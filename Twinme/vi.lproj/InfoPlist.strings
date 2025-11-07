@@ -1,0 +1,5 @@
+NSAppleMusicUsageDescription = "để phát trực tuyến nhạc";
+NSCameraUsageDescription = "để chụp ảnh và thực hiện cuộc gọi video";
+NSMicrophoneUsageDescription = "để chụp ảnh và thực hiện cuộc gọi video";
+NSPhotoLibraryUsageDescription = "để sử dụng ảnh đại diện và gửi trong các tin nhắn trò chuyện";
+NSPhotoLibraryAddUsageDescription = "Để lưu ảnh và video được trao đổi trong cuộc trò chuyện, cũng như mã QR mời, vào album ảnh của thiết bị.";

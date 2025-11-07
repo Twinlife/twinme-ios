@@ -1,0 +1,5 @@
+NSAppleMusicUsageDescription = "Musiikin suoratoisto";
+NSCameraUsageDescription = "kuvien ottamiseen ja videopuheluiden soittamiseen";
+NSMicrophoneUsageDescription = "ääni- ja videopuheluiden soittamiseen";
+NSPhotoLibraryUsageDescription = "profiilin kuviin ja pikaviestien lähettämiseen";
+NSPhotoLibraryAddUsageDescription = "Voit tallentaa keskusteluissa vaihdetut kuvat ja videot sekä kutsujen QR-koodit laitteen valokuva-albumiin.";

@@ -1,0 +1,1129 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 54;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		471A5C642E9D4CF4008F4406 /* NotificationTools.h in Headers */ = {isa = PBXBuildFile; fileRef = 8348EA51249C977C00AB33DA /* NotificationTools.h */; platformFilter = ios; settings = {ATTRIBUTES = (Public, ); }; };
+		471A5C652E9D4CF4008F4406 /* NotificationSettings.h in Headers */ = {isa = PBXBuildFile; fileRef = 8348EA52249C977C00AB33DA /* NotificationSettings.h */; platformFilter = ios; settings = {ATTRIBUTES = (Public, ); }; };
+		471A5C672E9D4CF4008F4406 /* NotificationTools.m in Sources */ = {isa = PBXBuildFile; fileRef = 8348EA54249C977C00AB33DA /* NotificationTools.m */; };
+		471A5C682E9D4CF4008F4406 /* NotificationSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = 8348EA4F249C977C00AB33DA /* NotificationSettings.m */; };
+		471A5C802E9D4D13008F4406 /* NotificationTools.h in Headers */ = {isa = PBXBuildFile; fileRef = 8348EA51249C977C00AB33DA /* NotificationTools.h */; platformFilter = ios; settings = {ATTRIBUTES = (Public, ); }; };
+		471A5C812E9D4D13008F4406 /* NotificationSettings.h in Headers */ = {isa = PBXBuildFile; fileRef = 8348EA52249C977C00AB33DA /* NotificationSettings.h */; platformFilter = ios; settings = {ATTRIBUTES = (Public, ); }; };
+		471A5C832E9D4D13008F4406 /* NotificationTools.m in Sources */ = {isa = PBXBuildFile; fileRef = 8348EA54249C977C00AB33DA /* NotificationTools.m */; };
+		471A5C842E9D4D13008F4406 /* NotificationSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = 8348EA4F249C977C00AB33DA /* NotificationSettings.m */; };
+		471A5C912E9D4D34008F4406 /* NotificationTools.h in Headers */ = {isa = PBXBuildFile; fileRef = 8348EA51249C977C00AB33DA /* NotificationTools.h */; platformFilter = ios; settings = {ATTRIBUTES = (Public, ); }; };
+		471A5C922E9D4D34008F4406 /* NotificationSettings.h in Headers */ = {isa = PBXBuildFile; fileRef = 8348EA52249C977C00AB33DA /* NotificationSettings.h */; platformFilter = ios; settings = {ATTRIBUTES = (Public, ); }; };
+		471A5C942E9D4D34008F4406 /* NotificationTools.m in Sources */ = {isa = PBXBuildFile; fileRef = 8348EA54249C977C00AB33DA /* NotificationTools.m */; };
+		471A5C952E9D4D34008F4406 /* NotificationSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = 8348EA4F249C977C00AB33DA /* NotificationSettings.m */; };
+		471A5CA22E9D4D52008F4406 /* NotificationTools.h in Headers */ = {isa = PBXBuildFile; fileRef = 8348EA51249C977C00AB33DA /* NotificationTools.h */; platformFilter = ios; settings = {ATTRIBUTES = (Public, ); }; };
+		471A5CA32E9D4D52008F4406 /* NotificationSettings.h in Headers */ = {isa = PBXBuildFile; fileRef = 8348EA52249C977C00AB33DA /* NotificationSettings.h */; platformFilter = ios; settings = {ATTRIBUTES = (Public, ); }; };
+		471A5CA52E9D4D52008F4406 /* NotificationTools.m in Sources */ = {isa = PBXBuildFile; fileRef = 8348EA54249C977C00AB33DA /* NotificationTools.m */; };
+		471A5CA62E9D4D52008F4406 /* NotificationSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = 8348EA4F249C977C00AB33DA /* NotificationSettings.m */; };
+		4770BA852E9D04E90042F374 /* NotificationTools.h in Headers */ = {isa = PBXBuildFile; fileRef = 8348EA51249C977C00AB33DA /* NotificationTools.h */; platformFilter = ios; settings = {ATTRIBUTES = (Public, ); }; };
+		4770BA862E9D04E90042F374 /* NotificationSettings.h in Headers */ = {isa = PBXBuildFile; fileRef = 8348EA52249C977C00AB33DA /* NotificationSettings.h */; platformFilter = ios; settings = {ATTRIBUTES = (Public, ); }; };
+		4770BA882E9D04E90042F374 /* NotificationTools.m in Sources */ = {isa = PBXBuildFile; fileRef = 8348EA54249C977C00AB33DA /* NotificationTools.m */; };
+		4770BA892E9D04E90042F374 /* NotificationSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = 8348EA4F249C977C00AB33DA /* NotificationSettings.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		471A5C622E9D4CF4008F4406 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7AB2AA022B600F52006EB6D7 /* Twinme.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = B857C6CF61F28A184432EEBF;
+			remoteInfo = TwinmeTwinme;
+		};
+		471A5C8B2E9D4D29008F4406 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7AB2AA022B600F52006EB6D7 /* Twinme.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 783AAE3D57510347B49C28AF;
+			remoteInfo = TwinmeTwinmePlus;
+		};
+		471A5C9C2E9D4D46008F4406 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7AB2AA022B600F52006EB6D7 /* Twinme.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 36B7BADCD8A6BD6B361FF890;
+			remoteInfo = TwinmeSkred;
+		};
+		471A5CAD2E9D4D64008F4406 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7AB2AA022B600F52006EB6D7 /* Twinme.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = DEEE8FCB19EC42B53251FF7B;
+			remoteInfo = TwinmeMytwinlifePlus;
+		};
+		475FB7072B8CE00B00660BA8 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 475FB6FF2B8CE00B00660BA8 /* Twinlife.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 7AE670482B4EC09F00859E5E;
+			remoteInfo = TwinlifeTwinmePlus;
+		};
+		475FB7092B8CE00B00660BA8 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 475FB6FF2B8CE00B00660BA8 /* Twinlife.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 7A2F2C812B51B1F20021AF15;
+			remoteInfo = TwinlifeTwinme;
+		};
+		475FB70B2B8CE00B00660BA8 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 475FB6FF2B8CE00B00660BA8 /* Twinlife.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 7A2F2DD82B51B20B0021AF15;
+			remoteInfo = TwinlifeSkred;
+		};
+		4770BA952E9D04E90042F374 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 475FB6FF2B8CE00B00660BA8 /* Twinlife.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = B67E332CB3B5E9A0BB5D48AE;
+			remoteInfo = TwinlifeMytwinlife;
+		};
+		4770BA972E9D04E90042F374 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 475FB6FF2B8CE00B00660BA8 /* Twinlife.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 23FD80A90A8EF285A2DD8472;
+			remoteInfo = TwinlifeMytwinlifePlus;
+		};
+		4770BA9D2E9D04E90042F374 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7AB2AA022B600F52006EB6D7 /* Twinme.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 5F9A4648C67CEAFA6BD91FEE;
+			remoteInfo = TwinmeMytwinlife;
+		};
+		4770BA9F2E9D04E90042F374 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7AB2AA022B600F52006EB6D7 /* Twinme.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8F4BFC646F4C43DA1E3C7CDA;
+			remoteInfo = TwinmeMytwinlifePlus;
+		};
+		4770BAA62E9D04E90042F374 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7A79E4FB2B60281300458A97 /* Twinme.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 5F9A4648C67CEAFA6BD91FEE;
+			remoteInfo = TwinmeMytwinlife;
+		};
+		4770BAA82E9D04E90042F374 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7A79E4FB2B60281300458A97 /* Twinme.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8F4BFC646F4C43DA1E3C7CDA;
+			remoteInfo = TwinmeMytwinlifePlus;
+		};
+		4770BAAA2E9D050F0042F374 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7AB2AA022B600F52006EB6D7 /* Twinme.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8024D2448A8D56B71C6C9C5D;
+			remoteInfo = TwinmeMytwinlife;
+		};
+		7A79E5022B60281300458A97 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7A79E4FB2B60281300458A97 /* Twinme.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 83DB2A6C1E44C2DA007C0FD8;
+			remoteInfo = TwinmeTwinme;
+		};
+		7A79E5062B60281300458A97 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7A79E4FB2B60281300458A97 /* Twinme.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 7AA8E4E32B5697AA00210FCB;
+			remoteInfo = TwinmeTwinmePlus;
+		};
+		7A79E5082B60281300458A97 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7A79E4FB2B60281300458A97 /* Twinme.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 7AA8E59E2B5697C200210FCB;
+			remoteInfo = TwinmeSkred;
+		};
+		7AB2AA092B600F52006EB6D7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7AB2AA022B600F52006EB6D7 /* Twinme.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 83DB2A6C1E44C2DA007C0FD8;
+			remoteInfo = TwinmeTwinme;
+		};
+		7AB2AA0D2B600F52006EB6D7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7AB2AA022B600F52006EB6D7 /* Twinme.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 7AA8E4E32B5697AA00210FCB;
+			remoteInfo = TwinmeTwinmePlus;
+		};
+		7AB2AA0F2B600F52006EB6D7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7AB2AA022B600F52006EB6D7 /* Twinme.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 7AA8E59E2B5697C200210FCB;
+			remoteInfo = TwinmeSkred;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		471A5C6A2E9D4CF4008F4406 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "include/$(PRODUCT_NAME)";
+			dstSubfolderSpec = 16;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		471A5C862E9D4D13008F4406 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "include/$(PRODUCT_NAME)";
+			dstSubfolderSpec = 16;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		471A5C972E9D4D34008F4406 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "include/$(PRODUCT_NAME)";
+			dstSubfolderSpec = 16;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		471A5CA82E9D4D52008F4406 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "include/$(PRODUCT_NAME)";
+			dstSubfolderSpec = 16;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4770BA8B2E9D04E90042F374 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "include/$(PRODUCT_NAME)";
+			dstSubfolderSpec = 16;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		471A5C6E2E9D4CF4008F4406 /* libNotificationTwinme.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libNotificationTwinme.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		471A5C8A2E9D4D13008F4406 /* libNotificationTwinmePlus.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libNotificationTwinmePlus.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		471A5C9B2E9D4D34008F4406 /* libNotificationSkred.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libNotificationSkred.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		471A5CAC2E9D4D52008F4406 /* libNotificationMytwinlifePlus.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libNotificationMytwinlifePlus.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		475FB6FF2B8CE00B00660BA8 /* Twinlife.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Twinlife.xcodeproj; path = ../TwinlifeFramework/Twinlife.xcodeproj; sourceTree = "<group>"; };
+		4770BA8F2E9D04E90042F374 /* libNotificationMytwinlife.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libNotificationMytwinlife.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		7A79E4FB2B60281300458A97 /* Twinme.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Twinme.xcodeproj; path = ../TwinmeFramework/Twinme.xcodeproj; sourceTree = "<group>"; };
+		7AB2AA022B600F52006EB6D7 /* Twinme.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Twinme.xcodeproj; path = ../TwinmeFramework/Twinme.xcodeproj; sourceTree = "<group>"; };
+		8348EA4F249C977C00AB33DA /* NotificationSettings.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NotificationSettings.m; sourceTree = "<group>"; };
+		8348EA51249C977C00AB33DA /* NotificationTools.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NotificationTools.h; sourceTree = "<group>"; };
+		8348EA52249C977C00AB33DA /* NotificationSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NotificationSettings.h; sourceTree = "<group>"; };
+		8348EA54249C977C00AB33DA /* NotificationTools.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NotificationTools.m; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		471A5C692E9D4CF4008F4406 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		471A5C852E9D4D13008F4406 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		471A5C962E9D4D34008F4406 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		471A5CA72E9D4D52008F4406 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4770BA8A2E9D04E90042F374 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		475FB7002B8CE00B00660BA8 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				4770BA962E9D04E90042F374 /* libTwinlifeMytwinlife.a */,
+				4770BA982E9D04E90042F374 /* libTwinlifeMytwinlifePlus.a */,
+				475FB70C2B8CE00B00660BA8 /* libTwinlifeSkred.a */,
+				475FB70A2B8CE00B00660BA8 /* libTwinlifeTwinme.a */,
+				475FB7082B8CE00B00660BA8 /* libTwinlifeTwinmePlus.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		7A79E4FA2B60280D00458A97 /* Projects */ = {
+			isa = PBXGroup;
+			children = (
+				7A79E4FB2B60281300458A97 /* Twinme.xcodeproj */,
+			);
+			name = Projects;
+			sourceTree = "<group>";
+		};
+		7A79E4FC2B60281300458A97 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				4770BAA72E9D04E90042F374 /* libTwinmeMytwinlife.a */,
+				4770BAA92E9D04E90042F374 /* libTwinmeMytwinlifePlus.a */,
+				7A79E5092B60281300458A97 /* libTwinmeSkred.a */,
+				7A79E5032B60281300458A97 /* libTwinmeTwinme.a */,
+				7A79E5072B60281300458A97 /* libTwinmeTwinmePlus.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		7AB2AA032B600F52006EB6D7 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				4770BA9E2E9D04E90042F374 /* libTwinmeMytwinlife.a */,
+				4770BAA02E9D04E90042F374 /* libTwinmeMytwinlifePlus.a */,
+				7AB2AA102B600F52006EB6D7 /* libTwinmeSkred.a */,
+				7AB2AA0A2B600F52006EB6D7 /* libTwinmeTwinme.a */,
+				7AB2AA0E2B600F52006EB6D7 /* libTwinmeTwinmePlus.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		8348EA26249C959800AB33DA = {
+			isa = PBXGroup;
+			children = (
+				7A79E4FA2B60280D00458A97 /* Projects */,
+				7AB2AA022B600F52006EB6D7 /* Twinme.xcodeproj */,
+				8348EA4E249C977C00AB33DA /* Notification */,
+				8348EA30249C959800AB33DA /* Products */,
+				475FB6FF2B8CE00B00660BA8 /* Twinlife.xcodeproj */,
+			);
+			sourceTree = "<group>";
+		};
+		8348EA30249C959800AB33DA /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				4770BA8F2E9D04E90042F374 /* libNotificationMytwinlife.a */,
+				471A5C6E2E9D4CF4008F4406 /* libNotificationTwinme.a */,
+				471A5C8A2E9D4D13008F4406 /* libNotificationTwinmePlus.a */,
+				471A5C9B2E9D4D34008F4406 /* libNotificationSkred.a */,
+				471A5CAC2E9D4D52008F4406 /* libNotificationMytwinlifePlus.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		8348EA4E249C977C00AB33DA /* Notification */ = {
+			isa = PBXGroup;
+			children = (
+				8348EA52249C977C00AB33DA /* NotificationSettings.h */,
+				8348EA4F249C977C00AB33DA /* NotificationSettings.m */,
+				8348EA51249C977C00AB33DA /* NotificationTools.h */,
+				8348EA54249C977C00AB33DA /* NotificationTools.m */,
+			);
+			path = Notification;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		471A5C632E9D4CF4008F4406 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				471A5C642E9D4CF4008F4406 /* NotificationTools.h in Headers */,
+				471A5C652E9D4CF4008F4406 /* NotificationSettings.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		471A5C7F2E9D4D13008F4406 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				471A5C802E9D4D13008F4406 /* NotificationTools.h in Headers */,
+				471A5C812E9D4D13008F4406 /* NotificationSettings.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		471A5C902E9D4D34008F4406 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				471A5C912E9D4D34008F4406 /* NotificationTools.h in Headers */,
+				471A5C922E9D4D34008F4406 /* NotificationSettings.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		471A5CA12E9D4D52008F4406 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				471A5CA22E9D4D52008F4406 /* NotificationTools.h in Headers */,
+				471A5CA32E9D4D52008F4406 /* NotificationSettings.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4770BA842E9D04E90042F374 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4770BA852E9D04E90042F374 /* NotificationTools.h in Headers */,
+				4770BA862E9D04E90042F374 /* NotificationSettings.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		471A5C602E9D4CF4008F4406 /* NotificationTwinme */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 471A5C6B2E9D4CF4008F4406 /* Build configuration list for PBXNativeTarget "NotificationTwinme" */;
+			buildPhases = (
+				471A5C632E9D4CF4008F4406 /* Headers */,
+				471A5C662E9D4CF4008F4406 /* Sources */,
+				471A5C692E9D4CF4008F4406 /* Frameworks */,
+				471A5C6A2E9D4CF4008F4406 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				471A5C612E9D4CF4008F4406 /* PBXTargetDependency */,
+			);
+			name = NotificationTwinme;
+			productName = Notification;
+			productReference = 471A5C6E2E9D4CF4008F4406 /* libNotificationTwinme.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+		471A5C7C2E9D4D13008F4406 /* NotificationTwinmePlus */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 471A5C872E9D4D13008F4406 /* Build configuration list for PBXNativeTarget "NotificationTwinmePlus" */;
+			buildPhases = (
+				471A5C7F2E9D4D13008F4406 /* Headers */,
+				471A5C822E9D4D13008F4406 /* Sources */,
+				471A5C852E9D4D13008F4406 /* Frameworks */,
+				471A5C862E9D4D13008F4406 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				471A5C8C2E9D4D29008F4406 /* PBXTargetDependency */,
+			);
+			name = NotificationTwinmePlus;
+			productName = Notification;
+			productReference = 471A5C8A2E9D4D13008F4406 /* libNotificationTwinmePlus.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+		471A5C8D2E9D4D34008F4406 /* NotificationSkred */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 471A5C982E9D4D34008F4406 /* Build configuration list for PBXNativeTarget "NotificationSkred" */;
+			buildPhases = (
+				471A5C902E9D4D34008F4406 /* Headers */,
+				471A5C932E9D4D34008F4406 /* Sources */,
+				471A5C962E9D4D34008F4406 /* Frameworks */,
+				471A5C972E9D4D34008F4406 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				471A5C9D2E9D4D46008F4406 /* PBXTargetDependency */,
+			);
+			name = NotificationSkred;
+			productName = Notification;
+			productReference = 471A5C9B2E9D4D34008F4406 /* libNotificationSkred.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+		471A5C9E2E9D4D52008F4406 /* NotificationMytwinlifePlus */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 471A5CA92E9D4D52008F4406 /* Build configuration list for PBXNativeTarget "NotificationMytwinlifePlus" */;
+			buildPhases = (
+				471A5CA12E9D4D52008F4406 /* Headers */,
+				471A5CA42E9D4D52008F4406 /* Sources */,
+				471A5CA72E9D4D52008F4406 /* Frameworks */,
+				471A5CA82E9D4D52008F4406 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				471A5CAE2E9D4D64008F4406 /* PBXTargetDependency */,
+			);
+			name = NotificationMytwinlifePlus;
+			productName = Notification;
+			productReference = 471A5CAC2E9D4D52008F4406 /* libNotificationMytwinlifePlus.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+		4770BA812E9D04E90042F374 /* NotificationMytwinlife */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4770BA8C2E9D04E90042F374 /* Build configuration list for PBXNativeTarget "NotificationMytwinlife" */;
+			buildPhases = (
+				4770BA842E9D04E90042F374 /* Headers */,
+				4770BA872E9D04E90042F374 /* Sources */,
+				4770BA8A2E9D04E90042F374 /* Frameworks */,
+				4770BA8B2E9D04E90042F374 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				4770BAAB2E9D050F0042F374 /* PBXTargetDependency */,
+			);
+			name = NotificationMytwinlife;
+			productName = Notification;
+			productReference = 4770BA8F2E9D04E90042F374 /* libNotificationMytwinlife.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		8348EA27249C959800AB33DA /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 1210;
+				ORGANIZATIONNAME = Twinlife;
+			};
+			buildConfigurationList = 8348EA2A249C959800AB33DA /* Build configuration list for PBXProject "Notification" */;
+			compatibilityVersion = "Xcode 12.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 8348EA26249C959800AB33DA;
+			productRefGroup = 8348EA30249C959800AB33DA /* Products */;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 475FB7002B8CE00B00660BA8 /* Products */;
+					ProjectRef = 475FB6FF2B8CE00B00660BA8 /* Twinlife.xcodeproj */;
+				},
+				{
+					ProductGroup = 7AB2AA032B600F52006EB6D7 /* Products */;
+					ProjectRef = 7AB2AA022B600F52006EB6D7 /* Twinme.xcodeproj */;
+				},
+				{
+					ProductGroup = 7A79E4FC2B60281300458A97 /* Products */;
+					ProjectRef = 7A79E4FB2B60281300458A97 /* Twinme.xcodeproj */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				4770BA812E9D04E90042F374 /* NotificationMytwinlife */,
+				471A5C602E9D4CF4008F4406 /* NotificationTwinme */,
+				471A5C7C2E9D4D13008F4406 /* NotificationTwinmePlus */,
+				471A5C8D2E9D4D34008F4406 /* NotificationSkred */,
+				471A5C9E2E9D4D52008F4406 /* NotificationMytwinlifePlus */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		475FB7082B8CE00B00660BA8 /* libTwinlifeTwinmePlus.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libTwinlifeTwinmePlus.a;
+			remoteRef = 475FB7072B8CE00B00660BA8 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		475FB70A2B8CE00B00660BA8 /* libTwinlifeTwinme.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libTwinlifeTwinme.a;
+			remoteRef = 475FB7092B8CE00B00660BA8 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		475FB70C2B8CE00B00660BA8 /* libTwinlifeSkred.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libTwinlifeSkred.a;
+			remoteRef = 475FB70B2B8CE00B00660BA8 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		4770BA962E9D04E90042F374 /* libTwinlifeMytwinlife.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libTwinlifeMytwinlife.a;
+			remoteRef = 4770BA952E9D04E90042F374 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		4770BA982E9D04E90042F374 /* libTwinlifeMytwinlifePlus.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libTwinlifeMytwinlifePlus.a;
+			remoteRef = 4770BA972E9D04E90042F374 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		4770BA9E2E9D04E90042F374 /* libTwinmeMytwinlife.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libTwinmeMytwinlife.a;
+			remoteRef = 4770BA9D2E9D04E90042F374 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		4770BAA02E9D04E90042F374 /* libTwinmeMytwinlifePlus.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libTwinmeMytwinlifePlus.a;
+			remoteRef = 4770BA9F2E9D04E90042F374 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		4770BAA72E9D04E90042F374 /* libTwinmeMytwinlife.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libTwinmeMytwinlife.a;
+			remoteRef = 4770BAA62E9D04E90042F374 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		4770BAA92E9D04E90042F374 /* libTwinmeMytwinlifePlus.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libTwinmeMytwinlifePlus.a;
+			remoteRef = 4770BAA82E9D04E90042F374 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		7A79E5032B60281300458A97 /* libTwinmeTwinme.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libTwinmeTwinme.a;
+			remoteRef = 7A79E5022B60281300458A97 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		7A79E5072B60281300458A97 /* libTwinmeTwinmePlus.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libTwinmeTwinmePlus.a;
+			remoteRef = 7A79E5062B60281300458A97 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		7A79E5092B60281300458A97 /* libTwinmeSkred.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libTwinmeSkred.a;
+			remoteRef = 7A79E5082B60281300458A97 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		7AB2AA0A2B600F52006EB6D7 /* libTwinmeTwinme.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libTwinmeTwinme.a;
+			remoteRef = 7AB2AA092B600F52006EB6D7 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		7AB2AA0E2B600F52006EB6D7 /* libTwinmeTwinmePlus.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libTwinmeTwinmePlus.a;
+			remoteRef = 7AB2AA0D2B600F52006EB6D7 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		7AB2AA102B600F52006EB6D7 /* libTwinmeSkred.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libTwinmeSkred.a;
+			remoteRef = 7AB2AA0F2B600F52006EB6D7 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
+
+/* Begin PBXSourcesBuildPhase section */
+		471A5C662E9D4CF4008F4406 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				471A5C672E9D4CF4008F4406 /* NotificationTools.m in Sources */,
+				471A5C682E9D4CF4008F4406 /* NotificationSettings.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		471A5C822E9D4D13008F4406 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				471A5C832E9D4D13008F4406 /* NotificationTools.m in Sources */,
+				471A5C842E9D4D13008F4406 /* NotificationSettings.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		471A5C932E9D4D34008F4406 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				471A5C942E9D4D34008F4406 /* NotificationTools.m in Sources */,
+				471A5C952E9D4D34008F4406 /* NotificationSettings.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		471A5CA42E9D4D52008F4406 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				471A5CA52E9D4D52008F4406 /* NotificationTools.m in Sources */,
+				471A5CA62E9D4D52008F4406 /* NotificationSettings.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4770BA872E9D04E90042F374 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4770BA882E9D04E90042F374 /* NotificationTools.m in Sources */,
+				4770BA892E9D04E90042F374 /* NotificationSettings.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		471A5C612E9D4CF4008F4406 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = TwinmeTwinme;
+			targetProxy = 471A5C622E9D4CF4008F4406 /* PBXContainerItemProxy */;
+		};
+		471A5C8C2E9D4D29008F4406 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = TwinmeTwinmePlus;
+			targetProxy = 471A5C8B2E9D4D29008F4406 /* PBXContainerItemProxy */;
+		};
+		471A5C9D2E9D4D46008F4406 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = TwinmeSkred;
+			targetProxy = 471A5C9C2E9D4D46008F4406 /* PBXContainerItemProxy */;
+		};
+		471A5CAE2E9D4D64008F4406 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = TwinmeMytwinlifePlus;
+			targetProxy = 471A5CAD2E9D4D64008F4406 /* PBXContainerItemProxy */;
+		};
+		4770BAAB2E9D050F0042F374 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = TwinmeMytwinlife;
+			targetProxy = 4770BAAA2E9D050F0042F374 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		471A5C6C2E9D4CF4008F4406 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = MU7KFWAKY9;
+				EXCLUDED_ARCHS = "";
+				GCC_PREFIX_HEADER = Prefix.pch;
+				HEADER_SEARCH_PATHS = (
+					"\"${SRCROOT}/../Pods/Headers/Public/CocoaLumberjack\"",
+					"\"${SRCROOT}/../Utils\"",
+					"\"${SRCROOT}/../WebRTCFramework/Headers\"",
+					"\"${SRCROOT}/../Pods/Headers/Public\"",
+					"\"${TARGET_BUILD_DIR}/include\"",
+				);
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		471A5C6D2E9D4CF4008F4406 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = MU7KFWAKY9;
+				EXCLUDED_ARCHS = "";
+				GCC_PREFIX_HEADER = Prefix.pch;
+				HEADER_SEARCH_PATHS = (
+					"\"${SRCROOT}/../Pods/Headers/Public/CocoaLumberjack\"",
+					"\"${SRCROOT}/../Utils\"",
+					"\"${SRCROOT}/../WebRTCFramework/Headers\"",
+					"\"${SRCROOT}/../Pods/Headers/Public\"",
+					"\"${TARGET_BUILD_DIR}/include\"",
+				);
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		471A5C882E9D4D13008F4406 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = MU7KFWAKY9;
+				EXCLUDED_ARCHS = "";
+				GCC_PREFIX_HEADER = Prefix.pch;
+				HEADER_SEARCH_PATHS = (
+					"\"${SRCROOT}/../Pods/Headers/Public/CocoaLumberjack\"",
+					"\"${SRCROOT}/../Utils\"",
+					"\"${SRCROOT}/../WebRTCFramework/Headers\"",
+					"\"${SRCROOT}/../Pods/Headers/Public\"",
+					"\"${TARGET_BUILD_DIR}/include\"",
+				);
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		471A5C892E9D4D13008F4406 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = MU7KFWAKY9;
+				EXCLUDED_ARCHS = "";
+				GCC_PREFIX_HEADER = Prefix.pch;
+				HEADER_SEARCH_PATHS = (
+					"\"${SRCROOT}/../Pods/Headers/Public/CocoaLumberjack\"",
+					"\"${SRCROOT}/../Utils\"",
+					"\"${SRCROOT}/../WebRTCFramework/Headers\"",
+					"\"${SRCROOT}/../Pods/Headers/Public\"",
+					"\"${TARGET_BUILD_DIR}/include\"",
+				);
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		471A5C992E9D4D34008F4406 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = MU7KFWAKY9;
+				EXCLUDED_ARCHS = "";
+				GCC_PREFIX_HEADER = Prefix.pch;
+				HEADER_SEARCH_PATHS = (
+					"\"${SRCROOT}/../Pods/Headers/Public/CocoaLumberjack\"",
+					"\"${SRCROOT}/../Utils\"",
+					"\"${SRCROOT}/../WebRTCFramework/Headers\"",
+					"\"${SRCROOT}/../Pods/Headers/Public\"",
+					"\"${TARGET_BUILD_DIR}/include\"",
+				);
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		471A5C9A2E9D4D34008F4406 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = MU7KFWAKY9;
+				EXCLUDED_ARCHS = "";
+				GCC_PREFIX_HEADER = Prefix.pch;
+				HEADER_SEARCH_PATHS = (
+					"\"${SRCROOT}/../Pods/Headers/Public/CocoaLumberjack\"",
+					"\"${SRCROOT}/../Utils\"",
+					"\"${SRCROOT}/../WebRTCFramework/Headers\"",
+					"\"${SRCROOT}/../Pods/Headers/Public\"",
+					"\"${TARGET_BUILD_DIR}/include\"",
+				);
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		471A5CAA2E9D4D52008F4406 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = MU7KFWAKY9;
+				EXCLUDED_ARCHS = "";
+				GCC_PREFIX_HEADER = Prefix.pch;
+				HEADER_SEARCH_PATHS = (
+					"\"${SRCROOT}/../Pods/Headers/Public/CocoaLumberjack\"",
+					"\"${SRCROOT}/../Utils\"",
+					"\"${SRCROOT}/../WebRTCFramework/Headers\"",
+					"\"${SRCROOT}/../Pods/Headers/Public\"",
+					"\"${TARGET_BUILD_DIR}/include\"",
+				);
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		471A5CAB2E9D4D52008F4406 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = MU7KFWAKY9;
+				EXCLUDED_ARCHS = "";
+				GCC_PREFIX_HEADER = Prefix.pch;
+				HEADER_SEARCH_PATHS = (
+					"\"${SRCROOT}/../Pods/Headers/Public/CocoaLumberjack\"",
+					"\"${SRCROOT}/../Utils\"",
+					"\"${SRCROOT}/../WebRTCFramework/Headers\"",
+					"\"${SRCROOT}/../Pods/Headers/Public\"",
+					"\"${TARGET_BUILD_DIR}/include\"",
+				);
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		4770BA8D2E9D04E90042F374 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = MU7KFWAKY9;
+				EXCLUDED_ARCHS = "";
+				GCC_PREFIX_HEADER = Prefix.pch;
+				HEADER_SEARCH_PATHS = (
+					"\"${SRCROOT}/../Pods/Headers/Public/CocoaLumberjack\"",
+					"\"${SRCROOT}/../Utils\"",
+					"\"${SRCROOT}/../WebRTCFramework/Headers\"",
+					"\"${SRCROOT}/../Pods/Headers/Public\"",
+					"\"${TARGET_BUILD_DIR}/include\"",
+				);
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		4770BA8E2E9D04E90042F374 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = MU7KFWAKY9;
+				EXCLUDED_ARCHS = "";
+				GCC_PREFIX_HEADER = Prefix.pch;
+				HEADER_SEARCH_PATHS = (
+					"\"${SRCROOT}/../Pods/Headers/Public/CocoaLumberjack\"",
+					"\"${SRCROOT}/../Utils\"",
+					"\"${SRCROOT}/../WebRTCFramework/Headers\"",
+					"\"${SRCROOT}/../Pods/Headers/Public\"",
+					"\"${TARGET_BUILD_DIR}/include\"",
+				);
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		8348EA36249C959800AB33DA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				EXCLUDED_ARCHS = arm64;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = Notification;
+				PUBLIC_HEADERS_FOLDER_PATH = include/Notification;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		8348EA37249C959800AB33DA /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				EXCLUDED_ARCHS = arm64;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = Notification;
+				PUBLIC_HEADERS_FOLDER_PATH = include/Notification;
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		471A5C6B2E9D4CF4008F4406 /* Build configuration list for PBXNativeTarget "NotificationTwinme" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				471A5C6C2E9D4CF4008F4406 /* Debug */,
+				471A5C6D2E9D4CF4008F4406 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		471A5C872E9D4D13008F4406 /* Build configuration list for PBXNativeTarget "NotificationTwinmePlus" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				471A5C882E9D4D13008F4406 /* Debug */,
+				471A5C892E9D4D13008F4406 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		471A5C982E9D4D34008F4406 /* Build configuration list for PBXNativeTarget "NotificationSkred" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				471A5C992E9D4D34008F4406 /* Debug */,
+				471A5C9A2E9D4D34008F4406 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		471A5CA92E9D4D52008F4406 /* Build configuration list for PBXNativeTarget "NotificationMytwinlifePlus" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				471A5CAA2E9D4D52008F4406 /* Debug */,
+				471A5CAB2E9D4D52008F4406 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		4770BA8C2E9D04E90042F374 /* Build configuration list for PBXNativeTarget "NotificationMytwinlife" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4770BA8D2E9D04E90042F374 /* Debug */,
+				4770BA8E2E9D04E90042F374 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		8348EA2A249C959800AB33DA /* Build configuration list for PBXProject "Notification" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8348EA36249C959800AB33DA /* Debug */,
+				8348EA37249C959800AB33DA /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 8348EA27249C959800AB33DA /* Project object */;
+}

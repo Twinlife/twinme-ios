@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="22146" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22122"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="ClearItemCellIdentifier" id="KGk-i7-Jjw" customClass="ClearItemCell">
+            <rect key="frame" x="0.0" y="0.0" width="750" height="120"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
+                <rect key="frame" x="0.0" y="0.0" width="750" height="120"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="H3d-tn-hXt">
+                        <rect key="frame" x="0.0" y="0.0" width="750" height="120"/>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    </view>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text=".name" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="LbC-V8-mU9">
+                        <rect key="frame" x="343.5" y="45.5" width="63.5" height="29"/>
+                        <constraints>
+                            <constraint firstAttribute="width" relation="lessThanOrEqual" constant="522" id="qS3-ig-zAx"/>
+                        </constraints>
+                        <fontDescription key="fontDescription" type="system" pointSize="24"/>
+                        <nil key="textColor"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <imageView hidden="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="QMI-qG-o6i">
+                        <rect key="frame" x="708" y="48" width="24" height="24"/>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="24" id="bIV-cl-TN2"/>
+                            <constraint firstAttribute="width" secondItem="QMI-qG-o6i" secondAttribute="height" multiplier="1:1" id="y7R-rB-5Ed"/>
+                        </constraints>
+                    </imageView>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ucQ-EV-wd4">
+                        <rect key="frame" x="36" y="42" width="36" height="36"/>
+                        <subviews>
+                            <imageView hidden="YES" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="CheckMarkGrey" translatesAutoresizingMaskIntoConstraints="NO" id="IgI-3U-J6D">
+                                <rect key="frame" x="0.0" y="0.0" width="36" height="36"/>
+                            </imageView>
+                        </subviews>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstAttribute="trailing" secondItem="IgI-3U-J6D" secondAttribute="trailing" id="DhA-JI-NgH"/>
+                            <constraint firstAttribute="width" secondItem="ucQ-EV-wd4" secondAttribute="height" multiplier="1:1" id="LDj-uC-Hu9"/>
+                            <constraint firstItem="IgI-3U-J6D" firstAttribute="top" secondItem="ucQ-EV-wd4" secondAttribute="top" id="TSw-DH-lbh"/>
+                            <constraint firstAttribute="bottom" secondItem="IgI-3U-J6D" secondAttribute="bottom" id="fmd-WV-GpM"/>
+                            <constraint firstAttribute="height" constant="36" id="ui1-En-NoA"/>
+                            <constraint firstItem="IgI-3U-J6D" firstAttribute="leading" secondItem="ucQ-EV-wd4" secondAttribute="leading" id="yf7-EY-8dR"/>
+                        </constraints>
+                    </view>
+                </subviews>
+                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                <constraints>
+                    <constraint firstAttribute="trailing" secondItem="H3d-tn-hXt" secondAttribute="trailing" id="0fp-0g-ItU"/>
+                    <constraint firstItem="ucQ-EV-wd4" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="5PP-Ru-p96"/>
+                    <constraint firstItem="LbC-V8-mU9" firstAttribute="centerX" secondItem="H2p-sc-9uM" secondAttribute="centerX" id="Cwx-fX-LwU"/>
+                    <constraint firstAttribute="bottom" secondItem="H3d-tn-hXt" secondAttribute="bottom" id="ICV-jk-vSA"/>
+                    <constraint firstAttribute="trailing" secondItem="QMI-qG-o6i" secondAttribute="trailing" constant="18" id="Pqg-F7-ZcE"/>
+                    <constraint firstItem="ucQ-EV-wd4" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="36" id="cvG-K8-QXY"/>
+                    <constraint firstItem="ucQ-EV-wd4" firstAttribute="width" secondItem="ucQ-EV-wd4" secondAttribute="height" multiplier="1:1" id="fd8-2H-juZ"/>
+                    <constraint firstItem="QMI-qG-o6i" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="gAR-NQ-F96"/>
+                    <constraint firstItem="LbC-V8-mU9" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="unS-dA-rps"/>
+                    <constraint firstItem="H3d-tn-hXt" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" id="yx0-rs-seh"/>
+                    <constraint firstItem="H3d-tn-hXt" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" id="zGP-vE-CoD"/>
+                </constraints>
+            </tableViewCellContentView>
+            <viewLayoutGuide key="safeArea" id="aW0-zy-SZf"/>
+            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+            <connections>
+                <outlet property="checkMarkImageView" destination="IgI-3U-J6D" id="m8v-ej-Khf"/>
+                <outlet property="checkMarkView" destination="ucQ-EV-wd4" id="Ycm-0B-Iem"/>
+                <outlet property="checkMarkViewHeightConstraint" destination="ui1-En-NoA" id="5I2-el-CZx"/>
+                <outlet property="checkMarkViewLeadingConstraint" destination="cvG-K8-QXY" id="aGT-ii-Yia"/>
+                <outlet property="clearLabel" destination="LbC-V8-mU9" id="GEn-Ja-A6I"/>
+                <outlet property="clearLabelWidthConstraint" destination="qS3-ig-zAx" id="wE7-r0-Twy"/>
+                <outlet property="overlayView" destination="H3d-tn-hXt" id="V2O-EN-vRT"/>
+                <outlet property="stateImageView" destination="QMI-qG-o6i" id="V1b-eH-2F9"/>
+                <outlet property="stateImageViewHeightConstraint" destination="bIV-cl-TN2" id="tHF-ct-CPu"/>
+                <outlet property="stateImageViewTrailingConstraint" destination="Pqg-F7-ZcE" id="RaU-pK-Luy"/>
+            </connections>
+            <point key="canvasLocation" x="139" y="82"/>
+        </tableViewCell>
+    </objects>
+    <resources>
+        <image name="CheckMarkGrey" width="22" height="22"/>
+    </resources>
+</document>

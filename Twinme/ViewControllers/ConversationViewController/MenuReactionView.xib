@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="retina6_0" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="MenuReactionView">
+            <connections>
+                <outlet property="reactionCollectionView" destination="Zbq-M5-hNa" id="1J8-Mb-HL2"/>
+                <outlet property="reactionCollectionViewLeadingConstraint" destination="41G-lu-jHM" id="sj5-q7-OdF"/>
+                <outlet property="reactionCollectionViewTrailingConstraint" destination="4rS-Lh-tzB" id="AtU-A2-HQm"/>
+                <outlet property="reactionContainerView" destination="4db-eS-wYA" id="w7a-jn-FNO"/>
+                <outlet property="reactionContainerViewHeightConstraint" destination="zuT-Mq-iKA" id="r2G-Qa-tB8"/>
+                <outlet property="reactionContainerViewLeadingConstraint" destination="BHP-pd-zhT" id="U2D-4l-G4K"/>
+                <outlet property="reactionContainerViewWidthConstraint" destination="U1I-Xd-rSB" id="N2Y-ol-tbT"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="iN0-l3-epB">
+            <rect key="frame" x="0.0" y="0.0" width="750" height="100"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="4db-eS-wYA">
+                    <rect key="frame" x="34" y="4" width="682" height="92"/>
+                    <subviews>
+                        <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="none" translatesAutoresizingMaskIntoConstraints="NO" id="Zbq-M5-hNa">
+                            <rect key="frame" x="12" y="0.0" width="658" height="92"/>
+                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            <collectionViewFlowLayout key="collectionViewLayout" scrollDirection="horizontal" minimumLineSpacing="10" minimumInteritemSpacing="10" id="mDe-GJ-TrE">
+                                <size key="itemSize" width="128" height="128"/>
+                                <size key="headerReferenceSize" width="0.0" height="0.0"/>
+                                <size key="footerReferenceSize" width="0.0" height="0.0"/>
+                                <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                            </collectionViewFlowLayout>
+                        </collectionView>
+                    </subviews>
+                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <constraints>
+                        <constraint firstItem="Zbq-M5-hNa" firstAttribute="centerY" secondItem="4db-eS-wYA" secondAttribute="centerY" id="2bd-Ol-PYy"/>
+                        <constraint firstItem="Zbq-M5-hNa" firstAttribute="leading" secondItem="4db-eS-wYA" secondAttribute="leading" constant="12" id="41G-lu-jHM"/>
+                        <constraint firstAttribute="trailing" secondItem="Zbq-M5-hNa" secondAttribute="trailing" constant="12" id="4rS-Lh-tzB"/>
+                        <constraint firstAttribute="width" constant="682" id="U1I-Xd-rSB"/>
+                        <constraint firstItem="Zbq-M5-hNa" firstAttribute="height" secondItem="4db-eS-wYA" secondAttribute="height" id="UFi-3w-EcH"/>
+                        <constraint firstAttribute="height" constant="92" id="zuT-Mq-iKA"/>
+                    </constraints>
+                </view>
+            </subviews>
+            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+            <constraints>
+                <constraint firstItem="4db-eS-wYA" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="5Hu-ZT-ATs"/>
+                <constraint firstItem="4db-eS-wYA" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="34" id="BHP-pd-zhT"/>
+            </constraints>
+            <nil key="simulatedTopBarMetrics"/>
+            <nil key="simulatedBottomBarMetrics"/>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <point key="canvasLocation" x="46" y="21"/>
+        </view>
+    </objects>
+</document>

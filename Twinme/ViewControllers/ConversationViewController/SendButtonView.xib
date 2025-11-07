@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view multipleTouchEnabled="YES" contentMode="scaleToFill" id="iN0-l3-epB" customClass="SendButtonView">
+            <rect key="frame" x="0.0" y="0.0" width="200" height="90"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="9JK-8e-3Kz">
+                    <rect key="frame" x="64" y="9" width="72" height="72"/>
+                    <subviews>
+                        <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Send" translatesAutoresizingMaskIntoConstraints="NO" id="pV8-ye-b6i">
+                            <rect key="frame" x="21" y="21" width="30" height="30"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="30" id="YOa-eE-QJa"/>
+                                <constraint firstAttribute="width" secondItem="pV8-ye-b6i" secondAttribute="height" multiplier="1:1" id="xbh-jN-UcQ"/>
+                            </constraints>
+                        </imageView>
+                    </subviews>
+                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <constraints>
+                        <constraint firstItem="pV8-ye-b6i" firstAttribute="centerX" secondItem="9JK-8e-3Kz" secondAttribute="centerX" id="SZX-LL-HvN"/>
+                        <constraint firstAttribute="height" constant="72" id="bmh-Oq-8mV"/>
+                        <constraint firstItem="pV8-ye-b6i" firstAttribute="centerY" secondItem="9JK-8e-3Kz" secondAttribute="centerY" id="d1X-R2-EzS"/>
+                        <constraint firstAttribute="width" secondItem="9JK-8e-3Kz" secondAttribute="height" multiplier="1:1" id="hNp-Zp-2Um"/>
+                    </constraints>
+                </view>
+                <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Ivr-Th-ucz">
+                    <rect key="frame" x="64" y="9" width="72" height="72"/>
+                    <subviews>
+                        <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="CheckMark" translatesAutoresizingMaskIntoConstraints="NO" id="3YC-WH-AeZ">
+                            <rect key="frame" x="15.5" y="21" width="41" height="30"/>
+                            <constraints>
+                                <constraint firstAttribute="width" secondItem="3YC-WH-AeZ" secondAttribute="height" multiplier="40:29" id="EhF-vA-5mX"/>
+                                <constraint firstAttribute="height" constant="30" id="xwJ-AW-cDA"/>
+                            </constraints>
+                        </imageView>
+                    </subviews>
+                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <constraints>
+                        <constraint firstItem="3YC-WH-AeZ" firstAttribute="centerY" secondItem="Ivr-Th-ucz" secondAttribute="centerY" id="lI4-Fh-iFo"/>
+                        <constraint firstItem="3YC-WH-AeZ" firstAttribute="centerX" secondItem="Ivr-Th-ucz" secondAttribute="centerX" id="v1l-al-1CS"/>
+                    </constraints>
+                </view>
+            </subviews>
+            <constraints>
+                <constraint firstItem="9JK-8e-3Kz" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="Mli-0P-UKU"/>
+                <constraint firstItem="9JK-8e-3Kz" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="NhP-6J-olR"/>
+                <constraint firstItem="Ivr-Th-ucz" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="Oj4-sM-Q2t"/>
+                <constraint firstItem="Ivr-Th-ucz" firstAttribute="height" secondItem="9JK-8e-3Kz" secondAttribute="height" id="XlQ-sx-KNt"/>
+                <constraint firstItem="Ivr-Th-ucz" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="hxW-op-gIX"/>
+                <constraint firstItem="Ivr-Th-ucz" firstAttribute="width" secondItem="9JK-8e-3Kz" secondAttribute="width" id="jDf-O3-H6p"/>
+            </constraints>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <connections>
+                <outlet property="editImageView" destination="3YC-WH-AeZ" id="LyY-Jw-3uR"/>
+                <outlet property="editImageViewHeightConstraint" destination="xwJ-AW-cDA" id="Pa8-uQ-Ma4"/>
+                <outlet property="editView" destination="Ivr-Th-ucz" id="oua-eU-7bB"/>
+                <outlet property="sendImageView" destination="pV8-ye-b6i" id="1Dn-gI-tGt"/>
+                <outlet property="sendImageViewHeightConstraint" destination="YOa-eE-QJa" id="ptB-PT-q9f"/>
+                <outlet property="sendView" destination="9JK-8e-3Kz" id="w7M-XQ-IyL"/>
+                <outlet property="sendViewHeightConstraint" destination="bmh-Oq-8mV" id="eGL-HF-IL4"/>
+            </connections>
+            <point key="canvasLocation" x="-55" y="-20"/>
+        </view>
+    </objects>
+    <resources>
+        <image name="CheckMark" width="160" height="116"/>
+        <image name="Send" width="26" height="26"/>
+    </resources>
+</document>

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="19455" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19454"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="NameItemCellIdentifier" id="KGk-i7-Jjw" customClass="NameItemCell">
+            <rect key="frame" x="0.0" y="0.0" width="750" height="36"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
+                <rect key="frame" x="0.0" y="0.0" width="750" height="36"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="x6a-Na-6C0">
+                        <rect key="frame" x="0.0" y="0.0" width="750" height="36"/>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    </view>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text=".name" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qP6-Ki-Tqj">
+                        <rect key="frame" x="114" y="0.0" width="63.5" height="36"/>
+                        <constraints>
+                            <constraint firstAttribute="width" relation="lessThanOrEqual" constant="522" id="VCv-js-wxG"/>
+                        </constraints>
+                        <fontDescription key="fontDescription" type="system" pointSize="24"/>
+                        <nil key="textColor"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                </subviews>
+                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                <constraints>
+                    <constraint firstItem="qP6-Ki-Tqj" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" id="3GN-UR-iAW"/>
+                    <constraint firstAttribute="bottom" secondItem="qP6-Ki-Tqj" secondAttribute="bottom" id="3WD-xb-zd0"/>
+                    <constraint firstItem="x6a-Na-6C0" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" id="Gsh-3k-ZkM"/>
+                    <constraint firstItem="qP6-Ki-Tqj" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="114" id="PI3-zg-Xde"/>
+                    <constraint firstAttribute="trailing" secondItem="x6a-Na-6C0" secondAttribute="trailing" id="Q7Z-th-pVI"/>
+                    <constraint firstAttribute="bottom" secondItem="x6a-Na-6C0" secondAttribute="bottom" id="bBz-jb-5S8"/>
+                    <constraint firstItem="x6a-Na-6C0" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" id="sGP-em-OVa"/>
+                </constraints>
+            </tableViewCellContentView>
+            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+            <connections>
+                <outlet property="nameLabel" destination="qP6-Ki-Tqj" id="G1s-cK-mhb"/>
+                <outlet property="nameLabelBottomConstraint" destination="3WD-xb-zd0" id="VMT-HV-xmr"/>
+                <outlet property="nameLabelLeadingConstraint" destination="PI3-zg-Xde" id="qeo-bN-Okb"/>
+                <outlet property="nameLabelTopConstraint" destination="3GN-UR-iAW" id="aBk-8G-p1o"/>
+                <outlet property="nameLabelWidthConstraint" destination="VCv-js-wxG" id="EVf-7R-Kc1"/>
+                <outlet property="overlayView" destination="x6a-Na-6C0" id="Di6-Dk-alF"/>
+            </connections>
+            <point key="canvasLocation" x="139" y="140"/>
+        </tableViewCell>
+    </objects>
+</document>

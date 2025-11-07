@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_0" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="EnableNotificationCellIdentifier" id="KGk-i7-Jjw" customClass="EnableNotificationCell">
+            <rect key="frame" x="0.0" y="0.0" width="750" height="208"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
+                <rect key="frame" x="0.0" y="0.0" width="750" height="208"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="nO9-o9-Gbe">
+                        <rect key="frame" x="40" y="24" width="670" height="160"/>
+                        <subviews>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="TabBarNotificationBadgeGrey" translatesAutoresizingMaskIntoConstraints="NO" id="7ea-gE-9Ze">
+                                <rect key="frame" x="24" y="14.333333333333336" width="40" height="40"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="40" id="KSK-mD-ayq"/>
+                                    <constraint firstAttribute="width" secondItem="7ea-gE-9Ze" secondAttribute="height" multiplier="1:1" id="Lk4-yu-Bpr"/>
+                                </constraints>
+                            </imageView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text=".title" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="yAM-tk-Px6">
+                                <rect key="frame" x="88" y="24" width="558" height="20.333333333333329"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="top" horizontalHuggingPriority="251" text=".message" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="WH0-fS-7BG">
+                                <rect key="frame" x="24" y="60.333333333333321" width="540" height="83.666666666666686"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="TFj-gi-QGP">
+                                <rect key="frame" x="588" y="84" width="66" height="60"/>
+                                <subviews>
+                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="OnboardingInfoIcon" translatesAutoresizingMaskIntoConstraints="NO" id="6E4-4K-fQc">
+                                        <rect key="frame" x="13" y="10" width="40" height="40"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" secondItem="6E4-4K-fQc" secondAttribute="height" multiplier="1:1" id="1ip-Fs-afd"/>
+                                            <constraint firstAttribute="height" constant="40" id="PYT-zc-H84"/>
+                                        </constraints>
+                                    </imageView>
+                                </subviews>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstItem="6E4-4K-fQc" firstAttribute="centerX" secondItem="TFj-gi-QGP" secondAttribute="centerX" id="R38-75-Fpc"/>
+                                    <constraint firstAttribute="width" constant="66" id="bYl-96-mNj"/>
+                                    <constraint firstAttribute="height" constant="60" id="hMy-5Z-dhg"/>
+                                    <constraint firstItem="6E4-4K-fQc" firstAttribute="centerY" secondItem="TFj-gi-QGP" secondAttribute="centerY" id="u5s-EV-gQM"/>
+                                </constraints>
+                            </view>
+                        </subviews>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstAttribute="trailing" secondItem="TFj-gi-QGP" secondAttribute="trailing" constant="16" id="El1-SQ-fWp"/>
+                            <constraint firstItem="7ea-gE-9Ze" firstAttribute="leading" secondItem="nO9-o9-Gbe" secondAttribute="leading" constant="24" id="JGK-fv-l9E"/>
+                            <constraint firstAttribute="bottom" secondItem="TFj-gi-QGP" secondAttribute="bottom" constant="16" id="JuZ-fp-b1b"/>
+                            <constraint firstItem="yAM-tk-Px6" firstAttribute="top" secondItem="nO9-o9-Gbe" secondAttribute="top" constant="24" id="Odi-i2-eTu"/>
+                            <constraint firstAttribute="bottom" secondItem="WH0-fS-7BG" secondAttribute="bottom" constant="16" id="P5j-cT-F65"/>
+                            <constraint firstAttribute="trailing" secondItem="yAM-tk-Px6" secondAttribute="trailing" constant="24" id="RH7-hc-Bb3"/>
+                            <constraint firstItem="WH0-fS-7BG" firstAttribute="leading" secondItem="nO9-o9-Gbe" secondAttribute="leading" constant="24" id="U9C-CM-t7U"/>
+                            <constraint firstItem="WH0-fS-7BG" firstAttribute="top" secondItem="yAM-tk-Px6" secondAttribute="bottom" constant="16" id="e3S-TL-17t"/>
+                            <constraint firstAttribute="height" relation="greaterThanOrEqual" priority="750" constant="160" id="fI6-ZG-ZWy"/>
+                            <constraint firstItem="yAM-tk-Px6" firstAttribute="leading" secondItem="7ea-gE-9Ze" secondAttribute="trailing" constant="24" id="hYX-wc-m1l"/>
+                            <constraint firstItem="7ea-gE-9Ze" firstAttribute="centerY" secondItem="yAM-tk-Px6" secondAttribute="centerY" id="uTf-ee-qTc"/>
+                            <constraint firstItem="TFj-gi-QGP" firstAttribute="leading" secondItem="WH0-fS-7BG" secondAttribute="trailing" constant="24" id="xIM-54-QiL"/>
+                        </constraints>
+                    </view>
+                </subviews>
+                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                <constraints>
+                    <constraint firstItem="nO9-o9-Gbe" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="24" id="GTt-4U-jAj"/>
+                    <constraint firstAttribute="bottom" secondItem="nO9-o9-Gbe" secondAttribute="bottom" constant="24" id="d9F-x1-S3t"/>
+                    <constraint firstAttribute="trailing" secondItem="nO9-o9-Gbe" secondAttribute="trailing" constant="40" id="eBv-a2-c6k"/>
+                    <constraint firstItem="nO9-o9-Gbe" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="40" id="eWR-ML-MWS"/>
+                </constraints>
+            </tableViewCellContentView>
+            <viewLayoutGuide key="safeArea" id="aW0-zy-SZf"/>
+            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+            <connections>
+                <outlet property="containerView" destination="nO9-o9-Gbe" id="qmP-s2-I5P"/>
+                <outlet property="containerViewBottomConstraint" destination="d9F-x1-S3t" id="rNl-jC-kBo"/>
+                <outlet property="containerViewHeightConstraint" destination="fI6-ZG-ZWy" id="sqa-VJ-6Ut"/>
+                <outlet property="containerViewLeadingConstraint" destination="eWR-ML-MWS" id="dIQ-lN-NnP"/>
+                <outlet property="containerViewTopConstraint" destination="GTt-4U-jAj" id="8fd-mb-4Sf"/>
+                <outlet property="containerViewTrailingConstraint" destination="eBv-a2-c6k" id="PnQ-cW-HAG"/>
+                <outlet property="enableImageView" destination="6E4-4K-fQc" id="rfY-bP-sdW"/>
+                <outlet property="enableImageViewHeightConstraint" destination="PYT-zc-H84" id="QCT-LW-4pg"/>
+                <outlet property="enableView" destination="TFj-gi-QGP" id="qPP-qM-MYt"/>
+                <outlet property="enableViewBottomConstraint" destination="JuZ-fp-b1b" id="vz3-sY-MvA"/>
+                <outlet property="enableViewHeightConstraint" destination="hMy-5Z-dhg" id="9WX-dH-bnn"/>
+                <outlet property="enableViewTrailingConstraint" destination="El1-SQ-fWp" id="JMY-ys-lt7"/>
+                <outlet property="enableViewWidthConstraint" destination="bYl-96-mNj" id="1hL-vv-9Zb"/>
+                <outlet property="messageLabel" destination="WH0-fS-7BG" id="Fvf-Gs-mdc"/>
+                <outlet property="messageLabelBottomConstraint" destination="P5j-cT-F65" id="3yD-d1-LZt"/>
+                <outlet property="messageLabelLeadingConstraint" destination="U9C-CM-t7U" id="K4d-8U-dJp"/>
+                <outlet property="messageLabelTrailingConstraint" destination="xIM-54-QiL" id="5fv-oK-jhD"/>
+                <outlet property="notficationImageView" destination="7ea-gE-9Ze" id="1jQ-VF-hG1"/>
+                <outlet property="notificationImageViewImageHeightConstraint" destination="KSK-mD-ayq" id="ycQ-hT-GpA"/>
+                <outlet property="notificationImageViewImageLeadingConstraint" destination="JGK-fv-l9E" id="Fuq-Pa-bhD"/>
+                <outlet property="titleLabel" destination="yAM-tk-Px6" id="r7f-yR-g1p"/>
+                <outlet property="titleLabelBottomConstraint" destination="e3S-TL-17t" id="O2f-T7-35Z"/>
+                <outlet property="titleLabelLeadingConstraint" destination="hYX-wc-m1l" id="OUD-eR-8da"/>
+                <outlet property="titleLabelTopConstraint" destination="Odi-i2-eTu" id="ss7-Eu-5PU"/>
+                <outlet property="titleLabelTrailingConstraint" destination="RH7-hc-Bb3" id="A7h-A9-ykc"/>
+            </connections>
+            <point key="canvasLocation" x="-226" y="-1"/>
+        </tableViewCell>
+    </objects>
+    <resources>
+        <image name="OnboardingInfoIcon" width="24" height="24"/>
+        <image name="TabBarNotificationBadgeGrey" width="22" height="28"/>
+    </resources>
+</document>

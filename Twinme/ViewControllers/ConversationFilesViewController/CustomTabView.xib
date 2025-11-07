@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21678"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="iN0-l3-epB" customClass="CustomTabView">
+            <rect key="frame" x="0.0" y="0.0" width="750" height="148"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <subviews>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="QhU-ZN-2Xo">
+                    <rect key="frame" x="40" y="39" width="670" height="70"/>
+                    <subviews>
+                        <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="none" translatesAutoresizingMaskIntoConstraints="NO" id="Fwi-1z-C3r">
+                            <rect key="frame" x="0.0" y="0.0" width="670" height="70"/>
+                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="70" id="G7G-VM-scf"/>
+                            </constraints>
+                            <collectionViewFlowLayout key="collectionViewLayout" scrollDirection="horizontal" minimumLineSpacing="0.0" minimumInteritemSpacing="0.0" id="7b7-6b-whZ">
+                                <size key="itemSize" width="128" height="128"/>
+                                <size key="headerReferenceSize" width="0.0" height="0.0"/>
+                                <size key="footerReferenceSize" width="0.0" height="0.0"/>
+                                <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                            </collectionViewFlowLayout>
+                        </collectionView>
+                    </subviews>
+                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <constraints>
+                        <constraint firstItem="Fwi-1z-C3r" firstAttribute="centerY" secondItem="QhU-ZN-2Xo" secondAttribute="centerY" id="2p5-lx-13u"/>
+                        <constraint firstAttribute="height" constant="70" id="DTq-PR-CMt"/>
+                        <constraint firstAttribute="trailing" secondItem="Fwi-1z-C3r" secondAttribute="trailing" id="k2p-Db-KGh"/>
+                        <constraint firstItem="Fwi-1z-C3r" firstAttribute="leading" secondItem="QhU-ZN-2Xo" secondAttribute="leading" id="ue0-BA-OaR"/>
+                    </constraints>
+                </view>
+            </subviews>
+            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+            <constraints>
+                <constraint firstItem="QhU-ZN-2Xo" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="40" id="Tb9-Th-zdM"/>
+                <constraint firstItem="QhU-ZN-2Xo" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="YQn-Ch-13a"/>
+                <constraint firstAttribute="trailing" secondItem="QhU-ZN-2Xo" secondAttribute="trailing" constant="40" id="i7p-7U-btb"/>
+            </constraints>
+            <nil key="simulatedTopBarMetrics"/>
+            <nil key="simulatedBottomBarMetrics"/>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <connections>
+                <outlet property="tabCollectionView" destination="Fwi-1z-C3r" id="bx7-x3-a9I"/>
+                <outlet property="tabCollectionViewHeightConstraint" destination="G7G-VM-scf" id="N28-hV-a5U"/>
+                <outlet property="tabCollectionViewLeadingConstraint" destination="ue0-BA-OaR" id="qdw-6G-CqH"/>
+                <outlet property="tabCollectionViewTrailingConstraint" destination="k2p-Db-KGh" id="Mvj-mM-n4E"/>
+                <outlet property="tabContainerView" destination="QhU-ZN-2Xo" id="olV-sV-X4M"/>
+                <outlet property="tabContainerViewHeightConstraint" destination="DTq-PR-CMt" id="mcI-f3-mLf"/>
+                <outlet property="tabContainerViewLeadingConstraint" destination="Tb9-Th-zdM" id="8Dr-ch-Xy1"/>
+                <outlet property="tabContainerViewTrailingConstraint" destination="i7p-7U-btb" id="Ort-9W-CHU"/>
+            </connections>
+            <point key="canvasLocation" x="48" y="21"/>
+        </view>
+    </objects>
+</document>

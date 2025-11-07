@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21225" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="retina6_0" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21207"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="AnnotationCountCellIdentifier" id="gTV-IL-0wX" customClass="AnnotationCountCell">
+            <rect key="frame" x="0.0" y="0.0" width="70" height="50"/>
+            <autoresizingMask key="autoresizingMask"/>
+            <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                <rect key="frame" x="0.0" y="0.0" width="70" height="50"/>
+                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                <subviews>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ke9-Gg-lsc">
+                        <rect key="frame" x="0.0" y="3" width="62" height="44"/>
+                        <subviews>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ReactionLove" translatesAutoresizingMaskIntoConstraints="NO" id="DYc-da-dFT">
+                                <rect key="frame" x="0.0" y="0.0" width="36" height="44"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="36" id="4sG-RS-QqM"/>
+                                    <constraint firstAttribute="height" constant="44" id="Hs9-sz-4A6"/>
+                                </constraints>
+                            </imageView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="10" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="NO2-O0-1Jo">
+                                <rect key="frame" x="28" y="11.666666666666664" width="30" height="21"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="30" id="6wT-Fw-37Y"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="44" id="0aK-b9-MfS"/>
+                            <constraint firstItem="DYc-da-dFT" firstAttribute="centerY" secondItem="ke9-Gg-lsc" secondAttribute="centerY" id="JbJ-1A-Aec"/>
+                            <constraint firstItem="NO2-O0-1Jo" firstAttribute="centerY" secondItem="ke9-Gg-lsc" secondAttribute="centerY" id="PT9-WR-gnt"/>
+                            <constraint firstAttribute="width" constant="62" id="fug-SQ-kf1"/>
+                            <constraint firstItem="DYc-da-dFT" firstAttribute="leading" secondItem="ke9-Gg-lsc" secondAttribute="leading" id="wpJ-Jd-153"/>
+                            <constraint firstAttribute="trailing" secondItem="NO2-O0-1Jo" secondAttribute="trailing" constant="4" id="zJ7-O8-W1l"/>
+                        </constraints>
+                    </view>
+                </subviews>
+            </view>
+            <constraints>
+                <constraint firstItem="ke9-Gg-lsc" firstAttribute="centerY" secondItem="gTV-IL-0wX" secondAttribute="centerY" id="MPG-g4-Noa"/>
+                <constraint firstItem="ke9-Gg-lsc" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" id="ifX-eP-7EY"/>
+            </constraints>
+            <connections>
+                <outlet property="annotationImageView" destination="DYc-da-dFT" id="E1F-va-n7K"/>
+                <outlet property="annotationImageViewHeightConstraint" destination="Hs9-sz-4A6" id="5aZ-5U-EYL"/>
+                <outlet property="annotationImageViewLeadingConstraint" destination="wpJ-Jd-153" id="grX-iS-foc"/>
+                <outlet property="annotationImageViewWidthConstraint" destination="4sG-RS-QqM" id="bMI-YG-3T6"/>
+                <outlet property="annotationView" destination="ke9-Gg-lsc" id="9mA-sL-hnx"/>
+                <outlet property="annotationViewHeightConstraint" destination="0aK-b9-MfS" id="pkU-IX-Gyg"/>
+                <outlet property="annotationViewLeadingConstraint" destination="ifX-eP-7EY" id="ABQ-GD-UU1"/>
+                <outlet property="annotationViewWidthConstraint" destination="fug-SQ-kf1" id="SRm-j3-JIW"/>
+                <outlet property="counterLabel" destination="NO2-O0-1Jo" id="TWM-6B-qDz"/>
+                <outlet property="counterLabelTrailingConstraint" destination="zJ7-O8-W1l" id="x3G-Q6-tyI"/>
+                <outlet property="counterLabelWidthConstraint" destination="6wT-Fw-37Y" id="ZQy-qp-dbg"/>
+            </connections>
+            <point key="canvasLocation" x="-203" y="21"/>
+        </collectionViewCell>
+    </objects>
+    <resources>
+        <image name="ReactionLove" width="200" height="188"/>
+    </resources>
+</document>

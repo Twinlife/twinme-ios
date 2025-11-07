@@ -1,0 +1,5 @@
+NSAppleMusicUsageDescription = "для підключення вашої Apple Music";
+NSCameraUsageDescription = "фотографувати та здійснювати відеодзвінки";
+NSMicrophoneUsageDescription = "для здійснення аудіо та відеодзвінків";
+NSPhotoLibraryUsageDescription = "для зображень профілю та надсилання в повідомленнях чату";
+NSPhotoLibraryAddUsageDescription = "Для збереження фотографій і відео, якими обмінювалися в розмовах, а також QR-кодів запрошень у фотоальбом пристрою.";

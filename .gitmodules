@@ -1,0 +1,12 @@
+[submodule "WebRTCFramework"]
+	path = WebRTCFramework
+	url = https://github.com/Twinlife/webrtc-ios.git
+[submodule "TwinlifeFramework"]
+	path = TwinlifeFramework
+	url = https://github.com/Twinlife/twinlife-framework-ios.git
+[submodule "TwinmeFramework"]
+	path = TwinmeFramework
+	url = https://github.com/Twinlife/twinme-framework-ios.git
+[submodule "TwinmeCommonFramework"]
+	path = TwinmeCommonFramework
+	url = https://github.com/Twinlife/twinme-common-ios.git

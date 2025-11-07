@@ -1,0 +1,5 @@
+NSAppleMusicUsageDescription = "لبث الموسيقى";
+NSCameraUsageDescription = "لالتقاط الصور وإجراء مكالمات الفيديو";
+NSMicrophoneUsageDescription = "لإجراء مكالمات الصوت والفيديو";
+NSPhotoLibraryUsageDescription = "لصور الصفحة الشخصية وإرسال رسائل الدردشة";
+NSPhotoLibraryAddUsageDescription = "لحفظ الصور ومقاطع الفيديو من المحادثات، وكذلك رموز QR الخاصة بالدعوة، في ألبوم الصور الخاص بالجهاز.";

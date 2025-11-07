@@ -1,0 +1,18 @@
+Podfile.lock
+Notification/Notification.xcodeproj/xcuserdata
+*.xcworkspace
+Twinme.xcodeproj/xcshareddata
+Twinme.xcodeproj/xcuserdata
+Utils/Utils.xcodeproj/xcuserdata
+Twinme.xcodeproj/project.xcworkspace/xcuserdata/
+Pods/Headers
+.DS_Store
+.idea
+Pods/Local Podspecs/
+Pods/Manifest.lock
+Pods/Pods.xcodeproj/
+Pods/Target Support Files/
+.ruby-version
+*~
+*.log
+

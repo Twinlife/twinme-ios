@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21678"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" reuseIdentifier="MediaCellIdentifier" id="gTV-IL-0wX" customClass="MediaCell">
+            <rect key="frame" x="0.0" y="0.0" width="125" height="125"/>
+            <autoresizingMask key="autoresizingMask"/>
+            <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                <rect key="frame" x="0.0" y="0.0" width="125" height="125"/>
+                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                <subviews>
+                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="aZg-zH-AaG">
+                        <rect key="frame" x="6" y="6" width="113" height="113"/>
+                        <constraints>
+                            <constraint firstAttribute="width" secondItem="aZg-zH-AaG" secondAttribute="height" multiplier="1:1" id="QLg-57-Qki"/>
+                        </constraints>
+                    </imageView>
+                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="AddPhoto" translatesAutoresizingMaskIntoConstraints="NO" id="MiU-hG-Ym6">
+                        <rect key="frame" x="37.666666666666664" y="37.666666666666664" width="49.999999999999993" height="49.999999999999993"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="50" id="0Hb-Sm-gsh"/>
+                            <constraint firstAttribute="width" secondItem="MiU-hG-Ym6" secondAttribute="height" multiplier="1:1" id="s1D-vj-nqb"/>
+                        </constraints>
+                    </imageView>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="b0o-a1-zKx">
+                        <rect key="frame" x="63" y="63" width="44" height="44"/>
+                        <subviews>
+                            <imageView hidden="YES" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="CheckMarkGrey" translatesAutoresizingMaskIntoConstraints="NO" id="lfv-G0-nVb">
+                                <rect key="frame" x="0.0" y="0.0" width="44" height="44"/>
+                            </imageView>
+                        </subviews>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstAttribute="bottom" secondItem="lfv-G0-nVb" secondAttribute="bottom" id="7eg-xp-PbB"/>
+                            <constraint firstAttribute="height" constant="44" id="EY3-pz-icv"/>
+                            <constraint firstItem="lfv-G0-nVb" firstAttribute="leading" secondItem="b0o-a1-zKx" secondAttribute="leading" id="KnI-R2-O5k"/>
+                            <constraint firstAttribute="width" secondItem="b0o-a1-zKx" secondAttribute="height" multiplier="1:1" id="Vgd-o7-EmZ"/>
+                            <constraint firstAttribute="trailing" secondItem="lfv-G0-nVb" secondAttribute="trailing" id="cvb-2C-0es"/>
+                            <constraint firstItem="lfv-G0-nVb" firstAttribute="top" secondItem="b0o-a1-zKx" secondAttribute="top" id="oZ8-yw-dWI"/>
+                        </constraints>
+                    </view>
+                </subviews>
+            </view>
+            <constraints>
+                <constraint firstAttribute="bottom" secondItem="b0o-a1-zKx" secondAttribute="bottom" constant="18" id="0U2-BC-522"/>
+                <constraint firstItem="MiU-hG-Ym6" firstAttribute="centerY" secondItem="aZg-zH-AaG" secondAttribute="centerY" id="PxY-pc-Ha1"/>
+                <constraint firstItem="b0o-a1-zKx" firstAttribute="width" secondItem="b0o-a1-zKx" secondAttribute="height" multiplier="1:1" id="RD9-w6-njJ"/>
+                <constraint firstAttribute="trailing" secondItem="b0o-a1-zKx" secondAttribute="trailing" constant="18" id="WJY-4r-XpC"/>
+                <constraint firstAttribute="trailing" secondItem="aZg-zH-AaG" secondAttribute="trailing" constant="6" id="bLs-CH-zr9"/>
+                <constraint firstItem="aZg-zH-AaG" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" constant="6" id="dD0-Nz-g9K"/>
+                <constraint firstItem="b0o-a1-zKx" firstAttribute="width" secondItem="b0o-a1-zKx" secondAttribute="height" multiplier="1:1" id="h0s-6J-Nt6"/>
+                <constraint firstAttribute="bottom" secondItem="aZg-zH-AaG" secondAttribute="bottom" constant="6" id="nDb-CQ-3xP"/>
+                <constraint firstItem="aZg-zH-AaG" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" constant="6" id="pkc-rc-Cp9"/>
+                <constraint firstItem="MiU-hG-Ym6" firstAttribute="centerX" secondItem="aZg-zH-AaG" secondAttribute="centerX" id="qJw-G2-Leq"/>
+            </constraints>
+            <connections>
+                <outlet property="checkMarkImageView" destination="lfv-G0-nVb" id="i90-Rw-wBc"/>
+                <outlet property="checkMarkView" destination="b0o-a1-zKx" id="csn-yB-iUo"/>
+                <outlet property="checkMarkViewBottomConstraint" destination="0U2-BC-522" id="ueX-XR-hip"/>
+                <outlet property="checkMarkViewHeightConstraint" destination="EY3-pz-icv" id="jOg-Ny-Vxp"/>
+                <outlet property="checkMarkViewTrailingConstraint" destination="WJY-4r-XpC" id="ILv-Nw-kII"/>
+                <outlet property="imageView" destination="aZg-zH-AaG" id="V7n-dO-vr2"/>
+                <outlet property="imageViewBottomConstraint" destination="nDb-CQ-3xP" id="nUk-Wc-GEa"/>
+                <outlet property="imageViewLeadingConstraint" destination="pkc-rc-Cp9" id="3Ir-r1-qYz"/>
+                <outlet property="imageViewTopConstraint" destination="dD0-Nz-g9K" id="b4D-J6-WXm"/>
+                <outlet property="imageViewTrailingConstraint" destination="bLs-CH-zr9" id="Xfb-Al-VMd"/>
+                <outlet property="placeholderImageView" destination="MiU-hG-Ym6" id="97C-Gt-G56"/>
+                <outlet property="placeholderImageViewHeightConstraint" destination="0Hb-Sm-gsh" id="vLa-9L-4nP"/>
+            </connections>
+            <point key="canvasLocation" x="-151" y="-1"/>
+        </collectionViewCell>
+    </objects>
+    <resources>
+        <image name="AddPhoto" width="34" height="34"/>
+        <image name="CheckMarkGrey" width="22" height="22"/>
+    </resources>
+</document>

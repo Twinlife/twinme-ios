@@ -1,0 +1,5 @@
+NSAppleMusicUsageDescription = "å streame musikk";
+NSCameraUsageDescription = "å ta bilder og ha videosamtaler";
+NSMicrophoneUsageDescription = "å ha tale- og videosamtaler";
+NSPhotoLibraryUsageDescription = "for profilbilder og for å sende inn chat-meldinger";
+NSPhotoLibraryAddUsageDescription = "For å lagre bilder og videoer utvekslet i samtaler, samt invitasjons-QR-koder, til enhetens fotoalbum.";

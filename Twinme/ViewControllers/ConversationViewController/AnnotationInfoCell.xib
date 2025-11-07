@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="32700.99.1234" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22684"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="AnnotationInfoCellIdentifier" id="KGk-i7-Jjw" customClass="AnnotationInfoCell">
+            <rect key="frame" x="0.0" y="0.0" width="750" height="120"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
+                <rect key="frame" x="0.0" y="0.0" width="750" height="120"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Qgw-pG-wbG">
+                        <rect key="frame" x="42" y="18" width="84" height="84"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="84" id="G2Y-fh-lrm"/>
+                            <constraint firstAttribute="width" secondItem="Qgw-pG-wbG" secondAttribute="height" multiplier="1:1" id="Vj5-vD-801"/>
+                        </constraints>
+                    </imageView>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text=".label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zDY-Gw-Qj7">
+                        <rect key="frame" x="158" y="33.666666666666664" width="476" height="52.999999999999993"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="44"/>
+                        <nil key="textColor"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ReactionLove" translatesAutoresizingMaskIntoConstraints="NO" id="LC2-73-tn7">
+                        <rect key="frame" x="666" y="32" width="46" height="56"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="56" id="XMI-ar-YQS"/>
+                            <constraint firstAttribute="width" constant="46" id="z3g-fN-fRI"/>
+                        </constraints>
+                    </imageView>
+                    <view autoresizesSubviews="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="P1q-wO-Zpa">
+                        <rect key="frame" x="158" y="119" width="592" height="1"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="1" id="gE4-NX-avc"/>
+                        </constraints>
+                    </view>
+                </subviews>
+                <constraints>
+                    <constraint firstAttribute="trailing" secondItem="P1q-wO-Zpa" secondAttribute="trailing" id="1bQ-7c-bTl"/>
+                    <constraint firstAttribute="trailing" secondItem="LC2-73-tn7" secondAttribute="trailing" constant="38" id="1yy-0Q-PJT"/>
+                    <constraint firstItem="Qgw-pG-wbG" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="4Ub-CY-Jpr"/>
+                    <constraint firstItem="Qgw-pG-wbG" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="42" id="A6L-fd-yXs"/>
+                    <constraint firstItem="LC2-73-tn7" firstAttribute="leading" secondItem="zDY-Gw-Qj7" secondAttribute="trailing" constant="32" id="EU2-d9-7Fi"/>
+                    <constraint firstItem="LC2-73-tn7" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="Oj6-XU-fI7"/>
+                    <constraint firstItem="zDY-Gw-Qj7" firstAttribute="leading" secondItem="Qgw-pG-wbG" secondAttribute="trailing" constant="32" id="QGp-mb-P1p"/>
+                    <constraint firstItem="zDY-Gw-Qj7" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="cCw-VW-uPN"/>
+                    <constraint firstAttribute="bottom" secondItem="P1q-wO-Zpa" secondAttribute="bottom" id="kQQ-UN-0Th"/>
+                    <constraint firstItem="P1q-wO-Zpa" firstAttribute="leading" secondItem="zDY-Gw-Qj7" secondAttribute="leading" id="o1u-BW-TXF"/>
+                </constraints>
+            </tableViewCellContentView>
+            <viewLayoutGuide key="safeArea" id="aW0-zy-SZf"/>
+            <connections>
+                <outlet property="annotationImageView" destination="LC2-73-tn7" id="JMb-JE-Fbp"/>
+                <outlet property="annotationImageViewHeightConstraint" destination="XMI-ar-YQS" id="98K-ju-fSz"/>
+                <outlet property="annotationImageViewTrailingConstraint" destination="1yy-0Q-PJT" id="QwU-6R-ocH"/>
+                <outlet property="annotationImageViewWidthConstraint" destination="z3g-fN-fRI" id="6bm-ru-Ois"/>
+                <outlet property="avatarView" destination="Qgw-pG-wbG" id="AqF-Be-RrR"/>
+                <outlet property="avatarViewHeightConstraint" destination="G2Y-fh-lrm" id="DAK-cu-2JI"/>
+                <outlet property="avatarViewLeadingConstraint" destination="A6L-fd-yXs" id="GNl-8Z-5ZP"/>
+                <outlet property="nameLabel" destination="zDY-Gw-Qj7" id="b84-D4-YPP"/>
+                <outlet property="nameLabelLeadingConstraint" destination="QGp-mb-P1p" id="Vbp-xM-Ml1"/>
+                <outlet property="nameLabelTrailingConstraint" destination="EU2-d9-7Fi" id="Puc-d8-Ryi"/>
+                <outlet property="separatorView" destination="P1q-wO-Zpa" id="09u-pK-sAH"/>
+                <outlet property="separatorViewBottomConstraint" destination="kQQ-UN-0Th" id="oLh-XX-5zx"/>
+                <outlet property="separatorViewHeightConstraint" destination="gE4-NX-avc" id="JWb-CR-opX"/>
+            </connections>
+            <point key="canvasLocation" x="93" y="21"/>
+        </tableViewCell>
+    </objects>
+    <resources>
+        <image name="ReactionLove" width="200" height="188"/>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+    </resources>
+</document>

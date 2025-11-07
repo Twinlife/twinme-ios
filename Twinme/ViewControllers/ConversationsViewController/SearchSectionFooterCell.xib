@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="SearchSectionFooterCellIdentifier" id="KGk-i7-Jjw" customClass="SearchSectionFooterCell">
+            <rect key="frame" x="0.0" y="0.0" width="750" height="60"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
+                <rect key="frame" x="0.0" y="0.0" width="750" height="60"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <view autoresizesSubviews="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="HWF-4c-fIC">
+                        <rect key="frame" x="24" y="58" width="702" height="2"/>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="2" id="ctZ-eS-eRR"/>
+                        </constraints>
+                    </view>
+                </subviews>
+                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                <constraints>
+                    <constraint firstAttribute="bottom" secondItem="HWF-4c-fIC" secondAttribute="bottom" id="WVI-EZ-9IQ"/>
+                    <constraint firstAttribute="trailing" secondItem="HWF-4c-fIC" secondAttribute="trailing" constant="24" id="fRh-kj-QnU"/>
+                    <constraint firstItem="HWF-4c-fIC" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="24" id="lcr-Iz-Rl6"/>
+                </constraints>
+            </tableViewCellContentView>
+            <viewLayoutGuide key="safeArea" id="aW0-zy-SZf"/>
+            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+            <connections>
+                <outlet property="separatorView" destination="HWF-4c-fIC" id="cDX-kH-HqN"/>
+                <outlet property="separatorViewHeightConstraint" destination="ctZ-eS-eRR" id="dBE-FI-cYR"/>
+                <outlet property="separatorViewLeadingConstraint" destination="lcr-Iz-Rl6" id="rU9-oo-zxX"/>
+                <outlet property="separatorViewTrailingConstraint" destination="fRh-kj-QnU" id="489-Zd-7PN"/>
+            </connections>
+            <point key="canvasLocation" x="-253" y="-1"/>
+        </tableViewCell>
+    </objects>
+</document>

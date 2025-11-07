@@ -1,0 +1,5 @@
+NSAppleMusicUsageDescription = "流式傳輸音樂";
+NSCameraUsageDescription = "拍照和進行視頻呼叫";
+NSMicrophoneUsageDescription = "進行語音和視頻呼叫";
+NSPhotoLibraryUsageDescription = "個人資料圖像和聊天信息發送";
+NSPhotoLibraryAddUsageDescription = "將對話中交換的照片和視頻以及邀請二維碼保存到設備相冊。";

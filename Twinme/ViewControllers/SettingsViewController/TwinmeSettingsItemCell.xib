@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="19529" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19519"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="TwinmeSettingsCellIdentifier" id="KGk-i7-Jjw" customClass="TwinmeSettingsItemCell">
+            <rect key="frame" x="0.0" y="0.0" width="750" height="120"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
+                <rect key="frame" x="0.0" y="0.0" width="750" height="120"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text=".label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qls-Yg-WJZ">
+                        <rect key="frame" x="34" y="0.0" width="636" height="120"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="32"/>
+                        <nil key="textColor"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="EndChevron" translatesAutoresizingMaskIntoConstraints="NO" id="XU1-nf-0Fu">
+                        <rect key="frame" x="702" y="47" width="16" height="26"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="26" id="hAa-to-4eB"/>
+                        </constraints>
+                    </imageView>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="M1a-we-ROV">
+                        <rect key="frame" x="0.0" y="119" width="750" height="1"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="1" id="sHN-4X-VTA"/>
+                        </constraints>
+                    </view>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="pWv-dj-z6k">
+                        <rect key="frame" x="9" y="52" width="16" height="16"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="16" id="a7K-Fu-EHB"/>
+                            <constraint firstAttribute="width" secondItem="pWv-dj-z6k" secondAttribute="height" multiplier="1:1" id="jrb-mU-9MG"/>
+                        </constraints>
+                    </view>
+                </subviews>
+                <constraints>
+                    <constraint firstItem="pWv-dj-z6k" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="9" id="8Bz-l9-RRw"/>
+                    <constraint firstItem="M1a-we-ROV" firstAttribute="centerX" secondItem="H2p-sc-9uM" secondAttribute="centerX" id="Dyj-0t-I20"/>
+                    <constraint firstItem="qls-Yg-WJZ" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="34" id="NXA-VY-b5a"/>
+                    <constraint firstItem="pWv-dj-z6k" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="SNw-lH-Tfp"/>
+                    <constraint firstItem="qls-Yg-WJZ" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="SUV-hp-Xg2"/>
+                    <constraint firstItem="qls-Yg-WJZ" firstAttribute="height" secondItem="H2p-sc-9uM" secondAttribute="height" id="UU3-xu-Msj"/>
+                    <constraint firstItem="XU1-nf-0Fu" firstAttribute="width" secondItem="XU1-nf-0Fu" secondAttribute="height" multiplier="8:13" id="cIa-bn-ZuH"/>
+                    <constraint firstItem="XU1-nf-0Fu" firstAttribute="leading" secondItem="qls-Yg-WJZ" secondAttribute="trailing" constant="32" id="hDG-v3-atv"/>
+                    <constraint firstAttribute="trailing" secondItem="XU1-nf-0Fu" secondAttribute="trailing" constant="32" id="j17-Uo-Jbh"/>
+                    <constraint firstItem="XU1-nf-0Fu" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="oew-xx-9KX"/>
+                    <constraint firstItem="M1a-we-ROV" firstAttribute="width" secondItem="H2p-sc-9uM" secondAttribute="width" id="uJ8-YZ-ezA"/>
+                    <constraint firstAttribute="bottom" secondItem="M1a-we-ROV" secondAttribute="bottom" id="xYA-89-p9T"/>
+                </constraints>
+            </tableViewCellContentView>
+            <viewLayoutGuide key="safeArea" id="aW0-zy-SZf"/>
+            <connections>
+                <outlet property="accessoryImageView" destination="XU1-nf-0Fu" id="gj2-6Q-hGz"/>
+                <outlet property="accessoryImageViewHeightConstraint" destination="hAa-to-4eB" id="Ody-jJ-fHH"/>
+                <outlet property="accessoryImageViewTrailingConstraint" destination="j17-Uo-Jbh" id="5xJ-Us-RRS"/>
+                <outlet property="notificationView" destination="pWv-dj-z6k" id="N2Z-bt-T9K"/>
+                <outlet property="notificationViewHeightConstraint" destination="a7K-Fu-EHB" id="l0u-gt-QgL"/>
+                <outlet property="notificationViewLeadingConstraint" destination="8Bz-l9-RRw" id="Zqd-DT-DDD"/>
+                <outlet property="separatorView" destination="M1a-we-ROV" id="VcB-44-t1J"/>
+                <outlet property="separatorViewHeightConstraint" destination="sHN-4X-VTA" id="MFA-1w-cyI"/>
+                <outlet property="title" destination="qls-Yg-WJZ" id="Fs4-UL-ZTV"/>
+                <outlet property="titleLeadingConstraint" destination="NXA-VY-b5a" id="zH9-Zd-WAH"/>
+                <outlet property="titleTrailingConstraint" destination="hDG-v3-atv" id="My9-QM-ATt"/>
+            </connections>
+            <point key="canvasLocation" x="137.68115942028987" y="99.776785714285708"/>
+        </tableViewCell>
+    </objects>
+    <resources>
+        <image name="EndChevron" width="9" height="13"/>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+    </resources>
+</document>

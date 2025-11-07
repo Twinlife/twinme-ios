@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21225" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21207"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="DefaultProfileCellIdentifier" id="KGk-i7-Jjw" customClass="DefaultProfileCell">
+            <rect key="frame" x="0.0" y="0.0" width="750" height="260"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
+                <rect key="frame" x="0.0" y="0.0" width="750" height="260"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="dxk-Bt-isG">
+                        <rect key="frame" x="40" y="8" width="160" height="160"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="160" id="Qal-Ls-eDE"/>
+                        </constraints>
+                    </imageView>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text=".name" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Dla-zi-d2P">
+                        <rect key="frame" x="40" y="188" width="670" height="41"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="670" id="VL0-pC-DFw"/>
+                        </constraints>
+                        <fontDescription key="fontDescription" type="system" pointSize="34"/>
+                        <nil key="textColor"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Dbv-Zx-fz3">
+                        <rect key="frame" x="636" y="8" width="84" height="84"/>
+                        <subviews>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ContactIcon" translatesAutoresizingMaskIntoConstraints="NO" id="oHc-aY-c5Y">
+                                <rect key="frame" x="26" y="25" width="32" height="34"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="34" id="bOP-RX-s3M"/>
+                                    <constraint firstAttribute="width" secondItem="oHc-aY-c5Y" secondAttribute="height" multiplier="13:14" id="eU1-z6-4f7"/>
+                                </constraints>
+                            </imageView>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="AddIcon" translatesAutoresizingMaskIntoConstraints="NO" id="fwm-P1-TGn">
+                                <rect key="frame" x="54" y="21" width="16.5" height="14"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="14" id="r4h-eF-2eF"/>
+                                </constraints>
+                            </imageView>
+                        </subviews>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="fwm-P1-TGn" firstAttribute="top" secondItem="oHc-aY-c5Y" secondAttribute="top" constant="-4" id="50x-Yf-iNj"/>
+                            <constraint firstItem="oHc-aY-c5Y" firstAttribute="centerX" secondItem="Dbv-Zx-fz3" secondAttribute="centerX" id="Jvy-kz-JPm"/>
+                            <constraint firstAttribute="height" constant="84" id="LAa-fH-Mc1"/>
+                            <constraint firstItem="fwm-P1-TGn" firstAttribute="width" secondItem="fwm-P1-TGn" secondAttribute="height" multiplier="6:5" id="RaH-xM-gId"/>
+                            <constraint firstAttribute="width" secondItem="Dbv-Zx-fz3" secondAttribute="height" multiplier="1:1" id="Wwq-VG-zxI"/>
+                            <constraint firstItem="oHc-aY-c5Y" firstAttribute="centerY" secondItem="Dbv-Zx-fz3" secondAttribute="centerY" id="q71-yr-UXF"/>
+                            <constraint firstItem="fwm-P1-TGn" firstAttribute="leading" secondItem="oHc-aY-c5Y" secondAttribute="trailing" constant="-4" id="qlH-XM-mvf"/>
+                        </constraints>
+                    </view>
+                </subviews>
+                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                <constraints>
+                    <constraint firstItem="dxk-Bt-isG" firstAttribute="width" secondItem="dxk-Bt-isG" secondAttribute="height" multiplier="1:1" id="1LD-wm-LW3"/>
+                    <constraint firstItem="Dla-zi-d2P" firstAttribute="top" secondItem="dxk-Bt-isG" secondAttribute="bottom" constant="20" id="5da-Xp-V0U"/>
+                    <constraint firstItem="Dbv-Zx-fz3" firstAttribute="top" secondItem="dxk-Bt-isG" secondAttribute="top" id="UWM-5k-Diu"/>
+                    <constraint firstItem="Dla-zi-d2P" firstAttribute="leading" secondItem="dxk-Bt-isG" secondAttribute="leading" id="m06-Yg-ZI8"/>
+                    <constraint firstItem="dxk-Bt-isG" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="8" id="mfD-x8-DPO"/>
+                    <constraint firstItem="dxk-Bt-isG" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="40" id="vT4-BS-Id6"/>
+                </constraints>
+            </tableViewCellContentView>
+            <viewLayoutGuide key="safeArea" id="aW0-zy-SZf"/>
+            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+            <constraints>
+                <constraint firstItem="H2p-sc-9uM" firstAttribute="trailing" secondItem="Dbv-Zx-fz3" secondAttribute="trailing" constant="30" id="WnR-iJ-MKM"/>
+            </constraints>
+            <connections>
+                <outlet property="addContactView" destination="Dbv-Zx-fz3" id="6Yi-aq-bJK"/>
+                <outlet property="addContactViewHeightConstraint" destination="LAa-fH-Mc1" id="98Z-zB-Tg6"/>
+                <outlet property="addContactViewTrailingConstraint" destination="WnR-iJ-MKM" id="ew0-ze-jqM"/>
+                <outlet property="addImageView" destination="fwm-P1-TGn" id="fh0-G3-aS3"/>
+                <outlet property="addImageViewHeightConstraint" destination="r4h-eF-2eF" id="4aT-EK-Zx1"/>
+                <outlet property="addImageViewTopConstraint" destination="50x-Yf-iNj" id="zNh-ge-qfL"/>
+                <outlet property="avatarView" destination="dxk-Bt-isG" id="4v9-Mf-aSA"/>
+                <outlet property="avatarViewHeightConstraint" destination="Qal-Ls-eDE" id="oMw-Mq-fDn"/>
+                <outlet property="avatarViewLeadingConstraint" destination="vT4-BS-Id6" id="OEK-bg-1g7"/>
+                <outlet property="avatarViewTopConstraint" destination="mfD-x8-DPO" id="Cfb-gO-0Ma"/>
+                <outlet property="contactImageView" destination="oHc-aY-c5Y" id="CSe-kW-v4Z"/>
+                <outlet property="contactImageViewHeightConstraint" destination="bOP-RX-s3M" id="c3q-qG-sgh"/>
+                <outlet property="nameLabel" destination="Dla-zi-d2P" id="7Aa-SS-Pvc"/>
+                <outlet property="nameLabelTopConstraint" destination="5da-Xp-V0U" id="KBY-PR-CJf"/>
+                <outlet property="nameLabelWidthConstraint" destination="VL0-pC-DFw" id="thj-OD-iLN"/>
+            </connections>
+            <point key="canvasLocation" x="139" y="90"/>
+        </tableViewCell>
+    </objects>
+    <resources>
+        <image name="AddIcon" width="7" height="7"/>
+        <image name="ContactIcon" width="16" height="17"/>
+    </resources>
+</document>

@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21678"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="iN0-l3-epB" customClass="ItemSelectedActionView">
+            <rect key="frame" x="0.0" y="0.0" width="750" height="148"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="E1d-Tv-Eeh">
+                    <rect key="frame" x="0.0" y="0.0" width="120" height="148"/>
+                    <subviews>
+                        <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ShareItem" translatesAutoresizingMaskIntoConstraints="NO" id="M0s-75-pLa">
+                            <rect key="frame" x="45.333333333333336" y="56" width="29.333333333333336" height="36"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="36" id="f2R-DX-IPD"/>
+                                <constraint firstAttribute="width" secondItem="M0s-75-pLa" secondAttribute="height" multiplier="67:83" id="kNX-SY-ehG"/>
+                            </constraints>
+                        </imageView>
+                    </subviews>
+                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="120" id="2us-g0-wyN"/>
+                        <constraint firstItem="M0s-75-pLa" firstAttribute="centerY" secondItem="E1d-Tv-Eeh" secondAttribute="centerY" id="CQx-st-ivm"/>
+                        <constraint firstItem="M0s-75-pLa" firstAttribute="centerX" secondItem="E1d-Tv-Eeh" secondAttribute="centerX" id="Zhi-ek-nrf"/>
+                    </constraints>
+                </view>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Pnc-PZ-48N">
+                    <rect key="frame" x="630" y="0.0" width="120" height="148"/>
+                    <subviews>
+                        <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ToolbarTrash" translatesAutoresizingMaskIntoConstraints="NO" id="bfa-w8-sGm">
+                            <rect key="frame" x="46" y="56" width="28" height="36"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="36" id="yHp-cV-TgO"/>
+                                <constraint firstAttribute="width" secondItem="bfa-w8-sGm" secondAttribute="height" multiplier="7:9" id="ywW-1H-m1j"/>
+                            </constraints>
+                        </imageView>
+                    </subviews>
+                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <constraints>
+                        <constraint firstItem="bfa-w8-sGm" firstAttribute="centerX" secondItem="Pnc-PZ-48N" secondAttribute="centerX" id="Gzu-0A-Ab2"/>
+                        <constraint firstItem="bfa-w8-sGm" firstAttribute="centerY" secondItem="Pnc-PZ-48N" secondAttribute="centerY" id="aG9-bn-Lia"/>
+                        <constraint firstAttribute="width" constant="120" id="k04-aR-uek"/>
+                    </constraints>
+                </view>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text=".label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ulw-Jx-K3I">
+                    <rect key="frame" x="120" y="63.666666666666657" width="510" height="21"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                    <nil key="textColor"/>
+                    <nil key="highlightedColor"/>
+                </label>
+            </subviews>
+            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+            <constraints>
+                <constraint firstItem="Ulw-Jx-K3I" firstAttribute="trailing" secondItem="Pnc-PZ-48N" secondAttribute="leading" id="1CV-mO-dgc"/>
+                <constraint firstAttribute="trailing" secondItem="Pnc-PZ-48N" secondAttribute="trailing" id="2yO-AE-fEU"/>
+                <constraint firstItem="Ulw-Jx-K3I" firstAttribute="leading" secondItem="E1d-Tv-Eeh" secondAttribute="trailing" id="CT0-xk-b5g"/>
+                <constraint firstItem="Ulw-Jx-K3I" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="Gwk-XX-3Ga"/>
+                <constraint firstItem="E1d-Tv-Eeh" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="Hsq-X0-VWS"/>
+                <constraint firstItem="Pnc-PZ-48N" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="Kcb-nl-uLX"/>
+                <constraint firstItem="E1d-Tv-Eeh" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="blJ-X0-3Ja"/>
+                <constraint firstItem="Pnc-PZ-48N" firstAttribute="height" secondItem="iN0-l3-epB" secondAttribute="height" id="ogJ-kw-CUv"/>
+                <constraint firstItem="E1d-Tv-Eeh" firstAttribute="height" secondItem="iN0-l3-epB" secondAttribute="height" id="xie-gv-NmQ"/>
+            </constraints>
+            <nil key="simulatedTopBarMetrics"/>
+            <nil key="simulatedBottomBarMetrics"/>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <connections>
+                <outlet property="deleteItemImageView" destination="bfa-w8-sGm" id="npj-eU-vIF"/>
+                <outlet property="deleteItemImageViewHeightConstraint" destination="yHp-cV-TgO" id="gCf-rF-Lcc"/>
+                <outlet property="deleteItemView" destination="Pnc-PZ-48N" id="j5Q-4p-bp2"/>
+                <outlet property="deleteItemViewWidthConstraint" destination="k04-aR-uek" id="66K-C7-5c9"/>
+                <outlet property="selectedLabel" destination="Ulw-Jx-K3I" id="RSc-kY-chx"/>
+                <outlet property="shareItemImageView" destination="M0s-75-pLa" id="WUn-S4-44w"/>
+                <outlet property="shareItemImageViewHeightConstraint" destination="f2R-DX-IPD" id="jba-xq-HuW"/>
+                <outlet property="shareItemView" destination="E1d-Tv-Eeh" id="llM-tK-337"/>
+                <outlet property="shareItemViewWidthConstraint" destination="2us-g0-wyN" id="aTA-ds-brB"/>
+            </connections>
+            <point key="canvasLocation" x="48" y="21"/>
+        </view>
+    </objects>
+    <resources>
+        <image name="ShareItem" width="16" height="20"/>
+        <image name="ToolbarTrash" width="12" height="15"/>
+    </resources>
+</document>

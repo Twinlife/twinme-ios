@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="PreviewThumbnailCellIdentifier" id="gTV-IL-0wX" customClass="PreviewThumbnailCell">
+            <rect key="frame" x="0.0" y="0.0" width="120" height="120"/>
+            <autoresizingMask key="autoresizingMask"/>
+            <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                <rect key="frame" x="0.0" y="0.0" width="120" height="120"/>
+                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                <subviews>
+                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="1ai-TR-rgg">
+                        <rect key="frame" x="10" y="10" width="100" height="100"/>
+                    </imageView>
+                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="GeI-Bh-Wip">
+                        <rect key="frame" x="30" y="30" width="60" height="60"/>
+                        <constraints>
+                            <constraint firstAttribute="width" secondItem="GeI-Bh-Wip" secondAttribute="height" multiplier="1:1" id="e6i-lO-O90"/>
+                            <constraint firstAttribute="height" constant="60" id="i6m-B6-AI8"/>
+                        </constraints>
+                    </imageView>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="xCV-Hs-mUV">
+                        <rect key="frame" x="10" y="10" width="100" height="100"/>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    </view>
+                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="DeleteIcon" translatesAutoresizingMaskIntoConstraints="NO" id="9s7-8j-efS">
+                        <rect key="frame" x="35" y="35" width="50" height="50"/>
+                        <constraints>
+                            <constraint firstAttribute="width" secondItem="9s7-8j-efS" secondAttribute="height" multiplier="1:1" id="Q8D-RR-7B4"/>
+                            <constraint firstAttribute="height" constant="50" id="RmU-6f-UAb"/>
+                        </constraints>
+                    </imageView>
+                </subviews>
+            </view>
+            <constraints>
+                <constraint firstItem="xCV-Hs-mUV" firstAttribute="leading" secondItem="1ai-TR-rgg" secondAttribute="leading" id="7oa-Ux-AsU"/>
+                <constraint firstItem="1ai-TR-rgg" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" constant="10" id="A77-iv-dtO"/>
+                <constraint firstItem="xCV-Hs-mUV" firstAttribute="trailing" secondItem="1ai-TR-rgg" secondAttribute="trailing" id="Dcr-jz-oaf"/>
+                <constraint firstAttribute="trailing" secondItem="1ai-TR-rgg" secondAttribute="trailing" constant="10" id="FAU-AT-L80"/>
+                <constraint firstItem="1ai-TR-rgg" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" constant="10" id="QDn-ee-Lqx"/>
+                <constraint firstAttribute="bottom" secondItem="1ai-TR-rgg" secondAttribute="bottom" constant="10" id="SjS-Fh-YGo"/>
+                <constraint firstItem="9s7-8j-efS" firstAttribute="centerY" secondItem="1ai-TR-rgg" secondAttribute="centerY" id="c24-J3-7zG"/>
+                <constraint firstItem="xCV-Hs-mUV" firstAttribute="top" secondItem="1ai-TR-rgg" secondAttribute="top" id="deF-Gc-oHn"/>
+                <constraint firstItem="GeI-Bh-Wip" firstAttribute="centerX" secondItem="gTV-IL-0wX" secondAttribute="centerX" id="jU9-vi-VuF"/>
+                <constraint firstItem="xCV-Hs-mUV" firstAttribute="bottom" secondItem="1ai-TR-rgg" secondAttribute="bottom" id="nGm-YD-SRc"/>
+                <constraint firstItem="9s7-8j-efS" firstAttribute="centerX" secondItem="1ai-TR-rgg" secondAttribute="centerX" id="pTf-Dj-JtR"/>
+                <constraint firstItem="GeI-Bh-Wip" firstAttribute="centerY" secondItem="gTV-IL-0wX" secondAttribute="centerY" id="wRS-6S-Dkk"/>
+            </constraints>
+            <connections>
+                <outlet property="fileImageView" destination="GeI-Bh-Wip" id="zeL-9T-h5b"/>
+                <outlet property="fileImageViewHeightConstraint" destination="i6m-B6-AI8" id="mSf-xb-c9Q"/>
+                <outlet property="imageView" destination="1ai-TR-rgg" id="zGa-Jj-AZm"/>
+                <outlet property="imageViewBottomConstraint" destination="SjS-Fh-YGo" id="XAs-mt-DGJ"/>
+                <outlet property="imageViewLeadingConstraint" destination="QDn-ee-Lqx" id="dTG-yH-OXd"/>
+                <outlet property="imageViewTopConstraint" destination="A77-iv-dtO" id="B9o-zJ-lCr"/>
+                <outlet property="imageViewTrailingConstraint" destination="FAU-AT-L80" id="0lS-N7-Wvd"/>
+                <outlet property="overlayView" destination="xCV-Hs-mUV" id="laU-mV-28d"/>
+                <outlet property="trashView" destination="9s7-8j-efS" id="y0T-wK-bMk"/>
+                <outlet property="trashViewHeightConstraint" destination="RmU-6f-UAb" id="QYu-xk-fMu"/>
+            </connections>
+            <point key="canvasLocation" x="-191" y="20"/>
+        </collectionViewCell>
+    </objects>
+    <resources>
+        <image name="DeleteIcon" width="18" height="24"/>
+    </resources>
+</document>

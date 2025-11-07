@@ -1,0 +1,23 @@
+{
+  "images" : [
+    {
+      "filename" : "PremiumFeatureStreaming.png",
+      "idiom" : "universal",
+      "scale" : "1x"
+    },
+    {
+      "filename" : "PremiumFeatureStreaming@2x.png",
+      "idiom" : "universal",
+      "scale" : "2x"
+    },
+    {
+      "filename" : "PremiumFeatureStreaming@3x.png",
+      "idiom" : "universal",
+      "scale" : "3x"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}
