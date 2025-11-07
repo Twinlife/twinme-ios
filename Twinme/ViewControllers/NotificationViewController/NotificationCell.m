@@ -26,6 +26,8 @@
 #import <TwinmeCommon/Design.h>
 #import "NotificationViewController.h"
 
+#import "UIColor+Hex.h"
+
 static UIColor *DESIGN_TIME_COLOR;
 
 //
@@ -178,9 +180,11 @@ static UIColor *DESIGN_TIME_COLOR;
     }
     
     if ([self.avatarView.image isEqual:[TLTwinmeAttributes DEFAULT_GROUP_AVATAR]]) {
-        self.avatarView.backgroundColor = Design.GREY_ITEM;
+        self.avatarView.backgroundColor = [UIColor colorWithHexString:Design.DEFAULT_COLOR alpha:1.0];
+        self.avatarView.tintColor = [UIColor whiteColor];
     } else {
         self.avatarView.backgroundColor = [UIColor clearColor];
+        self.avatarView.tintColor = [UIColor clearColor];
     }
     
     if (uiNotification.isCertifiedContact) {
@@ -280,8 +284,12 @@ static UIColor *DESIGN_TIME_COLOR;
             self.typeView.tintColor = Design.BLACK_COLOR;
             break;
             
-        case TLNotificationTypeDeletedGroup:
         case TLNotificationTypeNewGeolocation:
+            messageType = TwinmeLocalizedString(@"notification_view_controller_item_geolocation_message", nil);
+            self.typeView.image = [UIImage imageNamed:@"NotificationLocationMessage"];
+            break;
+            
+        case TLNotificationTypeDeletedGroup:
         case TLNotificationTypeUnknown:
             break;
     }

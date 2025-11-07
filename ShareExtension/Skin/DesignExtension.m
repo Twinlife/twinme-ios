@@ -14,12 +14,18 @@ static float DESIGN_REFERENCE_WIDTH = 750;
 // static float DESIGN_REFERENCE_DISPLAY_HEIGHT = 667;
 // static float DESIGN_REFERENCE_DISPLAY_WIDTH = 375;
 
+static float DESIGN_SPACE_RADIUS_RATIO = 18.f / 53.f;
+
 static CGFloat DESIGN_DISPLAY_HEIGHT;
 static CGFloat DESIGN_DISPLAY_WIDTH;
 
 static CGFloat DESIGN_HEIGHT_RATIO;
 static CGFloat DESIGN_WIDTH_RATIO;
 static CGFloat DESIGN_FONT_RATIO;
+
+static CGFloat DESIGN_HEIGHT;
+static CGFloat DESIGN_LEADING;
+static CGFloat DESIGN_SEPARATOR_HEIGHT;
 
 static UIFont *DESIGN_REGULAR28;
 static UIFont *DESIGN_REGULAR34;
@@ -40,6 +46,8 @@ static UIColor *DESIGN_NAVIGATION_BACKGROUND_COLOR;
 static UIColor *DESIGN_SEPARATOR_COLOR_GREY;
 static UIColor *DESIGN_BACKGROUND_COLOR_GREY;
 static UIColor *DESIGN_POPUP_BACKGROUND_COLOR;
+static UIColor *DESIGN_FONT_COLOR_PROFILE_GREY;
+static UIColor *DESIGN_MAIN_COLOR;
 
 @implementation DesignExtension
 
@@ -58,6 +66,10 @@ static UIColor *DESIGN_POPUP_BACKGROUND_COLOR;
     
     DESIGN_FONT_RATIO = MIN(DESIGN_DISPLAY_HEIGHT / DESIGN_REFERENCE_HEIGHT, 0.5);
     
+    DESIGN_SEPARATOR_HEIGHT = 0.5;
+    DESIGN_HEIGHT = 84 * DESIGN_HEIGHT_RATIO;
+    DESIGN_LEADING = 42 * DESIGN_WIDTH_RATIO;
+    
     DESIGN_REGULAR28 = [UIFont systemFontOfSize:(28 * DESIGN_FONT_RATIO)];
     DESIGN_REGULAR34 = [UIFont systemFontOfSize:(34 * DESIGN_FONT_RATIO)];
     DESIGN_REGULAR36 = [UIFont systemFontOfSize:(36 * DESIGN_FONT_RATIO)];
@@ -68,6 +80,9 @@ static UIColor *DESIGN_POPUP_BACKGROUND_COLOR;
     DESIGN_BOLD36 = [UIFont systemFontOfSize:(36 * DESIGN_FONT_RATIO) weight:UIFontWeightBold];
     DESIGN_BOLD44 = [UIFont systemFontOfSize:(44 * DESIGN_FONT_RATIO) weight:UIFontWeightBold];
     DESIGN_BOLD68 = [UIFont systemFontOfSize:(68 * DESIGN_FONT_RATIO) weight:UIFontWeightBold];
+    
+    DESIGN_MAIN_COLOR = [UIColor colorWithRed:251./255. green:28./255. blue:91./255. alpha:1];
+    DESIGN_FONT_COLOR_PROFILE_GREY = [UIColor colorWithRed:143./255. green:150./255. blue:164./255. alpha:1.0];
     
     [self setupColors];
 }
@@ -99,7 +114,7 @@ static UIColor *DESIGN_POPUP_BACKGROUND_COLOR;
     DESIGN_BLACK_COLOR = [UIColor blackColor];
     DESIGN_FONT_COLOR_DEFAULT = [UIColor colorWithRed:44./255. green:44./255. blue:44./255. alpha:1];
     DESIGN_LIGHT_GREY_BACKGROUND_COLOR = [UIColor colorWithRed:249./255. green:249./255. blue:249./255. alpha:1];
-    DESIGN_NAVIGATION_BACKGROUND_COLOR = [UIColor colorWithRed:0 green:174./255. blue:255./255. alpha:1];
+    DESIGN_NAVIGATION_BACKGROUND_COLOR = [UIColor colorWithRed:251./255. green:28./255. blue:91./255. alpha:1];
     DESIGN_SEPARATOR_COLOR_GREY = [UIColor colorWithRed:199./255. green:199./255. blue:204./255. alpha:1];
     DESIGN_BACKGROUND_COLOR_GREY = [UIColor colorWithRed:239./255. green:239./255. blue:239./255. alpha:1];
     DESIGN_POPUP_BACKGROUND_COLOR = [UIColor whiteColor];
@@ -133,6 +148,21 @@ static UIColor *DESIGN_POPUP_BACKGROUND_COLOR;
 + (CGFloat)WIDTH_RATIO {
     
     return DESIGN_WIDTH_RATIO;
+}
+
++ (CGFloat)AVATAR_HEIGHT {
+    
+    return DESIGN_HEIGHT;
+}
+
++ (CGFloat)AVATAR_LEADING {
+    
+    return DESIGN_LEADING;
+}
+
++ (CGFloat)SEPARATOR_HEIGHT {
+    
+    return DESIGN_SEPARATOR_HEIGHT;
 }
 
 + (UIFont *)FONT_REGULAR28 {
@@ -205,6 +235,11 @@ static UIColor *DESIGN_POPUP_BACKGROUND_COLOR;
     return DESIGN_LIGHT_GREY_BACKGROUND_COLOR;
 }
 
++ (UIColor *)MAIN_COLOR {
+    
+    return DESIGN_MAIN_COLOR;
+}
+
 + (UIColor *)NAVIGATION_BACKGROUND_COLOR {
     
     return DESIGN_NAVIGATION_BACKGROUND_COLOR;
@@ -224,5 +259,16 @@ static UIColor *DESIGN_POPUP_BACKGROUND_COLOR;
     
     return DESIGN_POPUP_BACKGROUND_COLOR;
 }
+
++ (UIColor *)FONT_COLOR_PROFILE_GREY {
+    
+    return DESIGN_FONT_COLOR_PROFILE_GREY;
+}
+
++ (CGFloat)SPACE_RADIUS_RATIO {
+    
+    return DESIGN_SPACE_RADIUS_RATIO;
+}
+
 
 @end

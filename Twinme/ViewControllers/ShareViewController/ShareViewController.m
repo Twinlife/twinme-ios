@@ -4,6 +4,7 @@
  *
  *  Contributors:
  *   Fabrice Trescartes (Fabrice.Trescartes@twin.life)
+ *   Stephane Carrez (Stephane.Carrez@twin.life)
  */
 
 #import <CocoaLumberjack.h>
@@ -13,6 +14,7 @@
 
 #import <Twinme/TLProfile.h>
 #import <Twinme/TLContact.h>
+#import <Twinme/TLSpace.h>
 #import <Twinme/TLGroup.h>
 
 #import <Utils/NSString+Utils.h>
@@ -43,24 +45,25 @@
 #import "FileItemCell.h"
 #import "PeerFileItemCell.h"
 #import "AddCommentCell.h"
-
-#import <TwinmeCommon/ShareService.h>
+#import "ChangeSpaceCell.h"
 
 #import "ShareViewController.h"
 #import "ConversationViewController.h"
-#import <TwinmeCommon/TwinmeNavigationController.h>
-#import <TwinmeCommon/MainViewController.h>
+#import "SpacesViewController.h"
 #import "ShareSectionHeaderCell.h"
-
-#import <TwinmeCommon/Design.h>
-#import "UIColor+Hex.h"
 
 #import "AddGroupMemberCell.h"
 #import "SelectedMembersCell.h"
 #import "UIContact.h"
-#import <TwinmeCommon/ApplicationDelegate.h>
+#import "UISpace.h"
+#import "UIColor+Hex.h"
 
+#import <TwinmeCommon/ApplicationDelegate.h>
 #import <TwinmeCommon/AsyncManager.h>
+#import <TwinmeCommon/Design.h>
+#import <TwinmeCommon/MainViewController.h>
+#import <TwinmeCommon/ShareService.h>
+#import <TwinmeCommon/TwinmeNavigationController.h>
 
 #if 0
 static const int ddLogLevel = DDLogLevelVerbose;
@@ -87,10 +90,12 @@ static NSString *PEER_VIDEO_ITEM_CELL_IDENTIFIER = @"PeerVideoItemCellIdentifier
 static NSString *FILE_ITEM_CELL_IDENTIFIER = @"FileItemCellIdentifier";
 static NSString *PEER_FILE_ITEM_CELL_IDENTIFIER = @"PeerFileItemCellIdentifier";
 static NSString *ADD_COMMENT_CELL_IDENTIFIER = @"AddCommentCellIdentifier";
+static NSString *CHANGE_SPACE_CELL_IDENTIFIER = @"ChangeSpaceCellIdentifier";
 
 static CGFloat DESIGN_SECTION_HEIGHT = 110;
 static CGFloat DESIGN_SECTION_CONTACT_HEIGHT = 60;
 static CGFloat DESIGN_COMMENT_CELL_HEIGHT = 140;
+static CGFloat DESIGN_SPACE_CELL_HEIGHT = 144;
 
 static const int SHARE_VIEW_SECTION_COUNT = 3;
 
@@ -102,7 +107,7 @@ static const int GROUPS_VIEW_SECTION = 2;
 // Interface: ShareViewController ()
 //
 
-@interface ShareViewController () <ShareServiceDelegate, UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate, AddCommentDelegate, AsyncLoaderDelegate>
+@interface ShareViewController () <ShareServiceDelegate, UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate, SpacesPickerDelegate, AddCommentDelegate, AsyncLoaderDelegate>
 
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *previewTableViewHeightConstraint;
 @property (weak, nonatomic) IBOutlet UITableView *previewTableView;
@@ -121,7 +126,10 @@ static const int GROUPS_VIEW_SECTION = 2;
 @property (nonatomic, readonly, nonnull) NSMutableArray<UIContact *> *uiContacts;
 @property (nonatomic, readonly, nonnull) NSMutableArray<UIContact *> *uiGroups;
 @property (nonatomic, readonly, nonnull) NSMutableArray<UIContact *> *uiSelectedContact;
+@property (nonatomic) UIContact *selectedContact;
 
+@property (nonatomic) TLSpace *space;
+@property (nonatomic) UISpace *uiSpace;
 @property (nonatomic, readonly, nonnull) ShareService *shareService;
 @property (nonatomic) AsyncManager *asyncLoaderManager;
 
@@ -164,6 +172,7 @@ static const int GROUPS_VIEW_SECTION = 2;
     
     [super viewDidLoad];
     
+    [self updateWithSpace:self.currentSpace];
     [self initViews];
 }
 
@@ -172,17 +181,21 @@ static const int GROUPS_VIEW_SECTION = 2;
     
     if (self.needRefresh) {
         self.needRefresh = NO;
-        [self.shareService getContactsAndGroups:self.currentSpace];
+        [self.shareService getContactsAndGroups:self.space];
     }
     [super viewWillAppear:animated];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self.previewTableView reloadData];
+    });
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
     DDLogVerbose(@"%@ viewWillDisappear: %@", LOG_TAG, animated ? @"YES" : @"NO");
-    
+     
     self.needRefresh = YES;
     [super viewWillDisappear:animated];
     
@@ -205,7 +218,11 @@ static const int GROUPS_VIEW_SECTION = 2;
     [super viewDidLayoutSubviews];
     
     dispatch_async(dispatch_get_main_queue(), ^{
-        CGRect rect = [self.previewTableView rectForRowAtIndexPath:[NSIndexPath indexPathForRow:1 inSection:0]];
+        int lastRow = 0;
+        if (self.item) {
+            lastRow = 2;
+        }
+        CGRect rect = [self.previewTableView rectForRowAtIndexPath:[NSIndexPath indexPathForRow:lastRow inSection:0]];
         self.previewTableViewHeightConstraint.constant = rect.origin.y + rect.size.height;
     });
 }
@@ -222,7 +239,7 @@ static const int GROUPS_VIEW_SECTION = 2;
     CGSize keyboardSize = [[info objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue].size;
     self.contactsTableViewBottomConstraint.constant = keyboardSize.height;
         
-    [self.previewTableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:0 inSection:0]] withRowAnimation:UITableViewRowAnimationNone];
+    [self.previewTableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:1 inSection:0]] withRowAnimation:UITableViewRowAnimationNone];
     
     if ([self.twinmeApplication getDefaultKeyboardHeight] != keyboardSize.height) {
         [self.twinmeApplication setDefaultKeyboardHeight:keyboardSize.height];
@@ -233,7 +250,7 @@ static const int GROUPS_VIEW_SECTION = 2;
     DDLogVerbose(@"%@ keyboardWillHide: %@", LOG_TAG, notification);
     
     self.keyboardHidden = YES;
-    [self.previewTableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:0 inSection:0]] withRowAnimation:UITableViewRowAnimationNone];
+    [self.previewTableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:1 inSection:0]] withRowAnimation:UITableViewRowAnimationNone];
     self.contactsTableViewBottomConstraint.constant = 0;
 }
 
@@ -244,7 +261,7 @@ static const int GROUPS_VIEW_SECTION = 2;
     
     if ([items containsObject:self.item]) {
         [items removeObject:self.item];
-        ItemCell *itemCell = (ItemCell *)[self.previewTableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
+        ItemCell *itemCell = (ItemCell *)[self.previewTableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:1 inSection:0]];
         switch (self.item.type) {
             case ItemTypeAudio:
             case ItemTypePeerAudio:
@@ -272,11 +289,19 @@ static const int GROUPS_VIEW_SECTION = 2;
     }
 }
 
-
 #pragma mark - ShareServiceDelegate
 
 - (void)onSetCurrentSpace:(nonnull TLSpace *)space {
+    DDLogVerbose(@"%@ onSetCurrentSpace: %@", LOG_TAG, space);
+    
+    [self updateWithSpace:space];
+}
 
+- (void)onUpdateSpace:(TLSpace *)space {
+    DDLogVerbose(@"%@ onUpdateSpace: %@", LOG_TAG, space);
+    
+    [self updateWithSpace:space];
+    
     [self.previewTableView reloadData];
 }
 
@@ -365,30 +390,29 @@ static const int GROUPS_VIEW_SECTION = 2;
         BOOL copyAllowed;
         
         if (self.descriptorType == TLDescriptorTypeObjectDescriptor) {
-            copyAllowed = self.twinmeApplication.allowCopyText;
+            copyAllowed = self.space.settings.messageCopyAllowed;
         } else {
-            copyAllowed = self.twinmeApplication.allowCopyFile;
+            copyAllowed = self.space.settings.fileCopyAllowed;
         }
         [self.shareService forwardDescriptor:self.descriptorId copyAllowed:copyAllowed];
 
     } else if (self.fileURL) {
-        BOOL toBeDeleted = YES;
 
         if ([self isImageFile:self.fileURL.path]) {
-            [self.shareService pushFileWithPath:self.fileURL.path type:TLDescriptorTypeImageDescriptor toBeDeleted:toBeDeleted copyAllowed:self.twinmeApplication.allowCopyFile];
+            [self.shareService pushFileWithPath:self.fileURL.path type:TLDescriptorTypeImageDescriptor toBeDeleted:YES copyAllowed:self.space.settings.fileCopyAllowed];
         } else if ([self isVideoFile:self.fileURL.path]) {
-            [self.shareService pushFileWithPath:self.fileURL.path type:TLDescriptorTypeVideoDescriptor toBeDeleted:toBeDeleted copyAllowed:self.twinmeApplication.allowCopyFile];
+            [self.shareService pushFileWithPath:self.fileURL.path type:TLDescriptorTypeVideoDescriptor toBeDeleted:YES copyAllowed:self.space.settings.fileCopyAllowed];
         } else if ([self isAudioFile:self.fileURL.path]) {
-            [self.shareService pushFileWithPath:self.fileURL.path type:TLDescriptorTypeAudioDescriptor toBeDeleted:toBeDeleted copyAllowed:self.twinmeApplication.allowCopyFile];
+            [self.shareService pushFileWithPath:self.fileURL.path type:TLDescriptorTypeAudioDescriptor toBeDeleted:YES copyAllowed:self.space.settings.fileCopyAllowed];
         } else {
-            [self.shareService pushFileWithPath:self.fileURL.path type:TLDescriptorTypeNamedFileDescriptor toBeDeleted:toBeDeleted copyAllowed:self.twinmeApplication.allowCopyFile];
+            [self.shareService pushFileWithPath:self.fileURL.path type:TLDescriptorTypeNamedFileDescriptor toBeDeleted:YES copyAllowed:self.space.settings.fileCopyAllowed];
         }
     } else if (self.content) {
-        [self.shareService pushMessage:self.content copyAllowed:self.twinmeApplication.allowCopyText];
+        [self.shareService pushMessage:self.content copyAllowed:self.space.settings.messageCopyAllowed];
     }
     
     if (self.comment && ![self.comment isEqualToString:@""]) {
-        [self.shareService pushMessage:self.comment copyAllowed:self.twinmeApplication.allowCopyText];
+        [self.shareService pushMessage:self.comment copyAllowed:self.space.settings.messageCopyAllowed];
     }
 
     if (self.uiSelectedContact.count == 0) {
@@ -407,6 +431,15 @@ static const int GROUPS_VIEW_SECTION = 2;
 }
 
 #pragma mark - Private
+
+- (void)updateWithSpace:(nonnull TLSpace *)space {
+    DDLogVerbose(@"%@ updateWithSpace: %@", LOG_TAG, space);
+    
+    self.space = space;
+    self.uiSpace = [self createUISpaceWithSpace:self.space service:self.shareService withRefresh:^(void) {
+        [self refreshTable];
+    }];
+}
 
 - (void)updateUIContact:(TLContact *)contact avatar:(nullable UIImage *)avatar {
     DDLogVerbose(@"%@ updateUIContact: %@ avatar: %@", LOG_TAG, contact, avatar);
@@ -523,16 +556,16 @@ static const int GROUPS_VIEW_SECTION = 2;
     [self.uiGroups removeAllObjects];
     
     if (![searchText isEqualToString:@""]) {
-        [self.shareService findContactsAndGroupsByName:searchText space:self.currentSpace];
+        [self.shareService findContactsAndGroupsByName:searchText space:self.space];
     } else {
-        [self.shareService getContactsAndGroups: self.currentSpace];
+        [self.shareService getContactsAndGroups:self.space];
     }
 }
 
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar {
     DDLogVerbose(@"%@ searchBarCancelButtonClicked: %@", LOG_TAG, searchBar);
     
-    [self.shareService getContactsAndGroups: self.currentSpace];
+    [self.shareService getContactsAndGroups:self.space];
 }
 
 #pragma mark - UITableViewDataSource
@@ -558,8 +591,11 @@ static const int GROUPS_VIEW_SECTION = 2;
         }
         
         return 1;
-    } else if (self.item && tableView == self.previewTableView) {
-        return 2;
+    } else if (tableView == self.previewTableView) {
+        if (self.item) {
+            return 3;
+        }
+        return 1;
     }
     
     return 0;
@@ -612,6 +648,13 @@ static const int GROUPS_VIEW_SECTION = 2;
         return Design.CELL_HEIGHT;
     } else {
         if (indexPath.row == 0) {
+            ApplicationDelegate *delegate = (ApplicationDelegate *)[[UIApplication sharedApplication] delegate];
+            MainViewController *mainViewController = delegate.mainViewController;
+            if ([mainViewController numberSpaces:NO] == 1) {
+                return CGFLOAT_MIN;
+            }
+            return DESIGN_SPACE_CELL_HEIGHT * Design.HEIGHT_RATIO;
+        } else if (indexPath.row == 1) {
             return UITableViewAutomaticDimension;
         } else {
             return DESIGN_COMMENT_CELL_HEIGHT * Design.HEIGHT_RATIO;
@@ -694,6 +737,21 @@ static const int GROUPS_VIEW_SECTION = 2;
         }
     } else {
         if (indexPath.row == 0) {
+            
+            if (!self.space) {
+                return [[UITableViewCell alloc]initWithFrame:CGRectZero];
+            }
+            
+            ChangeSpaceCell *changeSpaceCell = (ChangeSpaceCell *)[tableView dequeueReusableCellWithIdentifier:CHANGE_SPACE_CELL_IDENTIFIER];
+            if (!changeSpaceCell) {
+                changeSpaceCell = [[ChangeSpaceCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:CHANGE_SPACE_CELL_IDENTIFIER];
+            }
+
+
+            [changeSpaceCell bindWithSpace:self.uiSpace];
+            
+            return changeSpaceCell;
+        } else if (indexPath.row == 1) {
             if (self.keyboardHidden) {
                 self.item.mode = ItemModePreview;
             } else {
@@ -852,6 +910,12 @@ static const int GROUPS_VIEW_SECTION = 2;
         }
         
         [self.contactsTableView reloadData];
+    } else if (indexPath.row == 0) {
+        SpacesViewController *spacesViewController = [[UIStoryboard storyboardWithName:@"Space" bundle:nil] instantiateViewControllerWithIdentifier:@"SpacesViewController"];
+        spacesViewController.pickerMode = YES;
+        spacesViewController.spacesPickerDelegate = self;
+        TwinmeNavigationController *navigationController = [[TwinmeNavigationController alloc] initWithRootViewController:spacesViewController];
+        [self.navigationController presentViewController:navigationController animated:YES completion:nil];
     }
 }
 
@@ -863,11 +927,21 @@ static const int GROUPS_VIEW_SECTION = 2;
     self.comment = comment;
 }
 
+#pragma mark - SpacesPickerDelegate
+
+- (void)didSelectSpace:(TLSpace *)space {
+    DDLogVerbose(@"%@ didSelectSpace: %@", LOG_TAG, space);
+    
+    [self updateWithSpace:space];
+    [self.previewTableView reloadData];
+    [self.shareService getContactsAndGroups:self.space];
+}
+
 #pragma mark - Private methods
 
 - (void)initViews {
     DDLogVerbose(@"%@ initViews", LOG_TAG);
-    
+        
     self.definesPresentationContext = YES;
     self.view.backgroundColor = Design.WHITE_COLOR;
     
@@ -906,13 +980,13 @@ static const int GROUPS_VIEW_SECTION = 2;
     contactSearchBar.delegate = self;
     
     if (@available(iOS 13.0, *)) {
-        self.searchController.searchBar.backgroundColor = [UIColor clearColor];
         self.searchController.searchBar.searchTextField.backgroundColor = [UIColor whiteColor];
         self.searchController.searchBar.searchTextField.tintColor = Design.POPUP_BACKGROUND_COLOR;
+        self.searchController.searchBar.searchTextField.tintColor = [UIColor darkGrayColor];
         self.searchController.searchBar.translucent = NO;
         self.navigationItem.searchController = self.searchController;
     } else {
-        self.contactsTableView.tableHeaderView = self.searchController.searchBar;
+        self.previewTableView.tableHeaderView = self.searchController.searchBar;
     }
     
     self.previewTableViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
@@ -940,7 +1014,8 @@ static const int GROUPS_VIEW_SECTION = 2;
     [self.previewTableView registerNib:[UINib nibWithNibName:@"FileItemCell" bundle:nil] forCellReuseIdentifier:FILE_ITEM_CELL_IDENTIFIER];
     [self.previewTableView registerNib:[UINib nibWithNibName:@"PeerFileItemCell" bundle:nil] forCellReuseIdentifier:PEER_FILE_ITEM_CELL_IDENTIFIER];
     [self.previewTableView registerNib:[UINib nibWithNibName:@"AddCommentCell" bundle:nil] forCellReuseIdentifier:ADD_COMMENT_CELL_IDENTIFIER];
-        
+    [self.previewTableView registerNib:[UINib nibWithNibName:@"ChangeSpaceCell" bundle:nil] forCellReuseIdentifier:CHANGE_SPACE_CELL_IDENTIFIER];
+    
     self.contactsTableView.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
     self.contactsTableView.delegate = self;
     self.contactsTableView.dataSource = self;
@@ -973,9 +1048,9 @@ static const int GROUPS_VIEW_SECTION = 2;
 
 - (void)handleSendTapGesture:(UIButton *)sender {
     DDLogVerbose(@"%@ handleSendTapGesture: %@", LOG_TAG, sender);
-    
+ 
     self.sendBarButtonItem.enabled = NO;
-         
+
     if (self.uiSelectedContact.count > 0) {
         UIContact *selectedContact = [self.uiSelectedContact objectAtIndex:0];
         
@@ -1017,7 +1092,7 @@ static const int GROUPS_VIEW_SECTION = 2;
 
 - (BOOL)isSelectedContact:(UIContact *)contact {
     DDLogVerbose(@"%@ isSelectedContact: %@", LOG_TAG, contact);
-
+    
     for (UIContact *member in self.uiSelectedContact) {
         if ([contact.contact.uuid isEqual:member.contact.uuid]) {
             return YES;
@@ -1028,7 +1103,7 @@ static const int GROUPS_VIEW_SECTION = 2;
 
 - (NSInteger)indexForContact:(UIContact *)contact {
     DDLogVerbose(@"%@ indexForContact: %@", LOG_TAG, contact);
-
+    
     int index = -1;
     for (UIContact *member in self.uiSelectedContact) {
         index++;

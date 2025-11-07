@@ -220,7 +220,7 @@ static NSString *TWINME_SETTINGS_CELL_IDENTIFIER = @"TwinmeSettingsCellIdentifie
         } else if (self.space) {
             [cleanupViewController initCleanUpWithSpace:self.space];
         } else {
-            [cleanupViewController initCleanUpWithCurrentSpace];
+            [cleanupViewController initCleanUpApplication];
         }
         
         [self.navigationController pushViewController:cleanupViewController animated:YES];

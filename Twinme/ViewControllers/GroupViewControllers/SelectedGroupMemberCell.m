@@ -34,6 +34,8 @@
     
     [super awakeFromNib];
     
+    self.contentView.backgroundColor = Design.WHITE_COLOR;
+    
     self.avatarViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     
     CALayer *avatarViewLayer = self.avatarView.layer;
@@ -53,6 +55,8 @@
     
     self.avatarView.hidden = NO;
     self.avatarView.image = avatar;
+    
+    self.contentView.backgroundColor = Design.WHITE_COLOR;
 }
 
 @end

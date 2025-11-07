@@ -57,7 +57,7 @@ static CGFloat DESIGN_COLLECTION_WIDTH_INSET = 14;
     
     [super awakeFromNib];
     
-    self.colors = Design.COLORS;
+    self.colors = Design.SPACES_COLOR;
     
     for (UICustomColor *customColor in self.colors) {
         if ([customColor.color isEqualToString:Design.MAIN_STYLE]) {

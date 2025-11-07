@@ -4,7 +4,7 @@ import shutil, os
 import fileinput
 from subprocess import call
 
-paths = ['Pods/Headers', 'Podfile.lock', 'Twinme.xcworkspace']
+paths = ['Pods/Headers', 'Podfile.lock', 'Skred.xcworkspace']
 
 for path in paths:
     try:

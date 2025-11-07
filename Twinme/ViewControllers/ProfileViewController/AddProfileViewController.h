@@ -16,9 +16,11 @@
 
 @interface AddProfileViewController : AbstractTwinmeViewController
 
+@property (nonatomic) BOOL fromCreateSpace;
 @property (nonatomic) BOOL firstProfile;
 @property (nonatomic) BOOL fromContactsTab;
 @property (nonatomic) BOOL fromConversationsTab;
 @property (nonatomic) NSURL *invitationURL;
+@property (nonatomic) NSString *lastLevelName;
 
 @end

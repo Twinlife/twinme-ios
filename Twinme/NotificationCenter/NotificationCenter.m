@@ -25,6 +25,7 @@
 #import <Twinme/TLGroup.h>
 #import <Twinme/TLGroupMember.h>
 #import <Twinme/TLMessage.h>
+#import <Twinme/TLSpace.h>
 #import <Twinme/TLTwinmeAttributes.h>
 
 #import <Notification/NotificationSettings.h>
@@ -54,6 +55,8 @@
 #import "ApplicationAssertion.h"
 
 #import "NotificationView.h"
+
+#import "SpaceSetting.h"
 
 #if 0
 static const int ddLogLevel = DDLogLevelVerbose;
@@ -406,6 +409,10 @@ typedef enum {
         notification = [[ContactNotification alloc] initWithNotificationId:notificationInfo.identifier contact:(TLContact *)contact invitationId:nil];
     }
     
+    if (![self showNotification:contact]) {
+        return;
+    }
+    
     if (self.inBackground) {
         [self postNotificationWithNotificationInfo:notificationInfo];
         
@@ -586,9 +593,9 @@ typedef enum {
 - (void)handleNotification:(TLNotification *)notification {
     
     [self dismissModalViewController];
+    
     ApplicationDelegate *delegate = (ApplicationDelegate *)[[UIApplication sharedApplication] delegate];
     MainViewController *mainViewController = delegate.mainViewController;
-    
     TwinmeNavigationController *selectedNavigationController = mainViewController.selectedViewController;
     if ([selectedNavigationController.topViewController isKindOfClass:[CallViewController class]]) {
         CallViewController *callViewConroller = (CallViewController *) selectedNavigationController.topViewController;
@@ -597,12 +604,31 @@ typedef enum {
     [selectedNavigationController popToRootViewControllerAnimated:NO];
     
     id<TLRepositoryObject> subject = notification.subject;
+
+    if ([subject conformsToProtocol:@protocol(TLOriginator)]) {
+        id<TLOriginator> originator = (id<TLOriginator>) subject;
+        if (originator.space && ![self.twinmeContext isCurrentSpace:originator]) {
+            int64_t requestId = [self.twinmeContext newRequestId];
+            [self.twinmeContext setCurrentSpaceWithRequestId:requestId space:originator.space];
+            
+            TLSpaceSettings *spaceSettings = originator.space.settings;
+            if ([originator.space.settings getBooleanWithName:PROPERTY_DEFAULT_APPEARANCE_SETTINGS defaultValue:YES]) {
+                spaceSettings = self.twinmeContext.defaultSpaceSettings;
+            }
+            
+            if (![Design.MAIN_STYLE isEqualToString:spaceSettings.style]) {
+                [Design setMainColor:spaceSettings.style];
+            }
+        }
+    }
+    
     switch (notification.notificationType) {
         case TLNotificationTypeNewTextMessage:
         case TLNotificationTypeNewImageMessage:
         case TLNotificationTypeNewAudioMessage:
         case TLNotificationTypeNewVideoMessage:
         case TLNotificationTypeNewFileMessage:
+        case TLNotificationTypeNewGeolocation:
         case TLNotificationTypeResetConversation:
         case TLNotificationTypeUpdatedAnnotation: {
             [mainViewController selectTab:3];
@@ -1017,6 +1043,20 @@ typedef enum {
         }
     }
     return image;
+}
+
+- (BOOL)showNotification:(nonnull id<TLOriginator>)originator {
+    
+    if (!originator.space) {
+        return YES;
+    }
+    
+    BOOL allowNotification = [originator.space.settings getBooleanWithName:PROPERTY_DISPLAY_NOTIFICATIONS defaultValue:YES];
+    if (allowNotification || (!self.inBackground && !allowNotification && [self.twinmeContext isCurrentSpace:originator])) {
+        return YES;
+    }
+    
+    return NO;
 }
 
 @end

@@ -12,8 +12,12 @@
 // Interface: CreateExternalCallViewController
 //
 
+@class UITemplateExternalCall;
+
 @interface CreateExternalCallViewController : AbstractShowViewController
 
 @property (nonatomic) BOOL isTransfert;
+
+- (void)initWithTemplate:(UITemplateExternalCall *)templateExternalCall;
 
 @end

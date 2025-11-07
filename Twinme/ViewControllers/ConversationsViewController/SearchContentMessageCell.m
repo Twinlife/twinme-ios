@@ -18,6 +18,8 @@
 #import "UIContact.h"
 #import "UIConversation.h"
 
+#import "UIColor+Hex.h"
+
 #if 0
 static const int ddLogLevel = DDLogLevelVerbose;
 #else
@@ -141,9 +143,11 @@ static const CGFloat DESIGN_SMALL_ROUND_CORNER_RADIUS = 8;
     }
         
     if ([uiConversation.uiContact.avatar isEqual:[TLTwinmeAttributes DEFAULT_GROUP_AVATAR]]) {
-        self.avatarView.backgroundColor = Design.GREY_ITEM;
+        self.avatarView.backgroundColor = [UIColor colorWithHexString:Design.DEFAULT_COLOR alpha:1.0];
+        self.avatarView.tintColor = [UIColor whiteColor];
     } else {
         self.avatarView.backgroundColor = [UIColor clearColor];
+        self.avatarView.tintColor = [UIColor clearColor];
     }
     
     self.avatarView.image = uiConversation.uiContact.avatar;

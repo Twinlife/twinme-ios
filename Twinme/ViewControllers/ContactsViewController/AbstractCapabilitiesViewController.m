@@ -17,18 +17,23 @@
 
 #import "MessageSettingsViewController.h"
 #import "ContactCapabilitiesViewController.h"
+#import "InAppSubscriptionViewController.h"
+
 #import "SettingsItemCell.h"
+#import "ScheduleCell.h"
 #import "SettingsSectionHeaderCell.h"
 #import "SettingsInformationCell.h"
 #import "SettingsValueItemCell.h"
 #import "PremiumFeatureConfirmView.h"
 #import "OnboardingConfirmView.h"
+#import "UIPremiumFeature.h"
 
 #import <TwinmeCommon/Design.h>
 #import <TwinmeCommon/EditContactCapabilitiesService.h>
+#import <TwinmeCommon/TwinmeNavigationController.h>
 
 #import "SwitchView.h"
-#import "UIPremiumFeature.h"
+#import "MenuDateTimeView.h"
 
 #if 0
 static const int ddLogLevel = DDLogLevelVerbose;
@@ -39,13 +44,14 @@ static const int ddLogLevel = DDLogLevelWarning;
 static NSString *SETTINGS_CELL_IDENTIFIER = @"SettingsCellIdentifier";
 static NSString *HEADER_SETTINGS_CELL_IDENTIFIER = @"HeaderSettingsCellIdentifier";
 static NSString *SETTINGS_INFORMATION_CELL_IDENTIFIER = @"SettingsInformationCellIdentifier";
+static NSString *SCHEDULE_CELL_IDENTIFIER = @"ScheduleCellIdentifier";
 static NSString *SETTINGS_VALUE_CELL_IDENTIFIER = @"SettingsValueCellIdentifier";
 
 //
 // Interface: AbstractCapabilitiesViewController ()
 //
 
-@interface AbstractCapabilitiesViewController () <SettingsActionDelegate, EditContactCapabilitiesServiceDelegate, ConfirmViewDelegate, SettingsSectionHeaderDelegate>
+@interface AbstractCapabilitiesViewController () <SettingsActionDelegate, EditContactCapabilitiesServiceDelegate, ScheduleDelegate, MenuDateTimeViewDelegate, ConfirmViewDelegate, SettingsSectionHeaderDelegate>
 
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 
@@ -86,6 +92,7 @@ typedef enum {
         _zoomable = TLVideoZoomableAsk;
         _discreetRelation = NO;
         _scheduleEnable = NO;
+        _canSave = NO;
     }
     return self;
 }
@@ -107,10 +114,33 @@ typedef enum {
     [self.tableView reloadData];
 }
 
+- (void)viewWillDisappear:(BOOL)animated {
+    DDLogVerbose(@"%@ viewWillDisappear: %@", LOG_TAG, animated ? @"YES" : @"NO");
+    
+    [super viewWillDisappear:animated];
+    
+    [self saveCapabilities];
+}
+
 - (BOOL)isGroupCapabilities {
     DDLogVerbose(@"%@ isGroupCapabilities", LOG_TAG);
     
     return NO;
+}
+
+- (void)saveCapabilities {
+    DDLogVerbose(@"%@ saveCapabilities", LOG_TAG);
+    
+}
+
+- (void)openMenuSelectValue {
+    DDLogVerbose(@"%@ openMenuSelectValue", LOG_TAG);
+    
+}
+
+- (void)setUpdated {
+    DDLogVerbose(@"%@ setUpdated", LOG_TAG);
+    
 }
 
 #pragma mark - SettingsActionDelegate
@@ -118,7 +148,33 @@ typedef enum {
 - (void)switchChangeValue:(SwitchView *)updatedSwitch {
     DDLogVerbose(@"%@ switchChangeValue: %@", LOG_TAG, updatedSwitch);
     
-    [self showPremiumFeature:FeatureTypePrivacy];
+    switch (updatedSwitch.tag) {
+        case TAG_ALLOW_AUDIO_CALL:
+            self.allowAudioCall = updatedSwitch.isOn;
+            break;
+            
+        case TAG_ALLOW_VIDEO_CALL:
+            self.allowVideoCall = updatedSwitch.isOn;
+            break;
+            
+        case TAG_DISCREET_RELATION:
+            self.discreetRelation = updatedSwitch.isOn;
+            break;
+            
+        case TAG_ENABLE_SCHEDULE:
+            self.scheduleEnable = updatedSwitch.isOn;
+            break;
+            
+        default:
+            break;
+    }
+    
+    if (self.scheduleEnable && !self.scheduleStartDate) {
+        [self initSchedule];
+    }
+    
+    [self setUpdated];
+    [self.tableView reloadData];
 }
 
 #pragma mark - EditContactCapabilitiesServiceDelegate
@@ -174,9 +230,10 @@ typedef enum {
     
     if ((section == SECTION_DISCREET_RELATION || section == SECTION_CONTROL_CAMERA) && [self isGroupCapabilities]) {
         return 0;
-    } else if (section == SECTION_CONTROL_CAMERA) {
-        return 2;
+    } else if (section == SECTION_PROGRAMMED_CALL && self.scheduleEnable) {
+        return 4;
     }
+    
     return 2;
 }
 
@@ -253,6 +310,20 @@ typedef enum {
         [cell bindWithText:text];
         
         return cell;
+    } else if (indexPath.section == SECTION_PROGRAMMED_CALL && self.scheduleEnable && indexPath.row > 1) {
+        ScheduleCell *cell = [tableView dequeueReusableCellWithIdentifier:SCHEDULE_CELL_IDENTIFIER];
+        if (!cell) {
+            cell = [[ScheduleCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:SCHEDULE_CELL_IDENTIFIER];
+        }
+        
+        cell.scheduleDelegate = self;
+        
+        if (indexPath.row == 2) {
+            [cell bind:ScheduleTypeStart date:self.scheduleStartDate time:self.scheduleStartTime];
+        } else {
+            [cell bind:ScheduleTypeEnd date:self.scheduleEndDate time:self.scheduleEndTime];
+        }
+        return cell;
     } else if (indexPath.section == SECTION_CONTROL_CAMERA) {
         SettingsValueItemCell *cell = [tableView dequeueReusableCellWithIdentifier:SETTINGS_VALUE_CELL_IDENTIFIER];
         if (!cell) {
@@ -268,8 +339,7 @@ typedef enum {
             value = TwinmeLocalizedString(@"contact_capabilities_view_controller_camera_control_allow", nil);
         }
         
-        [cell bindWithTitle:nil value:value];
-        
+        [cell bindWithTitle:nil value:value backgroundColor:Design.WHITE_COLOR];
         return cell;
     } else {
         SettingsItemCell *cell = [tableView dequeueReusableCellWithIdentifier:SETTINGS_CELL_IDENTIFIER];
@@ -316,8 +386,8 @@ typedef enum {
             default:
                 break;
         }
-        
-        [cell bindWithTitle:title icon:nil stateSwitch:switchState tagSwitch:tag hiddenSwitch:hiddenSwitch disableSwitch:YES backgroundColor:Design.WHITE_COLOR hiddenSeparator:NO];
+
+        [cell bindWithTitle:title icon:nil stateSwitch:switchState tagSwitch:tag hiddenSwitch:hiddenSwitch disableSwitch:NO backgroundColor:Design.WHITE_COLOR hiddenSeparator:NO];
         
         return cell;
     }
@@ -331,6 +401,144 @@ typedef enum {
     if (indexPath.section == SECTION_CONTROL_CAMERA) {
         [self showOnboarding:NO];
     }
+}
+
+#pragma mark - ScheduleDelegate
+
+- (void)scheduleDate:(ScheduleType)scheduleType {
+    DDLogVerbose(@"%@ scheduleDate", LOG_TAG);
+    
+    if (scheduleType == ScheduleTypeStart) {
+        NSDate *date = [NSDate date];
+        if (self.scheduleStartDate) {
+            NSDateComponents *startDateComponents = [[NSDateComponents alloc] init];
+            startDateComponents.day = self.scheduleStartDate.day;
+            startDateComponents.month = self.scheduleStartDate.month;
+            startDateComponents.year = self.scheduleStartDate.year;
+            startDateComponents.hour = self.scheduleStartTime.hour;
+            startDateComponents.minute = self.scheduleStartTime.minute;
+            
+            NSCalendar *calendar = [NSCalendar currentCalendar];
+            date = [calendar dateFromComponents:startDateComponents];
+        }
+        
+        [self openMenuDateTime:date minimumDate:[NSDate date] menuDateTimeType:MenuDateTimeTypeStartDate];
+    } else {
+        if (self.scheduleStartDate) {
+            NSDateComponents *startDateComponents = [[NSDateComponents alloc] init];
+            startDateComponents.day = self.scheduleStartDate.day;
+            startDateComponents.month = self.scheduleStartDate.month;
+            startDateComponents.year = self.scheduleStartDate.year;
+            startDateComponents.hour = self.scheduleStartTime.hour;
+            startDateComponents.minute = self.scheduleStartTime.minute;
+            
+            NSCalendar *calendar = [NSCalendar currentCalendar];
+            NSDate *minimumDate = [calendar dateFromComponents:startDateComponents];
+            
+            NSDate *date = [minimumDate dateByAddingTimeInterval:3600];
+            if (self.scheduleEndDate) {
+                NSDateComponents *startEndComponents = [[NSDateComponents alloc] init];
+                startEndComponents.day = self.scheduleEndDate.day;
+                startEndComponents.month = self.scheduleEndDate.month;
+                startEndComponents.year = self.scheduleEndDate.year;
+                startEndComponents.hour = self.scheduleEndTime.hour;
+                startEndComponents.minute = self.scheduleEndTime.minute;
+                
+                date = [calendar dateFromComponents:startEndComponents];
+            }
+        
+            [self openMenuDateTime:date minimumDate:minimumDate menuDateTimeType:MenuDateTimeTypeEndDate];
+        } else {
+            [self openMenuDateTime:[NSDate date] minimumDate:[NSDate date] menuDateTimeType:MenuDateTimeTypeEndDate];
+        }
+    }
+}
+
+- (void)scheduleTime:(ScheduleType)scheduleType {
+    DDLogVerbose(@"%@ scheduleTime", LOG_TAG);
+    
+    if (scheduleType == ScheduleTypeStart) {
+        
+        NSDate *date = [NSDate date];
+        if (self.scheduleStartDate) {
+            NSDateComponents *startDateComponents = [[NSDateComponents alloc] init];
+            startDateComponents.day = self.scheduleStartDate.day;
+            startDateComponents.month = self.scheduleStartDate.month;
+            startDateComponents.year = self.scheduleStartDate.year;
+            startDateComponents.hour = self.scheduleStartTime.hour;
+            startDateComponents.minute = self.scheduleStartTime.minute;
+            
+            NSCalendar *calendar = [NSCalendar currentCalendar];
+            date = [calendar dateFromComponents:startDateComponents];
+        }
+        
+        [self openMenuDateTime:date minimumDate:[NSDate date] menuDateTimeType:MenuDateTimeTypeStartHour];
+    } else {
+        if (self.scheduleStartDate) {
+            NSDateComponents *startDateComponents = [[NSDateComponents alloc] init];
+            startDateComponents.day = self.scheduleStartDate.day;
+            startDateComponents.month = self.scheduleStartDate.month;
+            startDateComponents.year = self.scheduleStartDate.year;
+            startDateComponents.hour = self.scheduleStartTime.hour;
+            startDateComponents.minute = self.scheduleStartTime.minute;
+            
+            NSCalendar *calendar = [NSCalendar currentCalendar];
+            NSDate *minimumDate = [calendar dateFromComponents:startDateComponents];
+            
+            NSDate *date = [minimumDate dateByAddingTimeInterval:3600];
+            if (self.scheduleEndDate) {
+                NSDateComponents *startEndComponents = [[NSDateComponents alloc] init];
+                startEndComponents.day = self.scheduleEndDate.day;
+                startEndComponents.month = self.scheduleEndDate.month;
+                startEndComponents.year = self.scheduleEndDate.year;
+                startEndComponents.hour = self.scheduleEndTime.hour;
+                startEndComponents.minute = self.scheduleEndTime.minute;
+                
+                date = [calendar dateFromComponents:startEndComponents];
+            }
+        
+            [self openMenuDateTime:date minimumDate:minimumDate menuDateTimeType:MenuDateTimeTypeEndHour];
+        } else {
+            [self openMenuDateTime:[NSDate date] minimumDate:[NSDate date] menuDateTimeType:MenuDateTimeTypeEndHour];
+        }
+    }
+}
+
+#pragma mark - MenuDateTimeDelegate
+
+- (void)menuDateTimeDidClosed:(MenuDateTimeView *)menuDateTimeView menuDateTimeType:(MenuDateTimeType)menuDateTimeType date:(NSDate *)date {
+    DDLogVerbose(@"%@ menuDateTimeDidClosed", LOG_TAG);
+    
+    [menuDateTimeView removeFromSuperview];
+    
+    NSCalendar *calendar = [NSCalendar currentCalendar];
+    NSCalendarUnit calendarUnit = NSCalendarUnitYear | NSCalendarUnitMonth |  NSCalendarUnitDay | NSCalendarUnitHour | NSCalendarUnitMinute;
+    NSDateComponents *dateComponents = [calendar components:calendarUnit fromDate:date];
+    
+    if (menuDateTimeType == MenuDateTimeTypeStartDate || menuDateTimeType == MenuDateTimeTypeStartHour) {
+        self.scheduleStartDate = [[TLDate alloc]initWithYear:(int)dateComponents.year month:(int)dateComponents.month day:(int)dateComponents.day];
+        self.scheduleStartTime = [[TLTime alloc]initWithHour:(int)dateComponents.hour minute:(int)dateComponents.minute];
+    } else if (menuDateTimeType == MenuDateTimeTypeEndDate || menuDateTimeType == MenuDateTimeTypeEndHour) {
+        self.scheduleEndDate = [[TLDate alloc]initWithYear:(int)dateComponents.year month:(int)dateComponents.month day:(int)dateComponents.day];
+        self.scheduleEndTime = [[TLTime alloc]initWithHour:(int)dateComponents.hour minute:(int)dateComponents.minute];
+    }
+    
+    if ([self.scheduleStartDate compare:self.scheduleEndDate] ==  NSOrderedDescending) {
+        NSDateComponents *startDateComponents = [[NSDateComponents alloc] init];
+        startDateComponents.day = self.scheduleStartDate.day;
+        startDateComponents.month = self.scheduleStartDate.month;
+        startDateComponents.year = self.scheduleStartDate.year;
+        startDateComponents.hour = self.scheduleStartTime.hour;
+        startDateComponents.minute = self.scheduleStartTime.minute;
+        
+        NSDate *startDate = [calendar dateFromComponents:startDateComponents];
+        NSDate *endDate = [calendar dateByAddingUnit:NSCalendarUnitHour value:1 toDate:startDate options:NSCalendarWrapComponents];
+        dateComponents = [calendar components:calendarUnit fromDate:endDate];
+        self.scheduleEndDate = [[TLDate alloc]initWithYear:(int)dateComponents.year month:(int)dateComponents.month day:(int)dateComponents.day];
+        self.scheduleEndTime = [[TLTime alloc]initWithHour:(int)dateComponents.hour minute:(int)dateComponents.minute];
+    }
+    
+    [self.tableView reloadData];
 }
 
 #pragma mark - SettingsSectionHeaderDelegate
@@ -347,9 +555,18 @@ typedef enum {
     DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractConfirmView);
     
     if ([abstractConfirmView isKindOfClass:[PremiumFeatureConfirmView class]]) {
-        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:TwinmeLocalizedString(@"twinme_plus_link", nil)] options:@{} completionHandler:nil];
-    } else if (!abstractConfirmView.cancelView.hidden) {
-        [self showPremiumFeature:FeatureTypeRemoteControl];
+        InAppSubscriptionViewController *inAppSubscriptionViewController = [[UIStoryboard storyboardWithName:@"iPhone" bundle:nil] instantiateViewControllerWithIdentifier:@"InAppSubscriptionViewController"];
+        TwinmeNavigationController *navigationController = [[TwinmeNavigationController alloc]initWithRootViewController:inAppSubscriptionViewController];
+        [self.navigationController presentViewController:navigationController animated:YES completion:nil];
+    } else {
+        ApplicationDelegate *delegate = (ApplicationDelegate *)[[UIApplication sharedApplication] delegate];
+        if (!abstractConfirmView.cancelView.hidden) {
+            if (![delegate.twinmeApplication isSubscribedWithFeature:TLTwinmeApplicationFeatureGroupCall]) {
+                [self showPremiumFeature:FeatureTypeRemoteControl];
+            } else {
+                [self openMenuSelectValue];
+            }
+        }
     }
 
     [abstractConfirmView closeConfirmView];
@@ -392,6 +609,7 @@ typedef enum {
     self.tableView.estimatedRowHeight = Design.SETTING_CELL_HEIGHT * Design.HEIGHT_RATIO;
     [self.tableView registerNib:[UINib nibWithNibName:@"SettingsItemCell" bundle:nil] forCellReuseIdentifier:SETTINGS_CELL_IDENTIFIER];
     [self.tableView registerNib:[UINib nibWithNibName:@"SettingsInformationCell" bundle:nil] forCellReuseIdentifier:SETTINGS_INFORMATION_CELL_IDENTIFIER];
+    [self.tableView registerNib:[UINib nibWithNibName:@"ScheduleCell" bundle:nil] forCellReuseIdentifier:SCHEDULE_CELL_IDENTIFIER];
     [self.tableView registerNib:[UINib nibWithNibName:@"SettingsValueItemCell" bundle:nil] forCellReuseIdentifier:SETTINGS_VALUE_CELL_IDENTIFIER];
 
     self.tableView.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
@@ -411,6 +629,42 @@ typedef enum {
     [self.navigationController popViewControllerAnimated:YES];
 }
 
+- (void)reloadData {
+    DDLogVerbose(@"%@ reloadData ", LOG_TAG);
+    
+    [self.tableView reloadData];
+}
+
+- (void)initSchedule {
+    DDLogVerbose(@"%@ initSchedule", LOG_TAG);
+    
+    NSCalendar *calendar = [NSCalendar currentCalendar];
+    NSCalendarUnit calendarUnit = NSCalendarUnitYear | NSCalendarUnitMonth |  NSCalendarUnitDay | NSCalendarUnitHour | NSCalendarUnitMinute;
+    NSDate *date = [NSDate date];
+    NSDateComponents *dateComponents = [calendar components:calendarUnit fromDate:date];
+    self.scheduleStartDate = [[TLDate alloc]initWithYear:(int)dateComponents.year month:(int)dateComponents.month day:(int)dateComponents.day];
+    
+    date = [calendar dateByAddingUnit:NSCalendarUnitHour value:1 toDate:date options:NSCalendarWrapComponents];
+    dateComponents = [calendar components:calendarUnit fromDate:date];
+    self.scheduleStartTime = [[TLTime alloc]initWithHour:(int)dateComponents.hour minute:0];
+    
+    date = [calendar dateByAddingUnit:NSCalendarUnitHour value:1 toDate:date options:NSCalendarWrapComponents];
+    dateComponents = [calendar components:calendarUnit fromDate:date];
+    self.scheduleEndDate = [[TLDate alloc]initWithYear:(int)dateComponents.year month:(int)dateComponents.month day:(int)dateComponents.day];
+    self.scheduleEndTime = [[TLTime alloc]initWithHour:(int)dateComponents.hour minute:0];
+}
+
+- (void)openMenuDateTime:(NSDate *)date minimumDate:(NSDate *)minimumDate menuDateTimeType:(MenuDateTimeType)menuDateTimeType {
+    DDLogVerbose(@"%@ openMenuDateTime", LOG_TAG);
+    
+    MenuDateTimeView *menuDateTimeView = [[MenuDateTimeView alloc]init];
+    menuDateTimeView.menuDateTimeViewDelegate = self;
+    [self.tabBarController.view addSubview:menuDateTimeView];
+    
+    [menuDateTimeView setMenuDateTimeTypeWithType:menuDateTimeType];
+    [menuDateTimeView openMenu:minimumDate date:date];
+}
+
 - (void)showOnboarding:(BOOL)hideCancel {
     DDLogVerbose(@"%@ showOnboarding", LOG_TAG);
     
@@ -426,16 +680,21 @@ typedef enum {
         [self.navigationController.view addSubview:onboardingConfirmView];
         [onboardingConfirmView showConfirmView];
     } else {
-        [self showPremiumFeature:FeatureTypeRemoteControl];
+        ApplicationDelegate *delegate = (ApplicationDelegate *)[[UIApplication sharedApplication] delegate];
+        if (![delegate.twinmeApplication isSubscribedWithFeature:TLTwinmeApplicationFeatureGroupCall]) {
+            [self showPremiumFeature:FeatureTypeRemoteControl];
+        } else {
+            [self openMenuSelectValue];
+        }
     }
 }
-
+    
 - (void)showPremiumFeature:(FeatureType)featureType {
     DDLogVerbose(@"%@ showPremiumFeature", LOG_TAG);
     
     PremiumFeatureConfirmView *premiumFeatureConfirmView = [[PremiumFeatureConfirmView alloc] init];
     premiumFeatureConfirmView.confirmViewDelegate = self;
-    [premiumFeatureConfirmView initWithPremiumFeature:[[UIPremiumFeature alloc]initWithFeatureType:featureType] parentViewController:self.navigationController];
+    [premiumFeatureConfirmView initWithPremiumFeature:[[UIPremiumFeature alloc]initWithFeatureType:featureType spaceSettings:self.currentSpaceSettings] parentViewController:self.navigationController];
     [self.navigationController.view addSubview:premiumFeatureConfirmView];
     [premiumFeatureConfirmView showConfirmView];
 }

@@ -25,13 +25,14 @@
 #import "DeviceAuthorization.h"
 #import "MenuSelectValueView.h"
 #import "MenuPhotoView.h"
-#import "MenuPropagatingProfileView.h"
+#import "UITemplateSpace.h"
 #import "UIViewController+ProgressIndicator.h"
 #import "ApplicationAssertion.h"
 
 #import <TwinmeCommon/Design.h>
 #import <TwinmeCommon/EditIdentityService.h>
 #import <TwinmeCommon/MainViewController.h>
+
 
 #if 0
 static const int ddLogLevel = DDLogLevelVerbose;
@@ -45,7 +46,7 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
 // Interface: EditProfileViewController ()
 //
 
-@interface EditProfileViewController () <EditIdentityServiceDelegate, UITextFieldDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate, UITextViewDelegate, UIAdaptivePresentationControllerDelegate, MenuSelectValueDelegate, MenuPhotoViewDelegate, AlertMessageViewDelegate, MenuPropagatingProfileDelegate>
+@interface EditProfileViewController () <EditIdentityServiceDelegate, UITextFieldDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate, UITextViewDelegate, UIAdaptivePresentationControllerDelegate, MenuSelectValueDelegate, MenuPhotoViewDelegate, AlertMessageViewDelegate>
 
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *avatarPlaceholderImageViewHeightConstraint;
 @property (weak, nonatomic) IBOutlet UIImageView *avatarPlaceholderImageView;
@@ -92,13 +93,14 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
 
 @property (nonatomic) BOOL keyboardHidden;
 @property (nonatomic) BOOL updated;
-@property (nonatomic) BOOL isActiveProfile;
+@property (nonatomic) BOOL showOnboarding;
 @property (nonatomic) UIImage *updatedIdentityAvatar;
 @property (nonatomic) UIImage *updatedIdentityLargeAvatar;
 
 @property (nonatomic) EditIdentityService *editIdentityService;
 @property (nonatomic) TLProfile *profile;
 @property (nonatomic) TLSpace *space;
+@property (nonatomic) UITemplateSpace *templateSpace;
 @property (nonatomic) NSString *name;
 @property (nonatomic) NSString *identityDescription;
 @property (nonatomic) UIImage *avatar;
@@ -131,6 +133,7 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     
     if (self) {
         _updated = NO;
+        _showOnboarding = NO;
         _keyboardHidden = YES;
         _updateProfileDone = NO;
         _editIdentityService = [[EditIdentityService alloc] initWithTwinmeContext:self.twinmeContext delegate:self];
@@ -177,26 +180,41 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     DDLogVerbose(@"%@ viewDidAppear: %@", LOG_TAG, animated ? @"YES" : @"NO");
     
     [super viewDidAppear:animated];
-}
-
-- (void)backTap {
-    DDLogVerbose(@"%@ backTap", LOG_TAG);
-
-    [super backTap];
-
-    if (self.navigationController.viewControllers.count == 1) {
-        [self.nameTextField resignFirstResponder];
-        [self.descriptionTextView resignFirstResponder];
+    
+    if (!self.profile && !self.showOnboarding && [self.twinmeApplication startOnboarding:OnboardingTypeProfile]) {
+        self.showOnboarding = YES;
+        OnboardingProfileViewController *onboardingProfileViewController = [[UIStoryboard storyboardWithName:@"iPhone" bundle:nil] instantiateViewControllerWithIdentifier:@"OnboardingProfileViewController"];
+        ApplicationDelegate *delegate = (ApplicationDelegate *)[[UIApplication sharedApplication] delegate];
+        MainViewController *mainViewController = delegate.mainViewController;
+        [onboardingProfileViewController showInView:mainViewController];
     }
 }
 
 #pragma mark - Public methods
 
-- (void)initWithProfile:(TLProfile *)profile isActive:(BOOL)isActive {
-    DDLogVerbose(@"%@ initWithProfile: %@ isActive: %d", LOG_TAG, profile, isActive);
+- (void)initWithProfile:(TLProfile *)profile {
+    DDLogVerbose(@"%@ initWithProfile: %@", LOG_TAG, profile);
     
     self.profile = profile;
-    self.isActiveProfile = isActive;
+    
+    [self updateProfile];
+}
+
+- (void)initWithSpace:(TLSpace *)space {
+    DDLogVerbose(@"%@ initWithSpace: %@", LOG_TAG, space);
+    
+    self.space = space;
+    self.profile = space.profile;
+    
+    [self updateProfile];
+}
+
+- (void)initWithSpace:(TLSpace *)space templateSpace:(UITemplateSpace *)templateSpace {
+    DDLogVerbose(@"%@ initWithSpace: %@ templateSpace: %@", LOG_TAG, space, templateSpace);
+    
+    self.space = space;
+    self.templateSpace = templateSpace;
+    
     [self updateProfile];
 }
 
@@ -325,9 +343,13 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     self.profile = profile;
     
     self.updated = NO;
-    
-    [self updateProfile];
-    [self.editIdentityService refreshWithProfile:self.profile];
+
+    if (self.space && [self.space.profileId isEqual:profile.uuid]) {
+        [self finish];
+    } else {
+        [self updateProfile];
+        [self.editIdentityService refreshWithProfile:self.profile];
+    }
 }
 
 - (void)onUpdateProfile:(TLProfile *)profile {
@@ -357,9 +379,6 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
 - (void)onDeleteProfile:(NSUUID *)profileId {
     DDLogVerbose(@"%@ onDeleteProfile: %@", LOG_TAG, profileId);
     
-    if ([self.profile.uuid isEqual:profileId]) {
-        [self finish];
-    }
 }
 
 - (void)onUpdateIdentityAvatar:(UIImage *)avatar {
@@ -372,7 +391,7 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
 
 - (void)presentationControllerWillDismiss:(UIPresentationController *)presentationController {
     DDLogVerbose(@"%@ presentationControllerWillDismiss: %@", LOG_TAG, presentationController);
-
+    
     self.navigationController.navigationBarHidden = YES;
 }
 
@@ -429,26 +448,6 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     DDLogVerbose(@"%@ menuPhotoDidSelectCamera", LOG_TAG);
  
     [menuPhotoView removeFromSuperview];
-}
-
-#pragma mark - MenuPropagatingProfileDelegate
-
-- (void)cancelMenuPropagatingProfileView:(MenuPropagatingProfileView *)menuPropagatingProfileView {
-    DDLogVerbose(@"%@ cancelMenuPropagatingProfileView: %@", LOG_TAG, menuPropagatingProfileView);
-    
-    [menuPropagatingProfileView removeFromSuperview];
-    
-    [self saveProfile];
-}
-
-- (void)saveProfileWithUpdateMode:(MenuPropagatingProfileView *)menuPropagatingProfileView profileUpdateMode:(TLProfileUpdateMode)profileUpdateMode {
-    DDLogVerbose(@"%@ saveProfileWithUpdateMode: %@ profileUpdateMode: %d", LOG_TAG, menuPropagatingProfileView, profileUpdateMode);
-    
-    [menuPropagatingProfileView removeFromSuperview];
-    
-    [self.twinmeApplication setProfileUpdateModeWithMode:profileUpdateMode];
-    
-    [self saveProfile];
 }
 
 #pragma mark - Private methods
@@ -552,15 +551,15 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     self.saveProfileLabel.textColor = [UIColor whiteColor];
     self.saveProfileLabel.text = TwinmeLocalizedString(@"application_save", nil);
     
+    UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTapGesture)];
+    [self.view addGestureRecognizer:tapGesture];
+    
     self.messageLabelTopConstraint.constant *= Design.HEIGHT_RATIO;
     self.messageLabelWidthConstraint.constant *= Design.WIDTH_RATIO;
     
     self.messageLabel.font = Design.FONT_REGULAR32;
     self.messageLabel.textColor = Design.FONT_COLOR_DEFAULT;
     self.messageLabel.text = TwinmeLocalizedString(@"create_profile_view_controller_message", nil);
-        
-    UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTapGesture)];
-    [self.view addGestureRecognizer:tapGesture];
 }
 
 - (void)finish {
@@ -691,20 +690,6 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
         return;
     }
     
-    if (self.profile) {
-        [self dismissKeyboard];
-        MenuPropagatingProfileView *menuPropagatingProfileView = [[MenuPropagatingProfileView alloc] init];
-        menuPropagatingProfileView.menuPropagatingProfileDelegate = self;
-        [self.tabBarController.view addSubview:menuPropagatingProfileView];
-        [menuPropagatingProfileView openMenu];
-    } else {
-        [self saveProfile];
-    }
-}
-
-- (void)saveProfile {
-    DDLogVerbose(@"%@ saveProfile", LOG_TAG);
-    
     NSString *updatedIdentityName =  [self.nameTextField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
     if (updatedIdentityName.length == 0) {
         updatedIdentityName = self.nameTextField.placeholder;
@@ -725,12 +710,11 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
         }
         if (self.profile) {
             [self.editIdentityService updateIdentityWithProfile:self.profile identityName:updatedIdentityName identityDescription:updatedIdentityDescription identityAvatar:avatar identityLargeAvatar:self.updatedIdentityLargeAvatar profileUpdateMode:self.twinmeApplication.profileUpdateMode];
-        } else {
-            [self.editIdentityService createProfile:updatedIdentityName identityDescription:updatedIdentityDescription identityAvatar:avatar identityLargeAvatar:self.updatedIdentityLargeAvatar space:self.currentSpace];
+        } else if (self.space) {
+            [self.editIdentityService createProfile:updatedIdentityName identityDescription:updatedIdentityDescription identityAvatar:avatar identityLargeAvatar:self.updatedIdentityLargeAvatar space:self.space];
         }
     }
 }
-
 
 - (void)takePhoto {
     DDLogVerbose(@"%@ takePhoto", LOG_TAG);
@@ -834,7 +818,8 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
             placeholder = self.profile.name;
         }
         self.saveProfileView.alpha = self.updated ? 1.0 : 0.5;
-                
+        self.avatarPlaceholderImageView.hidden = NO;
+        
         NSMutableAttributedString *valueAttributedString = [[NSMutableAttributedString alloc] initWithString:TwinmeLocalizedString(@"edit_profile_view_controller_propagating_profile", nil) attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_REGULAR32, NSFontAttributeName, Design.FONT_COLOR_DEFAULT, NSForegroundColorAttributeName, nil]];
         
         NSString *subTitle = @"";
@@ -856,11 +841,13 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
         self.nameTextField.text = self.name;
         placeholder =  self.name;
         self.saveProfileView.alpha = self.updated ? 1.0 : 0.5;
+        self.avatarPlaceholderImageView.hidden = NO;
         self.propagateView.hidden = YES;
         self.propagateViewHeightConstraint.constant = 0;
         self.propagateViewTopConstraint.constant = 0;
     } else {
         placeholder = TwinmeLocalizedString(@"application_name_hint", nil);
+        self.avatarPlaceholderImageView.hidden = NO;
         self.saveProfileView.alpha = 0.5;
         self.propagateView.hidden = YES;
         self.propagateViewHeightConstraint.constant = 0;
@@ -884,6 +871,10 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
         self.descriptionTextView.textColor = Design.PLACEHOLDER_COLOR;
         self.counterDescriptionLabel.text = [NSString stringWithFormat:@"0/%d", MAX_DESCRIPTION_LENGTH];
     }
+    
+    if (self.templateSpace) {
+        self.nameTextField.placeholder = [self.templateSpace getProfilePlaceholder];
+    }
 }
 
 - (void)updateFont {
@@ -894,6 +885,7 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     self.saveProfileLabel.font = Design.FONT_BOLD36;
     self.counterNameLabel.font = Design.FONT_REGULAR26;
     self.counterDescriptionLabel.font = Design.FONT_REGULAR26;
+    self.messageLabel.font = Design.FONT_REGULAR32;
     self.propagateLabel.font = Design.FONT_REGULAR32;
     self.messageLabel.font = Design.FONT_REGULAR32;
 }
@@ -904,12 +896,12 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     [super updateColor];
     
     self.nameView.backgroundColor = Design.TEXTFIELD_BACKGROUND_COLOR;
-    self.saveProfileView.backgroundColor = Design.MAIN_COLOR;
     self.descriptionView.backgroundColor = Design.TEXTFIELD_BACKGROUND_COLOR;
     self.nameTextField.textColor = Design.FONT_COLOR_DEFAULT;
     self.nameTextField.tintColor = Design.FONT_COLOR_DEFAULT;
     self.counterDescriptionLabel.textColor = Design.FONT_COLOR_DEFAULT;
     self.counterNameLabel.textColor = Design.FONT_COLOR_DEFAULT;
+    self.messageLabel.textColor = Design.FONT_COLOR_DEFAULT;
     self.propagateLabel.textColor = Design.FONT_COLOR_DEFAULT;
     self.messageLabel.textColor = Design.FONT_COLOR_DEFAULT;
     
@@ -918,6 +910,8 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     } else {
         self.descriptionTextView.textColor = Design.FONT_COLOR_DEFAULT;
     }
+    
+    self.saveProfileView.backgroundColor = Design.MAIN_COLOR;
 }
 
 @end

@@ -105,8 +105,8 @@ static const int ddLogLevel = DDLogLevelWarning;
     self.iconView.hidden = YES;
     self.avatarContainerView.hidden = YES;
     
-    self.messageLabel.text = TwinmeLocalizedString(@"migration_twinme_plus_view_controller_premium_feature", nil);
-    self.confirmLabel.text = TwinmeLocalizedString(@"migration_twinme_plus_view_controller_upgrade_title", nil);
+    self.messageLabel.text = TwinmeLocalizedString(@"application_premium_feature_message", nil);
+    self.confirmLabel.text = TwinmeLocalizedString(@"application_premium_feature_title", nil);
         
     self.confirmView.backgroundColor = Design.MAIN_COLOR;
     self.cancelLabel.textColor = Design.FONT_COLOR_DEFAULT;

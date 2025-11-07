@@ -14,6 +14,7 @@
 #import <Twinlife/TLConversationService.h>
 
 #import <Twinme/TLMessage.h>
+#import <Twinme/TLTwinmeAttributes.h>
 
 #import <Utils/NSString+Utils.h>
 
@@ -23,17 +24,21 @@
 #import "AnnotationCountCell.h"
 #import "PeerAudioItem.h"
 #import "ConversationViewController.h"
+#import "Cache.h"
+#import "CustomAppearance.h"
+#import "DecoratedLabel.h"
+#import "EphemeralView.h"
+#import "AudioTrackView.h"
+#import "UIColor+Hex.h"
 
 #import <TwinmeCommon/AudioPlayerManager.h>
 #import <TwinmeCommon/AsyncAudioTrackLoader.h>
 #import <TwinmeCommon/AsyncImageLoader.h>
 #import <TwinmeCommon/AsyncVideoLoader.h>
-#import <TwinmeCommon/Utils.h>
+#import <TwinmeCommon/AudioPlayerManager.h>
 #import <TwinmeCommon/Design.h>
+#import <TwinmeCommon/Utils.h>
 
-#import "DecoratedLabel.h"
-#import "EphemeralView.h"
-#import "AudioTrackView.h"
 
 #if 0
 static const int ddLogLevel = DDLogLevelVerbose;
@@ -119,14 +124,15 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
 @property (nonatomic) NSURL *url;
 @property (nonatomic) int64_t duration;
 
+@property float currentTime;
 @property NSTimer *timer;
 @property BOOL isPaused;
 @property BOOL sliding;
-@property float currentTime;
 @property (nonatomic) AsyncAudioTrackLoader *audioTrackLoader;
 
-@property (nonatomic) NSTimer *updateEphemeralTimer;
+@property (nonatomic) CustomAppearance *customAppearance;
 
+@property (nonatomic) NSTimer *updateEphemeralTimer;
 @property (nonatomic) PeerAudioItem *peerAudioItem;
 
 @end
@@ -145,6 +151,7 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
     
     [super awakeFromNib];
     
+    self.currentTime = 0;
     self.selectionStyle = UITableViewCellSelectionStyleNone;
     
     UITapGestureRecognizer *tapContentGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onTouchUpInsideContentView:)];
@@ -172,7 +179,7 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
     self.playerButtonViewLeadingConstraint.constant *= Design.WIDTH_RATIO;
     
     self.playerButtonView.clipsToBounds = YES;
-    self.playerButtonView.backgroundColor = [UIColor whiteColor];
+    self.playerButtonView.backgroundColor =  Design.LIGHT_GREY_BACKGROUND_COLOR;
     self.playerButtonView.layer.cornerRadius = self.playerButtonViewHeightConstraint.constant * 0.5;
     
     UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleplayerButtonViewTapGestureRecognizer:)];
@@ -341,6 +348,12 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
     
     [super bindWithItem:item conversationViewController:conversationViewController];
     
+    self.customAppearance = [conversationViewController getCustomAppearance];
+    
+    [self.contentAudioView setBackgroundColor:[self.customAppearance getPeerMessageBackgroundColor]];
+    
+    self.durationLabel.textColor = [self.customAppearance getPeerMessageTextColor];
+    
     PeerAudioItem *peerAudioItem = (PeerAudioItem *)item;
     self.peerAudioItem = peerAudioItem;
     
@@ -505,6 +518,14 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
     if (peerAudioItem.visibleAvatar) {
         self.avatarView.hidden = NO;
         self.avatarView.image = [conversationViewController getContactAvatarWithUUID:item.peerTwincodeOutboundId];
+        
+        if ([self.avatarView.image isEqual:[TLTwinmeAttributes DEFAULT_GROUP_AVATAR]]) {
+            self.avatarView.backgroundColor = [UIColor colorWithHexString:Design.DEFAULT_COLOR alpha:1.0];
+            self.avatarView.tintColor = [UIColor whiteColor];
+        } else {
+            self.avatarView.backgroundColor = [UIColor clearColor];
+            self.avatarView.tintColor = [UIColor clearColor];
+        }
     } else {
         self.avatarView.hidden = YES;
         self.avatarView.image = nil;
@@ -534,25 +555,6 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
     [self updateFont];
     [self updateColor];
     [self setNeedsDisplay];
-}
-
-- (void)updateEphemeralView {
-    
-    if (self.item.state == ItemStateRead) {
-        CGFloat timeSinceRead = ([[NSDate date] timeIntervalSince1970] * 1000) - self.item.readTimestamp;
-        CGFloat percent = 1.0 - [Utils progressWithTime:timeSinceRead duration:self.item.expireTimeout];
-        [self.ephemeralView updateWithPercent:percent color:Design.BLACK_COLOR size:self.ephemeralViewHeightConstraint.constant];
-    } else {
-        [self.ephemeralView updateWithPercent:1.0 color:Design.BLACK_COLOR size:self.ephemeralViewHeightConstraint.constant];
-    }
-}
-
-- (void)deleteEphemeralItem {
-    DDLogVerbose(@"%@ deleteEphemeralItem", LOG_TAG);
-    
-    if ([self.deleteActionDelegate respondsToSelector:@selector(deleteItem:)]) {
-        [self.deleteActionDelegate deleteItem:self.item];
-    }
 }
 
 #pragma mark - UICollectionViewDataSource
@@ -675,6 +677,25 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
 }
 
 
+- (void)updateEphemeralView {
+    
+    if (self.item.state == ItemStateRead) {
+        CGFloat timeSinceRead = ([[NSDate date] timeIntervalSince1970] * 1000) - self.item.readTimestamp;
+        CGFloat percent = 1.0 - [Utils progressWithTime:timeSinceRead duration:self.item.expireTimeout];
+        [self.ephemeralView updateWithPercent:percent color:[self.customAppearance getPeerMessageTextColor] size:self.ephemeralViewHeightConstraint.constant];
+    } else {
+        [self.ephemeralView updateWithPercent:1.0 color:[self.customAppearance getPeerMessageTextColor] size:self.ephemeralViewHeightConstraint.constant];
+    }
+}
+
+- (void)deleteEphemeralItem {
+    DDLogVerbose(@"%@ deleteEphemeralItem", LOG_TAG);
+    
+    if ([self.deleteActionDelegate respondsToSelector:@selector(deleteItem:)]) {
+        [self.deleteActionDelegate deleteItem:self.item];
+    }
+}
+
 #pragma mark - IBActions
 
 - (void)onLongPressInsideContent:(UILongPressGestureRecognizer *)longPressGesture {
@@ -704,6 +725,14 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
     
     if ([self.replyItemDelegate respondsToSelector:@selector(didSelectReplyTo:)]) {
         [self.replyItemDelegate didSelectReplyTo:self.item.replyTo];
+    }
+}
+
+- (void)onSwipeInsideContentView:(UIPanGestureRecognizer *)panGesture {
+    DDLogVerbose(@"%@ onSwipeInsideContentView: %@", LOG_TAG, panGesture);
+    
+    if (!self.audioTrackView.isTouch) {
+        [super onSwipeInsideContentView:panGesture];
     }
 }
 
@@ -743,7 +772,7 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
     self.borderLayer = [CAShapeLayer layer];
     self.borderLayer.path = mask.path;
     self.borderLayer.fillColor = [UIColor clearColor].CGColor;
-    self.borderLayer.strokeColor =  [UIColor clearColor].CGColor;
+    self.borderLayer.strokeColor = [self.customAppearance getPeerMessageBorderColor].CGColor;
     self.borderLayer.lineWidth = Design.ITEM_BORDER_WIDTH;
     self.borderLayer.frame = self.contentAudioView.bounds;
     [self.contentAudioView.layer addSublayer:self.borderLayer];
@@ -891,7 +920,6 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
     
     self.playerImageView.tintColor = Design.MAIN_COLOR;
     self.pauseImageView.tintColor = Design.MAIN_COLOR;
-    self.durationLabel.textColor = Design.FONT_COLOR_DEFAULT;
     self.overlayView.backgroundColor = Design.BACKGROUND_COLOR_WHITE_OPACITY85;
 }
 

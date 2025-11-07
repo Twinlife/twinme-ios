@@ -6,12 +6,17 @@
  *   Fabrice Trescartes (Fabrice.Trescartes@twin.life)
  */
 
-#import <TwinmeCommon/TwinmeNavigationController.h>
+
+#import <Twinme/TLSpace.h>
+#import <Twinme/TLTwinmeContext.h>
+
+#import "SpaceSetting.h"
 
 #import <TwinmeCommon/Design.h>
-
 #import <TwinmeCommon/ApplicationDelegate.h>
+#import <TwinmeCommon/MainViewController.h>
 #import <TwinmeCommon/TwinmeApplication.h>
+#import <TwinmeCommon/TwinmeNavigationController.h>
 
 //
 // Interface: TwinmeNavigationController ()
@@ -60,10 +65,19 @@
 - (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection {
     
     ApplicationDelegate *delegate = (ApplicationDelegate *)[[UIApplication sharedApplication] delegate];
-    TwinmeApplication *twinmeApplication = [delegate twinmeApplication];
-    if (twinmeApplication.displayMode == DisplayModeSystem) {
-        [Design setupColors];
+    MainViewController *mainViewController = delegate.mainViewController;
+    
+    if (mainViewController.space) {
+        TLSpaceSettings *spaceSettings = mainViewController.space.settings;
+        if ([mainViewController.space.settings getBooleanWithName:PROPERTY_DEFAULT_APPEARANCE_SETTINGS defaultValue:YES]) {
+            spaceSettings = delegate.twinmeContext.defaultSpaceSettings;
+        }
+        
+        if ([[spaceSettings getStringWithName:PROPERTY_DISPLAY_MODE defaultValue:[NSString stringWithFormat:@"%d",DisplayModeSystem]]intValue] == DisplayModeSystem) {
+            [Design setupColors:DisplayModeSystem];
+        }
     }
+    
     [self setNavigationBarStyle];
 }
 

@@ -22,6 +22,7 @@
 #import <TwinmeCommon/ShowRoomService.h>
 
 #import "ShowRoomViewController.h"
+#import "AdminRoomViewController.h"
 #import "EditContactViewController.h"
 #import "RoomMembersViewController.h"
 #import "EditIdentityViewController.h"
@@ -29,6 +30,8 @@
 #import "ConversationFilesViewController.h"
 #import <TwinmeCommon/CallViewController.h>
 #import "LastCallsViewController.h"
+#import "SpacesViewController.h"
+#import <TwinmeCommon/TwinmeNavigationController.h>
 #import "AdminRoomViewController.h"
 #import "TypeCleanupViewController.h"
 #import "ExportViewController.h"
@@ -39,6 +42,8 @@
 #import "InsideBorderView.h"
 #import <TwinmeCommon/Design.h>
 #import "DeviceAuthorization.h"
+#import "AlertMessageView.h"
+#import "UIColor+Hex.h"
 #import "UIView+Toast.h"
 
 #if 0
@@ -55,7 +60,7 @@ static int MAX_ROOM_MEMBER = 5;
 // Interface: ShowRoomViewController ()
 //
 
-@interface ShowRoomViewController ()<ShowRoomServiceDelegate, UICollectionViewDataSource>
+@interface ShowRoomViewController ()<ShowRoomServiceDelegate, UICollectionViewDataSource, AlertMessageViewDelegate>
 
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *chatViewWidthConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *chatViewHeightConstraint;
@@ -114,6 +119,18 @@ static int MAX_ROOM_MEMBER = 5;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *lastCallAccessoryViewTrailingConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *lastCallAccessoryViewHeightConstraint;
 @property (weak, nonatomic) IBOutlet UIImageView *lastCallAccessoryView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *spaceViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet InsideBorderView *spaceView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *spaceImageViewLeadingConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *spaceImageViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet UIImageView *spaceImageView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *spaceAvatarViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *spaceAvatarViewTrailingConstraint;
+@property (weak, nonatomic) IBOutlet UIImageView *spaceAvatarView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *spaceLabelLeadingConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *spaceLabelTrailingConstraint;
+@property (weak, nonatomic) IBOutlet UILabel *spaceLabel;
+@property (weak, nonatomic) IBOutlet UILabel *spaceAvatarLabel;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *conversationsTitleLabelLeadingConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *conversationsTitleLabelTrailingConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *conversationsTitleLabelTopConstraint;
@@ -222,6 +239,8 @@ static int MAX_ROOM_MEMBER = 5;
     } else {
         self.roomAvatar = [TLContact ANONYMOUS_AVATAR];
     }
+    
+    [self checkSpacePermission];
 }
 
 - (void)editTap {
@@ -295,6 +314,7 @@ static int MAX_ROOM_MEMBER = 5;
     }
     
     [self updateRoom];
+    [self checkSpacePermission];
 }
 
 - (void)onDeleteRoom:(NSUUID *)roomId {
@@ -385,6 +405,20 @@ static int MAX_ROOM_MEMBER = 5;
     }
     
     return showRoomMemberCell;
+}
+
+#pragma mark - AlertMessageViewDelegate
+
+- (void)didCloseAlertMessage:(nonnull AlertMessageView *)alertMessageView {
+    DDLogVerbose(@"%@ didCloseAlertMessage: %@", LOG_TAG, alertMessageView);
+    
+    [alertMessageView closeAlertView];
+}
+
+- (void)didFinishCloseAlertMessageAnimation:(nonnull AlertMessageView *)alertMessageView {
+    DDLogVerbose(@"%@ didFinishCloseAlertMessageAnimation: %@", LOG_TAG, alertMessageView);
+    
+    [alertMessageView removeFromSuperview];
 }
 
 #pragma mark - Private methods
@@ -537,6 +571,49 @@ static int MAX_ROOM_MEMBER = 5;
     self.lastCallLabel.font = Design.FONT_REGULAR34;
     self.lastCallLabel.textColor = Design.FONT_COLOR_DEFAULT;
     
+    self.spaceViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    UITapGestureRecognizer *spaceViewGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSpaceTapGesture:)];
+    [self.spaceView addGestureRecognizer:spaceViewGestureRecognizer];
+    
+    [self.spaceView setBorder:Design.SEPARATOR_COLOR_GREY borderWidth:Design.SEPARATOR_HEIGHT width:Design.DISPLAY_WIDTH height:self.spaceViewHeightConstraint.constant left:false right:false top:true bottom:true];
+    
+    self.spaceImageViewLeadingConstraint.constant *= Design.WIDTH_RATIO;
+    self.spaceImageViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    
+    self.spaceImageView.tintColor = Design.UNSELECTED_TAB_COLOR;
+    
+    NSString *nameSpace = @"";
+    NSString *nameProfile = @"";
+    if (self.room.space.settings.name) {
+        nameSpace = self.room.space.settings.name;
+    }
+    if (self.room.space.profile.name) {
+        nameProfile = self.room.space.profile.name;
+    }
+    
+    self.spaceLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
+    self.spaceLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
+    
+    NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:@""];
+    [attributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:nameSpace attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_REGULAR34, NSFontAttributeName, Design.FONT_COLOR_DEFAULT, NSForegroundColorAttributeName, nil]]];
+    [attributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:@"\n"]];
+    [attributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:nameProfile attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_REGULAR32, NSFontAttributeName, Design.FONT_COLOR_PROFILE_GREY, NSForegroundColorAttributeName, nil]]];
+    self.spaceLabel.attributedText = attributedString;
+    
+    self.spaceAvatarLabel.font = Design.FONT_BOLD44;
+    self.spaceAvatarLabel.textColor = [UIColor whiteColor];
+    self.spaceAvatarLabel.hidden = YES;
+    
+    self.spaceAvatarViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    self.spaceAvatarViewTrailingConstraint.constant *= Design.WIDTH_RATIO;
+    
+    self.spaceAvatarView.clipsToBounds = YES;
+    self.spaceAvatarView.layer.cornerRadius = Design.SPACE_RADIUS_RATIO * self.spaceAvatarViewHeightConstraint.constant;
+    
+    [self getImageWithService:self.showRoomService space:self.room.space withBlock:^(UIImage *image) {
+        self.spaceAvatarView.image = image;
+    }];
+
     self.conversationsTitleLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
     self.conversationsTitleLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
     self.conversationsTitleLabelTopConstraint.constant *= Design.HEIGHT_RATIO;
@@ -825,6 +902,27 @@ static int MAX_ROOM_MEMBER = 5;
     }
 }
 
+- (void)handleSpaceTapGesture:(UITapGestureRecognizer *)sender {
+    DDLogVerbose(@"%@ handleSpaceTapGesture: %@", LOG_TAG, sender);
+    
+    if (sender.state == UIGestureRecognizerStateEnded) {
+        if (![self.room.space hasPermission:TLSpacePermissionTypeMoveContact]) {
+            AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
+            alertMessageView.alertMessageViewDelegate = self;
+            [alertMessageView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:TwinmeLocalizedString(@"spaces_view_controller_permission_not_allowed", nil)];
+            [self.tabBarController.view addSubview:alertMessageView];
+            [alertMessageView showAlertView];
+        } else {
+            SpacesViewController *spacesViewController = [[UIStoryboard storyboardWithName:@"Space" bundle:nil] instantiateViewControllerWithIdentifier:@"SpacesViewController"];
+            [spacesViewController initWithContact:self.room];
+            spacesViewController.pickerMode = YES;
+            TwinmeNavigationController *navigationController = [[TwinmeNavigationController alloc] initWithRootViewController:spacesViewController];
+            [self.navigationController presentViewController:navigationController animated:YES completion:nil];
+            self.startModal = YES;
+        }
+    }
+}
+    
 - (void)handleFilesTapGesture:(UITapGestureRecognizer *)sender {
     DDLogVerbose(@"%@ handleFilesTapGesture: %@", LOG_TAG, sender);
     
@@ -868,6 +966,37 @@ static int MAX_ROOM_MEMBER = 5;
         self.identityAvatarView.image = image;
     }];
     
+    if (self.room.space.avatarId) {
+        [self.showRoomService getImageWithSpace:self.room.space withBlock:^(UIImage *image) {
+            self.spaceAvatarView.image = image;
+            self.spaceAvatarLabel.hidden = YES;
+        }];
+    } else {
+        self.spaceAvatarView.image = nil;
+        self.spaceAvatarLabel.hidden = NO;
+        if (self.room.space.settings.style) {
+            self.spaceAvatarView.backgroundColor = [UIColor colorWithHexString:self.room.space.settings.style alpha:1.0];
+        } else {
+            self.spaceAvatarView.backgroundColor = Design.MAIN_COLOR;
+        }
+        self.spaceAvatarLabel.text = [NSString firstCharacter:self.room.space.settings.name];
+    }
+    
+    NSString *nameSpace = @"";
+    NSString *nameProfile = @"";
+    if (self.room.space.settings.name) {
+        nameSpace = self.room.space.settings.name;
+    }
+    if (self.room.space.profile.name) {
+        nameProfile = self.room.space.profile.name;
+    }
+    
+    NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:@""];
+    [attributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:nameSpace attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_MEDIUM34, NSFontAttributeName, Design.FONT_COLOR_DEFAULT, NSForegroundColorAttributeName, nil]]];
+    [attributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:@"\n"]];
+    [attributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:nameProfile attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_MEDIUM32, NSFontAttributeName, Design.FONT_COLOR_PROFILE_GREY, NSForegroundColorAttributeName, nil]]];
+    self.spaceLabel.attributedText = attributedString;
+    
     if ([self.room.capabilities hasAdmin]) {
         self.adminView.hidden = NO;
         self.adminViewHeightConstraint.constant = DESIGN_COLLECTION_CELL_HEIGHT * Design.HEIGHT_RATIO;
@@ -906,6 +1035,38 @@ static int MAX_ROOM_MEMBER = 5;
     self.filesLabel.font = Design.FONT_REGULAR34;
     self.exportLabel.font = Design.FONT_REGULAR34;
     self.cleanLabel.font = Design.FONT_REGULAR34;
+    self.spaceAvatarLabel.font = Design.FONT_BOLD44;
+    
+    NSString *nameSpace = @"";
+    NSString *nameProfile = @"";
+    if (self.room.space.settings.name) {
+        nameSpace = self.room.space.settings.name;
+    }
+    if (self.room.space.profile.name) {
+        nameProfile = self.room.space.profile.name;
+    }
+    
+    NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:@""];
+    [attributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:nameSpace attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_MEDIUM34, NSFontAttributeName, Design.FONT_COLOR_DEFAULT, NSForegroundColorAttributeName, nil]]];
+    [attributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:@"\n"]];
+    [attributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:nameProfile attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_MEDIUM32, NSFontAttributeName, Design.FONT_COLOR_PROFILE_GREY, NSForegroundColorAttributeName, nil]]];
+    self.spaceLabel.attributedText = attributedString;
+}
+
+- (void)checkSpacePermission {
+    DDLogVerbose(@"%@ checkSpacePermission", LOG_TAG);
+    
+    if (![self.room.space hasPermission:TLSpacePermissionTypeMoveContact]) {
+        self.spaceLabel.alpha = .5f;
+    } else {
+        self.spaceLabel.alpha = 1.f;
+    }
+    
+    if (![self.room.space hasPermission:TLSpacePermissionTypeUpdateIdentity]) {
+        self.identityView.alpha = .5f;
+    } else {
+        self.identityView.alpha = 1.f;
+    }
 }
 
 - (void)updateInCall {

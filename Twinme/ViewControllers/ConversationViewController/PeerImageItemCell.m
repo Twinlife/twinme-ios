@@ -15,6 +15,7 @@
 #import <Twinlife/TLConversationService.h>
 
 #import <Twinme/TLMessage.h>
+#import <Twinme/TLTwinmeAttributes.h>
 
 #import "PeerImageItemCell.h"
 
@@ -29,11 +30,13 @@
 #import <TwinmeCommon/AsyncVideoLoader.h>
 #import <TwinmeCommon/Design.h>
 #import <TwinmeCommon/Utils.h>
+
+#import "CustomAppearance.h"
 #import "DecoratedLabel.h"
 #import "EphemeralView.h"
 #import "PeerImageItem.h"
-
 #import "UIView+Toast.h"
+#import "UIColor+Hex.h"
 #import "UIImage+Animated.h"
 #import "UIView+GradientBackgroundColor.h"
 
@@ -529,8 +532,8 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
         self.replyToImageContentViewTopConstraint.constant = 0;
     }
     
-    self.contentImageView.backgroundColor = self.replyView.hidden ? [UIColor clearColor] : Design.GREY_ITEM;
-
+    self.contentImageView.backgroundColor = self.replyView.hidden ? [UIColor clearColor] : [[conversationViewController getCustomAppearance] getPeerMessageBackgroundColor];
+    
     if (self.item.isEphemeralItem && self.item.isAvailableItem) {
         self.gradientBottomView.hidden = NO;
         self.ephemeralView.hidden = NO;
@@ -562,6 +565,15 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
     if (peerImageItem.visibleAvatar) {
         self.avatarView.hidden = NO;
         self.avatarView.image = [conversationViewController getContactAvatarWithUUID:item.peerTwincodeOutboundId];
+        
+        if ([self.avatarView.image isEqual:[TLTwinmeAttributes DEFAULT_GROUP_AVATAR]]) {
+            self.avatarView.backgroundColor = [UIColor colorWithHexString:Design.DEFAULT_COLOR alpha:1.0];
+            self.avatarView.tintColor = [UIColor whiteColor];
+        } else {
+            self.avatarView.backgroundColor = [UIColor clearColor];
+            self.avatarView.tintColor = [UIColor clearColor];
+        }
+        
     } else {
         self.avatarView.hidden = YES;
         self.avatarView.image = nil;

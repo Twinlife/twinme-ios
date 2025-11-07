@@ -8,20 +8,24 @@
 
 #import <CocoaLumberjack.h>
 
+#import <Twinme/TLSpace.h>
+
 #import <Utils/NSString+Utils.h>
 
 #import "OnboardingSpaceViewController.h"
+#import "TemplateSpaceViewController.h"
 
 #import "OnboardingSpaceFirstPartCell.h"
 #import "OnboardingSpaceSecondPartCell.h"
 #import "OnboardingSpaceThirdPartCell.h"
 
-#import <TwinmeCommon/ApplicationDelegate.h>
 #import "WelcomeFlowLayout.h"
+#import "UIPremiumFeature.h"
+
+#import <TwinmeCommon/ApplicationDelegate.h>
 #import <TwinmeCommon/MainViewController.h>
 #import <TwinmeCommon/TwinmeNavigationController.h>
 #import <TwinmeCommon/Design.h>
-#import "UIPremiumFeature.h"
 
 #if 0
 static const int ddLogLevel = DDLogLevelVerbose;
@@ -206,29 +210,23 @@ static CGFloat DESIGN_TEXT_MARGIN = 30;
 
 #pragma mark - OnboardingSpaceDelegate
 
-- (void)didShowMoreText:(int)page {
-    DDLogVerbose(@"%@ didShowMoreText: %d", LOG_TAG, page);
+- (void)didTouchDoNotDisplayAgain {
+    DDLogVerbose(@"%@ didTouchDoNotDisplayAgain", LOG_TAG);
     
     [self hapticFeedBack:UIImpactFeedbackStyleMedium];
-    [self.onboardingCollectionView reloadData];
+    [self.twinmeApplication setShowOnboardingType:OnboardingTypeSpace state:NO];
+    [self startSpaceTemplate];
 }
 
 - (void)didTouchCreateSpace {
     DDLogVerbose(@"%@ didTouchCreateSpace", LOG_TAG);
     
     [self hapticFeedBack:UIImpactFeedbackStyleMedium];
-    
     if (self.startFromSupportSection) {
         [self closeActionView];
     } else {
-        [self finish];
+        [self startSpaceTemplate];
     }
-}
-
-- (void)didTouchDoNotDisplayAgain {
-    DDLogVerbose(@"%@ didTouchDoNotDisplayAgain", LOG_TAG);
-    
-    [self hapticFeedBack:UIImpactFeedbackStyleMedium];
 }
 
 #pragma mark - Private methods
@@ -428,6 +426,26 @@ static CGFloat DESIGN_TEXT_MARGIN = 30;
         
     [self removeFromParentViewController];
     [self.view removeFromSuperview];
+}
+
+- (void)startSpaceTemplate {
+    DDLogVerbose(@"%@ startSpaceTemplate", LOG_TAG);
+    
+    [CATransaction begin];
+    [CATransaction setCompletionBlock:^{
+        ApplicationDelegate *delegate = (ApplicationDelegate *)[[UIApplication sharedApplication] delegate];
+        MainViewController *mainViewController = delegate.mainViewController;
+        TwinmeNavigationController *selectedNavigationController = mainViewController.selectedViewController;
+        
+        TemplateSpaceViewController *templateSpaceViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"TemplateSpaceViewController"];
+        [selectedNavigationController pushViewController:templateSpaceViewController animated:YES];
+        
+        [self finish];
+    }];
+    
+    [self finish];
+
+    [CATransaction commit];
 }
 
 - (void)updateFont {

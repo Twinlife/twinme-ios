@@ -1,5 +1,9 @@
 NSAppleMusicUsageDescription = "для підключення вашої Apple Music";
 NSCameraUsageDescription = "фотографувати та здійснювати відеодзвінки";
+NSContactsUsageDescription = "Нам потрібен доступ до вашого списку контактів, щоб мати можливість запросити людей приєднатися до вас.";
+NSFaceIDUsageDescription = "для автентифікації та розблокування доступу до програми";
+NSLocationAlwaysAndWhenInUseUsage = "щоб поділитися своїм місцезнаходженням у режимі реального часу під час виклику";
+NSLocationWhenInUseUsageDescription = "щоб поділитися своїм місцезнаходженням у розмові";
 NSMicrophoneUsageDescription = "для здійснення аудіо та відеодзвінків";
 NSPhotoLibraryUsageDescription = "для зображень профілю та надсилання в повідомленнях чату";
 NSPhotoLibraryAddUsageDescription = "Для збереження фотографій і відео, якими обмінювалися в розмовах, а також QR-кодів запрошень у фотоальбом пристрою.";

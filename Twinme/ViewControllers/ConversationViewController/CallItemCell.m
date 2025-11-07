@@ -9,6 +9,7 @@
 #import <CocoaLumberjack.h>
 
 #import <Twinlife/TLConversationService.h>
+#import <Twinme/TLTwinmeAttributes.h>
 
 #import <Utils/NSString+Utils.h>
 
@@ -16,9 +17,11 @@
 
 #import "CallItem.h"
 #import "ConversationViewController.h"
+#import "CustomAppearance.h"
+#import "UIView+Toast.h"
+#import "UIColor+Hex.h"
 
 #import <TwinmeCommon/Design.h>
-#import "UIView+Toast.h"
 
 #if 0
 static const int ddLogLevel = DDLogLevelVerbose;
@@ -71,6 +74,9 @@ static const int ddLogLevel = DDLogLevelWarning;
 @property (nonatomic) CGFloat bottomRightRadius;
 @property (nonatomic) CGFloat bottomLeftRadius;
 @property (nonatomic) BOOL isDeleteAnimationStarted;
+
+@property (nonatomic) CAShapeLayer *borderLayer;
+@property (nonatomic) CustomAppearance *customAppearance;
 
 @end
 
@@ -204,6 +210,14 @@ static const int ddLogLevel = DDLogLevelWarning;
     
     [super bindWithItem:item conversationViewController:conversationViewController];
     
+    self.customAppearance = [conversationViewController getCustomAppearance];
+    
+    [self.contentCallView setBackgroundColor:[self.customAppearance getMessageBackgroundColor]];
+    self.callTypeLabel.textColor = [self.customAppearance getMessageTextColor];
+    self.callInfoLabel.textColor = [self.customAppearance getMessageTextColor];
+    self.callAgainLabel.textColor = [self.customAppearance getMessageTextColor];
+    self.callAgainImageView.tintColor = [self.customAppearance getMessageTextColor];
+    
     CallItem *callItem = (CallItem *)item;
     self.callDescriptor = callItem.callDescriptor;
     self.contentCallViewTopConstraint.constant = [conversationViewController getTopMarginWithMask:callItem.corners & ITEM_TOP_RIGHT item:item];
@@ -216,6 +230,14 @@ static const int ddLogLevel = DDLogLevelWarning;
     }
     
     self.callAvatarImageView.image = [conversationViewController getContactAvatarWithUUID:item.peerTwincodeOutboundId];
+    
+    if ([self.callAvatarImageView.image isEqual:[TLTwinmeAttributes DEFAULT_GROUP_AVATAR]]) {
+        self.callAvatarImageView.backgroundColor = [UIColor colorWithHexString:Design.DEFAULT_COLOR alpha:1.0];
+        self.callAvatarImageView.tintColor = [UIColor whiteColor];
+    } else {
+        self.callAvatarImageView.backgroundColor = [UIColor clearColor];
+        self.callAvatarImageView.tintColor = [UIColor clearColor];
+    }
     
     if (self.callDescriptor.isTerminated) {
         NSDateComponentsFormatter *dateComponentsFormatter = [[NSDateComponentsFormatter alloc] init];
@@ -414,6 +436,18 @@ static const int ddLogLevel = DDLogLevelWarning;
     self.contentCallView.layer.masksToBounds = YES;
     self.contentCallView.layer.mask = mask;
     
+    if (self.borderLayer) {
+        [self.borderLayer removeFromSuperlayer];
+    }
+    
+    self.borderLayer = [CAShapeLayer layer];
+    self.borderLayer.path = mask.path;
+    self.borderLayer.fillColor = [UIColor clearColor].CGColor;
+    self.borderLayer.strokeColor = [self.customAppearance getMessageBorderColor].CGColor;
+    self.borderLayer.lineWidth = Design.ITEM_BORDER_WIDTH;
+    self.borderLayer.frame = self.contentCallView.bounds;
+    [self.contentCallView.layer addSublayer:self.borderLayer];
+    
     CAShapeLayer *maskDelete = [CAShapeLayer layer];
     maskDelete.path = path.CGPath;
     self.contentDeleteView.layer.masksToBounds = YES;
@@ -431,7 +465,6 @@ static const int ddLogLevel = DDLogLevelWarning;
 - (void)updateColor {
     DDLogVerbose(@"%@ updateColor", LOG_TAG);
     
-    [self.contentCallView setBackgroundColor:Design.MAIN_COLOR];
     self.overlayView.backgroundColor = Design.BACKGROUND_COLOR_WHITE_OPACITY85;
 }
 

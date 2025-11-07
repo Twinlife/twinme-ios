@@ -201,11 +201,11 @@ typedef enum {
             break;
             
         case SECTION_AUDIO_CALL:
-            numberOfRowsInSection = 3;
+            numberOfRowsInSection = 2;
             break;
             
         case SECTION_VIDEO_CALL:
-            numberOfRowsInSection = 3;
+            numberOfRowsInSection = 2;
             break;
             
         default:

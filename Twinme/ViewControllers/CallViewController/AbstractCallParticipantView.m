@@ -85,6 +85,12 @@ static CGFloat THUMBNAIL_PARTICIPANT_HEIGHT;
     return NO;
 }
 
+- (BOOL)isLocationSupported {
+    DDLogVerbose(@"%@ isLocationSupported", LOG_TAG);
+    
+    return NO;
+}
+
 - (BOOL)isStreamingSupported {
     DDLogVerbose(@"%@ isStreamingSupported", LOG_TAG);
     
@@ -622,6 +628,24 @@ static CGFloat THUMBNAIL_PARTICIPANT_HEIGHT;
     self.infoView.userInteractionEnabled = YES;
     self.infoView.tintColor = Design.DELETE_COLOR_RED;
     
+    self.locationViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    self.locationViewTopConstraint.constant *= Design.HEIGHT_RATIO;
+    self.locationViewLeadingConstraint.constant *= Design.WIDTH_RATIO;
+    
+    self.locationView.hidden = YES;
+    self.locationView.clipsToBounds = YES;
+    self.locationView.userInteractionEnabled = YES;
+    
+    UITapGestureRecognizer *locationTapGestureRecognizer = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(handleLocationTapGesture:)];
+    [self.locationView addGestureRecognizer:locationTapGestureRecognizer];
+    
+    self.locationView.layer.backgroundColor = Design.BLUE_NORMAL.CGColor;
+    self.locationView.layer.cornerRadius = self.locationViewHeightConstraint.constant * 0.5;
+    
+    self.locationImageViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    self.locationImageView.image = [self.locationImageView.image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    self.locationImageView.tintColor = [UIColor whiteColor];
+
     self.switchCameraHeightConstraint.constant *= Design.HEIGHT_RATIO;
     self.switchCameraBottomConstraint.constant *= Design.HEIGHT_RATIO;
     self.switchCameraLeadingConstraint.constant *= Design.WIDTH_RATIO;
@@ -756,5 +780,14 @@ static CGFloat THUMBNAIL_PARTICIPANT_HEIGHT;
     super.autoresizingMask = ((unit.x ? UIViewAutoresizingFlexibleLeftMargin : UIViewAutoresizingFlexibleRightMargin) | (unit.y ? UIViewAutoresizingFlexibleTopMargin : UIViewAutoresizingFlexibleBottomMargin));
 }
 
+- (void)handleLocationTapGesture:(UITapGestureRecognizer *)sender {
+    DDLogVerbose(@"%@ handleLocationTapGesture: %@", LOG_TAG, sender);
+    
+    if (sender.state == UIGestureRecognizerStateEnded) {
+        if (self.delegate && [self.delegate respondsToSelector:@selector(didTapLocationCallParticipantView:)]) {
+            [self.delegate didTapLocationCallParticipantView:self];
+        }
+    }
+}
 
 @end

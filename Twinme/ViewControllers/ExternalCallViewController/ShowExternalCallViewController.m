@@ -192,8 +192,7 @@ static const int ddLogLevel = DDLogLevelWarning;
     } else {
         self.callReceiverDescription = self.callReceiver.peerDescription;
     }
-    
-    // SCz [self.callReceiverService getLargeAvatar:self.callReceiver.avatarId];
+    [self.callReceiverService initWithCallReceiver:callReceiver];
 }
 
 - (void)backTap {
@@ -262,9 +261,7 @@ static const int ddLogLevel = DDLogLevelWarning;
         } else {
             self.callReceiverDescription = self.callReceiver.peerDescription;
         }
-        
-        // SCz [self.callReceiverService getLargeAvatar:self.callReceiver.avatarId];
-        
+
         [self updateCallReceiver];
     }
 }
@@ -607,43 +604,10 @@ static const int ddLogLevel = DDLogLevelWarning;
     DDLogVerbose(@"%@ handleStartDateViewTapGesture: %@", LOG_TAG, sender);
     
     if (sender.state == UIGestureRecognizerStateEnded) {
-        [self openMenuDateTime:[NSDate date] menuDateTimeType:MenuDateTimeTypeStartDate];
-    }
-}
-
-- (void)handleStartHourViewTapGesture:(UITapGestureRecognizer *)sender {
-    DDLogVerbose(@"%@ handleStartHourViewTapGesture: %@", LOG_TAG, sender);
-    
-    if (sender.state == UIGestureRecognizerStateEnded) {
-        [self openMenuDateTime:[NSDate date] menuDateTimeType:MenuDateTimeTypeStartHour];
-    }
-}
-
-- (void)handleEndDateViewTapGesture:(UITapGestureRecognizer *)sender {
-    DDLogVerbose(@"%@ handleEndDateViewTapGesture: %@", LOG_TAG, sender);
-    
-    if (sender.state == UIGestureRecognizerStateEnded) {
+        
+        NSDate *date = [NSDate date];
         
         if (self.scheduleStartDate) {
-            NSDateComponents *startDateComponents = [[NSDateComponents alloc] init];
-            startDateComponents.day = self.scheduleStartDate.day;
-            startDateComponents.month = self.scheduleStartDate.month;
-            startDateComponents.year = self.scheduleStartDate.year;
-            
-            NSCalendar *calendar = [NSCalendar currentCalendar];
-            NSDate *minimumDate = [calendar dateFromComponents:startDateComponents];
-            [self openMenuDateTime:minimumDate menuDateTimeType:MenuDateTimeTypeEndDate];
-        } else {
-            [self openMenuDateTime:[NSDate date] menuDateTimeType:MenuDateTimeTypeEndDate];
-        }
-    }
-}
-
-- (void)handleEndHourViewTapGesture:(UITapGestureRecognizer *)sender {
-    DDLogVerbose(@"%@ handleStartHourViewTapGesture: %@", LOG_TAG, sender);
-    
-    if (sender.state == UIGestureRecognizerStateEnded) {
-        if (self.scheduleStartDate && self.scheduleStartTime) {
             NSDateComponents *startDateComponents = [[NSDateComponents alloc] init];
             startDateComponents.day = self.scheduleStartDate.day;
             startDateComponents.month = self.scheduleStartDate.month;
@@ -652,11 +616,103 @@ static const int ddLogLevel = DDLogLevelWarning;
             startDateComponents.minute = self.scheduleStartTime.minute;
             
             NSCalendar *calendar = [NSCalendar currentCalendar];
-            NSDate *minimumDate = [calendar dateFromComponents:startDateComponents];
-            [self openMenuDateTime:minimumDate menuDateTimeType:MenuDateTimeTypeEndHour];
-        } else {
-            [self openMenuDateTime:[NSDate date] menuDateTimeType:MenuDateTimeTypeEndHour];
+            date = [calendar dateFromComponents:startDateComponents];
         }
+        
+        [self openMenuDateTime:date minimumDate:[NSDate date] menuDateTimeType:MenuDateTimeTypeStartDate];
+    }
+}
+
+- (void)handleStartHourViewTapGesture:(UITapGestureRecognizer *)sender {
+    DDLogVerbose(@"%@ handleStartHourViewTapGesture: %@", LOG_TAG, sender);
+    
+    if (sender.state == UIGestureRecognizerStateEnded) {
+        NSDate *date = [NSDate date];
+        
+        if (self.scheduleStartDate) {
+            NSDateComponents *startDateComponents = [[NSDateComponents alloc] init];
+            startDateComponents.day = self.scheduleStartDate.day;
+            startDateComponents.month = self.scheduleStartDate.month;
+            startDateComponents.year = self.scheduleStartDate.year;
+            startDateComponents.hour = self.scheduleStartTime.hour;
+            startDateComponents.minute = self.scheduleStartTime.minute;
+            
+            NSCalendar *calendar = [NSCalendar currentCalendar];
+            date = [calendar dateFromComponents:startDateComponents];
+        }
+        
+        [self openMenuDateTime:date minimumDate:[NSDate date] menuDateTimeType:MenuDateTimeTypeStartHour];
+    }
+}
+
+- (void)handleEndDateViewTapGesture:(UITapGestureRecognizer *)sender {
+    DDLogVerbose(@"%@ handleEndDateViewTapGesture: %@", LOG_TAG, sender);
+    
+    if (sender.state == UIGestureRecognizerStateEnded) {
+        
+        NSDate *date = [NSDate date];
+        NSDate *minimumDate = [NSDate date];
+        
+        if (self.scheduleEndDate) {
+            NSDateComponents *startDateComponents = [[NSDateComponents alloc] init];
+            startDateComponents.day = self.scheduleEndDate.day;
+            startDateComponents.month = self.scheduleEndDate.month;
+            startDateComponents.year = self.scheduleEndDate.year;
+            startDateComponents.hour = self.scheduleEndTime.hour;
+            startDateComponents.minute = self.scheduleEndTime.minute;
+            
+            NSCalendar *calendar = [NSCalendar currentCalendar];
+            date = [calendar dateFromComponents:startDateComponents];
+        }
+        
+        if (self.scheduleStartDate) {
+            NSDateComponents *startDateComponents = [[NSDateComponents alloc] init];
+            startDateComponents.day = self.scheduleStartDate.day;
+            startDateComponents.month = self.scheduleStartDate.month;
+            startDateComponents.year = self.scheduleStartDate.year;
+            startDateComponents.hour = self.scheduleStartTime.hour;
+            startDateComponents.minute = self.scheduleStartTime.minute;
+            
+            NSCalendar *calendar = [NSCalendar currentCalendar];
+            minimumDate = [calendar dateFromComponents:startDateComponents];
+        }
+            
+        [self openMenuDateTime:date minimumDate:minimumDate menuDateTimeType:MenuDateTimeTypeEndDate];
+    }
+}
+
+- (void)handleEndHourViewTapGesture:(UITapGestureRecognizer *)sender {
+    DDLogVerbose(@"%@ handleStartHourViewTapGesture: %@", LOG_TAG, sender);
+    
+    if (sender.state == UIGestureRecognizerStateEnded) {
+        NSDate *date = [NSDate date];
+        NSDate *minimumDate = [NSDate date];
+        
+        if (self.scheduleEndDate) {
+            NSDateComponents *startDateComponents = [[NSDateComponents alloc] init];
+            startDateComponents.day = self.scheduleEndDate.day;
+            startDateComponents.month = self.scheduleEndDate.month;
+            startDateComponents.year = self.scheduleEndDate.year;
+            startDateComponents.hour = self.scheduleEndTime.hour;
+            startDateComponents.minute = self.scheduleEndTime.minute;
+            
+            NSCalendar *calendar = [NSCalendar currentCalendar];
+            date = [calendar dateFromComponents:startDateComponents];
+        }
+        
+        if (self.scheduleStartDate) {
+            NSDateComponents *startDateComponents = [[NSDateComponents alloc] init];
+            startDateComponents.day = self.scheduleStartDate.day;
+            startDateComponents.month = self.scheduleStartDate.month;
+            startDateComponents.year = self.scheduleStartDate.year;
+            startDateComponents.hour = self.scheduleStartTime.hour;
+            startDateComponents.minute = self.scheduleStartTime.minute;
+            
+            NSCalendar *calendar = [NSCalendar currentCalendar];
+            minimumDate = [calendar dateFromComponents:startDateComponents];
+        }
+            
+        [self openMenuDateTime:date minimumDate:minimumDate menuDateTimeType:MenuDateTimeTypeEndHour];
     }
 }
 
@@ -709,7 +765,7 @@ static const int ddLogLevel = DDLogLevelWarning;
         if (capabilitiesAttributedString.length > 0) {
             [capabilitiesAttributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:TwinmeLocalizedString(@", ", nil) attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_REGULAR32, NSFontAttributeName, Design.FONT_COLOR_GREY, NSForegroundColorAttributeName, nil]]];
         }
-        [capabilitiesAttributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:TwinmeLocalizedString(@", ", nil) attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_REGULAR32, NSFontAttributeName, Design.FONT_COLOR_GREY, NSForegroundColorAttributeName, nil]]];
+        [capabilitiesAttributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:TwinmeLocalizedString(@"show_contact_view_controller_video", nil) attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_REGULAR32, NSFontAttributeName, Design.FONT_COLOR_GREY, NSForegroundColorAttributeName, nil]]];
     }
     
     if ([capabilities hasGroupCall]) {
@@ -894,7 +950,7 @@ static const int ddLogLevel = DDLogLevelWarning;
     [menuCallCapabilitiesView openMenu:capabilities];
 }
 
-- (void)openMenuDateTime:(NSDate *)date menuDateTimeType:(MenuDateTimeType)menuDateTimeType {
+- (void)openMenuDateTime:(NSDate *)date minimumDate:(NSDate *)minimumDate menuDateTimeType:(MenuDateTimeType)menuDateTimeType {
     DDLogVerbose(@"%@ openMenuDateTime", LOG_TAG);
         
     MenuDateTimeView *menuDateTimeView = [[MenuDateTimeView alloc]init];
@@ -902,7 +958,7 @@ static const int ddLogLevel = DDLogLevelWarning;
     [self.tabBarController.view addSubview:menuDateTimeView];
         
     [menuDateTimeView setMenuDateTimeTypeWithType:menuDateTimeType];
-    [menuDateTimeView openMenu:date];
+    [menuDateTimeView openMenu:minimumDate date:date];
 }
 
 - (void)updateFont {

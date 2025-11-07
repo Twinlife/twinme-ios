@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14490.49"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" reuseIdentifier="InfoPrivacyCellIdentifier" id="9LB-6H-pDD" customClass="InfoPrivacyCell">
+            <rect key="frame" x="0.0" y="0.0" width="750" height="115"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="9LB-6H-pDD" id="4hp-CV-XrJ">
+                <rect key="frame" x="0.0" y="0.0" width="750" height="114.5"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="1Mc-y2-uGm">
+                        <rect key="frame" x="0.0" y="0.0" width="750" height="114.5"/>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    </view>
+                    <view clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="c8c-0s-UBh">
+                        <rect key="frame" x="37.5" y="8" width="675" height="98.5"/>
+                        <subviews>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="locker" translatesAutoresizingMaskIntoConstraints="NO" id="V8m-pP-WYA">
+                                <rect key="frame" x="8" y="8" width="25" height="25"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="25" id="v4H-XA-1kd"/>
+                                    <constraint firstAttribute="height" constant="25" id="xpS-Rx-nhl"/>
+                                </constraints>
+                            </imageView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="09m-aa-Hex">
+                                <rect key="frame" x="41" y="9" width="626" height="81.5"/>
+                                <string key="text">The chat messages are encrypted on your cellphone and during their transmission. To ensure the highest level of data security, they are directly sent to &lt;pseudo&gt;’s phone by using a peer to peer connection with no intermediary server.</string>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="0.80000000000000004" colorSpace="calibratedRGB"/>
+                        <constraints>
+                            <constraint firstItem="V8m-pP-WYA" firstAttribute="top" secondItem="c8c-0s-UBh" secondAttribute="top" constant="8" id="IFg-VU-gfa"/>
+                            <constraint firstItem="09m-aa-Hex" firstAttribute="leading" secondItem="V8m-pP-WYA" secondAttribute="trailing" constant="8" id="Qdr-ec-d5E"/>
+                            <constraint firstItem="V8m-pP-WYA" firstAttribute="leading" secondItem="c8c-0s-UBh" secondAttribute="leading" constant="8" id="R0J-O9-SRE"/>
+                            <constraint firstAttribute="trailing" secondItem="09m-aa-Hex" secondAttribute="trailing" constant="8" id="T4Y-pz-QKo"/>
+                            <constraint firstItem="09m-aa-Hex" firstAttribute="top" secondItem="c8c-0s-UBh" secondAttribute="top" constant="9" id="c5J-aB-Kjy"/>
+                            <constraint firstAttribute="bottom" secondItem="09m-aa-Hex" secondAttribute="bottom" constant="8" id="ypD-xT-P4u"/>
+                        </constraints>
+                        <userDefinedRuntimeAttributes>
+                            <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                <integer key="value" value="20"/>
+                            </userDefinedRuntimeAttribute>
+                            <userDefinedRuntimeAttribute type="boolean" keyPath="layer.maskToBounds" value="YES"/>
+                        </userDefinedRuntimeAttributes>
+                    </view>
+                </subviews>
+                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                <constraints>
+                    <constraint firstAttribute="bottom" secondItem="c8c-0s-UBh" secondAttribute="bottom" constant="8" id="BVv-Iv-Fji"/>
+                    <constraint firstItem="c8c-0s-UBh" firstAttribute="centerY" secondItem="4hp-CV-XrJ" secondAttribute="centerY" id="GJZ-8U-urO"/>
+                    <constraint firstItem="1Mc-y2-uGm" firstAttribute="leading" secondItem="4hp-CV-XrJ" secondAttribute="leading" id="Wrr-CO-E4T"/>
+                    <constraint firstAttribute="trailing" secondItem="1Mc-y2-uGm" secondAttribute="trailing" id="c2Y-Ir-Li2"/>
+                    <constraint firstItem="c8c-0s-UBh" firstAttribute="centerX" secondItem="4hp-CV-XrJ" secondAttribute="centerX" id="g3t-et-czs"/>
+                    <constraint firstAttribute="bottom" secondItem="1Mc-y2-uGm" secondAttribute="bottom" id="l8H-I1-tKJ"/>
+                    <constraint firstItem="c8c-0s-UBh" firstAttribute="width" secondItem="4hp-CV-XrJ" secondAttribute="width" multiplier="0.9" id="neq-UX-Rc6"/>
+                    <constraint firstItem="c8c-0s-UBh" firstAttribute="top" secondItem="4hp-CV-XrJ" secondAttribute="top" constant="8" id="tlE-Tv-KUz"/>
+                    <constraint firstItem="1Mc-y2-uGm" firstAttribute="top" secondItem="4hp-CV-XrJ" secondAttribute="top" id="w3a-Nf-hTP"/>
+                </constraints>
+            </tableViewCellContentView>
+            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+            <connections>
+                <outlet property="infoLabel" destination="09m-aa-Hex" id="88H-GU-qBg"/>
+                <outlet property="overlayView" destination="1Mc-y2-uGm" id="lis-aF-wxU"/>
+            </connections>
+        </tableViewCell>
+    </objects>
+    <resources>
+        <image name="locker" width="25" height="25"/>
+    </resources>
+</document>

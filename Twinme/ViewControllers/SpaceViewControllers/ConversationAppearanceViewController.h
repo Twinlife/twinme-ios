@@ -7,11 +7,22 @@
  */
 
 #import <TwinmeCommon/AbstractTwinmeViewController.h>
+#import "CustomAppearance.h"
 
 //
 // Interface: ConversationAppearanceViewController
 //
 
+@protocol SpaceAppearanceDelegate;
+
 @interface ConversationAppearanceViewController : AbstractTwinmeViewController
+
+@property (weak, nonatomic) id<SpaceAppearanceDelegate> spaceAppearanceDelegate;
+
+- (void)initWithSpace:(TLSpace *)space;
+
+- (void)initWithDefaultSpaceSettings;
+
+- (void)initWithCustomAppearance:(CustomAppearance *)customAppearance conversationBackgroundLightImage:(UIImage *)conversationBackgroundLightImage conversationBackgroundDarkImage:(UIImage *)conversationBackgroundDarkImage;
 
 @end

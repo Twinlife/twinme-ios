@@ -20,6 +20,7 @@ typedef enum {
     MenuTypeVideo,
     MenuTypeFile,
     MenuTypeInvitation,
+    MenuTypeLocation,
     MenuTypeCall,
     MenuTypeClear
 } MenuType;

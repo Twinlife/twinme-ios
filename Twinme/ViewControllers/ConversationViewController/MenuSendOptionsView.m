@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2019-2020 twinlife SA.
+ *  Copyright (c) 2019-2021 twinlife SA.
  *  SPDX-License-Identifier: AGPL-3.0-only
  *
  *  Contributors:
@@ -7,6 +7,8 @@
  */
 
 #import <CocoaLumberjack.h>
+
+#import "ConversationViewController.h"
 
 #import <Utils/NSString+Utils.h>
 
@@ -16,8 +18,8 @@
 
 #import "SettingsValueItemCell.h"
 #import "SettingsItemCell.h"
-#import "PremiumFeatureConfirmView.h"
-#import "UIPremiumFeature.h"
+#import "MenuSelectValueView.h"
+#import "UITimeout.h"
 
 #import <TwinmeCommon/Design.h>
 #import <TwinmeCommon/UIViewController+Utils.h>
@@ -40,7 +42,7 @@ typedef enum {
 // Interface: MenuSendOptionsView ()
 //
 
-@interface MenuSendOptionsView ()<UITableViewDelegate, UITableViewDataSource, ConfirmViewDelegate, SettingsActionDelegate>
+@interface MenuSendOptionsView ()<UITableViewDelegate, UITableViewDataSource, SettingsActionDelegate, SwitchViewDelegate, MenuSelectValueDelegate>
 
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *tableViewTopConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *tableViewHeightConstraint;
@@ -55,6 +57,7 @@ typedef enum {
 
 @property BOOL allowEphemeral;
 @property BOOL allowCopy;
+@property int64_t timeout;
 @property int count;
 
 @end
@@ -88,12 +91,27 @@ typedef enum {
     return self;
 }
 
-- (void)openMenu:(BOOL)allowCopy {
+- (void)openMenu:(BOOL)allowCopy allowEphemeralMessage:(BOOL)allowEphemeralMessage timeout:(int64_t)timeout {
     DDLogVerbose(@"%@ openMenu: %@", LOG_TAG, allowCopy ? @"YES":@"NO");
     
     self.allowCopy = allowCopy;
+    self.allowEphemeral = allowEphemeralMessage;
+    self.timeout = timeout;
+    
+    if (self.allowEphemeral) {
+        self.count = 3;
+    } else {
+        self.count = 2;
+    }
+        
     self.tableViewHeightConstraint.constant = Design.SETTING_CELL_HEIGHT * self.count;
     [self openMenu];
+}
+
+- (void)updateTimeout:(int64_t)timeout {
+    DDLogVerbose(@"%@ updateTimeout: %lld", LOG_TAG, timeout);
+    
+    self.timeout = timeout;
 }
 
 - (void)reloadData {
@@ -102,58 +120,47 @@ typedef enum {
     [self.tableView reloadData];
 }
 
+#pragma mark - MenuTimeoutDelegate
+
+- (void)cancelMenuSelectValue:(MenuSelectValueView *)menuSelectValueView {
+    DDLogVerbose(@"%@ cancelMenu", LOG_TAG);
+    
+    [menuSelectValueView removeFromSuperview];
+}
+
+- (void)selectTimeout:(MenuSelectValueView *)menuSelectValueView uiTimeout:(UITimeout *)uiTimeout {
+    DDLogVerbose(@"%@ selectTimeout: %@", LOG_TAG, uiTimeout);
+    
+    [menuSelectValueView removeFromSuperview];
+    
+    self.timeout = uiTimeout.timeout;
+    [self reloadData];
+}
+
 #pragma mark - SettingsActionDelegate
 
 - (void)switchChangeValue:(SwitchView *)updatedSwitch {
     DDLogVerbose(@"%@ switchChangeValue: %@", LOG_TAG, updatedSwitch);
     
     if (updatedSwitch.tag == TAG_ALLOW_EPHEMERAL) {
-        PremiumFeatureConfirmView *premiumFeatureConfirmView = [[PremiumFeatureConfirmView alloc] init];
-        premiumFeatureConfirmView.confirmViewDelegate = self;
-        premiumFeatureConfirmView.forceDarkMode = self.forceDarkMode;
-        
-        UIViewController *topViewController = [UIViewController topViewController];
-        if ([topViewController isKindOfClass:[ConversationViewController class]]) {
-            [premiumFeatureConfirmView initWithPremiumFeature:[[UIPremiumFeature alloc]initWithFeatureType:FeatureTypePrivacy] parentViewController:topViewController.navigationController];
-            [topViewController.navigationController.view addSubview:premiumFeatureConfirmView];
-        } else {
-            [premiumFeatureConfirmView initWithPremiumFeature:[[UIPremiumFeature alloc]initWithFeatureType:FeatureTypePrivacy] parentViewController:topViewController];
-            [topViewController.view addSubview:premiumFeatureConfirmView];
-        }
-        
-        [premiumFeatureConfirmView showConfirmView];
+        self.allowEphemeral = updatedSwitch.isOn;
     } else {
         self.allowCopy = updatedSwitch.isOn;
-        [self.tableView reloadData];
     }
-}
-
-#pragma mark - ConfirmViewDelegate
-
-- (void)didTapConfirm:(nonnull AbstractConfirmView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractConfirmView);
     
-    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:TwinmeLocalizedString(@"twinme_plus_link", nil)] options:@{} completionHandler:nil];
+    if (self.allowEphemeral) {
+        self.count = 3;
+    } else {
+        self.count = 2;
+    }
     
-    [abstractConfirmView closeConfirmView];
-}
+    self.tableViewHeightConstraint.constant = Design.SETTING_CELL_HEIGHT * self.count;
 
-- (void)didTapCancel:(nonnull AbstractConfirmView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didTapCancel: %@", LOG_TAG, abstractConfirmView);
-    
-    [abstractConfirmView closeConfirmView];
-}
-
-- (void)didClose:(nonnull AbstractConfirmView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didClose: %@", LOG_TAG, abstractConfirmView);
-    
-    [abstractConfirmView closeConfirmView];
-}
-
-- (void)didFinishCloseAnimation:(nonnull AbstractConfirmView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didFinishCloseAnimation: %@", LOG_TAG, abstractConfirmView);
-    
-    [abstractConfirmView removeFromSuperview];
+    [UIView animateWithDuration:0.3 animations:^{
+        [self layoutIfNeeded];
+    } completion:^(BOOL finished) {
+        [self reloadData];
+    }];
 }
 
 #pragma mark - UITableViewDataSource
@@ -201,11 +208,8 @@ typedef enum {
             cell = [[SettingsValueItemCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:SETTINGS_VALUE_CELL_IDENTIFIER];
         }
         
-        NSString *title = TwinmeLocalizedString(@"application_timeout", nil);
-        NSString *value = TwinmeLocalizedString(@"application_timeout_day", nil);
-        
         cell.forceDarkMode = self.forceDarkMode;
-        [cell bindWithTitle:title value:value];
+        [cell bindWithTitle:TwinmeLocalizedString(@"application_timeout", nil) value:[NSString formatTimeout:self.timeout] backgroundColor:Design.POPUP_BACKGROUND_COLOR];
         
         return cell;
     } else {
@@ -221,13 +225,11 @@ typedef enum {
         UIImage *icon;
         BOOL switchState = NO;
         int tag = 0;
-        BOOL disableSwitch = NO;
         BOOL hideSeparator = NO;
         
         if (indexPath.row == 0) {
             title = TwinmeLocalizedString(@"settings_view_controller_ephemeral_title", nil);
             tag = TAG_ALLOW_EPHEMERAL;
-            disableSwitch = YES;
             switchState = self.allowEphemeral;
             icon = [UIImage imageNamed:@"SendOptionEphemeralIcon"];
         } else {
@@ -238,7 +240,7 @@ typedef enum {
             icon = self.allowCopy ? [UIImage imageNamed:@"SendOptionCopyAllowedIcon"] : [UIImage imageNamed:@"SendOptionCopyIcon"];
         }
         
-        [cell bindWithTitle:title icon:icon stateSwitch:switchState tagSwitch:tag hiddenSwitch:NO disableSwitch:disableSwitch backgroundColor:Design.POPUP_BACKGROUND_COLOR hiddenSeparator:hideSeparator];
+        [cell bindWithTitle:title icon:icon stateSwitch:switchState tagSwitch:tag hiddenSwitch:NO disableSwitch:NO backgroundColor:Design.POPUP_BACKGROUND_COLOR hiddenSeparator:hideSeparator];
         
         return cell;
     }
@@ -249,6 +251,16 @@ typedef enum {
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     DDLogVerbose(@"%@ tableView: %@ didSelectRowAtIndexPath: %@", LOG_TAG, tableView, indexPath);
     
+    if (self.allowEphemeral && indexPath.row == 1) {
+        
+        MenuSelectValueView *menuTimeoutView = [[MenuSelectValueView alloc] init];
+        menuTimeoutView.menuSelectValueDelegate = self;
+        menuTimeoutView.forceDarkMode = self.forceDarkMode;
+        [menuTimeoutView setMenuSelectValueTypeWithType:MenuSelectValueTypeTimeoutEphemeralMessage];
+        [menuTimeoutView setSelectedValueWithValue:(int) self.timeout];
+        [self addSubview:menuTimeoutView];
+        [menuTimeoutView openMenu];
+    }
 }
 
 #pragma mark - Private methods
@@ -297,7 +309,7 @@ typedef enum {
     
     if (sender.state == UIGestureRecognizerStateEnded) {
         if ([self.menuSendOptionsDelegate respondsToSelector:@selector(sendFromOptionsMenu:allowCopy:allowEphemeral:expireTimeout:)]) {
-            [self.menuSendOptionsDelegate sendFromOptionsMenu:self allowCopy:self.allowCopy allowEphemeral:self.allowEphemeral expireTimeout:0];
+            [self.menuSendOptionsDelegate sendFromOptionsMenu:self allowCopy:self.allowCopy allowEphemeral:self.allowEphemeral expireTimeout:self.timeout];
         }
     }
 }

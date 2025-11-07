@@ -58,6 +58,7 @@ static NSString *MENU_ICON_CELL_IDENTIFIER = @"MenuIconCellIdentifier";
     
     self.frame = CGRectMake(0, 0, Design.DISPLAY_WIDTH, Design.DISPLAY_HEIGHT);
     self.count = 2;
+    self.showSelectColor = NO;
     
     if (self) {
         [self initViews];
@@ -69,6 +70,11 @@ static NSString *MENU_ICON_CELL_IDENTIFIER = @"MenuIconCellIdentifier";
     DDLogVerbose(@"%@ openMenu", LOG_TAG);
     
     self.titleLabel.hidden = hideTitle;
+    
+    if (self.showSelectColor) {
+        self.count = 3;
+        self.tableViewHeightConstraint.constant = Design.SETTING_CELL_HEIGHT * self.count;
+    }
     
     if (hideTitle) {
         self.tableViewTopConstraint.constant = 0;
@@ -113,9 +119,13 @@ static NSString *MENU_ICON_CELL_IDENTIFIER = @"MenuIconCellIdentifier";
     if (indexPath.row == 0) {
         title = TwinmeLocalizedString(@"application_camera", nil);
         icon = @"GreyCamera";
-    } else {
+    } else if (indexPath.row == 1) {
         title = TwinmeLocalizedString(@"application_photo_gallery", nil);
         icon = @"FromGallery";
+        hideSeparator = !self.showSelectColor;
+    }  else {
+        title = TwinmeLocalizedString(@"application_color", nil);
+        icon = @"ColorIcon";
         hideSeparator = YES;
     }
     
@@ -133,9 +143,13 @@ static NSString *MENU_ICON_CELL_IDENTIFIER = @"MenuIconCellIdentifier";
         if ([self.menuPhotoViewDelegate respondsToSelector:@selector(menuPhotoDidSelectCamera:)]) {
             [self.menuPhotoViewDelegate menuPhotoDidSelectCamera:self];
         }
-    } else {
+    } else if (indexPath.row == 1) {
         if ([self.menuPhotoViewDelegate respondsToSelector:@selector(menuPhotoDidSelectGallery:)]) {
             [self.menuPhotoViewDelegate menuPhotoDidSelectGallery:self];
+        }
+    } else {
+        if ([self.menuPhotoViewDelegate respondsToSelector:@selector(menuPhotoDidSelectColor:)]) {
+            [self.menuPhotoViewDelegate menuPhotoDidSelectColor:self];
         }
     }
 }

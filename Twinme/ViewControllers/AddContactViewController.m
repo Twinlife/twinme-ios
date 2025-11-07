@@ -29,6 +29,7 @@
 
 #import "AddContactViewController.h"
 #import "AcceptInvitationViewController.h"
+#import "AcceptInvitationSubscriptionViewController.h"
 #import "EnterInvitationCodeViewController.h"
 #import "InvitationCodeViewController.h"
 #import "ShowProfileViewController.h"
@@ -66,7 +67,7 @@ static UIColor *DESIGN_PLACEHOLDER_COLOR;
 // Interface: AddContactViewController ()
 //
 
-@interface AddContactViewController () <AVCaptureMetadataOutputObjectsDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, AcceptInvitationDelegate, ShareProfileServiceDelegate, AlertMessageViewDelegate, PHPhotoLibraryChangeObserver, UITextFieldDelegate, SuccessAuthentifiedRelationDelegate, ConfirmViewDelegate, CustomTabViewDelegate>
+@interface AddContactViewController () <AVCaptureMetadataOutputObjectsDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, AcceptInvitationDelegate, ShareProfileServiceDelegate, AlertMessageViewDelegate, PHPhotoLibraryChangeObserver, UITextFieldDelegate, AcceptInvitationSubscriptionDelegate, SuccessAuthentifiedRelationDelegate, ConfirmViewDelegate, CustomTabViewDelegate>
 
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *customTabViewTopConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *customTabViewHeightConstraint;
@@ -135,13 +136,13 @@ static UIColor *DESIGN_PLACEHOLDER_COLOR;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *shareLabelLeadingConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *shareLabelTrailingConstraint;
 @property (weak, nonatomic) IBOutlet UILabel *shareLabel;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *shareImageViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *shareImageViewLeadingConstraint;
+@property (weak, nonatomic) IBOutlet UIImageView *shareImageView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *shareSubLabelLeadingConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *shareSubLabelTrailingConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *shareSubLabelTopConstraint;
 @property (weak, nonatomic) IBOutlet UILabel *shareSubLabel;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *shareImageViewHeightConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *shareImageViewLeadingConstraint;
-@property (weak, nonatomic) IBOutlet UIImageView *shareImageView;
 @property (weak, nonatomic) IBOutlet UIView *captureView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *messageScanViewHeightConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *messageScanViewWidthConstraint;
@@ -587,6 +588,44 @@ static UIColor *DESIGN_PLACEHOLDER_COLOR;
     self.twincodeTextFieldTrailingConstraint.constant = self.twincodeTextFieldLeadingConstraint.constant;
     
     [alertMessageView removeFromSuperview];
+}
+
+#pragma mark - AcceptInvitationSubscriptionDelegate Methods
+
+- (void)invitationSubscriptionDidFinish:(TLBaseServiceErrorCode)errorCode  {
+    DDLogVerbose(@"%@ invitationDidFinish: %u", LOG_TAG, errorCode);
+    
+    if (errorCode == TLBaseServiceErrorCodeSuccess) {
+        [self finish];
+        [self.navigationController popToRootViewControllerAnimated:YES];
+    } else {
+        NSString *errorMessage;
+        if (errorCode == TLBaseServiceErrorCodeExpired) {
+            errorMessage = TwinmeLocalizedString(@"in_app_subscription_view_controller_expired_code", nil);
+        } else if (errorCode == TLBaseServiceErrorCodeLimitReached) {
+            errorMessage = TwinmeLocalizedString(@"in_app_subscription_view_controller_used_code", nil);
+        } else {
+            errorMessage = TwinmeLocalizedString(@"in_app_subscription_view_controller_invalid_code", nil);
+        }
+        
+        AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
+        alertMessageView.alertMessageViewDelegate = self;
+        [alertMessageView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:errorMessage];
+        [self.navigationController.view addSubview:alertMessageView];
+        [alertMessageView showAlertView];
+    }
+}
+
+- (void)invitationSubscriptionDidCancel {
+    DDLogVerbose(@"%@ invitationSubscriptionDidCancel", LOG_TAG);
+    
+    if (self.captureSession) {
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            [self.captureSession startRunning];
+        });
+    } else {
+        [self setupCaptureSession];
+    }
 }
 
 #pragma mark - ConfirmViewDelegate
@@ -1099,7 +1138,6 @@ static UIColor *DESIGN_PLACEHOLDER_COLOR;
         [self incorrectQRCode:-1];
         return;
     }
-    
     [self.shareProfileService parseUriWithUri:url withBlock:^(TLBaseServiceErrorCode errorCode, TLTwincodeURI *uri) {
         if (errorCode != TLBaseServiceErrorCodeSuccess) {
             [self incorrectQRCode:errorCode];
@@ -1143,10 +1181,17 @@ static UIColor *DESIGN_PLACEHOLDER_COLOR;
     DDLogVerbose(@"%@ didCaptureUrl: %@ twincodeUri: %@", LOG_TAG, url, twincodeUri);
     
     if (twincodeUri.kind == TLTwincodeURIKindInvitation) {
-        AcceptInvitationViewController *acceptInvitationViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"AcceptInvitationViewController"];
-        [acceptInvitationViewController initWithProfile:self.profile url:url descriptorId:nil originatorId:nil isGroup:NO notification:nil popToRootViewController:YES];
-        acceptInvitationViewController.acceptInvitationDelegate = self;
-        [acceptInvitationViewController showInView:self.navigationController.view];
+        if (twincodeUri.twincodeOptions) {
+            AcceptInvitationSubscriptionViewController *acceptInvitationSubscriptionViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"AcceptInvitationSubscriptionViewController"];
+            acceptInvitationSubscriptionViewController.acceptInvitationSubscriptionDelegate = self;
+            [acceptInvitationSubscriptionViewController initWithPeerTwincodeOutboundId:twincodeUri.twincodeId activationCode:twincodeUri.twincodeOptions];
+            [acceptInvitationSubscriptionViewController showInView:self.navigationController.view];
+        } else {
+            AcceptInvitationViewController *acceptInvitationViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"AcceptInvitationViewController"];
+            [acceptInvitationViewController initWithProfile:self.profile url:url descriptorId:nil originatorId:nil isGroup:NO notification:nil popToRootViewController:YES];
+            acceptInvitationViewController.acceptInvitationDelegate = self;
+            [acceptInvitationViewController showInView:self.navigationController.view];
+        }
     } else if (twincodeUri.kind == TLTwincodeURIKindProxy) {
         [self showProxy:twincodeUri.twincodeOptions];
     } else if (twincodeUri.kind == TLTwincodeURIKindAuthenticate) {
@@ -1220,7 +1265,7 @@ static UIColor *DESIGN_PLACEHOLDER_COLOR;
     
     if (sender.state == UIGestureRecognizerStateEnded) {
         ShowProfileViewController *showProfileViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"ShowProfileViewController"];
-        [showProfileViewController initWithProfile:self.profile isActive:YES];
+        [showProfileViewController initWithProfile:self.profile];
         [self.navigationController pushViewController:showProfileViewController animated:YES];
     }
 }

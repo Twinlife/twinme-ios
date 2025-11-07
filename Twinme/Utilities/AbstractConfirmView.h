@@ -29,6 +29,7 @@
 @property (weak, nonatomic) id<ConfirmViewDelegate> confirmViewDelegate;
 
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *actionViewBottomConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *avatarContainerViewTopConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *avatarContainerViewHeightConstraint;
 @property (weak, nonatomic) IBOutlet UIView *avatarContainerView;
 @property (weak, nonatomic) IBOutlet UIImageView *avatarView;

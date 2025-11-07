@@ -24,6 +24,12 @@
 
 @protocol MainServiceDelegate <AbstractTwinmeDelegate, CurrentSpaceTwinmeDelegate>
 
+- (void)onCreateSpace:(nonnull TLSpace *)space;
+
+- (void)onDeleteSpace:(nonnull NSUUID *)spaceId;
+
+- (void)onGetSpaces:(nonnull NSArray *)spaces;
+
 - (void)onUpdateDefaultProfile:(nonnull TLProfile *)profile;
 
 - (void)onGetDefaultProfileNotFound;
@@ -33,10 +39,6 @@
 - (void)onGetConversations:(BOOL)hasConversations;
 
 - (void)onGetContacts:(int)nbContacts;
-
-- (void)onGetProfiles:(nonnull NSArray *)profiles;
-
-- (void)onDeleteProfile:(nonnull NSUUID *)profileId;
 
 - (void)onGetTransfertCall:(nonnull TLCallReceiver *)callReceiver;
 
@@ -52,6 +54,12 @@
 
 @optional - (void)onUpdateSpace:(nonnull TLSpace *)space;
 
+@optional - (void)onSubscribeSuccess;
+
+@optional - (void)onSubscribeFailed:(TLBaseServiceErrorCode)errorCode;
+
+@optional - (void)onGetSpacesNotifications:(nonnull NSDictionary<NSUUID *, TLNotificationServiceNotificationStat *> *)spacesNotifications;
+
 @end
 
 //
@@ -64,9 +72,17 @@
 
 - (void)setCurrentSpace:(nonnull TLSpace *)space;
 
-- (void)activeProfile:(nonnull TLProfile *)profile;
-
 - (void)getConversations;
+
+- (void)getSpaces;
+
+- (void)setLevelWithName:(nonnull NSString *)name;
+
+- (void)createLevelWithName:(nonnull NSString *)name;
+
+- (void)deleteLevelWithName:(nonnull NSString *)name;
+
+- (void)subscribeFeature:(nonnull NSString*)productId purchaseToken:(nonnull NSString *)purchaseToken purchaseOrderId:(nonnull NSString *)purchaseOrderId;
 
 - (void)getContacts;
 

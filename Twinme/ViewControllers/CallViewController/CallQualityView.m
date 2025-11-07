@@ -12,6 +12,8 @@
 
 #import <Utils/NSString+Utils.h>
 
+#import "UIColor+Hex.h"
+
 #import <TwinmeCommon/Design.h>
 
 #if 0
@@ -163,7 +165,7 @@ static const int ddLogLevel = DDLogLevelWarning;
     
     [self.sendButton setTitle:TwinmeLocalizedString(@"feedback_view_controller_send", nil) forState:UIControlStateNormal];
     [self.sendButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-    [self.sendButton setBackgroundColor:Design.BLUE_NORMAL];
+    [self.sendButton setBackgroundColor:[UIColor colorWithHexString:Design.DEFAULT_COLOR alpha:1.0]];
     [self.sendButton.titleLabel setFont:Design.FONT_BOLD28];
     CALayer *sendButtonLayer = self.sendButton.layer;
     sendButtonLayer.cornerRadius = 6.f;
@@ -257,10 +259,10 @@ static const int ddLogLevel = DDLogLevelWarning;
 - (void)updateStars {
     DDLogVerbose(@"%@ updateStars", LOG_TAG);
     
-    self.starOneImageView.image = self.callQuality > 0 ? [UIImage imageNamed:@"StarBlue"]:[UIImage imageNamed:@"StarGrey"];
-    self.starTwoImageView.image = self.callQuality > 1 ? [UIImage imageNamed:@"StarBlue"]:[UIImage imageNamed:@"StarGrey"];
-    self.starThreeImageView.image = self.callQuality > 2 ? [UIImage imageNamed:@"StarBlue"]:[UIImage imageNamed:@"StarGrey"];
-    self.starFourImageView.image = self.callQuality > 3 ? [UIImage imageNamed:@"StarBlue"]:[UIImage imageNamed:@"StarGrey"];
+    self.starOneImageView.image = self.callQuality > 0 ? [UIImage imageNamed:@"StarRed"]:[UIImage imageNamed:@"StarGrey"];
+    self.starTwoImageView.image = self.callQuality > 1 ? [UIImage imageNamed:@"StarRed"]:[UIImage imageNamed:@"StarGrey"];
+    self.starThreeImageView.image = self.callQuality > 2 ? [UIImage imageNamed:@"StarRed"]:[UIImage imageNamed:@"StarGrey"];
+    self.starFourImageView.image = self.callQuality > 3 ? [UIImage imageNamed:@"StarRed"]:[UIImage imageNamed:@"StarGrey"];
 }
 
 @end

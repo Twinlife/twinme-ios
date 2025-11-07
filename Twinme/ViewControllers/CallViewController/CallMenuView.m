@@ -80,6 +80,11 @@ static const CGFloat DESIGN_ICON_RESUME_CALL_HEIGHT = 40;
 @property (weak, nonatomic) IBOutlet UIView *pauseView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *pauseImageViewHeightConstraint;
 @property (weak, nonatomic) IBOutlet UIImageView *pauseImageView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *mapViewLeadingConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *mapViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet UIView *mapView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *mapImageViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet UIImageView *mapImageView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *certifyViewLeadingConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *certifyViewHeightConstraint;
 @property (weak, nonatomic) IBOutlet UIView *certifyView;
@@ -154,7 +159,7 @@ static const CGFloat DESIGN_ICON_RESUME_CALL_HEIGHT = 40;
     [self.speakerOnImageView setTintColor:[UIColor blackColor]];
  }
 
-- (void)updateMenu:(BOOL)isInCall isAudioMuted:(BOOL)isAudioMuted isSpeakerOn:(BOOL)isSpeakerOn isCameraMuted:(BOOL)isCameraMuted isLocalVideoTrack:(BOOL)isLocalVideoTrack isVideoAllowed:(BOOL)isVideoAllowed isConversationAllowed:(BOOL)isConversationAllowed isStreamingAudioSupported:(BOOL)isStreamingAudioSupported isShareInvitationAllowed:(BOOL)isShareInvitationAllowed isInPause:(BOOL)isInPause hideCertify:(BOOL)hideCertify isCertifyRunning:(BOOL)isCertifyRunning audioDevice:(AudioDevice *)audioDevice isHeadSetAvailable:(BOOL)isHeadSetAvailable isCameraControlAllowed:(BOOL)isCameraControlAllowed isRemoteCameraControl:(BOOL)isRemoteCameraControl {
+- (void)updateMenu:(BOOL)isInCall isAudioMuted:(BOOL)isAudioMuted isSpeakerOn:(BOOL)isSpeakerOn isCameraMuted:(BOOL)isCameraMuted isLocalVideoTrack:(BOOL)isLocalVideoTrack isVideoAllowed:(BOOL)isVideoAllowed isConversationAllowed:(BOOL)isConversationAllowed isStreamingAudioSupported:(BOOL)isStreamingAudioSupported isShareInvitationAllowed:(BOOL)isShareInvitationAllowed isShareLocationAllowed:(BOOL)isShareLocationAllowed isInPause:(BOOL)isInPause isLocationShared:(BOOL)isLocationShared hideCertify:(BOOL)hideCertify isCertifyRunning:(BOOL)isCertifyRunning audioDevice:(AudioDevice *)audioDevice isHeadSetAvailable:(BOOL)isHeadSetAvailable isCameraControlAllowed:(BOOL)isCameraControlAllowed isRemoteCameraControl:(BOOL)isRemoteCameraControl {
     DDLogVerbose(@"%@ updateMenu", LOG_TAG);
     
     if (isInCall) {
@@ -170,6 +175,8 @@ static const CGFloat DESIGN_ICON_RESUME_CALL_HEIGHT = 40;
         self.streamingAudioButton.enabled = YES;
         self.invitationView.alpha = 1.0;
         self.invitationButton.enabled = YES;
+        self.mapView.alpha = 1.0;
+        self.mapButton.enabled = YES;
         self.certifyView.alpha = 1.0;
         self.certifyButton.enabled = YES;
         self.cameraControlView.alpha = 1.0;
@@ -183,6 +190,10 @@ static const CGFloat DESIGN_ICON_RESUME_CALL_HEIGHT = 40;
         self.conversationButton.enabled = NO;
         self.streamingAudioView.alpha = 0.5;
         self.streamingAudioButton.enabled = NO;
+        self.invitationView.alpha = 0.5;
+        self.invitationButton.enabled = NO;
+        self.mapView.alpha = 0.5;
+        self.mapButton.enabled = NO;
         self.certifyView.alpha = 0.5;
         self.certifyButton.enabled = NO;
         self.cameraControlView.alpha = 0.5;
@@ -190,6 +201,7 @@ static const CGFloat DESIGN_ICON_RESUME_CALL_HEIGHT = 40;
     }
     
     self.microMuteButton.hidden = NO;
+    
     if (isAudioMuted) {
         self.microMuteImageView.image = [UIImage imageNamed:@"MuteActionCallOn"];
     } else {
@@ -265,6 +277,18 @@ static const CGFloat DESIGN_ICON_RESUME_CALL_HEIGHT = 40;
         self.invitationView.hidden = YES;
     }
     
+    if (isShareLocationAllowed) {
+        self.mapView.hidden = NO;
+    } else {
+        self.mapView.hidden = YES;
+    }
+    
+    if (isLocationShared) {
+        self.mapImageView.image = [UIImage imageNamed:@"ShareLocationIcon"];
+    } else {
+        self.mapImageView.image = [UIImage imageNamed:@"CallLocationIcon"];
+    }
+
     if (isCameraControlAllowed) {
         self.cameraControlView.hidden = NO;
         self.cameraControlImageView.tintColor = isRemoteCameraControl ? Design.DELETE_COLOR_RED : [UIColor blackColor];
@@ -285,6 +309,11 @@ static const CGFloat DESIGN_ICON_RESUME_CALL_HEIGHT = 40;
     
     if (isShareInvitationAllowed) {
         self.invitationViewLeadingConstraint.constant = buttonWidth * viewPosition + buttonMargin * viewPosition;
+        viewPosition++;
+    }
+    
+    if (isShareLocationAllowed) {
+        self.mapViewLeadingConstraint.constant = buttonWidth * viewPosition + buttonMargin * viewPosition;
         viewPosition++;
     }
     
@@ -421,6 +450,18 @@ static const CGFloat DESIGN_ICON_RESUME_CALL_HEIGHT = 40;
     pauseAudioButtonLayer.cornerRadius = self.pauseViewHeightConstraint.constant * 0.5;
     pauseAudioButtonLayer.masksToBounds = NO;
     
+    self.mapViewLeadingConstraint.constant *= Design.WIDTH_RATIO;
+    self.mapViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    
+    self.mapImageViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    
+    [self.mapImageView setTintColor:[UIColor blackColor]];
+    
+    [self.mapButton setBackgroundColor:[UIColor whiteColor]];
+    CALayer *mapButtonLayer = self.mapButton.layer;
+    mapButtonLayer.cornerRadius = self.mapViewHeightConstraint.constant * 0.5;
+    mapButtonLayer.masksToBounds = NO;
+
     self.certifyViewLeadingConstraint.constant *= Design.WIDTH_RATIO;
     self.certifyViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     
@@ -454,7 +495,7 @@ static const CGFloat DESIGN_ICON_RESUME_CALL_HEIGHT = 40;
     [self addGestureRecognizer:panGestureRecognizer];
 }
 
--(void)handlePanGesture:(UIPanGestureRecognizer *)recognizer {
+- (void)handlePanGesture:(UIPanGestureRecognizer *)recognizer {
     DDLogVerbose(@"%@ handlePanGesture: %@", LOG_TAG, recognizer);
     
     CGPoint velocity = [recognizer velocityInView:self];

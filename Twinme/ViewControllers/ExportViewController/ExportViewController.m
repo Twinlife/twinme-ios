@@ -14,6 +14,8 @@
 #import <Twinme/TLSpace.h>
 
 #import "ExportViewController.h"
+#import "InAppSubscriptionViewController.h"
+#import <TwinmeCommon/TwinmeNavigationController.h>
 
 #import "SettingsInformationCell.h"
 #import "SettingsSectionHeaderCell.h"
@@ -343,11 +345,16 @@ static NSString *EXPORT_VOICE_SHORT_NAME = @"voice";
     if (exportActionType == ExportActionTypeCancel) {
         [self finish];
     } else if ([self canExport]) {
-        PremiumFeatureConfirmView *premiumFeatureConfirmView = [[PremiumFeatureConfirmView alloc] init];
-        premiumFeatureConfirmView.confirmViewDelegate = self;
-        [premiumFeatureConfirmView initWithPremiumFeature:[[UIPremiumFeature alloc]initWithFeatureType:FeatureTypeConversation] parentViewController:self.navigationController];
-        [self.navigationController.view addSubview:premiumFeatureConfirmView];
-        [premiumFeatureConfirmView showConfirmView];
+        ApplicationDelegate *delegate = (ApplicationDelegate *)[[UIApplication sharedApplication] delegate];
+        if ([delegate.twinmeApplication isSubscribedWithFeature:TLTwinmeApplicationFeatureGroupCall]) {
+            [self.exportService runExport:[self getExportTypeFilter] fileName:[self getExportFileName]];
+        } else {
+            PremiumFeatureConfirmView *premiumFeatureConfirmView = [[PremiumFeatureConfirmView alloc] init];
+            premiumFeatureConfirmView.confirmViewDelegate = self;
+            [premiumFeatureConfirmView initWithPremiumFeature:[[UIPremiumFeature alloc]initWithFeatureType:FeatureTypeConversation spaceSettings:[self currentSpaceSettings]] parentViewController:self.navigationController];
+            [self.navigationController.view addSubview:premiumFeatureConfirmView];
+            [premiumFeatureConfirmView showConfirmView];
+        }
     }
 }
 
@@ -356,8 +363,10 @@ static NSString *EXPORT_VOICE_SHORT_NAME = @"voice";
 - (void)didTapConfirm:(nonnull AbstractConfirmView *)abstractConfirmView {
     DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractConfirmView);
     
-    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:TwinmeLocalizedString(@"twinme_plus_link", nil)] options:@{} completionHandler:nil];
-
+    InAppSubscriptionViewController *inAppSubscriptionViewController = [[UIStoryboard storyboardWithName:@"iPhone" bundle:nil] instantiateViewControllerWithIdentifier:@"InAppSubscriptionViewController"];
+    TwinmeNavigationController *navigationController = [[TwinmeNavigationController alloc]initWithRootViewController:inAppSubscriptionViewController];
+    [self.navigationController presentViewController:navigationController animated:YES completion:nil];
+    
     [abstractConfirmView closeConfirmView];
 }
 

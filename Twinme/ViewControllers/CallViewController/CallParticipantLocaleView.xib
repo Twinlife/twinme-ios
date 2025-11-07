@@ -43,32 +43,50 @@
                         <constraint firstAttribute="height" constant="52" id="eob-X4-uBT"/>
                     </constraints>
                 </imageView>
-                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="DSx-NT-v7l" userLabel="Switch Camera View">
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="huk-NZ-XvU">
+                    <rect key="frame" x="10" y="10" width="52" height="52"/>
+                    <subviews>
+                        <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="CallLocationIcon" translatesAutoresizingMaskIntoConstraints="NO" id="Mga-wh-Zf4">
+                            <rect key="frame" x="12" y="12" width="28" height="28"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="28" id="7gN-M1-J4u"/>
+                                <constraint firstAttribute="width" secondItem="Mga-wh-Zf4" secondAttribute="height" multiplier="1:1" id="nvk-yr-9Hh"/>
+                            </constraints>
+                        </imageView>
+                    </subviews>
+                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <constraints>
+                        <constraint firstItem="Mga-wh-Zf4" firstAttribute="centerY" secondItem="huk-NZ-XvU" secondAttribute="centerY" id="1vP-pF-aTJ"/>
+                        <constraint firstAttribute="width" secondItem="huk-NZ-XvU" secondAttribute="height" multiplier="1:1" id="ObO-uv-GyA"/>
+                        <constraint firstAttribute="height" constant="52" id="kij-Vj-lfO"/>
+                        <constraint firstItem="Mga-wh-Zf4" firstAttribute="centerX" secondItem="huk-NZ-XvU" secondAttribute="centerX" id="oHn-JQ-Xzv"/>
+                    </constraints>
+                </view>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="oak-iT-Bg2" userLabel="Switch Camera View">
                     <rect key="frame" x="0.0" y="824" width="72" height="72"/>
                     <subviews>
-                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="kUt-nH-PqB" userLabel="Switch Camera Background View">
+                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="hZl-7F-cy5" userLabel="Switch Camera Background View">
                             <rect key="frame" x="10" y="10" width="52" height="52"/>
                             <constraints>
-                                <constraint firstAttribute="height" constant="52" id="CFz-Oa-dtx"/>
-                                <constraint firstAttribute="width" secondItem="kUt-nH-PqB" secondAttribute="height" multiplier="1:1" id="cl9-Lo-ZEi"/>
+                                <constraint firstAttribute="height" constant="52" id="sI2-ak-eCu"/>
                             </constraints>
                         </view>
-                        <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" preservesSuperviewLayoutMargins="YES" image="TurnActionCall" translatesAutoresizingMaskIntoConstraints="NO" id="S9g-Go-1h5">
+                        <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" preservesSuperviewLayoutMargins="YES" image="TurnActionCall" translatesAutoresizingMaskIntoConstraints="NO" id="Zb6-DX-6zs">
                             <rect key="frame" x="18" y="18" width="36" height="36"/>
                             <constraints>
-                                <constraint firstAttribute="width" secondItem="S9g-Go-1h5" secondAttribute="height" multiplier="1:1" id="Ozn-iY-uRk"/>
-                                <constraint firstAttribute="height" constant="36" id="r8c-ll-Jxv"/>
+                                <constraint firstAttribute="height" constant="36" id="MJu-ya-pCu"/>
+                                <constraint firstAttribute="width" secondItem="Zb6-DX-6zs" secondAttribute="height" multiplier="1:1" id="tuK-bx-XoC"/>
                             </constraints>
                         </imageView>
                     </subviews>
                     <constraints>
-                        <constraint firstAttribute="width" secondItem="DSx-NT-v7l" secondAttribute="height" multiplier="1:1" id="3et-Rs-NH4"/>
-                        <constraint firstItem="kUt-nH-PqB" firstAttribute="centerY" secondItem="DSx-NT-v7l" secondAttribute="centerY" id="4Mn-Im-vZL"/>
-                        <constraint firstAttribute="width" secondItem="DSx-NT-v7l" secondAttribute="height" multiplier="1:1" id="8u7-k2-r8v"/>
-                        <constraint firstItem="kUt-nH-PqB" firstAttribute="centerX" secondItem="DSx-NT-v7l" secondAttribute="centerX" id="CA1-9h-GxW"/>
-                        <constraint firstItem="S9g-Go-1h5" firstAttribute="centerX" secondItem="DSx-NT-v7l" secondAttribute="centerX" id="JSG-iA-8LQ"/>
-                        <constraint firstItem="S9g-Go-1h5" firstAttribute="centerY" secondItem="DSx-NT-v7l" secondAttribute="centerY" id="oGe-nu-7iT"/>
-                        <constraint firstAttribute="height" constant="72" id="qbg-db-h4y"/>
+                        <constraint firstItem="hZl-7F-cy5" firstAttribute="centerY" secondItem="oak-iT-Bg2" secondAttribute="centerY" id="28u-Kf-niF"/>
+                        <constraint firstAttribute="width" secondItem="oak-iT-Bg2" secondAttribute="height" multiplier="1:1" id="AYv-JO-bAu"/>
+                        <constraint firstItem="Zb6-DX-6zs" firstAttribute="centerY" secondItem="oak-iT-Bg2" secondAttribute="centerY" id="C8D-bU-yu0"/>
+                        <constraint firstItem="hZl-7F-cy5" firstAttribute="width" secondItem="hZl-7F-cy5" secondAttribute="height" multiplier="1:1" id="OCt-7t-Zt1"/>
+                        <constraint firstItem="hZl-7F-cy5" firstAttribute="centerX" secondItem="oak-iT-Bg2" secondAttribute="centerX" id="ggF-2W-PJh"/>
+                        <constraint firstAttribute="height" constant="72" id="slA-aq-9Bq"/>
+                        <constraint firstItem="Zb6-DX-6zs" firstAttribute="centerX" secondItem="oak-iT-Bg2" secondAttribute="centerX" id="ym5-r1-y7B"/>
                     </constraints>
                 </view>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="eOd-jQ-13J">
@@ -94,17 +112,19 @@
             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
             <constraints>
                 <constraint firstItem="03K-Gy-h2S" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="10" id="0co-oe-Aow"/>
+                <constraint firstItem="huk-NZ-XvU" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" constant="10" id="3yB-5h-GcE"/>
                 <constraint firstItem="m4A-L8-QxB" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" constant="10" id="7zA-ig-IGR"/>
                 <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="m4A-L8-QxB" secondAttribute="trailing" constant="10" id="BF2-0j-Zmy"/>
                 <constraint firstAttribute="top" secondItem="G7f-LH-qTS" secondAttribute="top" id="MAM-aP-Grb"/>
-                <constraint firstAttribute="bottom" secondItem="DSx-NT-v7l" secondAttribute="bottom" id="Mdc-WX-0py"/>
                 <constraint firstAttribute="bottom" secondItem="G7f-LH-qTS" secondAttribute="bottom" id="RTa-RM-Qzx"/>
                 <constraint firstAttribute="trailing" secondItem="3hc-Ty-mRF" secondAttribute="trailing" constant="10" id="RkX-26-1ii"/>
                 <constraint firstItem="G7f-LH-qTS" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="Skm-Bk-6NO"/>
-                <constraint firstItem="DSx-NT-v7l" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" id="Y0F-RP-oMH"/>
+                <constraint firstAttribute="bottom" secondItem="oak-iT-Bg2" secondAttribute="bottom" id="UOO-kS-1bz"/>
+                <constraint firstItem="oak-iT-Bg2" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" id="Xy1-ZA-g63"/>
                 <constraint firstItem="eOd-jQ-13J" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="iN0-l3-epB" secondAttribute="leading" constant="16" id="YSx-aY-PlK"/>
                 <constraint firstItem="LhA-DH-Ryq" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="aD6-8r-Cxo"/>
                 <constraint firstAttribute="trailing" secondItem="eOd-jQ-13J" secondAttribute="trailing" constant="16" id="dzb-EX-Crt"/>
+                <constraint firstItem="huk-NZ-XvU" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="10" id="eWd-9W-MJh"/>
                 <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="LhA-DH-Ryq" secondAttribute="trailing" id="efE-dz-iXG"/>
                 <constraint firstAttribute="bottom" secondItem="eOd-jQ-13J" secondAttribute="bottom" constant="14" id="fYB-2v-4n1"/>
                 <constraint firstAttribute="bottom" secondItem="LhA-DH-Ryq" secondAttribute="bottom" id="fc9-hc-wFg"/>
@@ -122,6 +142,12 @@
                 <outlet property="infoViewHeightConstraint" destination="vUF-Jr-RJe" id="CZX-Ml-zes"/>
                 <outlet property="infoViewLeadingConstraint" destination="0co-oe-Aow" id="Haf-1r-WOx"/>
                 <outlet property="infoViewTopConstraint" destination="omh-gn-hvp" id="sM6-cF-BAJ"/>
+                <outlet property="locationImageView" destination="Mga-wh-Zf4" id="iOR-E6-oYm"/>
+                <outlet property="locationImageViewHeightConstraint" destination="7gN-M1-J4u" id="iKX-tD-obB"/>
+                <outlet property="locationView" destination="huk-NZ-XvU" id="qMj-GV-Lqf"/>
+                <outlet property="locationViewHeightConstraint" destination="kij-Vj-lfO" id="rKx-sl-7sf"/>
+                <outlet property="locationViewLeadingConstraint" destination="eWd-9W-MJh" id="rDV-h9-tbg"/>
+                <outlet property="locationViewTopConstraint" destination="3yB-5h-GcE" id="0J2-WC-rsh"/>
                 <outlet property="microMuteView" destination="3hc-Ty-mRF" id="gLl-5K-Mhl"/>
                 <outlet property="microMuteViewHeightConstraint" destination="MxW-xZ-cJA" id="2n9-AW-eKA"/>
                 <outlet property="microMuteViewTopConstraint" destination="kSN-8T-aFG" id="Omf-Wt-xgj"/>
@@ -139,19 +165,20 @@
                 <outlet property="pauseViewHeightConstraint" destination="eob-X4-uBT" id="IAQ-Qc-mJG"/>
                 <outlet property="pauseViewTopConstraint" destination="7zA-ig-IGR" id="3Id-ff-2UV"/>
                 <outlet property="pauseViewTrailingConstraint" destination="BF2-0j-Zmy" id="ppO-Bf-pf5"/>
-                <outlet property="switchCameraBackgroundView" destination="kUt-nH-PqB" id="5w7-SC-RgY"/>
-                <outlet property="switchCameraBackgroundViewHeightConstraint" destination="CFz-Oa-dtx" id="apd-2b-vTZ"/>
-                <outlet property="switchCameraBottomConstraint" destination="Mdc-WX-0py" id="yKC-iZ-R25"/>
-                <outlet property="switchCameraHeightConstraint" destination="qbg-db-h4y" id="q41-S4-dhu"/>
-                <outlet property="switchCameraImageView" destination="S9g-Go-1h5" id="9o6-ee-Me2"/>
-                <outlet property="switchCameraImageViewHeightConstraint" destination="r8c-ll-Jxv" id="lP7-oR-UXa"/>
-                <outlet property="switchCameraLeadingConstraint" destination="Y0F-RP-oMH" id="wmV-UQ-VzJ"/>
-                <outlet property="switchCameraView" destination="DSx-NT-v7l" id="f5F-Gq-8PS"/>
+                <outlet property="switchCameraBackgroundView" destination="hZl-7F-cy5" id="Rp0-Gj-QVm"/>
+                <outlet property="switchCameraBackgroundViewHeightConstraint" destination="sI2-ak-eCu" id="Jc7-M8-sbO"/>
+                <outlet property="switchCameraBottomConstraint" destination="UOO-kS-1bz" id="UhJ-bA-N7W"/>
+                <outlet property="switchCameraHeightConstraint" destination="slA-aq-9Bq" id="diu-jx-w56"/>
+                <outlet property="switchCameraImageView" destination="Zb6-DX-6zs" id="rhS-ZJ-1PV"/>
+                <outlet property="switchCameraImageViewHeightConstraint" destination="MJu-ya-pCu" id="mhf-oY-SlG"/>
+                <outlet property="switchCameraLeadingConstraint" destination="Xy1-ZA-g63" id="CqF-oT-3DX"/>
+                <outlet property="switchCameraView" destination="oak-iT-Bg2" id="GUU-T9-3FY"/>
             </connections>
             <point key="canvasLocation" x="137.68115942028987" y="95.758928571428569"/>
         </view>
     </objects>
     <resources>
+        <image name="CallLocationIcon" width="24" height="24"/>
         <image name="InfoItem" width="18" height="18"/>
         <image name="RemoteAudioMute" width="26" height="26"/>
         <image name="RemotePause" width="51" height="51"/>

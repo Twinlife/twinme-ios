@@ -49,6 +49,7 @@ static const int64_t COACH_MARK_MAX_SHOW = 3;
 
 - (BOOL)showCoachMark:(CoachMarkTag)coachMarkTag {
     
+    return NO;
     /*if (![self showCoachMark]) {
         return NO;
     }
@@ -68,9 +69,9 @@ static const int64_t COACH_MARK_MAX_SHOW = 3;
             [self setCountShowCoachMark:coachMarkTag count:showCount + 1];
             return YES;
         }
-    }*/
+    }
     
-    return NO;
+    return NO;*/
 }
 
 - (NSDate *)lastShowCoachMarkDate:(CoachMarkTag)coachMarkTag {

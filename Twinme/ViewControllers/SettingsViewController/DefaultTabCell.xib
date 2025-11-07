@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="18122" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="22146" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="18093"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22122"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -20,10 +20,10 @@
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="FVa-R8-oih">
                         <rect key="frame" x="0.0" y="0.0" width="150" height="120"/>
                         <subviews>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="TabBarProfileGrey" translatesAutoresizingMaskIntoConstraints="NO" id="qwM-1O-ZjA">
-                                <rect key="frame" x="51" y="36" width="48" height="48"/>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="TabBarSpacesGrey" translatesAutoresizingMaskIntoConstraints="NO" id="qwM-1O-ZjA">
+                                <rect key="frame" x="43.5" y="36" width="63" height="48"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" secondItem="qwM-1O-ZjA" secondAttribute="height" multiplier="1:1" id="8NF-a4-Z1P"/>
+                                    <constraint firstAttribute="width" secondItem="qwM-1O-ZjA" secondAttribute="height" multiplier="154:117" id="8NF-a4-Z1P"/>
                                     <constraint firstAttribute="height" constant="48" id="lPW-cN-jKL"/>
                                 </constraints>
                             </imageView>
@@ -165,16 +165,16 @@
                 <outlet property="notificationsImageTabViewHeightConstraint" destination="1CS-Uo-pPy" id="A9t-c5-ELx"/>
                 <outlet property="notificationsTabView" destination="VOb-1D-C1l" id="jsc-Nf-dPN"/>
                 <outlet property="notificationsTabViewLeadingConstraint" destination="0Q9-6z-ygD" id="BLV-HP-ZQr"/>
-                <outlet property="profilesImageTabView" destination="qwM-1O-ZjA" id="4hs-CC-Ak3"/>
-                <outlet property="profilesImageTabViewHeightConstraint" destination="lPW-cN-jKL" id="Xbm-1X-bGA"/>
-                <outlet property="profilesTabView" destination="FVa-R8-oih" id="iCk-mU-EWy"/>
-                <outlet property="profilesTabViewLeadingConstraint" destination="9Xe-Ol-d9E" id="qJq-kK-EKY"/>
                 <outlet property="selectTabView" destination="IZ0-m9-Xie" id="LkF-jx-kSr"/>
                 <outlet property="selectTabViewBottomConstraint" destination="9bR-Cd-AhZ" id="Nrc-1C-cDJ"/>
                 <outlet property="selectTabViewHeightConstraint" destination="CnJ-Uy-3XB" id="NMF-T2-Esx"/>
                 <outlet property="selectTabViewLeadingConstraint" destination="TeJ-Qy-EKz" id="OPE-o5-hTJ"/>
                 <outlet property="separatorView" destination="BY9-BG-ixq" id="Lih-BX-iu0"/>
                 <outlet property="separatorViewHeightConstraint" destination="hAS-yC-LPN" id="7Aq-VA-DR2"/>
+                <outlet property="spacesImageTabView" destination="qwM-1O-ZjA" id="8cV-Ng-VHV"/>
+                <outlet property="spacesImageTabViewHeightConstraint" destination="lPW-cN-jKL" id="LZ4-bw-Uaw"/>
+                <outlet property="spacesTabView" destination="FVa-R8-oih" id="V4r-Pd-B09"/>
+                <outlet property="spacesTabViewLeadingConstraint" destination="9Xe-Ol-d9E" id="XLc-N3-zJB"/>
             </connections>
             <point key="canvasLocation" x="-88" y="52"/>
         </tableViewCell>
@@ -182,8 +182,8 @@
     <resources>
         <image name="TabBarCallGrey" width="24" height="24"/>
         <image name="TabBarChatGrey" width="24" height="24"/>
-        <image name="TabBarContactsGrey" width="24" height="22"/>
+        <image name="TabBarContactsGrey" width="26" height="24"/>
         <image name="TabBarNotificationGrey" width="22" height="28"/>
-        <image name="TabBarProfileGrey" width="18" height="20"/>
+        <image name="TabBarSpacesGrey" width="32" height="24"/>
     </resources>
 </document>

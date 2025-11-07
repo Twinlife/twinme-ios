@@ -83,6 +83,8 @@ static UIColor *DESIGN_PEER_ITEM_COLOR;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *separatorViewHeightConstraint;
 @property (weak, nonatomic) IBOutlet UIView *separatorView;
 
+@property UIColor *defaultColor;
+
 @property DisplayMode displayMode;
 
 @end
@@ -107,6 +109,8 @@ static UIColor *DESIGN_PEER_ITEM_COLOR;
     DDLogVerbose(@"%@ awakeFromNib", LOG_TAG);
     
     [super awakeFromNib];
+    
+    self.defaultColor = Design.MAIN_COLOR;
     
     self.selectionStyle = UITableViewCellSelectionStyleNone;
     self.contentView.backgroundColor = [UIColor clearColor];
@@ -141,7 +145,7 @@ static UIColor *DESIGN_PEER_ITEM_COLOR;
     self.lightItemViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     self.lightItemViewWidthConstraint.constant *= Design.WIDTH_RATIO;
     
-    self.lightItemView.backgroundColor = Design.MAIN_COLOR;
+    self.lightItemView.backgroundColor = self.defaultColor;
     self.lightItemView.layer.cornerRadius = DESIGN_ITEM_RADIUS;
     
     self.lightPeerItemViewTopConstraint.constant *= Design.HEIGHT_RATIO;
@@ -160,7 +164,7 @@ static UIColor *DESIGN_PEER_ITEM_COLOR;
     checkMarkViewLayer.borderWidth = Design.CHECKMARK_BORDER_WIDTH;
     checkMarkViewLayer.borderColor = Design.CHECKMARK_BORDER_COLOR.CGColor;
     
-    self.lightCheckMarkView.tintColor = Design.MAIN_COLOR;
+    self.lightCheckMarkView.tintColor = self.defaultColor;
     
     self.lightLabelTopConstraint.constant *= Design.HEIGHT_RATIO;
     
@@ -199,7 +203,7 @@ static UIColor *DESIGN_PEER_ITEM_COLOR;
     self.darkItemViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     self.darkItemViewWidthConstraint.constant *= Design.WIDTH_RATIO;
     
-    self.darkItemView.backgroundColor = Design.MAIN_COLOR;
+    self.darkItemView.backgroundColor =  self.defaultColor;
     self.darkItemView.layer.cornerRadius = DESIGN_ITEM_RADIUS;
     
     self.darkPeerItemViewTopConstraint.constant *= Design.HEIGHT_RATIO;
@@ -218,7 +222,7 @@ static UIColor *DESIGN_PEER_ITEM_COLOR;
     darkCheckMarkViewLayer.borderWidth = Design.CHECKMARK_BORDER_WIDTH;
     darkCheckMarkViewLayer.borderColor = Design.CHECKMARK_BORDER_COLOR.CGColor;
     
-    self.darkCheckMarkView.tintColor = Design.MAIN_COLOR;
+    self.darkCheckMarkView.tintColor = self.defaultColor;
     
     self.darkLabelTopConstraint.constant *= Design.HEIGHT_RATIO;
     
@@ -234,9 +238,10 @@ static UIColor *DESIGN_PEER_ITEM_COLOR;
    [super prepareForReuse];
 }
 
-- (void)bind:(DisplayMode)displayMode {
+- (void)bind:(DisplayMode)displayMode defaultColor:(UIColor *)defaultColor {
    DDLogVerbose(@"%@ bind", LOG_TAG);
    
+    self.defaultColor = defaultColor;
     self.displayMode = displayMode;
     
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
@@ -320,10 +325,10 @@ static UIColor *DESIGN_PEER_ITEM_COLOR;
     self.contentView.backgroundColor = Design.WHITE_COLOR;
     self.lightLabel.textColor = Design.FONT_COLOR_DEFAULT;
     self.darkLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    self.lightItemView.backgroundColor = Design.MAIN_COLOR;
-    self.darkItemView.backgroundColor = Design.MAIN_COLOR;
-    self.lightCheckMarkImageView.tintColor = Design.MAIN_COLOR;
-    self.darkCheckMarkImageView.tintColor = Design.MAIN_COLOR;
+    self.lightItemView.backgroundColor =  self.defaultColor;
+    self.darkItemView.backgroundColor =  self.defaultColor;
+    self.lightCheckMarkImageView.tintColor =  self.defaultColor;
+    self.darkCheckMarkImageView.tintColor =  self.defaultColor;
     self.separatorView.backgroundColor = Design.SEPARATOR_COLOR_GREY;
 }
 

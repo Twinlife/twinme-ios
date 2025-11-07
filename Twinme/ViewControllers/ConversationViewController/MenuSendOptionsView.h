@@ -9,6 +9,8 @@
 #import "AbstractMenuView.h"
 #import "SwitchView.h"
 
+@protocol MenuSendOptionsDelegate;
+
 //
 // Protocol: MenuSendOptionsDelegate
 //
@@ -19,7 +21,7 @@
 
 - (void)cancelMenuSendOptions:(MenuSendOptionsView *)menuSendOptionsView;
 
-- (void)sendFromOptionsMenu:(MenuSendOptionsView *)menuSendOptionsView allowCopy:(BOOL)allowCopy allowEphemeral:(BOOL)allowEphemeral expireTimeout:(int)expireTimeout;
+- (void)sendFromOptionsMenu:(MenuSendOptionsView *)menuSendOptionsView allowCopy:(BOOL)allowCopy allowEphemeral:(BOOL)allowEphemeral expireTimeout:(int64_t)expireTimeout;
 
 @end
 
@@ -31,6 +33,8 @@
 
 @property (weak, nonatomic) id<MenuSendOptionsDelegate> menuSendOptionsDelegate;
 
-- (void)openMenu:(BOOL)allowCopy;
+- (void)openMenu:(BOOL)allowCopy allowEphemeralMessage:(BOOL)allowEphemeralMessage timeout:(int64_t)timeout;
+
+- (void)updateTimeout:(int64_t)timeout;
 
 @end

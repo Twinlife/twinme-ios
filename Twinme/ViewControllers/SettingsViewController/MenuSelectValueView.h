@@ -8,11 +8,17 @@
 
 #import "AbstractMenuView.h"
 
+@class UITimeout;
+
 typedef enum {
     MenuSelectValueTypeImageSize,
     MenuSelectValueTypeVideoSize,
     MenuSelectValueTypeDisplayCallsMode,
-    MenuSelectValueTypeProfileUpdateMode
+    MenuSelectValueTypeEditSpace,
+    MenuSelectValueTypeProfileUpdateMode,
+    MenuSelectValueTypeTimeoutEphemeralMessage,
+    MenuSelectValueTypeTimeoutLockScreen,
+    MenuSelectValueTypeCallZoomable
 } MenuSelectValueType;
 
 //
@@ -25,7 +31,9 @@ typedef enum {
 
 - (void)cancelMenuSelectValue:(MenuSelectValueView *)menuSelectValueView;
 
-- (void)selectValue:(MenuSelectValueView *)menuSelectValueView value:(int)value;
+@optional - (void)selectValue:(MenuSelectValueView *)menuSelectValueView value:(int)value;
+
+@optional - (void)selectTimeout:(MenuSelectValueView *)menuSelectValueView uiTimeout:(UITimeout *)uiTimeout;
 
 @end
 
@@ -33,11 +41,16 @@ typedef enum {
 // Interface: MenuSelectValueView
 //
 
+@class MenuSendOptionsView;
+
 @interface MenuSelectValueView : AbstractMenuView
 
 @property (weak, nonatomic) id<MenuSelectValueDelegate> menuSelectValueDelegate;
 @property (nonatomic) MenuSelectValueType menuSelectValueType;
+@property (nonatomic, nullable) MenuSendOptionsView *menuSendOptionsView;
 
 - (void)setMenuSelectValueTypeWithType:(MenuSelectValueType)menuSelectValueType;
+
+- (void)setSelectedValueWithValue:(int)value;
 
 @end

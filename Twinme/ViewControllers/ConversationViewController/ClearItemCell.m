@@ -8,6 +8,8 @@
 
 #import <CocoaLumberjack.h>
 
+#import <Twinme/TLTwinmeAttributes.h>
+
 #import "ClearItemCell.h"
 
 #import <Utils/NSString+Utils.h>
@@ -16,6 +18,8 @@
 
 #import <TwinmeCommon/Design.h>
 #import "ClearItem.h"
+
+#import "UIColor+Hex.h"
 
 #if 0
 static const int ddLogLevel = DDLogLevelVerbose;
@@ -150,6 +154,11 @@ static const int ddLogLevel = DDLogLevelWarning;
             self.stateImageView.hidden = NO;
             [self.stateImageView.layer removeAllAnimations];
             self.stateImageView.image = [conversationViewController getContactAvatarWithUUID:[clearItem peerTwincodeOutboundId]];
+            
+            if ([self.stateImageView.image isEqual:[TLTwinmeAttributes DEFAULT_GROUP_AVATAR]]) {
+                self.stateImageView.backgroundColor = [UIColor colorWithHexString:Design.DEFAULT_COLOR alpha:1.0];
+                self.stateImageView.tintColor = [UIColor whiteColor];
+            }
             break;
             
         case ItemStateNotSent:

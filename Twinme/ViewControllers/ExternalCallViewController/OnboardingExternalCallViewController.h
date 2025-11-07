@@ -28,5 +28,6 @@
 - (void)showInView:(UIViewController *)view;
 
 @property (nonatomic) BOOL startFromSupportSection;
+@property (nonatomic) BOOL createExternalCallEnable;
 
 @end

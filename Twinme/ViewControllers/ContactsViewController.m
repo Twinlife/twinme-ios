@@ -17,10 +17,13 @@
 #import "ContactsViewController.h"
 #import "AddContactViewController.h"
 #import "AddProfileViewController.h"
+#import "AddProfileViewController.h"
 #import "AccountMigrationScannerViewController.h"
 #import "ContactCell.h"
 #import "AddContactCell.h"
 #import "SectionCallCell.h"
+
+#import "AlertView.h"
 
 #import <TwinmeCommon/ContactsService.h>
 #import <TwinmeCommon/Design.h>
@@ -28,6 +31,8 @@
 #import <TwinmeCommon/TwinmeNavigationController.h>
 
 #import "UIContact.h"
+#import "AlertMessageView.h"
+#import "SpaceSetting.h"
 #import "MenuAddContactView.h"
 #import "ApplicationAssertion.h"
 
@@ -47,7 +52,7 @@ static const int CONTACTS_VIEW_SECTION_COUNT = 2;
 // Interface: ContactsViewController
 //
 
-@interface ContactsViewController () <UITableViewDataSource, UITableViewDelegate, ContactsServiceDelegate, UISearchBarDelegate, MenuAddContactViewDelegate>
+@interface ContactsViewController () <UITableViewDataSource, UITableViewDelegate, ContactsServiceDelegate, UISearchBarDelegate, AlertMessageViewDelegate, MenuAddContactViewDelegate>
 
 @property (weak, nonatomic) IBOutlet UITableView *contactTableView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *contactTableViewBottomConstraint;
@@ -145,6 +150,7 @@ static const int CONTACTS_VIEW_SECTION_COUNT = 2;
     }
 
     [self reloadData];
+    [self setLeftBarButtonItem:self.contactsService profile:self.currentSpace.profile];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
@@ -209,8 +215,21 @@ static const int CONTACTS_VIEW_SECTION_COUNT = 2;
     
     [self setLeftBarButtonItem:self.contactsService profile:space.profile];
     
+    TLSpaceSettings *spaceSettings = space.settings;
+    if ([space.settings getBooleanWithName:PROPERTY_DEFAULT_APPEARANCE_SETTINGS defaultValue:YES]) {
+        spaceSettings = self.twinmeContext.defaultSpaceSettings;
+    }
+    
+    if (![Design.MAIN_STYLE isEqualToString:spaceSettings.style]) {
+        [Design setMainColor:spaceSettings.style];
+    }
+    
     TwinmeNavigationController *navigationController = (TwinmeNavigationController *) self.navigationController;
     [navigationController setNavigationBarStyle];
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self.contactTableView scrollsToTop];
+    });
 }
 
 - (void)onGetSpace:(nonnull TLSpace *)space avatar:(nullable UIImage *)avatar {
@@ -223,6 +242,10 @@ static const int CONTACTS_VIEW_SECTION_COUNT = 2;
     DDLogVerbose(@"%@ onUpdateSpace: %@", LOG_TAG, space);
     
     [self setLeftBarButtonItem:self.contactsService profile:space.profile];
+    
+    TwinmeNavigationController *navigationController = (TwinmeNavigationController *) self.navigationController;
+    [navigationController setNavigationBarStyle];
+    
     [self reloadData];
 }
 
@@ -471,6 +494,20 @@ static const int CONTACTS_VIEW_SECTION_COUNT = 2;
     }
 }
 
+#pragma mark - AlertMessageViewDelegate
+
+- (void)didCloseAlertMessage:(nonnull AlertMessageView *)alertMessageView {
+    DDLogVerbose(@"%@ didCloseAlertMessage: %@", LOG_TAG, alertMessageView);
+    
+    [alertMessageView closeAlertView];
+}
+
+- (void)didFinishCloseAlertMessageAnimation:(nonnull AlertMessageView *)alertMessageView {
+    DDLogVerbose(@"%@ didFinishCloseAlertMessageAnimation: %@", LOG_TAG, alertMessageView);
+    
+    [alertMessageView removeFromSuperview];
+}
+
 #pragma mark - MenuAddContactViewDelegate
 
 - (void)menuAddContactDidSelectScan:(MenuAddContactView *)menuAddContactView {
@@ -478,9 +515,8 @@ static const int CONTACTS_VIEW_SECTION_COUNT = 2;
     
     [menuAddContactView removeFromSuperview];
     
-    ApplicationDelegate *delegate = (ApplicationDelegate *)[[UIApplication sharedApplication] delegate];
     AddContactViewController *addContactViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"AddContactViewController"];
-    [addContactViewController initWithProfile:delegate.mainViewController.profile invitationMode:InvitationModeScan];
+    [addContactViewController initWithProfile:self.currentSpace.profile invitationMode:InvitationModeScan];
     [self.navigationController pushViewController:addContactViewController animated:YES];
 }
 
@@ -491,7 +527,7 @@ static const int CONTACTS_VIEW_SECTION_COUNT = 2;
     
     ApplicationDelegate *delegate = (ApplicationDelegate *)[[UIApplication sharedApplication] delegate];
     AddContactViewController *addContactViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"AddContactViewController"];
-    [addContactViewController initWithProfile:delegate.mainViewController.profile invitationMode:InvitationModeInvite];
+    [addContactViewController initWithProfile:self.currentSpace.profile invitationMode:InvitationModeInvite];
     [self.navigationController pushViewController:addContactViewController animated:YES];
 }
 
@@ -556,9 +592,8 @@ static const int CONTACTS_VIEW_SECTION_COUNT = 2;
     self.noContactImageViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     self.noContactImageViewWidthConstraint.constant *= Design.WIDTH_RATIO;
     self.noContactImageViewTopConstraint.constant *= Design.HEIGHT_RATIO;
-    self.noContactImageView.hidden = YES;
-    
-    self.noContactImageView.image = [self.twinmeApplication darkModeEnable] ? [UIImage imageNamed:@"OnboardingStep3Dark"] : [UIImage imageNamed:@"OnboardingStep3"];
+    self.noContactImageView.hidden = YES;        
+    self.noContactImageView.image = [self.twinmeApplication darkModeEnable:[self currentSpaceSettings]] ? [UIImage imageNamed:@"OnboardingStep3Dark"] : [UIImage imageNamed:@"OnboardingStep3"];
     
     self.noContactLabelWidthConstraint.constant *= Design.WIDTH_RATIO;
     self.noContactLabelTopConstraint.constant *= Design.HEIGHT_RATIO;
@@ -651,11 +686,17 @@ static const int CONTACTS_VIEW_SECTION_COUNT = 2;
 - (void)addContact {
     DDLogVerbose(@"%@ addContact", LOG_TAG);
     
-    if (!self.defaultProfile) {
+    if (!self.currentSpace.profile) {
         AddProfileViewController *addProfileViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"AddProfileViewController"];
         addProfileViewController.firstProfile = YES;
         addProfileViewController.fromContactsTab = YES;
         [self.navigationController pushViewController:addProfileViewController animated:YES];
+    } else if (![self.currentSpace hasPermission:TLSpacePermissionTypeCreateContact]) {
+        AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
+        alertMessageView.alertMessageViewDelegate = self;
+        [alertMessageView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:TwinmeLocalizedString(@"spaces_view_controller_permission_not_allowed", nil)];
+        [self.tabBarController.view addSubview:alertMessageView];
+        [alertMessageView showAlertView];
     } else {
         MenuAddContactView *menuAddContactView = [[MenuAddContactView alloc]init];
         menuAddContactView.menuAddContactViewDelegate = self;
@@ -758,7 +799,15 @@ static const int CONTACTS_VIEW_SECTION_COUNT = 2;
     self.transferLabel.textColor = Design.FONT_COLOR_DEFAULT;
     self.noResultFoundTitleLabel.textColor = Design.FONT_COLOR_DEFAULT;
     
-    self.noContactImageView.image = [self.twinmeApplication darkModeEnable] ? [UIImage imageNamed:@"OnboardingStep3Dark"] : [UIImage imageNamed:@"OnboardingStep3"];
+    self.noContactImageView.image = [self.twinmeApplication darkModeEnable:[self currentSpaceSettings]] ? [UIImage imageNamed:@"OnboardingStep3Dark"] : [UIImage imageNamed:@"OnboardingStep3"];
+}
+
+- (void)updateCurrentSpace {
+    DDLogVerbose(@"%@ updateCurrentSpace", LOG_TAG);
+    
+    [self setLeftBarButtonItem:self.contactsService profile:self.currentSpace.profile];
+    
+    [self updateColor];
 }
 
 @end

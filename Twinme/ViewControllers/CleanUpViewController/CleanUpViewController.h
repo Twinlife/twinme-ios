@@ -31,6 +31,6 @@ typedef enum {
 
 - (void)initCleanUpWithSpace:(TLSpace *)space;
 
-- (void)initCleanUpWithCurrentSpace;
+- (void)initCleanUpApplication;
 
 @end

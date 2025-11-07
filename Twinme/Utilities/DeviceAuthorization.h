@@ -14,6 +14,7 @@
 
 #include <Photos/Photos.h>
 #include <MediaPlayer/MediaPlayer.h>
+#include <CoreLocation/CoreLocation.h>
 
 @interface DeviceAuthorization : NSObject
 
@@ -27,6 +28,10 @@
 
 + (MPMediaLibraryAuthorizationStatus)deviceMediaLibraryAuthorizationStatus;
 
++ (CLAuthorizationStatus)deviceLocationAuthorizationStatus;
+
++ (BOOL)deviceLocationServicesEnabled;
+
 + (void)showPhotoSettingsAlertInController:(UIViewController *)controller;
 
 + (void)showCameraSettingsAlertInController:(UIViewController *)controller;
@@ -36,6 +41,8 @@
 + (void)showMicrophoneCameraSettingsAlertInController:(UIViewController *)controller;
 
 + (void)showMediaSettingsAlertInController:(UIViewController *)controller;
+
++ (void)showLocationSettingsAlertInController:(UIViewController *)controller;
 
 @end
 

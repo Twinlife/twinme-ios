@@ -19,10 +19,15 @@
 #import <Utils/NSString+Utils.h>
 
 #import "AcceptGroupInvitationViewController.h"
+#import "SpacesViewController.h"
 
 #import <TwinmeCommon/Design.h>
 #import <TwinmeCommon/GroupInvitationService.h>
 #import <TwinmeCommon/TwinmeNavigationController.h>
+
+#import "UIColor+Hex.h"
+#import "InsideBorderView.h"
+#import "UIViewController+ProgressIndicator.h"
 
 #if 0
 static const int ddLogLevel = DDLogLevelVerbose;
@@ -42,7 +47,7 @@ static const CGFloat DESIGN_CANCEL_HEIGHT = 140;
 // Interface: AcceptGroupInvitationViewContoller ()
 //
 
-@interface AcceptGroupInvitationViewController () <GroupInvitationServiceDelegate>
+@interface AcceptGroupInvitationViewController () <GroupInvitationServiceDelegate, SpacesPickerDelegate>
 
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *actionViewTopConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *actionViewBottomConstraint;
@@ -71,6 +76,23 @@ static const CGFloat DESIGN_CANCEL_HEIGHT = 140;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *messageLabelLeadingConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *messageLabelTrailingConstraint;
 @property (weak, nonatomic) IBOutlet UILabel *messageLabel;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *spaceTitleLabelLeadingConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *spaceTitleLabelTrailingConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *spaceTitleLabelTopConstraint;
+@property (weak, nonatomic) IBOutlet UILabel *spaceTitleLabel;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *spaceViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *spaceViewTopConstraint;
+@property (weak, nonatomic) IBOutlet InsideBorderView *spaceView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *spaceImageViewLeadingConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *spaceImageViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet UIImageView *spaceImageView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *spaceAvatarViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *spaceAvatarViewTrailingConstraint;
+@property (weak, nonatomic) IBOutlet UIImageView *spaceAvatarView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *spaceLabelLeadingConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *spaceLabelTrailingConstraint;
+@property (weak, nonatomic) IBOutlet UILabel *spaceLabel;
+@property (weak, nonatomic) IBOutlet UILabel *spaceAvatarLabel;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *confirmViewTopConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *confirmViewHeightConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *confirmViewWidthConstraint;
@@ -178,12 +200,13 @@ static const CGFloat DESIGN_CANCEL_HEIGHT = 140;
             avatar = [TLTwinmeAttributes DEFAULT_GROUP_AVATAR];
         }
         
-        self.avatarView.backgroundColor = DESIGN_NO_AVATAR_COLOR;
+        self.avatarView.backgroundColor = [UIColor colorWithHexString:Design.DEFAULT_COLOR alpha:1.0];
         self.avatarView.tintColor = [UIColor whiteColor];
     } else {
         self.avatarView.backgroundColor = [UIColor clearColor];
+        self.avatarView.tintColor = [UIColor clearColor];
     }
-    
+        
     self.avatarView.image = avatar;
     
     [self updateInvitationDescriptor];
@@ -200,6 +223,8 @@ static const CGFloat DESIGN_CANCEL_HEIGHT = 140;
     DDLogVerbose(@"%@ onAcceptedInvitationWithInvitationDescriptor: %@ groupId: %@", LOG_TAG, invitationDescriptor, group);
     
     self.group = group;
+    self.invitationDescriptor = invitationDescriptor;
+    [self updateInvitationDescriptor];
     
     if (![self.initialSpace.uuid isEqual:self.space.uuid]) {
         [self.groupInvitationService moveGroupToSpace:self.space group:group];
@@ -223,17 +248,35 @@ static const CGFloat DESIGN_CANCEL_HEIGHT = 140;
     
     self.space = space;
     self.initialSpace = space;
+    [self updateSpace];
 }
 
-- (void)onSetCurrentSpace:(TLSpace *)space {
-    DDLogVerbose(@"%@ onSetCurrentSpace: %@", LOG_TAG, space);
+- (void)onGetCurrentSpace:(TLSpace *)space {
+    DDLogVerbose(@"%@ onGetCurrentSpace: %@", LOG_TAG, space);
     
+    self.space = space;
+    self.initialSpace = space;
+    [self updateSpace];
+}
+
+- (void)onSetCurrentSpace:(nonnull TLSpace *)space {
+    DDLogVerbose(@"%@ onSetCurrentSpace: %@", LOG_TAG, space);
+
 }
 
 - (void)onMoveGroup:(TLGroup *)group {
     DDLogVerbose(@"%@ onMoveGroup: %@", LOG_TAG, group);
     
     [self updateInvitationDescriptor];
+}
+
+#pragma mark - SpacesPickerDelegate
+
+- (void)didSelectSpace:(TLSpace *)space {
+    DDLogVerbose(@"%@ didSelectSpace: %@", LOG_TAG, space);
+    
+    self.space = space;
+    [self updateSpace];
 }
 
 #pragma mark - Private methods
@@ -333,6 +376,40 @@ static const CGFloat DESIGN_CANCEL_HEIGHT = 140;
     self.bulletView.layer.borderColor = [UIColor whiteColor].CGColor;
     self.bulletView.backgroundColor = ICON_BACKGROUND_COLOR;
     
+    self.spaceTitleLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
+    self.spaceTitleLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
+    self.spaceTitleLabelTopConstraint.constant *= Design.HEIGHT_RATIO;
+    
+    self.spaceTitleLabel.font = Design.FONT_BOLD26;
+    self.spaceTitleLabel.textColor = Design.FONT_COLOR_DEFAULT;
+    self.spaceTitleLabel.text = TwinmeLocalizedString(@"settings_space_view_controller_space_category_title", nil).uppercaseString;
+    
+    self.spaceViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    self.spaceViewTopConstraint.constant *= Design.HEIGHT_RATIO;
+    
+    UITapGestureRecognizer *spaceViewGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSpaceTapGesture:)];
+    [self.spaceView addGestureRecognizer:spaceViewGestureRecognizer];
+    
+    [self.spaceView setBorder:Design.SEPARATOR_COLOR_GREY borderWidth:Design.SEPARATOR_HEIGHT width:Design.DISPLAY_WIDTH height:self.spaceViewHeightConstraint.constant left:NO right:NO top:YES bottom:YES];
+    
+    self.spaceImageViewLeadingConstraint.constant *= Design.WIDTH_RATIO;
+    self.spaceImageViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    
+    self.spaceImageView.tintColor = Design.UNSELECTED_TAB_COLOR;
+    
+    self.spaceAvatarLabel.font = Design.FONT_BOLD44;
+    self.spaceAvatarLabel.textColor = [UIColor whiteColor];
+    self.spaceAvatarLabel.hidden = YES;
+    
+    self.spaceLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
+    self.spaceLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
+
+    self.spaceAvatarViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    self.spaceAvatarViewTrailingConstraint.constant *= Design.WIDTH_RATIO;
+    
+    self.spaceAvatarView.clipsToBounds = YES;
+    self.spaceAvatarView.layer.cornerRadius = Design.SPACE_RADIUS_RATIO * self.spaceAvatarViewHeightConstraint.constant;
+    
     self.confirmViewTopConstraint.constant *= Design.HEIGHT_RATIO;
     self.confirmViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     self.confirmViewWidthConstraint.constant *= Design.WIDTH_RATIO;
@@ -416,6 +493,19 @@ static const CGFloat DESIGN_CANCEL_HEIGHT = 140;
     }];
 }
 
+- (void)handleSpaceTapGesture:(UITapGestureRecognizer *)sender {
+    DDLogVerbose(@"%@ handleSpaceTapGesture: %@", LOG_TAG, sender);
+    
+    if (sender.state == UIGestureRecognizerStateEnded) {
+        SpacesViewController *spacesViewController = [[UIStoryboard storyboardWithName:@"Space" bundle:nil] instantiateViewControllerWithIdentifier:@"SpacesViewController"];
+        spacesViewController.pickerMode = YES;
+        spacesViewController.spacesPickerDelegate = self;
+        TwinmeNavigationController *navigationController = [[TwinmeNavigationController alloc] initWithRootViewController:spacesViewController];
+        [self presentViewController:navigationController animated:YES completion:nil];
+    }
+}
+
+
 - (void)handleCancelTapGesture:(UITapGestureRecognizer *)sender {
     DDLogVerbose(@"%@ handleCancelTapGesture: %@", LOG_TAG, sender);
     
@@ -468,18 +558,60 @@ static const CGFloat DESIGN_CANCEL_HEIGHT = 140;
     }
 }
 
+- (void)updateSpace {
+    DDLogVerbose(@"%@ updateSpace", LOG_TAG);
+    
+    if (!self.space) {
+        return;
+    }
+    
+    NSString *nameSpace = @"";
+    NSString *nameProfile = @"";
+    if (self.space.settings.name) {
+        nameSpace = self.space.settings.name;
+    }
+    if (self.space.profile.name) {
+        nameProfile = self.space.profile.name;
+    }
+    
+    NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:@""];
+    [attributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:nameSpace attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_MEDIUM34, NSFontAttributeName, Design.FONT_COLOR_DEFAULT, NSForegroundColorAttributeName, nil]]];
+    [attributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:@"\n"]];
+    [attributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:nameProfile attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_MEDIUM32, NSFontAttributeName, Design.FONT_COLOR_PROFILE_GREY, NSForegroundColorAttributeName, nil]]];
+    self.spaceLabel.attributedText = attributedString;
+        
+    if (self.space.avatarId) {
+        [self.groupInvitationService getImageWithSpace:self.space withBlock:^(UIImage *image) {
+            self.spaceAvatarView.image = image;
+            self.spaceAvatarLabel.hidden = YES;
+        }];
+    } else {
+        self.spaceAvatarView.image = nil;
+        self.spaceAvatarLabel.hidden = NO;
+        if (self.space.settings.style) {
+            self.spaceAvatarView.backgroundColor = [UIColor colorWithHexString:self.space.settings.style alpha:1.0];
+        } else {
+            self.spaceAvatarView.backgroundColor = Design.MAIN_COLOR;
+        }
+        self.spaceAvatarLabel.text = [NSString firstCharacter:self.space.settings.name];
+    }
+}
+
 - (void)updateInvitationDescriptor {
     DDLogVerbose(@"%@ updateInvitationDescriptor: %@", LOG_TAG, self.invitationDescriptor);
     
     if (self.invitationDescriptor) {
         self.avatarContainerViewHeightConstraint.constant = DESIGN_AVATAR_HEIGHT * Design.HEIGHT_RATIO;
         self.cancelViewHeightConstraint.constant = DESIGN_CANCEL_HEIGHT * Design.HEIGHT_RATIO;
+        self.spaceViewHeightConstraint.constant = Design.SETTING_CELL_HEIGHT;
         
         self.nameLabel.text = self.invitationDescriptor.name;
         self.nameLabel.hidden = NO;
         self.avatarContainerView.hidden = NO;
         self.contactView.hidden = NO;
         self.bulletView.hidden = NO;
+        self.spaceTitleLabel.hidden = NO;
+        self.spaceView.hidden = NO;
         
         switch (self.invitationDescriptor.status) {
             case TLInvitationDescriptorStatusTypePending:
@@ -488,16 +620,22 @@ static const CGFloat DESIGN_CANCEL_HEIGHT = 140;
                 self.messageLabel.text = [NSString stringWithFormat:TwinmeLocalizedString(@"accept_group_invitation_view_controller_message %@", nil), self.contact.name];
                 self.contactImageView.hidden = NO;
                 self.statusInvitationImageView.hidden = YES;
+                self.spaceTitleLabel.hidden = NO;
+                self.spaceView.hidden = NO;
                 break;
                 
             case TLInvitationDescriptorStatusTypeAccepted:
                 self.confirmView.hidden = NO;
                 self.cancelView.hidden = YES;
                 self.cancelViewBottomConstraint.constant = 0;
+                self.spaceTitleLabelTopConstraint.constant = 0;
+                self.spaceViewHeightConstraint.constant = 0;
                 self.messageLabel.text = TwinmeLocalizedString(@"conversation_view_controller_invitation_accepted", nil);
                 self.contactImageView.hidden = YES;
                 self.statusInvitationImageView.hidden = NO;
                 self.statusInvitationImageView.image = [UIImage imageNamed:@"InvitationStateAccepted"];
+                self.spaceTitleLabel.hidden = YES;
+                self.spaceView.hidden = YES;
                 self.confirmLabel.text = TwinmeLocalizedString(@"application_ok", nil);
                 break;
                 
@@ -505,10 +643,14 @@ static const CGFloat DESIGN_CANCEL_HEIGHT = 140;
                 self.confirmView.hidden = NO;
                 self.cancelView.hidden = YES;
                 self.cancelViewBottomConstraint.constant = 0;
+                self.spaceTitleLabelTopConstraint.constant = 0;
+                self.spaceViewHeightConstraint.constant = 0;
                 self.messageLabel.text = TwinmeLocalizedString(@"conversation_view_controller_invitation_joined", nil);
                 self.contactImageView.hidden = YES;
                 self.statusInvitationImageView.hidden = NO;
                 self.statusInvitationImageView.image = [UIImage imageNamed:@"InvitationStateJoined"];
+                self.spaceTitleLabel.hidden = YES;
+                self.spaceView.hidden = YES;
                 self.confirmLabel.text = TwinmeLocalizedString(@"application_ok", nil);
                 break;
                 
@@ -516,10 +658,14 @@ static const CGFloat DESIGN_CANCEL_HEIGHT = 140;
                 self.confirmView.hidden = NO;
                 self.cancelView.hidden = YES;
                 self.cancelViewBottomConstraint.constant = 0;
+                self.spaceTitleLabelTopConstraint.constant = 0;
+                self.spaceViewHeightConstraint.constant = 0;
                 self.messageLabel.text = TwinmeLocalizedString(@"conversation_view_controller_invitation_refused", nil);
                 self.contactImageView.hidden = YES;
                 self.statusInvitationImageView.hidden = NO;
                 self.statusInvitationImageView.image = [UIImage imageNamed:@"InvitationStateRefused"];
+                self.spaceTitleLabel.hidden = YES;
+                self.spaceView.hidden = YES;
                 self.confirmLabel.text = TwinmeLocalizedString(@"application_ok", nil);
                 break;
                 
@@ -527,10 +673,14 @@ static const CGFloat DESIGN_CANCEL_HEIGHT = 140;
                 self.confirmView.hidden = NO;
                 self.cancelView.hidden = YES;
                 self.cancelViewBottomConstraint.constant = 0;
+                self.spaceTitleLabelTopConstraint.constant = 0;
+                self.spaceViewHeightConstraint.constant = 0;
                 self.contactImageView.hidden = YES;
                 self.statusInvitationImageView.hidden = NO;
                 self.statusInvitationImageView.image = [UIImage imageNamed:@"ToolbarTrash"];
                 self.statusInvitationImageView.tintColor = [UIColor whiteColor];
+                self.spaceTitleLabel.hidden = YES;
+                self.spaceView.hidden = YES;
                 self.confirmLabel.text = TwinmeLocalizedString(@"application_ok", nil);
                 self.messageLabel.text = TwinmeLocalizedString(@"accept_group_invitation_view_controller_deleted", nil);
                 break;
@@ -541,11 +691,15 @@ static const CGFloat DESIGN_CANCEL_HEIGHT = 140;
     } else {
         self.avatarContainerViewHeightConstraint.constant = 0;
         self.cancelViewHeightConstraint.constant = 0;
+        self.spaceViewHeightConstraint.constant = 0;
         
         self.cancelView.hidden = YES;
         self.confirmView.hidden = YES;
         self.bulletView.hidden = YES;
         self.contactView.hidden = YES;
+        self.spaceTitleLabel.hidden = YES;
+        self.spaceView.hidden = YES;
+        
         if (!self.contactAvatar) {
             self.avatarView.image = [TLTwinmeAttributes DEFAULT_GROUP_AVATAR];
         } else {
@@ -560,6 +714,8 @@ static const CGFloat DESIGN_CANCEL_HEIGHT = 140;
             self.avatarContainerView.hidden = YES;
             self.messageLabel.text = [NSString stringWithFormat:@"%@\n%@", TwinmeLocalizedString(@"accept_invitation_view_controller_being_transferred", nil), TwinmeLocalizedString(@"accept_invitation_view_controller_check_connection", nil)];
         }
+        self.spaceTitleLabel.hidden = YES;
+        self.spaceView.hidden = YES;
     }
     
     [self showActionView];

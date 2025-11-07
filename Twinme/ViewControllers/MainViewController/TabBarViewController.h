@@ -16,6 +16,10 @@
 
 - (void)updateColor;
 
-- (void)profileNotFound;
+- (NSUInteger)getSelectedIndex;
+
+- (void)updateSpace;
+
+- (void)setCurrentSpace;
 
 @end

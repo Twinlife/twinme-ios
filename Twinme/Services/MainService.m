@@ -33,46 +33,57 @@ static const int ddLogLevel = DDLogLevelWarning;
 
 static const int GET_CURRENT_SPACE = 1 << 0;
 static const int GET_CURRENT_SPACE_DONE = 1 << 1;
-static const int GET_PENDING_NOTIFICATIONS = 1 << 2;
-static const int GET_PENDING_NOTIFICATIONS_DONE = 1 << 3;
-static const int SET_CURRENT_SPACE = 1 << 4;
-static const int SET_CURRENT_SPACE_DONE = 1 << 5;
-static const int GET_CONVERSATIONS = 1 << 6;
-static const int GET_CONVERSATIONS_DONE = 1 << 7;
-static const int GET_PROFILES = 1 << 8;
-static const int GET_PROFILES_DONE = 1 << 9;
-static const int UPDATE_SPACE = 1 << 10;
-static const int UPDATE_SPACE_DONE = 1 << 11;
+static const int GET_SPACES = 1 << 2;
+static const int GET_SPACES_DONE = 1 << 3;
+static const int SUBSCRIBE_FEATURE = 1 << 4;
+static const int SUBSCRIBE_FEATURE_DONE = 1 << 5;
+static const int GET_CONTACTS = 1 << 6;
+static const int GET_CONTACTS_DONE = 1 << 7;
+static const int GET_PENDING_NOTIFICATIONS = 1 << 10;
+static const int GET_PENDING_NOTIFICATIONS_DONE = 1 << 11;
+static const int SET_CURRENT_SPACE = 1 << 17;
+static const int SET_CURRENT_SPACE_DONE = 1 << 18;
+static const int GET_CONVERSATIONS = 1 << 19;
+static const int GET_CONVERSATIONS_DONE = 1 << 20;
+static const int GET_SPACE_NOTIFICATIONS = 1 << 21;
+static const int GET_SPACE_NOTIFICATIONS_DONE = 1 << 22;
 static const int GET_TRANSFER_CALL = 1 << 12;
 static const int GET_TRANSFER_CALL_DONE = 1 << 13;
-static const int GET_CONTACTS = 1 << 14;
-static const int GET_CONTACTS_DONE = 1 << 15;
+static const int SET_LEVEL = 1 << 23;
+static const int CREATE_LEVEL = 1 << 24;
+static const int DELETE_LEVEL = 1 << 25;
 
 //
 // Interface: MainService ()
 //
 
 @class MainServiceTwinmeContextDelegate;
+@class MainServiceAccountServiceDelegate;
 
 @interface MainService ()
 
 @property (nonatomic) int work;
-@property (nonatomic, nullable) TLProfile *profile;
 @property (nonatomic, nullable) TLSpace *space;
+
+@property (nonatomic, nonnull) NSString *productId;
+@property (nonatomic, nonnull) NSString *purchaseToken;
+@property (nonatomic, nonnull) NSString *purchaseOrderId;
+
+@property (nonatomic) MainServiceAccountServiceDelegate *accountServiceDelegate;
 
 - (void)onOperation;
 
 - (void)onSetCurrentSpace:(nonnull TLSpace *)space;
 
+- (void)onCreateSpace:(nonnull TLSpace *)space;
+
 - (void)onUpdateSpace:(TLSpace *)space;
+
+- (void)onDeleteSpace:(nonnull NSUUID *)spaceId;
 
 - (void)onCreateProfile:(nonnull TLProfile *)profile;
 
 - (void)onUpdateProfile:(TLProfile *)profile;
-
-- (void)onGetProfiles:(nonnull NSArray *)profiles;
-
-- (void)onDeleteProfile:(nonnull NSUUID *)profileId;
 
 - (void)onCreateCallReceiver:(nonnull TLCallReceiver *)callReceiver;
 
@@ -83,6 +94,8 @@ static const int GET_CONTACTS_DONE = 1 << 15;
 - (void)onUpdatePendingNotifications:(BOOL)hasPendingNotifications;
 
 - (void)onGetConversations:(BOOL)hasConversations;
+
+- (void)onSubscribeUpdate:(TLBaseServiceErrorCode)errorCode;
 
 - (void)onErrorWithOperationId:(int)operationId errorCode:(TLBaseServiceErrorCode)errorCode errorParameter:(NSString *)errorParameter;
 
@@ -132,8 +145,20 @@ static const int GET_CONTACTS_DONE = 1 << 15;
 
 - (void)onSetCurrentSpaceWithRequestId:(int64_t)requestId space:(TLSpace *)space {
     DDLogVerbose(@"%@ onSetCurrentSpaceWithRequestId: %lld space: %@", LOG_TAG, requestId, space);
+
+    // Could be a SET_LEVEL or CREATE_LEVEL operation.
+    [self.service finishOperation:requestId];
     
     [(MainService *)self.service onSetCurrentSpace:space];
+}
+
+- (void)onCreateSpaceWithRequestId:(int64_t)requestId space:(TLSpace *)space {
+    DDLogVerbose(@"%@ onCreateSpaceWithRequestId: %lld space: %@", LOG_TAG, requestId, space);
+
+    // Could be a CREATE_LEVEL operation.
+    [self.service finishOperation:requestId];
+    
+    [(MainService *)self.service onCreateSpace:space];
 }
 
 - (void)onUpdateSpaceWithRequestId:(int64_t)requestId space:(TLSpace *)space {
@@ -142,16 +167,16 @@ static const int GET_CONTACTS_DONE = 1 << 15;
     [(MainService *)self.service onUpdateSpace:space];
 }
 
+- (void)onDeleteSpaceWithRequestId:(int64_t)requestId spaceId:(NSUUID *)spaceId {
+    DDLogVerbose(@"%@ onDeleteSpaceWithRequestId: %lld spaceId: %@", LOG_TAG, requestId, spaceId);
+    
+    [(MainService *)self.service onDeleteSpace:spaceId];
+}
+
 - (void)onUpdatePendingNotificationsWithRequestId:(int64_t)requestId hasPendingNotifications:(BOOL)hasPendingNotifications {
     DDLogVerbose(@"%@ onUpdatePendingNotificationsWithRequestId: %lld hasPendingNotifications: %@", LOG_TAG, requestId, hasPendingNotifications ? @"YES" : @"NO");
     
     [(MainService *)self.service onUpdatePendingNotifications:hasPendingNotifications];
-}
-
-- (void)onDeleteProfileWithRequestId:(int64_t)requestId profileId:(nonnull NSUUID *)profileId {
-    DDLogVerbose(@"%@ onDeleteProfileWithRequestId: %lld profile: %@", LOG_TAG, requestId, profileId);
-    
-    [(MainService *)self.service onDeleteProfile:profileId];
 }
 
 - (void)onCreateCallReceiverWithRequestId:(int64_t)requestId callReceiver:(TLCallReceiver *)callReceiver {
@@ -198,6 +223,52 @@ static const int GET_CONTACTS_DONE = 1 << 15;
 @end
 
 //
+// Interface: MainServiceAccountServiceDelegate
+//
+
+@interface MainServiceAccountServiceDelegate : NSObject <TLAccountServiceDelegate>
+
+@property (weak) MainService *service;
+
+- (instancetype)initWithService:(MainService *)service;
+
+@end
+
+//
+// Implementation: MainServiceAccountServiceDelegates
+//
+
+#undef LOG_TAG
+#define LOG_TAG @"MainServiceAccountServiceDelegate"
+
+@implementation MainServiceAccountServiceDelegate
+
+- (instancetype)initWithService:(MainService *)service {
+    DDLogVerbose(@"%@ initWithService: %@", LOG_TAG, service);
+    
+    self = [super init];
+    
+    if (self) {
+        _service = service;
+    }
+    return self;
+}
+
+- (void)onSubscribeUpdateWithRequestId:(int64_t)requestId errorCode:(TLBaseServiceErrorCode)errorCode {
+    DDLogVerbose(@"%@ onSubscribeUpdateWithRequestId: %lld  errorCode: %d", LOG_TAG, requestId, errorCode);
+    
+    int operationId = [self.service getOperation:requestId];
+    if (!operationId) {
+        return;
+    }
+    
+    [self.service onSubscribeUpdate:errorCode];
+}
+
+@end
+
+
+//
 // Implementation: MainService
 //
 
@@ -224,6 +295,17 @@ static const int GET_CONTACTS_DONE = 1 << 15;
     [self showProgressIndicator];
     int64_t requestId = [self newOperation:SET_CURRENT_SPACE];
     [self.twinmeContext setCurrentSpaceWithRequestId:requestId space:space];
+    
+    if (!space.settings.isSecret) {
+        [self.twinmeContext setDefaultSpace:space];
+    }
+}
+
+- (void)getSpaces {
+    DDLogVerbose(@"%@ getSpaces", LOG_TAG);
+    
+    self.state &= ~(GET_SPACES | GET_SPACES_DONE);
+    [self startOperation];
 }
 
 - (void)getConversations {
@@ -268,14 +350,39 @@ static const int GET_CONTACTS_DONE = 1 << 15;
     }];
 }
 
+- (void)setLevelWithName:(NSString *)name {
+    DDLogVerbose(@"%@ setLevelWithName: %@", LOG_TAG, name);
+    
+    if ([name length] > 0) {
+        [self.twinmeContext setLevelWithRequestId:[self newOperation:SET_LEVEL] name:name];
+    }
+}
 
-- (void)activeProfile:(nonnull TLProfile *)profile {
-    DDLogVerbose(@"%@ activeProfile: %@", LOG_TAG, profile);
+- (void)createLevelWithName:(NSString *)name {
+    DDLogVerbose(@"%@ createLevelWithName: %@", LOG_TAG, name);
     
-    self.profile = profile;
+    if ([name length] > 0) {
+        [self.twinmeContext createLevelWithRequestId:[self newOperation:CREATE_LEVEL] name:name];
+    }
+}
+
+- (void)deleteLevelWithName:(NSString *)name {
+    DDLogVerbose(@"%@ deleteLevelWithName: %@", LOG_TAG, name);
     
-    self.work = UPDATE_SPACE;
-    self.state &= ~(UPDATE_SPACE | UPDATE_SPACE_DONE);
+    if ([name length] > 0) {
+        [self.twinmeContext deleteLevelWithRequestId:[self newOperation:DELETE_LEVEL] name:name];
+    }
+}
+
+- (void)subscribeFeature:(nonnull NSString*)productId purchaseToken:(nonnull NSString *)purchaseToken purchaseOrderId:(nonnull NSString *)purchaseOrderId {
+    DDLogVerbose(@"%@ subscribeFeature: %@ purchaseToken: %@ purchaseOrderId: %@", LOG_TAG, productId, purchaseToken, purchaseOrderId);
+    
+    self.productId = productId;
+    self.purchaseToken = purchaseToken;
+    self.purchaseOrderId = purchaseOrderId;
+    
+    self.work |= SUBSCRIBE_FEATURE;
+    self.state &= ~(SUBSCRIBE_FEATURE | SUBSCRIBE_FEATURE_DONE);
     [self showProgressIndicator];
     [self startOperation];
 }
@@ -366,22 +473,6 @@ static const int GET_CONTACTS_DONE = 1 << 15;
     //
     // Step 4
     //
-    if ((self.state & GET_PROFILES) == 0) {
-        self.state |= GET_PROFILES;
-
-        [self.twinmeContext getProfilesWithBlock:^(TLBaseServiceErrorCode errorCode, NSArray<TLProfile *> *list) {
-            [self onGetProfiles:list];
-        }];
-        return;
-    }
-    
-    if ((self.state & GET_PROFILES_DONE) == 0) {
-        return;
-    }
-
-    //
-    // Step 5
-    //
 
     if ((self.state & GET_TRANSFER_CALL) == 0) {
         self.state |= GET_TRANSFER_CALL;
@@ -402,6 +493,25 @@ static const int GET_CONTACTS_DONE = 1 << 15;
         return;
     }
 
+    //
+    // Step 5: get the list of spaces.
+    //
+    if ((self.state & GET_SPACES) == 0) {
+        self.state |= GET_SPACES;
+
+        [self.twinmeContext findSpacesWithPredicate:^BOOL(TLSpace *space) {
+            return YES;
+        } withBlock:^(NSMutableArray<TLSpace *> *spaces) {
+            self.state |= GET_SPACES_DONE;
+            [self runOnGetSpaces:spaces];
+            [self onOperation];
+        }];
+        return;
+    }
+    if ((self.state & GET_SPACES_DONE) == 0) {
+        return;
+    }
+        
     //
     // Step 6
     //
@@ -424,20 +534,33 @@ static const int GET_CONTACTS_DONE = 1 << 15;
     }
     
     //
-    // We must update the current profile.
+    // Step 6: get the pending space notifications.
     //
-    if (self.space && self.profile && (self.work & UPDATE_SPACE) != 0) {
-        if ((self.state & UPDATE_SPACE) == 0) {
-            self.state |= UPDATE_SPACE;
+    if ((self.state & GET_SPACE_NOTIFICATIONS) == 0) {
+        self.state |= GET_SPACE_NOTIFICATIONS;
+        
+        [self.twinmeContext getNotificationStatsWithBlock:^(TLBaseServiceErrorCode errorCode, NSDictionary<NSUUID *, TLNotificationServiceNotificationStat *> *spacesWithNotifications) {
+            self.state |= GET_SPACE_NOTIFICATIONS_DONE;
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [(id<MainServiceDelegate>)self.delegate onGetSpacesNotifications:spacesWithNotifications];
+            });
+            [self onOperation];
+        }];
+        return;
+    }
+    if ((self.state & GET_SPACE_NOTIFICATIONS_DONE) == 0) {
+        return;
+    }
+    
+    if ((self.work & SUBSCRIBE_FEATURE) != 0) {
+        if ((self.state & SUBSCRIBE_FEATURE) == 0) {
+            self.state |= SUBSCRIBE_FEATURE;
             
-            int64_t requestId = [self newOperation:UPDATE_SPACE];
-            DDLogVerbose(@"%@ updateSpaceWithRequestId: %lld space: %@ profile: %@", LOG_TAG, requestId, self.space, self.profile);
-            
-            [self.twinmeContext updateSpaceWithRequestId:requestId space:self.space profile:self.profile];
+            int64_t requestId = [self newOperation:SUBSCRIBE_FEATURE];
+            [[self.twinmeContext getAccountService] subscribeFeatureWithRequestId:requestId merchantId:TLMerchantIdentificationTypeApple purchaseProductId:self.productId purchaseToken:self.purchaseToken purchaseOrderId:self.purchaseOrderId];
             return;
         }
-        
-        if ((self.state & UPDATE_SPACE_DONE) == 0) {
+        if ((self.state & SUBSCRIBE_FEATURE_DONE) == 0) {
             return;
         }
     }
@@ -449,23 +572,55 @@ static const int GET_CONTACTS_DONE = 1 << 15;
     [self hideProgressIndicator];
 }
 
+- (void)onTwinlifeOnline {
+    DDLogVerbose(@"%@ onTwinlifeOnline", LOG_TAG);
+    
+    if (self.restarted) {
+        self.restarted = NO;
+        
+        if (((self.state & SUBSCRIBE_FEATURE) != 0 ) && ((self.state & SUBSCRIBE_FEATURE_DONE) == 0)) {
+            self.state &= ~SUBSCRIBE_FEATURE;
+        }
+    }
+}
+
 - (void)onSetCurrentSpace:(nonnull TLSpace *)space {
     DDLogVerbose(@"%@ onSetCurrentSpace: %@", LOG_TAG, space);
-    
+
+    self.space = space;
     self.state |= SET_CURRENT_SPACE_DONE;
     self.state &= ~(GET_PENDING_NOTIFICATIONS | GET_PENDING_NOTIFICATIONS_DONE | GET_CONVERSATIONS | GET_CONVERSATIONS_DONE | GET_CONTACTS | GET_CONTACTS_DONE);
     [self runOnSetCurrentSpace:space];
     [self onOperation];
 }
 
+- (void)onCreateSpace:(nonnull TLSpace *)space {
+    DDLogVerbose(@"%@ onCreateSpace: %@", LOG_TAG, space);
+
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [(id<MainServiceDelegate>)self.delegate onCreateSpace:space];
+    });
+}
+
 - (void)onUpdateSpace:(TLSpace *)space {
     DDLogVerbose(@"%@ onUpdateSpace: %@", LOG_TAG, space);
     
-    self.state |= UPDATE_SPACE_DONE;
     [self runOnUpdateSpace:space];
 }
 
-- (void)onCreateProfile:(TLProfile *)profile {
+- (void)onDeleteSpace:(nonnull NSUUID *)spaceId {
+    DDLogVerbose(@"%@ onDeleteSpace: %@", LOG_TAG, spaceId);
+    
+    [self runOnDeleteSpace:spaceId];
+
+    if (self.space != nil && [spaceId isEqual:self.space.uuid]) {
+        self.space = nil;
+        self.state = 0;
+        [self onOperation];
+    }
+}
+
+- (void)onCreateProfile:(nonnull TLProfile *)profile {
     DDLogVerbose(@"%@ onCreateProfile: %@", LOG_TAG, profile);
     
     if ([self.twinmeContext isCurrentProfile:profile]) {
@@ -475,7 +630,7 @@ static const int GET_CONTACTS_DONE = 1 << 15;
     }
 }
 
-- (void)onUpdateProfile:(TLProfile *)profile {
+- (void)onUpdateProfile:(nonnull TLProfile *)profile {
     DDLogVerbose(@"%@ onUpdateProfile: %@", LOG_TAG, profile);
     
     if ([self.twinmeContext isCurrentProfile:profile]) {
@@ -483,26 +638,6 @@ static const int GET_CONTACTS_DONE = 1 << 15;
             [(id<MainServiceDelegate>)self.delegate onUpdateDefaultProfile:profile];
         });
     }
-}
-
-- (void)onDeleteProfile:(NSUUID *)profileId {
-    DDLogVerbose(@"%@ onDeleteProfile: %@", LOG_TAG, profileId);
-
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [(id<MainServiceDelegate>)self.delegate onDeleteProfile:profileId];
-    });
-    [self onOperation];
-}
-
-- (void)onGetProfiles:(NSArray *)profiles {
-    DDLogVerbose(@"%@ onGetProfiles: %@", LOG_TAG, profiles);
-    
-    self.state |= GET_PROFILES_DONE;
-
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [(id<MainServiceDelegate>)self.delegate onGetProfiles:profiles];
-    });
-    [self onOperation];
 }
 
 - (void)onGetTransfertCall:(NSArray *)callReceivers {
@@ -552,6 +687,8 @@ static const int GET_CONTACTS_DONE = 1 << 15;
     dispatch_async(dispatch_get_main_queue(), ^{
         [(id<MainServiceDelegate>)self.delegate onUpdatePendingNotifications:hasPendingNotifications];
     });
+    self.state &= ~(GET_SPACE_NOTIFICATIONS | GET_SPACE_NOTIFICATIONS_DONE);
+    [self onOperation];
 }
 
 - (void)onGetConversations:(BOOL)hasConversations {
@@ -568,6 +705,27 @@ static const int GET_CONTACTS_DONE = 1 << 15;
     dispatch_async(dispatch_get_main_queue(), ^{
         [(id<MainServiceDelegate>)self.delegate onOpenURL:url];
     });
+}
+
+- (void)onSubscribeUpdate:(TLBaseServiceErrorCode)errorCode {
+    DDLogVerbose(@"%@ onSubscribeUpdate: %d", LOG_TAG, errorCode);
+    
+    // When we are offline or failed to send the request, we must retry.
+    if (errorCode == TLBaseServiceErrorCodeTwinlifeOffline) {
+
+        self.restarted = YES;
+        return;
+    }
+
+    self.state |= SUBSCRIBE_FEATURE_DONE;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if (errorCode == TLBaseServiceErrorCodeSuccess) {
+            [(id<MainServiceDelegate>)self.delegate onSubscribeSuccess];
+        } else {
+            [(id<MainServiceDelegate>)self.delegate onSubscribeFailed:errorCode];
+        }
+    });
+    [self onOperation];
 }
 
 - (void)onFatalErrorWithErrorCode:(TLBaseServiceErrorCode)errorCode databaseError:(NSError *)databaseError {
@@ -597,6 +755,21 @@ static const int GET_CONTACTS_DONE = 1 << 15;
             return;
         }
     }
+    
+    // Trying to create an invalid skredboard level: do nothing.
+    if (operationId == CREATE_LEVEL && errorCode == TLBaseServiceErrorCodeBadRequest) {
+        return;
+    }
+    
+    // Trying to change the skredboard level but new level does not exist: do nothing.
+    if (operationId == SET_LEVEL && (errorCode == TLBaseServiceErrorCodeItemNotFound || errorCode == TLBaseServiceErrorCodeBadRequest)) {
+        return;
+    }
+    
+    // Trying to delete an invalid skredboard: do nothing.
+    if (operationId == DELETE_LEVEL && (errorCode == TLBaseServiceErrorCodeItemNotFound || errorCode == TLBaseServiceErrorCodeBadRequest)) {
+        return;
+    }    
 
     [super onErrorWithOperationId:operationId errorCode:errorCode errorParameter:errorParameter];
 }

@@ -10,7 +10,6 @@ typedef enum {
     FeatureTypeClickToCall,
     FeatureTypeConversation,
     FeatureTypeGroupCall,
-    FeatureTypePrivacy,
     FeatureTypeSpaces,
     FeatureTypeStreaming,
     FeatureTypeTransfertCall,
@@ -18,6 +17,7 @@ typedef enum {
 } FeatureType;
 
 @class UIPremiumFeatureDetail;
+@class TLSpaceSettings;
 
 //
 // Interface: UIPremiumFeature
@@ -26,9 +26,10 @@ typedef enum {
 @interface UIPremiumFeature : NSObject
 
 @property (nonatomic) FeatureType featureType;
+@property (nonatomic, nonnull) TLSpaceSettings *spaceSettings;
 @property (nonatomic, nonnull) NSMutableArray<UIPremiumFeatureDetail *> *featureDetails;
 
-- (nonnull instancetype)initWithFeatureType:(FeatureType)featureType;
+- (nonnull instancetype)initWithFeatureType:(FeatureType)featureType spaceSettings:(nullable TLSpaceSettings *)spaceSettings;
 
 - (nonnull NSString *)getTitle;
 

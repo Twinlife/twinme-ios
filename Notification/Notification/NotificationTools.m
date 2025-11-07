@@ -35,7 +35,7 @@ static const int ddLogLevel = DDLogLevelVerbose;
 static const int ddLogLevel = DDLogLevelWarning;
 #endif
 
-static const BOOL SYSTEM_NOTIFICATION_ON_CONTACT_UPDATE = YES;
+static const BOOL SYSTEM_NOTIFICATION_ON_CONTACT_UPDATE = NO; // Skred does not notify on contact update.
 
 //
 // Implementation: NotificationInfo
@@ -196,6 +196,23 @@ static const BOOL SYSTEM_NOTIFICATION_ON_CONTACT_UPDATE = YES;
             
             break;
 
+        case TLDescriptorTypeGeolocationDescriptor:
+            type = TLNotificationTypeNewGeolocation;
+                
+            if (displayNotificationSender && displayNotificationContent) {
+                notificationBackgroundMessage = TwinmeLocalizedString(@"notification_center_geolocation_message", nil);
+            } else if (displayNotificationSender && !displayNotificationContent) {
+                notificationBackgroundMessage = TwinmeLocalizedString(@"notification_center_message_received", nil);
+            } else if (!displayNotificationSender && displayNotificationContent) {
+                notificationBackgroundMessage = TwinmeLocalizedString(@"notification_center_geolocation_message_received", nil);
+            } else {
+                notificationBackgroundMessage = TwinmeLocalizedString(@"notification_center_message_received", nil);
+            }
+            
+            notificationMessage = TwinmeLocalizedString(@"notification_center_geolocation_message", nil);
+                
+            break;
+                
         case TLDescriptorTypeClearDescriptor:
             type = TLNotificationTypeResetConversation;
 

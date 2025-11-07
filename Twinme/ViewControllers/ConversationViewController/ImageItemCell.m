@@ -12,6 +12,7 @@
 
 #import <CocoaLumberjack.h>
 
+#import <Twinme/TLTwinmeAttributes.h>
 #import <Twinlife/TLConversationService.h>
 
 #import <Twinme/TLMessage.h>
@@ -31,9 +32,13 @@
 #import <TwinmeCommon/AsyncVideoLoader.h>
 #import <TwinmeCommon/Design.h>
 
+#import "CustomAppearance.h"
 #import "DecoratedLabel.h"
-#import "UIView+Toast.h"
+#import "EphemeralView.h"
 #import "UIImage+Animated.h"
+#import "UIColor+Hex.h"
+#import "UIView+GradientBackgroundColor.h"
+#import "UIView+Toast.h"
 
 #if 0
 static const int ddLogLevel = DDLogLevelVerbose;
@@ -78,6 +83,11 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
 @property (weak, nonatomic) IBOutlet UIImageView *replyImageView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *replyToImageContentViewTopConstraint;
 @property (weak, nonatomic) IBOutlet UIView *replyToImageContentView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *gradientBottomViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet UIView *gradientBottomView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *ephemeralViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *ephemeralViewLeadingConstraint;
+@property (weak, nonatomic) IBOutlet EphemeralView *ephemeralView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *replyActionImageViewHeightConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *replyActionImageViewLeadingConstraint;
 @property (weak, nonatomic) IBOutlet UIImageView *replyActionImageView;
@@ -98,6 +108,8 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
 @property (nonatomic) BOOL isDeleteAnimationStarted;
 @property (nonatomic) BOOL isAnimatedImage;
 @property (nonatomic) AsyncImageLoader *imageLoader;
+
+@property (nonatomic) NSTimer *updateEphemeralTimer;
 
 @end
 
@@ -203,6 +215,15 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
     
     self.replyImageView.clipsToBounds = YES;
     self.replyImageView.layer.cornerRadius = 6.0;
+    
+    self.gradientBottomViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    [self.gradientBottomView setupGradientBackgroundFromColors:Design.BACKGROUND_GRADIENT_COLORS_BLACK];
+    self.gradientBottomView.hidden = YES;
+    
+    self.ephemeralViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    self.ephemeralViewLeadingConstraint.constant *= Design.WIDTH_RATIO;
+    
+    self.ephemeralView.tintColor = [UIColor whiteColor];
     
     self.replyActionImageViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     self.replyActionImageViewLeadingConstraint.constant *= Design.WIDTH_RATIO;
@@ -394,6 +415,15 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
                 break;
             }
                 
+            case TLDescriptorTypeGeolocationDescriptor: {
+                self.replyView.hidden = NO;
+                self.replyToImageContentView.hidden = YES;
+                self.replyViewTopConstraint.constant = topMargin;
+                [self.replyLabel setPaddingWithTop:heightPadding left:widthPadding bottom:heightPadding right:widthPadding];
+                self.replyLabel.text = TwinmeLocalizedString(@"application_location", nil);
+                break;
+            }
+                
             case TLDescriptorTypeNamedFileDescriptor: {
                 self.replyView.hidden = NO;
                 self.replyToImageContentView.hidden = YES;
@@ -460,11 +490,26 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
         self.replyToImageContentViewTopConstraint.constant = 0;
     }
     
-    self.contentImageView.backgroundColor = self.replyView.hidden ? [UIColor clearColor] : Design.MAIN_COLOR;
-    
+    self.contentImageView.backgroundColor = self.replyView.hidden ? [UIColor clearColor] : [[conversationViewController getCustomAppearance] getMessageBackgroundColor];
+
+    if (self.item.isEphemeralItem) {
+        self.gradientBottomView.hidden = NO;
+        
+        if (self.updateEphemeralTimer) {
+            [self.updateEphemeralTimer invalidate];
+            self.updateEphemeralTimer = nil;
+        }
+        
+        [self updateEphemeralView];
+        self.updateEphemeralTimer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(updateEphemeralView) userInfo:nil repeats:YES];
+    } else {
+        self.gradientBottomView.hidden = YES;
+    }
+
     self.contentDeleteView.hidden = YES;
     
     self.stateImageView.backgroundColor = [UIColor clearColor];
+    self.stateImageView.tintColor = [UIColor clearColor];
     
     int corners = imageItem.corners;
     switch (imageItem.state) {
@@ -495,7 +540,8 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
             [self.stateImageView.layer removeAllAnimations];
             self.stateImageView.image = [conversationViewController getContactAvatarWithUUID:[imageItem peerTwincodeOutboundId]];
             if ([self.stateImageView.image isEqual:[TLTwinmeAttributes DEFAULT_GROUP_AVATAR]]) {
-                self.stateImageView.backgroundColor = Design.GREY_ITEM;
+                self.stateImageView.backgroundColor = [UIColor colorWithHexString:Design.DEFAULT_COLOR alpha:1.0];
+                self.stateImageView.tintColor = [UIColor whiteColor];
             }
             break;
             
@@ -547,6 +593,8 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
             [self.contentView bringSubviewToFront:self.replyView];
             [self.contentView bringSubviewToFront:self.replyToImageContentView];
             [self.contentView bringSubviewToFront:self.contentImageView];
+            [self.contentView bringSubviewToFront:self.gradientBottomView];
+            [self.contentView bringSubviewToFront:self.ephemeralView];
             [self.contentView bringSubviewToFront:self.annotationCollectionView];
         }
     } else {
@@ -559,6 +607,22 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
     
     [self updateColor];
     [self setNeedsDisplay];
+}
+
+- (void)updateEphemeralView {
+    
+    if (self.item.state == ItemStateRead) {
+        CGFloat timeSinceRead = ([[NSDate date] timeIntervalSince1970] * 1000) - self.item.readTimestamp;
+        CGFloat percent = 1.0 - (timeSinceRead / self.item.expireTimeout);
+        if (percent < 0) {
+            percent = 0.0;
+        } else if (percent > 1) {
+            percent = 1.0;
+        }
+        [self.ephemeralView updateWithPercent:percent color:[UIColor whiteColor] size:self.ephemeralViewHeightConstraint.constant];
+    } else {
+        [self.ephemeralView updateWithPercent:1.0 color:[UIColor whiteColor] size:self.ephemeralViewHeightConstraint.constant];
+    }
 }
 
 - (void)startDeleteAnimation {
@@ -741,7 +805,6 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
     }
 }
 
-
 #pragma - mark UIView (UIViewRendering)
 
 - (void)drawRect:(CGRect)rect {
@@ -822,6 +885,25 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
     maskReplyImage.path = path.CGPath;
     self.replyToImageContentView.layer.masksToBounds = YES;
     self.replyToImageContentView.layer.mask = maskReplyImage;
+    
+    width = self.gradientBottomView.bounds.size.width;
+    height = self.gradientBottomView.bounds.size.height;
+    topLeftRadius = 0;
+    topRightRadius = 0;
+    path = [[UIBezierPath alloc] init];
+    [path moveToPoint:CGPointMake(topLeftRadius, 0)];
+    [path addLineToPoint:CGPointMake(width - topRightRadius, 0)];
+    [path addArcWithCenter:CGPointMake(width - topRightRadius, topRightRadius) radius:topRightRadius startAngle:-M_PI_2 endAngle:0 clockwise:YES];
+    [path addLineToPoint:CGPointMake(width, height - bottomRightRadius)];
+    [path addArcWithCenter:CGPointMake(width - bottomRightRadius, height - bottomRightRadius) radius:bottomRightRadius startAngle:0 endAngle:M_PI_2 clockwise:YES];
+    [path addLineToPoint:CGPointMake(bottomLeftRadius, height)];
+    [path addArcWithCenter:CGPointMake(bottomLeftRadius, height - bottomLeftRadius) radius:bottomLeftRadius startAngle:M_PI_2 endAngle:M_PI clockwise:YES];
+    [path addLineToPoint:CGPointMake(0, topLeftRadius)];
+    [path addArcWithCenter:CGPointMake(topLeftRadius, topLeftRadius) radius:topLeftRadius startAngle:M_PI endAngle:-M_PI_2 clockwise:YES];
+    mask = [CAShapeLayer layer];
+    mask.path = path.CGPath;
+    self.gradientBottomView.layer.masksToBounds = YES;
+    self.gradientBottomView.layer.mask = mask;
 }
 
 - (void)updateColor {

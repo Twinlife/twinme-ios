@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2020 twinlife SA.
+ *  Copyright (c) 2020-2022 twinlife SA.
  *  SPDX-License-Identifier: AGPL-3.0-only
  *
  *  Contributors:
@@ -8,6 +8,8 @@
 
 #import <CocoaLumberjack.h>
 
+#import <Twinme/TLSpaceSettings.h>
+
 #import <Twinlife/TLAccountService.h>
 
 #import <Utils/NSString+Utils.h>
@@ -15,17 +17,21 @@
 #import "MessageSettingsViewController.h"
 
 #import "SettingsItemCell.h"
-#import "SettingsSectionHeaderCell.h"
 #import "SettingsInformationCell.h"
+#import "SettingsSectionHeaderCell.h"
 #import "SettingsValueItemCell.h"
 #import "TwinmeSettingsItemCell.h"
 
+#import <TwinmeCommon/SpaceSettingsService.h>
+
+#import "SpaceSetting.h"
 #import <TwinmeCommon/Design.h>
 #import <TwinmeCommon/NotificationSound.h>
+
 #import "SelectNotificationSoundViewController.h"
 #import "SwitchView.h"
-#import "UIPremiumFeature.h"
-#import "PremiumFeatureConfirmView.h"
+#import "UITimeout.h"
+#import "AlertView.h"
 #import "MenuSelectValueView.h"
 
 #if 0
@@ -35,22 +41,26 @@ static const int ddLogLevel = DDLogLevelWarning;
 #endif
 
 static NSString *SETTINGS_CELL_IDENTIFIER = @"SettingsCellIdentifier";
-static NSString *HEADER_SETTINGS_CELL_IDENTIFIER = @"HeaderSettingsCellIdentifier";
-static NSString *SETTINGS_INFORMATION_CELL_IDENTIFIER = @"SettingsInformationCellIdentifier";
 static NSString *SETTINGS_VALUE_CELL_IDENTIFIER = @"SettingsValueCellIdentifier";
+static NSString *SETTINGS_INFORMATION_CELL_IDENTIFIER = @"SettingsInformationCellIdentifier";
+static NSString *HEADER_SETTINGS_CELL_IDENTIFIER = @"HeaderSettingsCellIdentifier";
 static NSString *TWINME_SETTINGS_CELL_IDENTIFIER = @"TwinmeSettingsCellIdentifier";
 
 //
 // Interface: MessageSettingsViewController ()
 //
 
-@interface MessageSettingsViewController () <SettingsActionDelegate, MenuSelectValueDelegate, ConfirmViewDelegate>
+@interface MessageSettingsViewController () <SettingsActionDelegate, SpaceSettingsServiceDelegate, AlertViewDelegate, MenuSelectValueDelegate>
 
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
+
+@property (nonatomic) SpaceSettingsService *spaceSettingsService;
+@property (nonatomic) TLSpaceSettings *defaultSpaceSettings;
 
 @end
 
 typedef enum {
+    SECTION_INFO,
     SECTION_NOTIFICATION,
     SECTION_ALLOW_COPY,
     SECTION_CALLS,
@@ -66,7 +76,9 @@ typedef enum {
     TAG_DISPLAY_NOTIFCATION_LIKE,
     TAG_ALLOW_COPY_TEXT,
     TAG_ALLOW_COPY_FILE,
-    TAG_ALLOW_EPHEMERAL,
+    TAG_ALLOW_COPY_INFORMATION,
+    TAG_EPHEMERAL_MESSAGE,
+    TAG_EPHEMERAL_MESSAGE_INFORMATION,
     TAG_LINK_PREVIEW
 } TLTSettingTag;
 
@@ -84,6 +96,9 @@ typedef enum {
     
     [super viewDidLoad];
     
+    self.spaceSettingsService = [[SpaceSettingsService alloc]initWithTwinmeContext:self.twinmeContext delegate:self];
+    self.defaultSpaceSettings = [self.twinmeContext defaultSpaceSettings];
+    
     [self initViews];
 }
 
@@ -93,6 +108,15 @@ typedef enum {
     [super viewWillAppear:animated];
     
     [self.tableView deselectRowAtIndexPath:[self.tableView indexPathForSelectedRow] animated:YES];
+}
+
+#pragma mark - SpaceSettingsServiceDelegate
+
+- (void)onUpdateSpaceDefaultSettings:(TLSpaceSettings *)spaceSettings {
+    DDLogVerbose(@"%@ onUpdateSpaceDefaultSettings: %@", LOG_TAG, spaceSettings);
+    
+    self.defaultSpaceSettings = spaceSettings;
+    [self.tableView reloadData];
 }
 
 #pragma mark - SettingsActionDelegate
@@ -114,21 +138,16 @@ typedef enum {
             break;
             
         case TAG_ALLOW_COPY_TEXT:
-            [self.twinmeApplication setAllowCopyTextWithState:updatedSwitch.isOn];
+            [self.defaultSpaceSettings setMessageCopyAllowed:updatedSwitch.isOn];
             break;
             
         case TAG_ALLOW_COPY_FILE:
-            [self.twinmeApplication setAllowCopyFileWithState:updatedSwitch.isOn];
+            [self.defaultSpaceSettings setFileCopyAllowed:updatedSwitch.isOn];
             break;
             
-        case TAG_ALLOW_EPHEMERAL: {
-            PremiumFeatureConfirmView *premiumFeatureConfirmView = [[PremiumFeatureConfirmView alloc] init];
-            premiumFeatureConfirmView.confirmViewDelegate = self;
-            [premiumFeatureConfirmView initWithPremiumFeature:[[UIPremiumFeature alloc]initWithFeatureType:FeatureTypePrivacy] parentViewController:self.navigationController];
-            [self.navigationController.view addSubview:premiumFeatureConfirmView];
-            [premiumFeatureConfirmView showConfirmView];
+        case TAG_EPHEMERAL_MESSAGE:
+            [self.defaultSpaceSettings setBooleanWithName:PROPERTY_ALLOW_EPHEMERAL_MESSAGE value:updatedSwitch.isOn];
             break;
-        }
             
         case TAG_LINK_PREVIEW:
             [self.twinmeApplication setVisualizationLinkWithState:updatedSwitch.isOn];
@@ -137,6 +156,8 @@ typedef enum {
         default:
             break;
     }
+    
+    [self saveDefaultSpaceSettings];
 }
 
 #pragma mark - UITableViewDataSource
@@ -153,14 +174,15 @@ typedef enum {
     if ([self isInformationPath:indexPath]) {
         return UITableViewAutomaticDimension;
     }
-    
     return Design.SETTING_CELL_HEIGHT;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
     DDLogVerbose(@"%@ tableView: %@ heightForHeaderInSection: %ld", LOG_TAG, tableView, (long)section);
     
-    if (section == SECTION_LINK) {
+    if (section == SECTION_INFO) {
+        return CGFLOAT_MIN;
+    } else if (section == SECTION_LINK) {
         if (@available(iOS 13.0, *)) {
             return Design.SETTING_SECTION_HEIGHT;
         }
@@ -203,12 +225,12 @@ typedef enum {
             break;
             
         case SECTION_EPHEMERAL:
-            sectionName = TwinmeLocalizedString(@"settings_view_controller_ephemeral_section_title", nil).uppercaseString;;
+            sectionName = [NSString stringWithFormat:@"%@", TwinmeLocalizedString(@"settings_view_controller_ephemeral_section_title", nil)];
             hideSeparator = YES;
             break;
             
         case SECTION_CONTENT:
-            sectionName = TwinmeLocalizedString(@"settings_view_controller_content_title", nil).uppercaseString;;
+            sectionName = TwinmeLocalizedString(@"settings_view_controller_content_title", nil).uppercaseString;
             hideSeparator = YES;
             break;
             
@@ -232,6 +254,10 @@ typedef enum {
     
     NSInteger numberOfRowsInSection;
     switch (section) {
+        case SECTION_INFO:
+            numberOfRowsInSection = 1;
+            break;
+            
         case SECTION_NOTIFICATION:
             numberOfRowsInSection = 3;
             break;
@@ -240,11 +266,17 @@ typedef enum {
             numberOfRowsInSection = 3;
             break;
             
-        case SECTION_CALLS:
-            numberOfRowsInSection = 2;
+        case SECTION_EPHEMERAL: {
+            BOOL allowEphemeral = [self.defaultSpaceSettings getBooleanWithName:PROPERTY_ALLOW_EPHEMERAL_MESSAGE defaultValue:NO];
+            if (allowEphemeral) {
+                numberOfRowsInSection = 3;
+            } else {
+                numberOfRowsInSection = 2;
+            }
             break;
-            
-        case SECTION_EPHEMERAL:
+        }
+
+        case SECTION_CALLS:
             numberOfRowsInSection = 2;
             break;
             
@@ -278,7 +310,9 @@ typedef enum {
         }
         
         NSString *text = @"";
-        if (indexPath.section == SECTION_ALLOW_COPY) {
+        if (indexPath.section == SECTION_INFO) {
+            text = TwinmeLocalizedString(@"settings_view_controller_default_value_message", nil);
+        } else if (indexPath.section == SECTION_ALLOW_COPY) {
             text = TwinmeLocalizedString(@"settings_view_controller_allow_copy_category_title", nil);
         } else if (indexPath.section == SECTION_CALLS) {
             text = TwinmeLocalizedString(@"settings_view_controller_display_call_title", nil);
@@ -293,7 +327,7 @@ typedef enum {
         [cell bindWithText:text];
         
         return cell;
-    }  else if (indexPath.section == SECTION_CONTENT || indexPath.section == SECTION_CALLS) {
+    } else if ((indexPath.section == SECTION_EPHEMERAL && indexPath.row == 2) || indexPath.section == SECTION_CONTENT || indexPath.section == SECTION_CALLS) {
         SettingsValueItemCell *cell = [tableView dequeueReusableCellWithIdentifier:SETTINGS_VALUE_CELL_IDENTIFIER];
         if (!cell) {
             cell = [[SettingsValueItemCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:SETTINGS_VALUE_CELL_IDENTIFIER];
@@ -321,8 +355,9 @@ typedef enum {
                     value = TwinmeLocalizedString(@"conversation_view_controller_reduce_menu_original", nil);
                 }
             }
-        } else {
-            title = nil;
+            [cell bindWithTitle:title value:value backgroundColor:Design.WHITE_COLOR];
+        } else if (indexPath.section == SECTION_CALLS) {
+            title = TwinmeLocalizedString(@"settings_view_controller_display_call_title", nil);
             
             if ([self.twinmeApplication displayCallsMode] == TLDisplayCallsModeNone) {
                 value = TwinmeLocalizedString(@"settings_view_controller_display_call_none", nil);;
@@ -331,10 +366,12 @@ typedef enum {
             } else {
                 value = TwinmeLocalizedString(@"history_view_controller_all_call_segmented_control", nil);;
             }
+            [cell bindWithTitle:title value:value backgroundColor:Design.WHITE_COLOR];
+        } else {
+            NSString *expireTimeoutStringValue = [self.defaultSpaceSettings getStringWithName:PROPERTY_TIMEOUT_EPHEMERAL_MESSAGE defaultValue:[NSString stringWithFormat:@"%d", DEFAULT_TIMEOUT_MESSAGE]];
+            NSInteger expireTimeout = [expireTimeoutStringValue integerValue];
+            [cell bindWithTitle:TwinmeLocalizedString(@"application_timeout", nil) value:[NSString formatTimeout:expireTimeout] hiddenAccessory:YES];
         }
-        
-        [cell bindWithTitle:title value:value];
-        
         return cell;
     } else {
         SettingsItemCell *cell = [tableView dequeueReusableCellWithIdentifier:SETTINGS_CELL_IDENTIFIER];
@@ -348,7 +385,6 @@ typedef enum {
         BOOL switchState = NO;
         int tag = 0;
         BOOL hiddenSwitch = NO;
-        BOOL disableSwitch = NO;
         switch (indexPath.section) {
             case SECTION_NOTIFICATION:
                 if (indexPath.row == 0) {
@@ -383,7 +419,7 @@ typedef enum {
                 
             case SECTION_ALLOW_COPY:
                 if (indexPath.row == 1) {
-                    if ([self.twinmeApplication allowCopyText]) {
+                    if ([self.defaultSpaceSettings messageCopyAllowed]) {
                         switchState = YES;
                     } else {
                         switchState = NO;
@@ -392,7 +428,7 @@ typedef enum {
                     tag = TAG_ALLOW_COPY_TEXT;
                     title = TwinmeLocalizedString(@"settings_view_controller_allow_copy_text_title", nil);
                 } else if (indexPath.row == 2) {
-                    if ([self.twinmeApplication allowCopyFile]) {
+                    if ([self.defaultSpaceSettings fileCopyAllowed]) {
                         switchState = YES;
                     } else {
                         switchState = NO;
@@ -405,10 +441,10 @@ typedef enum {
                 
             case SECTION_EPHEMERAL:
                 if (indexPath.row == 1) {
-                    switchState =  NO;
+                    BOOL allowEphemeral = [self.defaultSpaceSettings getBooleanWithName:PROPERTY_ALLOW_EPHEMERAL_MESSAGE defaultValue:NO];
+                    switchState = allowEphemeral;
                     hiddenSwitch = NO;
-                    disableSwitch = YES;
-                    tag = TAG_ALLOW_EPHEMERAL;
+                    tag = TAG_EPHEMERAL_MESSAGE;
                     title = TwinmeLocalizedString(@"settings_view_controller_ephemeral_title", nil);
                 }
                 break;
@@ -416,7 +452,6 @@ typedef enum {
             case SECTION_LINK:
                 switchState =  self.twinmeApplication.visualizationLink;
                 hiddenSwitch = NO;
-                disableSwitch = NO;
                 tag = TAG_LINK_PREVIEW;
                 title = TwinmeLocalizedString(@"conversation_settings_view_controller_link_preview", nil);
                 break;
@@ -424,7 +459,7 @@ typedef enum {
                 break;
         }
         
-        [cell bindWithTitle:title icon:nil stateSwitch:switchState tagSwitch:tag hiddenSwitch:hiddenSwitch disableSwitch:disableSwitch backgroundColor:Design.WHITE_COLOR hiddenSeparator:NO];
+        [cell bindWithTitle:title icon:nil stateSwitch:switchState tagSwitch:tag hiddenSwitch:hiddenSwitch disableSwitch:NO backgroundColor:Design.WHITE_COLOR hiddenSeparator:NO];
         
         return cell;
     }
@@ -435,7 +470,10 @@ typedef enum {
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     DDLogVerbose(@"%@ tableView: %@ didSelectRowAtIndexPath: %@", LOG_TAG, tableView, indexPath);
     
-    if (indexPath.section == SECTION_CONTENT) {
+    BOOL allowEphemeral = [self.defaultSpaceSettings getBooleanWithName:PROPERTY_ALLOW_EPHEMERAL_MESSAGE defaultValue:NO];
+    if (indexPath.section == SECTION_EPHEMERAL && allowEphemeral && indexPath.row == 2) {
+        [self openMenuSelectValue:MenuSelectValueTypeTimeoutEphemeralMessage];
+    } else if (indexPath.section == SECTION_CONTENT) {
         if (indexPath.row == 1) {
             [self openMenuSelectValue:MenuSelectValueTypeImageSize];
         } else if (indexPath.row == 2) {
@@ -447,6 +485,12 @@ typedef enum {
 }
 
 #pragma mark - MenuSelectValueDelegate
+
+- (void)cancelMenuSelectValue:(MenuSelectValueView *)menuSelectValueView {
+    DDLogVerbose(@"%@ cancelMenu", LOG_TAG);
+    
+    [menuSelectValueView removeFromSuperview];
+}
 
 - (void)selectValue:(MenuSelectValueView *)menuSelectValueView value:(int)value {
     DDLogVerbose(@"%@ selectValue: %d", LOG_TAG, value);
@@ -464,38 +508,14 @@ typedef enum {
     [self.tableView reloadData];
 }
 
-- (void)cancelMenuSelectValue:(MenuSelectValueView *)menuSelectValueView {
-    DDLogVerbose(@"%@ cancelMenuSelectValue: %@", LOG_TAG, menuSelectValueView);
+- (void)selectTimeout:(MenuSelectValueView *)menuSelectValueView uiTimeout:(UITimeout *)uiTimeout {
+    DDLogVerbose(@"%@ selectTimeout: %@", LOG_TAG, uiTimeout);
     
     [menuSelectValueView removeFromSuperview];
-}
-
-#pragma mark - ConfirmViewDelegate
-
-- (void)didTapConfirm:(nonnull AbstractConfirmView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractConfirmView);
     
-    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:TwinmeLocalizedString(@"twinme_plus_link", nil)] options:@{} completionHandler:nil];
-
-    [abstractConfirmView closeConfirmView];
-}
-
-- (void)didTapCancel:(nonnull AbstractConfirmView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didTapCancel: %@", LOG_TAG, abstractConfirmView);
+    [self.defaultSpaceSettings setStringWithName:PROPERTY_TIMEOUT_EPHEMERAL_MESSAGE value:[NSString stringWithFormat:@"%lld", uiTimeout.timeout]];
     
-    [abstractConfirmView closeConfirmView];
-}
-
-- (void)didClose:(nonnull AbstractConfirmView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didClose: %@", LOG_TAG, abstractConfirmView);
-    
-    [abstractConfirmView closeConfirmView];
-}
-
-- (void)didFinishCloseAnimation:(nonnull AbstractConfirmView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didFinishCloseAnimation: %@", LOG_TAG, abstractConfirmView);
-    
-    [abstractConfirmView removeFromSuperview];
+    [self saveDefaultSpaceSettings];
 }
 
 #pragma mark - Private methods
@@ -517,6 +537,18 @@ typedef enum {
     self.tableView.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
 }
 
+- (void)finish {
+    DDLogVerbose(@"%@ finish", LOG_TAG);
+    
+    [self.spaceSettingsService dispose];
+}
+
+- (void)saveDefaultSpaceSettings {
+    DDLogVerbose(@"%@ saveDefaultSpaceSettings", LOG_TAG);
+    
+    [self.spaceSettingsService updateDefaultSpaceSettings:self.defaultSpaceSettings];
+}
+
 - (void)openMenuSelectValue:(MenuSelectValueType)menuSelectValueType {
     DDLogVerbose(@"%@ openMenuSelectValue", LOG_TAG);
     
@@ -524,6 +556,13 @@ typedef enum {
     menuSelectValueView.menuSelectValueDelegate = self;
     [self.tabBarController.view addSubview:menuSelectValueView];
     [menuSelectValueView setMenuSelectValueTypeWithType:menuSelectValueType];
+    
+    if (menuSelectValueType == MenuSelectValueTypeTimeoutEphemeralMessage) {
+        NSString *expireTimeoutStringValue = [self.defaultSpaceSettings getStringWithName:PROPERTY_TIMEOUT_EPHEMERAL_MESSAGE defaultValue:[NSString stringWithFormat:@"%d", DEFAULT_TIMEOUT_MESSAGE]];
+        int expireTimeout = [expireTimeoutStringValue intValue];
+        [menuSelectValueView setSelectedValueWithValue:expireTimeout];
+    }
+    
     [menuSelectValueView openMenu];
 }
 
@@ -541,7 +580,7 @@ typedef enum {
 
 - (BOOL)isInformationPath:(NSIndexPath *)indexPath {
     
-    if ((indexPath.section == SECTION_ALLOW_COPY || indexPath.section == SECTION_EPHEMERAL || indexPath.section == SECTION_CONTENT || indexPath.section == SECTION_LINK || indexPath.section == SECTION_CALLS) && indexPath.row == 0) {
+    if ((indexPath.section == SECTION_INFO || indexPath.section == SECTION_ALLOW_COPY || indexPath.section == SECTION_EPHEMERAL || indexPath.section == SECTION_CONTENT || indexPath.section == SECTION_LINK) && indexPath.row == 0) {
         return YES;
     }
     

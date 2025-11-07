@@ -140,6 +140,13 @@ static NSString *MENU_ITEM_CELL_IDENTIFIER = @"MenuItemCellIdentifier";
             [self.actionsArray addObject:[[UIMenuItemAction alloc]initWithTitle:TwinmeLocalizedString(@"application_select_more", nil) image:[UIImage imageNamed:@"SelectMoreItem"] actionType:ActionTypeSelectMore]];
             break;
             
+        case MenuTypeLocation:
+            [self.actionsArray addObject:[[UIMenuItemAction alloc]initWithTitle:TwinmeLocalizedString(@"conversation_view_controller_menu_item_view_info_title", nil) image:[UIImage imageNamed:@"InfoItem"] actionType:ActionTypeInfo]];
+            [self.actionsArray addObject:[[UIMenuItemAction alloc]initWithTitle:TwinmeLocalizedString(@"conversation_view_controller_menu_item_view_reply_title", nil) image:[UIImage imageNamed:@"ReplyItem"] actionType:ActionTypeReply]];
+            [self.actionsArray addObject:[[UIMenuItemAction alloc]initWithTitle:TwinmeLocalizedString(@"conversation_view_controller_menu_item_view_delete_title", nil) image:[UIImage imageNamed:@"ToolbarTrash"] actionType:ActionTypeDelete]];
+            [self.actionsArray addObject:[[UIMenuItemAction alloc]initWithTitle:TwinmeLocalizedString(@"application_select_more", nil) image:[UIImage imageNamed:@"SelectMoreItem"] actionType:ActionTypeSelectMore]];
+            break;
+            
         default:
             break;
     }

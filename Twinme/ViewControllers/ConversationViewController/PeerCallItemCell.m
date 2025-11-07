@@ -8,6 +8,8 @@
 
 #import <CocoaLumberjack.h>
 
+#import <Twinme/TLTwinmeAttributes.h>
+
 #import <Twinlife/TLConversationService.h>
 
 #import <Utils/NSString+Utils.h>
@@ -16,8 +18,12 @@
 
 #import "ConversationViewController.h"
 
+#import "CustomAppearance.h"
+
 #import <TwinmeCommon/Design.h>
+
 #import "PeerCallItem.h"
+#import "UIColor+Hex.h"
 
 #if 0
 static const int ddLogLevel = DDLogLevelVerbose;
@@ -68,6 +74,8 @@ static const int ddLogLevel = DDLogLevelWarning;
 @property (nonatomic) CGFloat bottomRightRadius;
 @property (nonatomic) CGFloat bottomLeftRadius;
 @property (nonatomic) CAShapeLayer *borderLayer;
+
+@property (nonatomic) CustomAppearance *customAppearance;
 
 @end
 
@@ -193,6 +201,13 @@ static const int ddLogLevel = DDLogLevelWarning;
     
     [super bindWithItem:item conversationViewController:conversationViewController];
     
+    self.customAppearance = [conversationViewController getCustomAppearance];
+    
+    [self.contentCallView setBackgroundColor:[self.customAppearance getPeerMessageBackgroundColor]];
+    self.callTypeLabel.textColor = [self.customAppearance getPeerMessageTextColor];
+    self.callAgainLabel.textColor = [self.customAppearance getPeerMessageTextColor];
+    self.callAgainImageView.tintColor = [self.customAppearance getPeerMessageTextColor];
+    
     PeerCallItem *peerCallItem = (PeerCallItem *)item;
     self.callDescriptor = peerCallItem.peerCallDescriptor;
     
@@ -204,16 +219,24 @@ static const int ddLogLevel = DDLogLevelWarning;
     
     self.callAvatarImageView.image = [conversationViewController getContactAvatarWithUUID:item.peerTwincodeOutboundId];
     
+    if ([self.callAvatarImageView.image isEqual:[TLTwinmeAttributes DEFAULT_GROUP_AVATAR]]) {
+        self.callAvatarImageView.backgroundColor = [UIColor colorWithHexString:Design.DEFAULT_COLOR alpha:1.0];
+        self.callAvatarImageView.tintColor = [UIColor whiteColor];
+    } else {
+        self.callAvatarImageView.backgroundColor = [UIColor clearColor];
+        self.callAvatarImageView.tintColor = [UIColor clearColor];
+    }
+    
     if (!self.callDescriptor.isAccepted && self.callDescriptor.isIncoming) {
         if (self.callDescriptor.isTerminated) {
             self.callInfoLabel.textColor = Design.DELETE_COLOR_RED;
             self.callInfoLabel.text = TwinmeLocalizedString(@"conversation_view_controller_call_missed", nil);
         } else {
-            self.callInfoLabel.textColor = Design.FONT_COLOR_DEFAULT;
+            self.callInfoLabel.textColor = [self.customAppearance getPeerMessageTextColor];
             self.callInfoLabel.text = @"";
         }
     } else {
-        self.callInfoLabel.textColor = Design.FONT_COLOR_DEFAULT;
+        self.callInfoLabel.textColor = [self.customAppearance getPeerMessageTextColor];
         NSDateComponentsFormatter *dateComponentsFormatter = [[NSDateComponentsFormatter alloc] init];
         dateComponentsFormatter.zeroFormattingBehavior = NSDateComponentsFormatterZeroFormattingBehaviorDropAll;
         dateComponentsFormatter.allowedUnits = NSCalendarUnitHour | NSCalendarUnitMinute | NSCalendarUnitSecond;
@@ -223,7 +246,7 @@ static const int ddLogLevel = DDLogLevelWarning;
     
     self.contentCallViewTopConstraint.constant = [conversationViewController getTopMarginWithMask:peerCallItem.corners & ITEM_TOP_LEFT item:item];
     self.contentCallViewBottomConstraint.constant = -[conversationViewController getBottomMarginWithMask:peerCallItem.corners & ITEM_BOTTOM_LEFT item:item];
-        
+    
     int corners = peerCallItem.corners;
     if ([[UIApplication sharedApplication] userInterfaceLayoutDirection] == UIUserInterfaceLayoutDirectionRightToLeft) {
         self.topLeftRadius = [conversationViewController getRadiusWithMask:corners & ITEM_TOP_RIGHT];
@@ -240,6 +263,15 @@ static const int ddLogLevel = DDLogLevelWarning;
     if (peerCallItem.visibleAvatar) {
         self.avatarView.hidden = NO;
         self.avatarView.image = [conversationViewController getContactAvatarWithUUID:item.peerTwincodeOutboundId];
+        
+        if ([self.avatarView.image isEqual:[TLTwinmeAttributes DEFAULT_GROUP_AVATAR]]) {
+            self.avatarView.backgroundColor = [UIColor colorWithHexString:Design.DEFAULT_COLOR alpha:1.0];
+            self.avatarView.tintColor = [UIColor whiteColor];
+        } else {
+            self.avatarView.backgroundColor = [UIColor clearColor];
+            self.avatarView.tintColor = [UIColor clearColor];
+        }
+        
     } else {
         self.avatarView.hidden = YES;
         self.avatarView.image = nil;
@@ -342,7 +374,7 @@ static const int ddLogLevel = DDLogLevelWarning;
     self.borderLayer = [CAShapeLayer layer];
     self.borderLayer.path = mask.path;
     self.borderLayer.fillColor = [UIColor clearColor].CGColor;
-    self.borderLayer.strokeColor = [UIColor clearColor].CGColor;
+    self.borderLayer.strokeColor = [self.customAppearance getPeerMessageBorderColor].CGColor;
     self.borderLayer.lineWidth = Design.ITEM_BORDER_WIDTH;
     self.borderLayer.frame = self.contentCallView.bounds;
     [self.contentCallView.layer addSublayer:self.borderLayer];
@@ -359,10 +391,6 @@ static const int ddLogLevel = DDLogLevelWarning;
 - (void)updateColor {
     DDLogVerbose(@"%@ updateColor", LOG_TAG);
     
-    self.contentCallView.backgroundColor = Design.GREY_ITEM;
-    self.callTypeLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    self.callAgainLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    self.callAgainImageView.tintColor = Design.FONT_COLOR_DEFAULT;
     self.overlayView.backgroundColor = Design.BACKGROUND_COLOR_WHITE_OPACITY85;
 }
 

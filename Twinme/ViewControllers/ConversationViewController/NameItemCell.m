@@ -13,6 +13,8 @@
 #import "NameItem.h"
 #import "ConversationViewController.h"
 
+#import "CustomAppearance.h"
+
 #import <TwinmeCommon/Design.h>
 
 #if 0
@@ -92,6 +94,8 @@ static const CGFloat DESIGN_AVATAR_TRAILING = 18;
     
     self.item = item;
     
+    [self.nameLabel setTextColor:[[conversationViewController getCustomAppearance] getConversationBackgroundText]];
+    
     NameItem *nameItem = (NameItem *)item;
     self.nameLabel.text = nameItem.name;
     
@@ -124,7 +128,6 @@ static const CGFloat DESIGN_AVATAR_TRAILING = 18;
 - (void)updateColor {
     DDLogVerbose(@"%@ updateColor", LOG_TAG);
     
-    self.nameLabel.textColor = Design.FONT_COLOR_DEFAULT;
     self.overlayView.backgroundColor = Design.BACKGROUND_COLOR_WHITE_OPACITY85;
 }
 

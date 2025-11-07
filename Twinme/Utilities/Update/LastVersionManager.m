@@ -11,7 +11,7 @@
 
 #import "LastVersion.h"
 
-#define URL_LAST_VERSION @"https://twin.me/download/twinme-ios.json"
+#define URL_LAST_VERSION @"https://skred.mobi/download/skred-ios.json"
 #define VERSION_KEY @"version"
 #define MINIMUM_OS_KEY @"iOS"
 #define IMAGES_KEY @"images"

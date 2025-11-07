@@ -24,11 +24,15 @@
 #import "InvitationItem.h"
 #import "ConversationViewController.h"
 
+#import "CustomAppearance.h"
+
 #import <TwinmeCommon/ApplicationDelegate.h>
 #import <TwinmeCommon/Design.h>
 #import <TwinmeCommon/TwinmeApplication.h>
+
 #import "UIView+GradientBackgroundColor.h"
 #import "UIView+Toast.h"
+#import "UIColor+Hex.h"
 
 #if 0
 static const int ddLogLevel = DDLogLevelVerbose;
@@ -77,6 +81,9 @@ static const int ddLogLevel = DDLogLevelWarning;
 @property (nonatomic) TwinmeApplication *twinmeApplication;
 @property (nonatomic) TLTwinmeContext *twinmeContext;
 @property (nonatomic, nullable) TLGetTwincodeAction *twincodeAction;
+
+@property (nonatomic) CAShapeLayer *borderLayer;
+@property (nonatomic) CustomAppearance *customAppearance;
 
 @end
 
@@ -206,6 +213,14 @@ static const int ddLogLevel = DDLogLevelWarning;
     }
     
     self.groupImageView.image = avatar;
+    
+    if ([self.groupImageView.image isEqual:[TLTwinmeAttributes DEFAULT_GROUP_AVATAR]]) {
+        self.groupImageView.backgroundColor = [UIColor colorWithHexString:Design.DEFAULT_COLOR alpha:1.0];
+        self.groupImageView.tintColor = [UIColor whiteColor];
+    } else {
+        self.groupImageView.backgroundColor = [UIColor clearColor];
+        self.groupImageView.tintColor = [UIColor clearColor];
+    }
 }
 
 #pragma mark - ItemCell
@@ -214,6 +229,11 @@ static const int ddLogLevel = DDLogLevelWarning;
     DDLogVerbose(@"%@ bindWithItem: %@ conversationViewController: %@", LOG_TAG, item, conversationViewController);
     
     [super bindWithItem:item conversationViewController:conversationViewController];
+    
+    self.customAppearance = [conversationViewController getCustomAppearance];
+    
+    self.invitationLabel.textColor = [self.customAppearance getMessageTextColor];
+    [self.contentInvitationView setBackgroundColor:[self.customAppearance getMessageBackgroundColor]];
     
     InvitationItem *invitationItem = (InvitationItem *)item;
     self.invitationDescriptor = invitationItem.invitationDescriptor;
@@ -272,6 +292,7 @@ static const int ddLogLevel = DDLogLevelWarning;
     self.contentDeleteView.hidden = YES;
     
     self.stateImageView.backgroundColor = [UIColor clearColor];
+    self.stateImageView.tintColor = [UIColor clearColor];
     
     int corners = invitationItem.corners;
     switch (invitationItem.state) {
@@ -303,7 +324,8 @@ static const int ddLogLevel = DDLogLevelWarning;
             self.stateImageView.image = [conversationViewController getContactAvatarWithUUID:[item peerTwincodeOutboundId]];
             
             if ([self.stateImageView.image isEqual:[TLTwinmeAttributes DEFAULT_GROUP_AVATAR]]) {
-                self.stateImageView.backgroundColor = Design.GREY_ITEM;
+                self.stateImageView.backgroundColor = [UIColor colorWithHexString:Design.DEFAULT_COLOR alpha:1.0];
+                self.stateImageView.tintColor = [UIColor whiteColor];
             }
             
             break;
@@ -482,6 +504,18 @@ static const int ddLogLevel = DDLogLevelWarning;
     self.contentInvitationView.layer.masksToBounds = YES;
     self.contentInvitationView.layer.mask = mask;
     
+    if (self.borderLayer) {
+        [self.borderLayer removeFromSuperlayer];
+    }
+    
+    self.borderLayer = [CAShapeLayer layer];
+    self.borderLayer.path = mask.path;
+    self.borderLayer.fillColor = [UIColor clearColor].CGColor;
+    self.borderLayer.strokeColor = [self.customAppearance getMessageBorderColor].CGColor;
+    self.borderLayer.lineWidth = Design.ITEM_BORDER_WIDTH;
+    self.borderLayer.frame = self.contentInvitationView.bounds;
+    [self.contentInvitationView.layer addSublayer:self.borderLayer];
+    
     CAShapeLayer *maskDelete = [CAShapeLayer layer];
     maskDelete.path = path.CGPath;
     self.contentDeleteView.layer.masksToBounds = YES;
@@ -491,7 +525,6 @@ static const int ddLogLevel = DDLogLevelWarning;
 - (void)updateColor {
     DDLogVerbose(@"%@ updateColor", LOG_TAG);
     
-    [self.contentInvitationView setBackgroundColor:Design.MAIN_COLOR];
     self.overlayView.backgroundColor = Design.BACKGROUND_COLOR_WHITE_OPACITY85;
 }
 

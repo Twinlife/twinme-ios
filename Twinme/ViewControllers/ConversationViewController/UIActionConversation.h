@@ -10,10 +10,13 @@ typedef enum {
     ConversationActionTypeCamera,
     ConversationActionTypeFile,
     ConversationActionTypeGallery,
+    ConversationActionTypeLocation,
     ConversationActionTypeManageConversation,
     ConversationActionTypeMediasAndFiles,
     ConversationActionTypeReset
 } ConversationActionType;
+
+@class TLSpaceSettings;
 
 //
 // Interface: UIActionConversation
@@ -22,10 +25,11 @@ typedef enum {
 @interface UIActionConversation : NSObject
 
 @property (nonatomic) ConversationActionType conversationActionType;
+@property (nonatomic, nonnull) TLSpaceSettings *spaceSettings;
 @property (nonatomic, nonnull) NSString *title;
 @property (nonatomic, nonnull) UIImage *icon;
 @property (nonatomic, nonnull) UIColor *iconColor;
 
-- (nonnull instancetype)initWithConversationActionType:(ConversationActionType)conversationActionType;
+- (nonnull instancetype)initWithConversationActionType:(ConversationActionType)conversationActionType spaceSettings:(nullable TLSpaceSettings *)spaceSettings;;
 
 @end

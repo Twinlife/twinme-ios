@@ -115,6 +115,12 @@ static const int ddLogLevel = DDLogLevelWarning;
     return self.callParticipant.isMessageSupported == CallMessageSupportYes;
 }
 
+- (BOOL)isLocationSupported {
+    DDLogVerbose(@"%@ isLocationSupported", LOG_TAG);
+    
+    return self.callParticipant.isGeolocationSupported == CallGeolocationSupportYes;
+}
+
 - (BOOL)isStreamingSupported {
     DDLogVerbose(@"%@ isStreamingSupported", LOG_TAG);
     
@@ -376,7 +382,13 @@ static const int ddLogLevel = DDLogLevelWarning;
         self.pauseView.hidden = YES;
         self.overlayView.hidden = YES;
     }
-
+    
+    if (self.callParticipant.currentGeolocation && CALL_IS_ACTIVE(self.callParticipant.callStatus)) {
+        self.locationView.hidden = NO;
+    } else {
+        self.locationView.hidden = YES;
+    }
+    
     // The info must be displayed only if we are sure the participant does not support group calls.
     if ([self.callParticipant isGroupSupported] == CallGroupSupportNo && self.nbParticipants > 2 && CALL_IS_ACTIVE(self.callParticipant.callStatus)) {
         self.infoView.hidden = NO;

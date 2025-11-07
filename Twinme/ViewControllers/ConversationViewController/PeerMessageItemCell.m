@@ -13,6 +13,7 @@
 #import <CocoaLumberjack.h>
 
 #import <Twinme/TLMessage.h>
+#import <Twinme/TLTwinmeAttributes.h>
 
 #import "PeerMessageItemCell.h"
 
@@ -24,13 +25,18 @@
 
 #import <Utils/NSString+Utils.h>
 
+#import "Cache.h"
+#import "CustomAppearance.h"
+#import "EphemeralView.h"
+#import "DecoratedLabel.h"
+#import "UIColor+Hex.h"
+
 #import <TwinmeCommon/AsyncImageLoader.h>
 #import <TwinmeCommon/AsyncVideoLoader.h>
 #import <TwinmeCommon/Design.h>
 #import <TwinmeCommon/Utils.h>
 
 #import "EphemeralView.h"
-#import "DecoratedLabel.h"
 
 #if 0
 static const int ddLogLevel = DDLogLevelVerbose;
@@ -103,6 +109,8 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
 
 @property (nonatomic) NSTimer *updateEphemeralTimer;
 
+@property (nonatomic) CustomAppearance *customAppearance;
+
 @end
 
 //
@@ -152,13 +160,14 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
     [self.contentLabel setPaddingWithTop:heightPadding left:widthPadding bottom:heightPadding right:widthPadding];
     [self.contentLabel setDecorShadowColor:DESIGN_SHADOW_COLOR];
     [self.contentLabel setDecorColor:Design.GREY_ITEM];
-    [self.contentLabel setBorderColor:[UIColor clearColor]];
+    [self.contentLabel setBorderColor:Design.ITEM_BORDER_COLOR];
     [self.contentLabel setBorderWidth:Design.ITEM_BORDER_WIDTH];
     self.contentLabel.longPressGestureRecognizer.cancelsTouchesInView = NO;
     
     NSMutableDictionary *mutableLinkAttributes = [NSMutableDictionary dictionary];
     [mutableLinkAttributes setObject:[NSNumber numberWithBool:YES] forKey:(NSString *)kCTUnderlineStyleAttributeName];
     [mutableLinkAttributes setObject:(__bridge id)[Design.FONT_COLOR_DEFAULT CGColor] forKey:(NSString *)kCTForegroundColorAttributeName];
+    [mutableLinkAttributes setObject:[UIFont systemFontOfSize:self.messageFont.pointSize weight:UIFontWeightSemibold] forKey:NSFontAttributeName];
     self.contentLabel.linkAttributes = [NSDictionary dictionaryWithDictionary:mutableLinkAttributes];
     
     UILongPressGestureRecognizer *longPressGesture  = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(onLongPressInsideContent:)];
@@ -295,9 +304,11 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
     
     [super bindWithItem:item conversationViewController:conversationViewController];
     
+    self.customAppearance = [conversationViewController getCustomAppearance];
     self.messageFont = [conversationViewController getMessageFont];
-    [self.contentLabel setDecorColor:Design.GREY_ITEM];
-    [self.contentLabel setBorderColor:[UIColor clearColor]];
+    [self.contentLabel setDecorColor:[[conversationViewController getCustomAppearance] getPeerMessageBackgroundColor]];
+    [self.contentLabel setTextColor:[[conversationViewController getCustomAppearance] getPeerMessageTextColor]];
+    [self.contentLabel setBorderColor:[[conversationViewController getCustomAppearance] getPeerMessageBorderColor]];
     
     PeerMessageItem *peerMessageItem = (PeerMessageItem *)item;
     CGFloat topMargin = [conversationViewController getTopMarginWithMask:peerMessageItem.corners & ITEM_TOP_LEFT item:item];
@@ -321,6 +332,12 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
         CGFloat widthPadding = Design.TEXT_WIDTH_PADDING;
         [self.contentLabel setPaddingWithTop:heightPadding left:widthPadding bottom:heightPadding right:widthPadding];
         
+        NSMutableDictionary *mutableLinkAttributes = [NSMutableDictionary dictionary];
+        [mutableLinkAttributes setObject:[NSNumber numberWithBool:YES] forKey:(NSString *)kCTUnderlineStyleAttributeName];
+        [mutableLinkAttributes setObject:(__bridge id)[Design.FONT_COLOR_DEFAULT CGColor] forKey:(NSString *)kCTForegroundColorAttributeName];
+        [mutableLinkAttributes setObject:[UIFont systemFontOfSize:self.messageFont.pointSize weight:UIFontWeightSemibold] forKey:NSFontAttributeName];
+        self.contentLabel.linkAttributes = [NSDictionary dictionaryWithDictionary:mutableLinkAttributes];
+        
         @try {
             NSAttributedString *attributedString = [NSString formatText:peerMessageItem.content fontSize:self.messageFont.pointSize fontColor:Design.FONT_COLOR_DEFAULT fontSearch:nil];
             self.contentLabel.text = attributedString;
@@ -340,9 +357,7 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
         self.contentLabel.font = [Design getEmojiFont:countEmoji];
         self.contentLabel.text = peerMessageItem.content;
     }
-    
-   
-    
+        
     if (self.item.mode == ItemModePreview) {
         self.contentLabel.numberOfLines = 5;
         self.contentLabel.lineBreakMode  = NSLineBreakByTruncatingTail;
@@ -503,6 +518,14 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
         self.avatarView.image = [conversationViewController getContactAvatarWithUUID:item.peerTwincodeOutboundId];
         self.avatarView.hidden = NO;
         self.avatarViewHeightConstraint.constant = self.avatarHeightConstraintValue;
+        
+        if ([self.avatarView.image isEqual:[TLTwinmeAttributes DEFAULT_GROUP_AVATAR]]) {
+            self.avatarView.backgroundColor = [UIColor colorWithHexString:Design.DEFAULT_COLOR alpha:1.0];
+            self.avatarView.tintColor = [UIColor whiteColor];
+        } else {
+            self.avatarView.backgroundColor = [UIColor clearColor];
+            self.avatarView.tintColor = [UIColor clearColor];
+        }
     } else {
         self.avatarViewTopConstraint.constant = 0;
         self.avatarViewHeightConstraint.constant = 0;
@@ -542,9 +565,9 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
     if (self.item.state == ItemStateRead) {
         CGFloat timeSinceRead = ([[NSDate date] timeIntervalSince1970] * 1000) - self.item.readTimestamp;
         CGFloat percent = 1.0 - [Utils progressWithTime:timeSinceRead duration:self.item.expireTimeout];
-        [self.ephemeralView updateWithPercent:percent color:Design.BLACK_COLOR size:self.ephemeralViewHeightConstraint.constant];
+        [self.ephemeralView updateWithPercent:percent color:[self.customAppearance getPeerMessageTextColor] size:self.ephemeralViewHeightConstraint.constant];
     } else {
-        [self.ephemeralView updateWithPercent:1.0 color:Design.BLACK_COLOR size:self.ephemeralViewHeightConstraint.constant];
+        [self.ephemeralView updateWithPercent:1.0 color:[self.customAppearance getPeerMessageTextColor] size:self.ephemeralViewHeightConstraint.constant];
     }
 }
 
@@ -742,7 +765,6 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
 - (void)updateColor {
     DDLogVerbose(@"%@ updateColor", LOG_TAG);
     
-    self.contentLabel.textColor = Design.FONT_COLOR_DEFAULT;
     self.overlayView.backgroundColor = Design.BACKGROUND_COLOR_WHITE_OPACITY85;
 }
 

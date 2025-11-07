@@ -594,8 +594,9 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
     DefaultConfirmView *migrationConfirmView = [[DefaultConfirmView alloc] init];
     migrationConfirmView.confirmViewDelegate = self;
     
-    UIImage *image = [self.twinmeApplication darkModeEnable] ? [UIImage imageNamed:@"OnboardingMigrationDark"] : [UIImage imageNamed:@"OnboardingMigration"];
+    UIImage *image = [self.twinmeApplication darkModeEnable:[self currentSpaceSettings]] ? [UIImage imageNamed:@"OnboardingMigrationDark"] : [UIImage imageNamed:@"OnboardingMigration"];
     [migrationConfirmView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:TwinmeLocalizedString(@"account_migration_view_controller_confirm_cancel_message", nil) image:image avatar:nil action:TwinmeLocalizedString(@"account_migration_view_controller_stop", nil) actionColor:Design.DELETE_COLOR_RED cancel:nil];
+
     [self.navigationController.view addSubview:migrationConfirmView];
     [migrationConfirmView showConfirmView];
 }

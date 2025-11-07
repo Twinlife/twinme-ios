@@ -91,9 +91,11 @@ static CGFloat DESIGN_NAME_TRAILING = 38;
 - (void)bindWithName:(NSString *)name avatar:(UIImage *)avatar isCertified:(BOOL)isCertified hideSeparator:(BOOL)hideSeparator {
     
     if ([avatar isEqual:[TLTwinmeAttributes DEFAULT_GROUP_AVATAR]]) {
-        self.avatarView.backgroundColor = DesignExtension.BACKGROUND_COLOR_GREY;
+        self.avatarView.backgroundColor = DesignExtension.MAIN_COLOR;
+        self.avatarView.tintColor = [UIColor whiteColor];
     } else {
         self.avatarView.backgroundColor = [UIColor clearColor];
+        self.avatarView.tintColor = [UIColor clearColor];
     }
     
     self.avatarView.image = avatar;

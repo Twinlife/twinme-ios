@@ -33,9 +33,9 @@
 @property (weak, nonatomic) IBOutlet UIImageView *identityAvatarView;
 @property (weak, nonatomic) IBOutlet UIView *editView;
 @property (weak, nonatomic) IBOutlet UIView *fallbackView;
+@property (weak, nonatomic) IBOutlet UILabel *identityTitleLabel;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *nameLabelWidthConstraint;
 
-@property (nonatomic) BOOL isAppear;
 @property (nonatomic) NSString *identityName;
 @property (nonatomic) UIImage *identityAvatar;
 @property (nonatomic) BOOL startModal;

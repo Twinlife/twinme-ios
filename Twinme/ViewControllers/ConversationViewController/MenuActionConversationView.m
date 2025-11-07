@@ -39,6 +39,7 @@ static NSString *MENU_ACTION_CONVERSATION_CELL_IDENTIFIER = @"MenuActionConversa
 
 @property (nonatomic) UIVisualEffectView *visualEffectView;
 
+@property (nonatomic) TLSpaceSettings *spaceSettings;
 @property (nonatomic) NSMutableArray *actions;
 @property (nonatomic) BOOL startCellAnimation;
 
@@ -55,7 +56,7 @@ static NSString *MENU_ACTION_CONVERSATION_CELL_IDENTIFIER = @"MenuActionConversa
 
 #pragma mark - UIView
 
-- (instancetype)init {
+- (instancetype)initWithSpaceSettings:(nonnull TLSpaceSettings *)spaceSettings {
     DDLogVerbose(@"%@ init", LOG_TAG);
     
     NSArray *objects = [[NSBundle mainBundle] loadNibNamed:@"MenuActionConversationView" owner:self options:nil];
@@ -64,6 +65,7 @@ static NSString *MENU_ACTION_CONVERSATION_CELL_IDENTIFIER = @"MenuActionConversa
     self.frame = CGRectMake(0, 0, Design.DISPLAY_WIDTH, Design.DISPLAY_HEIGHT);
     
     if (self) {
+        _spaceSettings = spaceSettings;
         _startCellAnimation = NO;
         [self initViews];
     }
@@ -75,12 +77,13 @@ static NSString *MENU_ACTION_CONVERSATION_CELL_IDENTIFIER = @"MenuActionConversa
     
     self.actions = [[NSMutableArray alloc]init];
     
-    [self.actions addObject:[[UIActionConversation alloc]initWithConversationActionType:ConversationActionTypeCamera]];
-    [self.actions addObject:[[UIActionConversation alloc]initWithConversationActionType:ConversationActionTypeGallery]];
-    [self.actions addObject:[[UIActionConversation alloc]initWithConversationActionType:ConversationActionTypeFile]];
-    [self.actions addObject:[[UIActionConversation alloc]initWithConversationActionType:ConversationActionTypeMediasAndFiles]];
-    [self.actions addObject:[[UIActionConversation alloc]initWithConversationActionType:ConversationActionTypeManageConversation]];
-    [self.actions addObject:[[UIActionConversation alloc]initWithConversationActionType:ConversationActionTypeReset]];
+    [self.actions addObject:[[UIActionConversation alloc]initWithConversationActionType:ConversationActionTypeCamera spaceSettings:self.spaceSettings]];
+    [self.actions addObject:[[UIActionConversation alloc]initWithConversationActionType:ConversationActionTypeGallery spaceSettings:self.spaceSettings]];
+    [self.actions addObject:[[UIActionConversation alloc]initWithConversationActionType:ConversationActionTypeFile spaceSettings:self.spaceSettings]];
+    [self.actions addObject:[[UIActionConversation alloc]initWithConversationActionType:ConversationActionTypeLocation spaceSettings:self.spaceSettings]];
+    [self.actions addObject:[[UIActionConversation alloc]initWithConversationActionType:ConversationActionTypeMediasAndFiles spaceSettings:self.spaceSettings]];
+    [self.actions addObject:[[UIActionConversation alloc]initWithConversationActionType:ConversationActionTypeManageConversation spaceSettings:self.spaceSettings]];
+    [self.actions addObject:[[UIActionConversation alloc]initWithConversationActionType:ConversationActionTypeReset spaceSettings:self.spaceSettings]];
 }
 
 - (void)openMenu {
@@ -173,7 +176,7 @@ static NSString *MENU_ACTION_CONVERSATION_CELL_IDENTIFIER = @"MenuActionConversa
     ApplicationDelegate *delegate = (ApplicationDelegate *)[[UIApplication sharedApplication] delegate];
     TwinmeApplication *twinmeApplication = [delegate twinmeApplication];
     
-    if ([twinmeApplication darkModeEnable]) {
+    if ([twinmeApplication darkModeEnable:self.spaceSettings]) {
         blurEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark];
     }
     

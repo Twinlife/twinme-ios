@@ -65,7 +65,7 @@ static const int DESIGN_ICON_HEIGHT = 44;
     self.annotationView.clipsToBounds = YES;
     self.annotationView.userInteractionEnabled = YES;
     self.annotationView.layer.cornerRadius = self.annotationViewHeightConstraint.constant * 0.5f;
-    self.annotationView.backgroundColor = Design.GREY_ITEM;
+    self.annotationView.backgroundColor = Design.POPUP_BACKGROUND_COLOR;
     
     UITapGestureRecognizer *tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapAnnotation:)];
     [self.annotationView addGestureRecognizer:tapGestureRecognizer];
@@ -178,7 +178,7 @@ static const int DESIGN_ICON_HEIGHT = 44;
 - (void)updateColor {
     
     self.backgroundColor = [UIColor clearColor];
-    self.annotationView.backgroundColor = Design.GREY_ITEM;
+    self.annotationView.backgroundColor = Design.POPUP_BACKGROUND_COLOR;
 }
 
 @end

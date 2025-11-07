@@ -122,8 +122,8 @@ static CGFloat DESIGN_THUMBNAIL_SIZE = 120;
     [self finish];
 }
 
-- (void)send:(BOOL)allowCopyText allowCopyFile:(BOOL)allowCopyFile {
-    DDLogVerbose(@"%@ send: %@ allowCopyFile: %@", LOG_TAG, allowCopyText ? @"YES" : @"NO", allowCopyFile ? @"YES" : @"NO");
+- (void)send:(BOOL)allowCopyText allowCopyFile:(BOOL)allowCopyFile timeout:(int64_t)timeout {
+    DDLogVerbose(@"%@ send: %@ allowCopyFile: %@ timeout: %lld", LOG_TAG, allowCopyText ? @"YES" : @"NO", allowCopyFile ? @"YES" : @"NO", timeout);
     
     self.countFilePicking = 0;
     self.endFilePicking = NO;
@@ -132,12 +132,11 @@ static CGFloat DESIGN_THUMBNAIL_SIZE = 120;
         self.countFilePicking++;
         if (previewInfo.previewType == PreviewTypeImage || previewInfo.previewType == PreviewTypeVideo) {
             UIPreviewMedia *previewMedia = (UIPreviewMedia *)previewInfo;
-   
             if (previewMedia.previewType == PreviewTypeVideo) {
                 if (self.twinmeApplication.sendVideoSize == SendVideoSizeOriginal) {
-                    [self.previewViewDelegate sendVideo:previewMedia.path allowCopyFile:allowCopyFile];
+                    [self.previewViewDelegate sendVideo:previewMedia.path allowCopyFile:allowCopyFile expireTimeout:timeout];
                     self.countFilePicking--;
-                    [self isAllMediaSent:allowCopyText];
+                    [self isAllMediaSent:allowCopyText timeout:timeout];
                 } else {
                     NSURL *url = [NSURL fileURLWithPath:previewMedia.path];
                     AVURLAsset *urlAsset = [[AVURLAsset alloc] initWithURL:url options:nil];
@@ -153,40 +152,40 @@ static CGFloat DESIGN_THUMBNAIL_SIZE = 120;
                                 if ([[NSFileManager defaultManager]fileExistsAtPath:previewMedia.path]) {
                                     [[NSFileManager defaultManager]removeItemAtPath:previewMedia.path error:nil];
                                 }
-                                [self.previewViewDelegate sendVideo:outputURL.path allowCopyFile:allowCopyFile];
+                                [self.previewViewDelegate sendVideo:outputURL.path allowCopyFile:allowCopyFile expireTimeout:timeout];
                             } else {
-                                [self.previewViewDelegate sendVideo:previewMedia.path allowCopyFile:allowCopyFile];
+                                [self.previewViewDelegate sendVideo:previewMedia.path allowCopyFile:allowCopyFile expireTimeout:timeout];
                             }
                             self.countFilePicking--;
-                            [self isAllMediaSent:allowCopyText];
+                            [self isAllMediaSent:allowCopyText timeout:timeout];
                         });
                     }];
                 }
             } else {
                 if (self.twinmeApplication.sendImageSize == SendImageSizeOriginal) {
-                    [self.previewViewDelegate sendImage:previewMedia.path allowCopyFile:allowCopyFile];
+                    [self.previewViewDelegate sendImage:previewMedia.path allowCopyFile:allowCopyFile expireTimeout:timeout];
                     self.countFilePicking--;
-                    [self isAllMediaSent:allowCopyText];
+                    [self isAllMediaSent:allowCopyText timeout:timeout];
                 } else {
                     [self resizeImage:previewMedia];
-                    [self.previewViewDelegate sendImage:previewMedia.path allowCopyFile:allowCopyFile];
+                    [self.previewViewDelegate sendImage:previewMedia.path allowCopyFile:allowCopyFile expireTimeout:timeout];
                     self.countFilePicking--;
-                    [self isAllMediaSent:allowCopyText];
+                    [self isAllMediaSent:allowCopyText timeout:timeout];
                 }
             }
         } else {
             UIPreviewFile *previewFile = (UIPreviewFile *)previewInfo;
-            [self.previewViewDelegate sendFile:previewFile.url.path allowCopyFile:allowCopyFile];
+            [self.previewViewDelegate sendFile:previewFile.url.path allowCopyFile:allowCopyFile expireTimeout:timeout];
             self.countFilePicking--;
-            [self isAllMediaSent:allowCopyText];
+            [self isAllMediaSent:allowCopyText timeout:timeout];
         }
     }
     
     self.endFilePicking = YES;
-    [self isAllMediaSent:allowCopyText];
+    [self isAllMediaSent:allowCopyText timeout:timeout];
 }
 
-- (void)isAllMediaSent:(BOOL)allowCopyText {
+- (void)isAllMediaSent:(BOOL)allowCopyText timeout:(int64_t)timeout {
     DDLogVerbose(@"%@ isAllMediaSent", LOG_TAG);
     
     if (self.endFilePicking && self.countFilePicking == 0) {
@@ -196,7 +195,7 @@ static CGFloat DESIGN_THUMBNAIL_SIZE = 120;
             message = @"";
         }
         
-        [self.previewViewDelegate sendMediaCaption:message allowCopyText:allowCopyText];
+        [self.previewViewDelegate sendMediaCaption:message allowCopyText:allowCopyText expireTimeout:timeout];
 
         [self finish];
     }

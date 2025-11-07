@@ -9,6 +9,7 @@
 
 #import <CocoaLumberjack.h>
 
+#import <LocalAuthentication/LocalAuthentication.h>
 #import <MobileCoreServices/UTCoreTypes.h>
 #import <MobileCoreServices/UTType.h>
 
@@ -16,11 +17,14 @@
 #import <WebRTC/RTCSSLAdapter.h>
 
 #import <Twinlife/TLTwinlife.h>
+#import <Twinlife/TLConfigIdentifier.h>
+
 #import <Twinme/TLTwinmeAttributes.h>
 #import <Twinme/TLMessage.h>
 #import <Twinme/TLTyping.h>
 #import <Twinme/TLOriginator.h>
 #import <Twinme/TLContact.h>
+#import <Twinme/TLProfile.h>
 #import <Twinme/TLSpace.h>
 #import <Twinme/TLGroup.h>
 #import <Twinme/TLTwinmeApplication.h>
@@ -29,14 +33,18 @@
 #import <UIKit/UIKit.h>
 
 #import "ShareExtensionViewController.h"
+#import "ShareExtensionSpaceViewController.h"
 #import <Utils/NSString+Utils.h>
 
 #import "ShareExtensionContactCell.h"
 #import "ShareExtensionHeaderCell.h"
 
 #import "DesignExtension.h"
+#import "UIColor+Hex.h"
 
 #import "ShareExtensionService.h"
+
+#import "ShareExtensionSpace.h"
 
 #if 0
 static const int ddLogLevel = DDLogLevelVerbose;
@@ -46,6 +54,7 @@ static const int ddLogLevel = DDLogLevelWarning;
 
 #define DATA_CHUNK_SIZE (64 * 1024)
 #define PROPERTY_DEFAULT_MESSAGE_SETTINGS @"DefaultMessageSettings"
+#define SCREEN_LOCK @"ScreenLock"
 
 @interface UIContact : NSObject
 
@@ -101,6 +110,9 @@ static const int ddLogLevel = DDLogLevelWarning;
 
 @end
 
+
+
+
 static NSString *SHARE_EXTENSION_CONTACT_CELL_IDENTIFIER = @"ShareExtensionContactCellIdentifier";
 static NSString *SHARE_EXTENSION_HEADER_CELL_IDENTIFIER = @"ShareExtensionHeaderCellIdentifier";
 
@@ -116,8 +128,24 @@ static const int GROUPS_VIEW_SECTION = 1;
 // Interface: ShareExtensionViewController
 //
 
-@interface ShareExtensionViewController () <UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate, ShareExtensionServiceDelegate>
+@interface ShareExtensionViewController () <UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate, ShareExtensionServiceDelegate, ShareExtensionSpaceDelegate>
 
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *spaceViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet UIView *spaceView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *spaceImageViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *spaceImageViewLeadingConstraint;
+@property (weak, nonatomic) IBOutlet UIImageView *spaceImageView;
+@property (weak, nonatomic) IBOutlet UILabel *spaceAvatarLabel;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *spaceLabelLeadingConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *spaceLabelTrailingConstraint;
+@property (weak, nonatomic) IBOutlet UILabel *spaceLabel;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *colorSpaceViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *colorSpaceViewTrailingConstraint;
+@property (weak, nonatomic) IBOutlet UIView *colorSpaceView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *currentSpaceViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *currentSpaceViewWidthConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *currentSpaceViewLeadingConstraint;
+@property (weak, nonatomic) IBOutlet UIView *currentSpaceView;
 @property (weak, nonatomic) IBOutlet UITableView *contactsTableView;
 @property (nonatomic) UIActivityIndicatorView *activityIndicatorView;
 @property (nonatomic) UIBarButtonItem *cancelBarButtonItem;
@@ -126,6 +154,7 @@ static const int GROUPS_VIEW_SECTION = 1;
 @property (nonatomic) BOOL uiInitialized;
 @property (nonatomic) NSMutableArray *uiContacts;
 @property (nonatomic) NSMutableArray *uiGroups;
+@property (nonatomic) NSMutableArray *uiSpaces;
 
 @property (nonatomic) NSMutableArray *contents;
 @property (nonatomic) BOOL fileCopyAllowed;
@@ -136,7 +165,9 @@ static const int GROUPS_VIEW_SECTION = 1;
 @property (nonatomic) ShareExtensionService *shareService;
 @property (nonatomic) id<TLOriginator> contact;
 
+@property (nonatomic) TLSpace *currentSpace;
 @property (nonatomic) int currentItem;
+@property (nonatomic) BOOL unlockScreen;
 
 @end
 
@@ -159,10 +190,12 @@ static const int GROUPS_VIEW_SECTION = 1;
     if (self) {
         _uiContacts = [[NSMutableArray alloc] init];
         _uiGroups = [[NSMutableArray alloc] init];
+        _uiSpaces = [[NSMutableArray alloc] init];
         _fileCopyAllowed = NO;
         _messageCopyAllowed = NO;
         _refreshTableScheduled = NO;
         _currentItem = 0;
+        _unlockScreen = NO;
         _contents = [[NSMutableArray alloc]init];
         _shareService = [ShareExtensionService instance];
         _shareService.shareExtensionServiceDelegate = self;
@@ -182,10 +215,71 @@ static const int GROUPS_VIEW_SECTION = 1;
     DDLogVerbose(@"%@ viewWillAppear: %@", LOG_TAG, animated ? @"YES":@"NO");
     
     [super viewWillAppear:animated];
-    [self.shareService start];
+    
+    if ([self showLockScreen] && !self.unlockScreen) {
+        LAContext *context = [[LAContext alloc] init];
+        
+        NSError *error = nil;
+        if ([context canEvaluatePolicy:LAPolicyDeviceOwnerAuthentication error:&error]) {
+            [context evaluatePolicy:LAPolicyDeviceOwnerAuthentication localizedReason:TwinmeLocalizedString(@"lock_screen_view_controller_local_authentication", nil) reply:^(BOOL success, NSError *error) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    if (success) {
+                        self.unlockScreen = YES;
+                        [self.shareService start];
+                    } else {
+                        switch ([error code]) {
+                            case kLAErrorAuthenticationFailed:
+                                break;
+                                
+                            case kLAErrorUserCancel:
+                                break;
+                                
+                            case kLAErrorUserFallback:
+                                break;
+                                
+                            case kLAErrorTouchIDNotEnrolled:
+                                break;
+                                
+                            case kLAErrorPasscodeNotSet:
+                                break;
+                                
+                            default:
+                                break;
+                        }
+                    }
+                });
+            }];
+        }
+    } else {
+        [self.shareService start];
+    }
 }
 
 #pragma mark - ShareExtensionServiceDelegate
+
+- (void)onGetCurrentSpace:(TLSpace *)space {
+    DDLogVerbose(@"%@ onGetCurrentSpace: %@", LOG_TAG, space);
+    
+    self.currentSpace = space;
+    
+    [self updateSpace];
+}
+
+- (void)onGetSpaces:(NSArray<TLSpace *> *)spaces {
+    DDLogVerbose(@"%@ onGetContacts: %@", LOG_TAG, spaces);
+    
+    [self.uiSpaces removeAllObjects];
+    for (TLSpace *space in spaces) {
+        [self updateUISpace:space avatar:nil];
+    }
+}
+
+- (void)onUpdateSpace:(nonnull TLSpace *)space avatar:(nonnull UIImage *)avatar {
+    DDLogVerbose(@"%@ onUpdateSpace: %@ avatar: %@", LOG_TAG, space, avatar);
+    
+    [self updateUISpace:space avatar:avatar];
+    [self reloadContactTableData];
+}
 
 - (void)onGetContacts:(NSArray<TLContact *> *)contacts {
     DDLogVerbose(@"%@ onGetContacts: %@", LOG_TAG, contacts);
@@ -290,6 +384,17 @@ static const int GROUPS_VIEW_SECTION = 1;
     }];
 }
 
+#pragma mark - UISearchBarDelegate
+
+- (void)didSelectSpace:(TLSpace *)space {
+    DDLogVerbose(@"%@ didSelectSpace: %@", LOG_TAG, space);
+    
+    [self.shareService setCurrentSpace:space];
+    self.currentSpace = space;
+    
+    [self updateSpace];
+}
+
 #pragma mark - Private
 
 - (void)updateUIContact:(TLContact *)contact avatar:(nullable UIImage *)avatar {
@@ -373,6 +478,55 @@ static const int GROUPS_VIEW_SECTION = 1;
     }
     if (!added) {
         [self.uiGroups addObject:uiContact];
+    }
+}
+
+- (void)updateUISpace:(nonnull TLSpace *)space avatar:(nullable UIImage *)avatar {
+    DDLogVerbose(@"%@ updateUISpace: %@", LOG_TAG, space);
+    
+    ShareExtensionSpace *uiSpace = nil;
+    for (ShareExtensionSpace *lUISpace in self.uiSpaces) {
+        if ([lUISpace.space.uuid isEqual:space.uuid]) {
+            uiSpace = lUISpace;
+            break;
+        }
+    }
+    
+    // TBD Sort using id order when name are equals
+    if (uiSpace)  {
+        [self.uiSpaces removeObject:uiSpace];
+        [uiSpace setSpace:space];
+    } else {
+        uiSpace = [[ShareExtensionSpace alloc] initWithSpace:space];
+    }
+    if (!avatar) {
+        [self.shareService getImageWithSpace:space withBlock:^(UIImage *image) {
+            [uiSpace updateAvatar:image];
+            [self refreshTable];
+        }];
+    } else {
+        [uiSpace updateAvatar:avatar];
+    }
+    
+    BOOL added = NO;
+    NSInteger count = self.uiSpaces.count;
+    for (NSInteger i = 0; i < count; i++) {
+        ShareExtensionSpace *lUISpace = self.uiSpaces[i];
+        if ([lUISpace.nameSpace caseInsensitiveCompare:uiSpace.nameSpace] == NSOrderedDescending) {
+            [self.uiSpaces insertObject:uiSpace atIndex:i];
+            added = YES;
+            break;
+        }
+    }
+    
+    if (self.currentSpace && [self.currentSpace.uuid isEqual:space.uuid]) {
+        uiSpace.isCurrentSpace = YES;
+    } else {
+        uiSpace.isCurrentSpace = NO;
+    }
+    
+    if (!added) {
+        [self.uiSpaces addObject:uiSpace];
     }
 }
 
@@ -591,6 +745,40 @@ static const int GROUPS_VIEW_SECTION = 1;
     self.navigationItem.leftBarButtonItem = self.cancelBarButtonItem;
     self.navigationItem.hidesSearchBarWhenScrolling = NO;
     
+    self.spaceViewHeightConstraint.constant *= DesignExtension.HEIGHT_RATIO;
+    
+    self.spaceView.backgroundColor = DesignExtension.WHITE_COLOR;
+    self.spaceView.userInteractionEnabled = YES;
+    UITapGestureRecognizer *spaceGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSpaceTapGesture:)];
+    [self.spaceView addGestureRecognizer:spaceGestureRecognizer];
+    
+    self.spaceImageViewHeightConstraint.constant *= DesignExtension.HEIGHT_RATIO;
+    self.spaceImageViewLeadingConstraint.constant *= DesignExtension.WIDTH_RATIO;
+    
+    self.spaceImageView.clipsToBounds = YES;
+    self.spaceImageView.layer.cornerRadius = DesignExtension.SPACE_RADIUS_RATIO * self.spaceImageViewHeightConstraint.constant;
+    
+    self.spaceLabelLeadingConstraint.constant *= DesignExtension.WIDTH_RATIO;
+    self.spaceLabelTrailingConstraint.constant *= DesignExtension.WIDTH_RATIO;
+    
+    self.spaceLabel.font = DesignExtension.FONT_BOLD36;
+    self.spaceLabel.textColor = DesignExtension.FONT_COLOR_DEFAULT;
+    
+    self.spaceAvatarLabel.font = DesignExtension.FONT_BOLD44;
+    self.spaceAvatarLabel.textColor = [UIColor whiteColor];
+    
+    self.colorSpaceViewHeightConstraint.constant *= DesignExtension.HEIGHT_RATIO;
+    self.colorSpaceViewTrailingConstraint.constant *= DesignExtension.WIDTH_RATIO;
+    
+    self.colorSpaceView.layer.cornerRadius = self.colorSpaceViewHeightConstraint.constant / 2.0;
+    
+    self.currentSpaceViewHeightConstraint.constant *= DesignExtension.HEIGHT_RATIO;
+    self.currentSpaceViewWidthConstraint.constant *= DesignExtension.WIDTH_RATIO;
+    self.currentSpaceViewLeadingConstraint.constant *= DesignExtension.WIDTH_RATIO;
+    
+    self.currentSpaceView.clipsToBounds = YES;
+    self.currentSpaceView.layer.cornerRadius = DesignExtension.SPACE_RADIUS_RATIO * self.currentSpaceViewHeightConstraint.constant;
+    
     self.searchController = [[UISearchController alloc]initWithSearchResultsController:nil];
     self.searchController.searchBar.placeholder = TwinmeLocalizedString(@"application_search_hint", nil);
     
@@ -652,6 +840,17 @@ static const int GROUPS_VIEW_SECTION = 1;
         NSError *error = [[NSError alloc]initWithDomain:[[NSBundle mainBundle] bundleIdentifier] code:0 userInfo:nil];
         [self.extensionContext cancelRequestWithError:error];
     }];
+}
+
+- (void)handleSpaceTapGesture:(UITapGestureRecognizer *)sender {
+    DDLogVerbose(@"%@ handleSpaceTapGesture: %@", LOG_TAG, sender);
+    
+    if (sender.state == UIGestureRecognizerStateEnded) {
+        ShareExtensionSpaceViewController *spacesViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"SelectSpaceViewController"];
+        spacesViewController.shareExtensionSpaceDelegate = self;
+        [spacesViewController initWithSpaces:self.uiSpaces];
+        [self.navigationController pushViewController:spacesViewController animated:YES];
+    }
 }
 
 - (void)loadItem {
@@ -869,5 +1068,74 @@ static const int GROUPS_VIEW_SECTION = 1;
     CFRelease(fileType);
     return result;
 }
+
+- (void)updateSpace {
+    DDLogVerbose(@"%@ updateSpace", LOG_TAG);
+    
+    if (!self.currentSpace) {
+        return;
+    }
+    
+    NSString *spaceName = @"";
+    NSString *profileName = @"";
+    if (self.currentSpace.settings.name) {
+        spaceName = self.currentSpace.settings.name;
+    }
+    
+    if (self.currentSpace.profile.name) {
+        profileName = self.currentSpace.profile.name;
+    }
+    
+    NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:@""];
+    [attributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:spaceName attributes:[NSDictionary dictionaryWithObjectsAndKeys:DesignExtension.FONT_BOLD36, NSFontAttributeName, DesignExtension.FONT_COLOR_DEFAULT, NSForegroundColorAttributeName, nil]]];
+    
+    [attributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:@"\n"]];
+    [attributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:profileName attributes:[NSDictionary dictionaryWithObjectsAndKeys:DesignExtension.FONT_REGULAR28, NSFontAttributeName, DesignExtension.FONT_COLOR_PROFILE_GREY, NSForegroundColorAttributeName, nil]]];
+    
+    self.spaceLabel.attributedText = attributedString;
+    
+    if (self.currentSpace.avatarId) {
+        self.spaceAvatarLabel.hidden = YES;
+        [self.shareService getImageWithSpace:self.currentSpace withBlock:^(UIImage *image) {
+            self.spaceImageView.image = image;
+        }];
+    } else {
+        self.spaceImageView.image = nil;
+        self.spaceAvatarLabel.hidden = NO;
+        if (self.currentSpace.settings.style) {
+            self.spaceImageView.backgroundColor = [UIColor colorWithHexString:self.currentSpace.settings.style alpha:1.0];
+        } else {
+            self.spaceImageView.backgroundColor = DesignExtension.MAIN_COLOR;
+        }
+        
+        self.spaceAvatarLabel.text = [NSString firstCharacter:self.currentSpace.settings.name];
+    }
+    
+    self.currentSpaceView.hidden = NO;
+    
+    if (self.currentSpace.settings.style) {
+        self.colorSpaceView.hidden = NO;
+        self.colorSpaceView.backgroundColor = [UIColor colorWithHexString:self.currentSpace.settings.style alpha:1.0];
+        self.currentSpaceView.backgroundColor = [UIColor colorWithHexString:self.currentSpace.settings.style alpha:1.0];
+    } else {
+        self.colorSpaceView.hidden = YES;
+        self.currentSpaceView.backgroundColor = DesignExtension.BACKGROUND_COLOR_GREY;
+    }
+}
+
+- (BOOL)showLockScreen {
+    DDLogVerbose(@"%@ showLockScreen", LOG_TAG);
+    
+    BOOL screenLock = NO;
+    
+    NSUserDefaults *userDefaults = [TLTwinlife getAppSharedUserDefaults];
+    id object = [userDefaults objectForKey:SCREEN_LOCK];
+    if (object) {
+        screenLock = [object boolValue];
+    }
+    
+    return screenLock;
+}
+
 
 @end

@@ -26,18 +26,17 @@ static const int ddLogLevel = DDLogLevelWarning;
 
 @interface DeletedAccountViewController ()
 
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *logoViewTopConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *logoViewWidthConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *logoViewHeightConstraint;
 @property (weak, nonatomic) IBOutlet UIView *logoView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *logoImageWidthConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *logoImageHeightConstraint;
 @property (weak, nonatomic) IBOutlet UIImageView *logoImage;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *twinmeImageWidthConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *twinmeImageHeightConstraint;
-@property (weak, nonatomic) IBOutlet UIImageView *twinmeImage;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *logoTextImageWidthConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *logoTextImageHeightConstraint;
+@property (weak, nonatomic) IBOutlet UIImageView *logoTextImage;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *messageLabelWidthConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *messageLabelTopConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *messageLabelBottomConstraint;
 @property (weak, nonatomic) IBOutlet UILabel *messageLabel;
 
 @end
@@ -78,21 +77,22 @@ static const int ddLogLevel = DDLogLevelWarning;
     
     self.view.backgroundColor = Design.WHITE_COLOR;
     
-    self.logoViewTopConstraint.constant *= Design.HEIGHT_RATIO;
     self.logoViewWidthConstraint.constant *= Design.WIDTH_RATIO;
     self.logoViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
-    
+        
     self.logoImageWidthConstraint.constant *= Design.WIDTH_RATIO;
     self.logoImageHeightConstraint.constant *= Design.HEIGHT_RATIO;
     
-    self.twinmeImageWidthConstraint.constant *= Design.WIDTH_RATIO;
-    self.twinmeImageHeightConstraint.constant *= Design.HEIGHT_RATIO;
-    self.twinmeImage.tintColor = Design.SPLASHSCREEN_LOGO_COLOR;
+    self.logoTextImage.backgroundColor = [UIColor clearColor];
+    self.logoTextImage.tintColor = Design.SPLASHSCREEN_LOGO_COLOR;
+    
+    self.logoTextImageWidthConstraint.constant *= Design.WIDTH_RATIO;
+    self.logoTextImageHeightConstraint.constant *= Design.HEIGHT_RATIO;
     
     self.messageLabelWidthConstraint.constant *= Design.WIDTH_RATIO;
-    self.messageLabelTopConstraint.constant *= Design.HEIGHT_RATIO;
+    self.messageLabelBottomConstraint.constant *= Design.HEIGHT_RATIO;
     self.messageLabel.font = Design.FONT_REGULAR36;
-    self.messageLabel.textColor = Design.FONT_COLOR_DEFAULT;
+    self.messageLabel.textColor = [UIColor whiteColor];
     self.messageLabel.text = TwinmeLocalizedString(@"deleted_account_view_controller_message", nil);
 }
 
@@ -106,7 +106,7 @@ static const int ddLogLevel = DDLogLevelWarning;
     DDLogVerbose(@"%@ updateColor", LOG_TAG);
     
     self.view.backgroundColor = Design.WHITE_COLOR;
-    self.messageLabel.textColor = Design.FONT_COLOR_DEFAULT;
+    self.messageLabel.textColor = [UIColor whiteColor];
 }
 
 @end

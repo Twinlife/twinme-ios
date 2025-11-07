@@ -32,21 +32,6 @@
 
 #import <Utils/NSString+Utils.h>
 
-#import <TwinmeCommon/AbstractTwinmeService.h>
-#import <TwinmeCommon/AbstractTwinmeService+Protected.h> // SCZ must fix
-#import <TwinmeCommon/CallParticipant.h>
-#import <TwinmeCommon/CallService.h>
-#import <TwinmeCommon/CallState.h>
-#import <TwinmeCommon/CallViewController.h>
-#import <TwinmeCommon/CoachMark.h>
-#import <TwinmeCommon/Design.h>
-#import <TwinmeCommon/MainViewController.h>
-#import <TwinmeCommon/StreamPlayer.h>
-#import <TwinmeCommon/Streamer.h>
-#import <TwinmeCommon/KeyCheckSessionHandler.h>
-#import <TwinmeCommon/TwinmeNavigationController.h>
-#import <TwinmeCommon/UIViewController+Utils.h>
-
 #import "DraggableVideoView.h"
 #import "UIView+GradientBackgroundColor.h"
 #import "DeviceAuthorization.h"
@@ -55,6 +40,12 @@
 #import "AlertView.h"
 #import "AlertMessageView.h"
 #import "CallQualityView.h"
+#import "DeviceAuthorization.h"
+#import "DefaultConfirmView.h"
+#import "AddCallParticipantViewController.h"
+#import "CoachMarkViewController.h"
+#import "StreamingAudioViewController.h"
+#import "InAppSubscriptionViewController.h"
 #import "InvitationCodeConfirmView.h"
 #import "CoachMarkViewController.h"
 #import "StreamingAudioViewController.h"
@@ -65,13 +56,29 @@
 #import "CallHoldView.h"
 #import "CallCertifyView.h"
 #import "CallConversationView.h"
+#import "CallMapView.h"
 #import "PlayerStreamingAudioView.h"
+#import "OnboardingConfirmView.h"
+#import "DefaultConfirmView.h"
 #import "PremiumFeatureConfirmView.h"
 #import "UIPremiumFeature.h"
 #import "UIView+Toast.h"
 #import "UIColor+Hex.h"
-#import "OnboardingConfirmView.h"
-#import "DefaultConfirmView.h"
+
+#import <TwinmeCommon/CallViewController.h>
+#import <TwinmeCommon/AbstractTwinmeService.h>
+#import <TwinmeCommon/AbstractTwinmeService+Protected.h> // SCz must fix
+#import <TwinmeCommon/CallService.h>
+#import <TwinmeCommon/CallState.h>
+#import <TwinmeCommon/CallParticipant.h>
+#import <TwinmeCommon/StreamPlayer.h>
+#import <TwinmeCommon/Streamer.h>
+#import <TwinmeCommon/Design.h>
+#import <TwinmeCommon/CoachMark.h>
+#import <TwinmeCommon/KeyCheckSessionHandler.h>
+#import <TwinmeCommon/MainViewController.h>
+#import <TwinmeCommon/TwinmeNavigationController.h>
+#import <TwinmeCommon/UIViewController+Utils.h>
 
 #if 0
 static const int ddLogLevel = DDLogLevelVerbose;
@@ -81,6 +88,7 @@ static const int ddLogLevel = DDLogLevelWarning;
 
 #define CLOSE_DELAY 3
 #define DELAY_COACH_MARK 0.5
+#define DELAY_LOCATION_SERVICES_ALERT 0.5
 #define DELAY_START_CERTIFY 0.8
 #define DELAY_HIDE_MENU_VIDEO_CALL 3
 #define MENU_ANIMATION_DURATION 0.1
@@ -93,12 +101,11 @@ static const CGFloat DESIGN_DEFAULT_MENU_MARGIN = 150;
 static const CGFloat DESIGN_MARGIN_PARTICIPANT = 34;
 static const CGFloat DESIGN_PARTICIPANTS_BOTTOM_MARGIN = 42;
 static const CGFloat DESIGN_PARTICIPANTS_BOTTOM_LARGE_MARGIN = 228;
-// static const CGFloat DESIGN_NAME_MAX_WIDTH = 360;
+// static const CGFloat DESIGN_NAME_MAX_WIDTH = 280;
 
 static UIColor *DESIGN_MENU_COLOR;
 static UIColor *DESIGN_OVERLAY_COLOR;
 
-static NSInteger PREMIUM_ALERT_VIEW_TAG = 1;
 static NSInteger TERMINATE_ALERT_VIEW_TAG = 2;
 
 static NSInteger CONTROL_CAMERA_ASK_TAG = 1;
@@ -111,7 +118,7 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
 // Interface: CallViewController ()
 //
 
-@interface CallViewController () <RTC_OBJC_TYPE(RTCVideoViewDelegate), VideoZoomDelegate, CAAnimationDelegate, AbstractTwinmeDelegate, AlertViewDelegate, CallQualityViewDelegate, CallParticipantViewDelegate, CallParticipantDelegate, CoachMarkDelegate, PlayerStreamingAudioViewDelegate, CallConversationDelegate, CallMenuDelegate, CallHoldDelegate, CallCertifyViewDelegate, AlertMessageViewDelegate, ConfirmViewDelegate>
+@interface CallViewController () <RTC_OBJC_TYPE(RTCVideoViewDelegate), VideoZoomDelegate, CAAnimationDelegate, AbstractTwinmeDelegate, AlertViewDelegate, CallQualityViewDelegate, AddCallParticipantDelegate, CallParticipantViewDelegate, CallParticipantDelegate, InAppSubscriptionViewControllerDelegate, CoachMarkDelegate, PlayerStreamingAudioViewDelegate, CallConversationDelegate, CallMenuDelegate, CallHoldDelegate, CallMapDelegate, CallCertifyViewDelegate, AlertMessageViewDelegate, ConfirmViewDelegate>
 
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *backImageViewWidthConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *backImageViewLeadingConstraint;
@@ -181,6 +188,11 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
 @property (weak, nonatomic) IBOutlet UIButton *unreadMessageButton;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *unreadMessageImageViewHeightConstraint;
 @property (weak, nonatomic) IBOutlet UIImageView *unreadMessageImageView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *sharedLocationViewTrailingConstraint;
+@property (weak, nonatomic) IBOutlet UIView *sharedLocationView;
+@property (weak, nonatomic) IBOutlet UIButton *sharedLocationButton;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *sharedLocationImageViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet UIImageView *sharedLocationImageView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *controlCameraViewTrailingConstraint;
 @property (weak, nonatomic) IBOutlet UIView *controlCameraView;
 @property (weak, nonatomic) IBOutlet UIButton *controlCameraButton;
@@ -224,6 +236,7 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
 @property (nonatomic) CallParticipant *participant;
 @property (nonatomic, nullable) AlertView *networkAlertView;
 @property (nonatomic) BOOL isSpeakerOnBeforeProximityUpdate;
+@property (nonatomic) BOOL isGroupCallSubscribed;
 @property (nonatomic) BOOL showCallQuality;
 @property (nonatomic) BOOL showCallGroupAnimation;
 @property (nonatomic) BOOL showTerminateReason;
@@ -238,6 +251,12 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
 @property (nonatomic) NSMutableArray *callParticipantViews;
 @property (nonatomic) CallParticipantLocaleView *callParticipantLocaleView;
 
+@property (nonatomic) NSLayoutConstraint *mapViewTopConstraint;
+@property (nonatomic) NSLayoutConstraint *mapViewBottomConstraint;
+@property (nonatomic) NSLayoutConstraint *mapViewFullScreenTopConstraint;
+@property (nonatomic) NSLayoutConstraint *mapViewFullScreenBottomConstraint;
+@property (nonatomic) CallMapView *mapView;
+
 @property (nonatomic) CallParticipantViewMode callParticipantViewMode;
 
 @property (nonatomic, readonly, nonnull) CallService *callService;
@@ -250,6 +269,8 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
 @property (nonatomic) BOOL isVideoCall;
 @property (nonatomic) BOOL isCallReceiver;
 @property (nonatomic) BOOL participantsViewInitialized;
+@property (nonatomic) BOOL showShareLocationMessage;
+@property (nonatomic) BOOL startShareLocationOnLocationEnable;
 
 @property (nonatomic) NSMutableArray *callParticipantColors;
 
@@ -306,6 +327,8 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
         _showCallGroupAnimation = NO;
         _showTerminateReason = NO;
         _showCertifyView = NO;
+        _showShareLocationMessage = NO;
+        _startShareLocationOnLocationEnable = NO;
         _showRemoteCameraOnboarding = NO;
         _elapsedTime = 0;
         _keyboardHidden = YES;
@@ -319,6 +342,7 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
         _callService = delegate.callService;
         _twinmeService = [[AbstractTwinmeService alloc] initWithTwinmeContext:self.twinmeContext tag:LOG_TAG delegate:self];
         _twinmeServiceDelegate = [[AbstractTwinmeContextDelegate alloc] initWithService:self.twinmeService];
+        _isGroupCallSubscribed = [delegate.twinmeApplication isSubscribedWithFeature:TLTwinmeApplicationFeatureGroupCall];
         [self.twinmeContext addDelegate:self.twinmeServiceDelegate];
         
         self.hidesBottomBarWhenPushed = YES;
@@ -475,6 +499,9 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
     [notificationCenter addObserver:self selector:@selector(onMessageCallOnHold:) name:CallEventMessageCallOnHold object:nil];
     [notificationCenter addObserver:self selector:@selector(onMessageCallResumed:) name:CallEventMessageCallResumed object:nil];
     [notificationCenter addObserver:self selector:@selector(onMessageCallsMerged:) name:CallEventMessageCallsMerged object:nil];
+    [notificationCenter addObserver:self selector:@selector(onMessageSharedLocationEnabled:) name:CallEventMessageSharedLocationEnabled object:nil];
+    [notificationCenter addObserver:self selector:@selector(onMessageSharedLocationRestricted:) name:CallEventMessageSharedLocationRestricted object:nil];
+    [notificationCenter addObserver:self selector:@selector(onMessageLocationServicesDisabled:) name:CallEventMessageLocationServicesDisabled object:nil];
     [notificationCenter addObserver:self selector:@selector(onCameraControlZoomUpdate:) name:CallEventCameraControlZoomUpdate object:nil];
 }
 
@@ -505,6 +532,9 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
     [notificationCenter addObserver:self selector:@selector(onMessageCallOnHold:) name:CallEventMessageCallOnHold object:nil];
     [notificationCenter addObserver:self selector:@selector(onMessageCallResumed:) name:CallEventMessageCallResumed object:nil];
     [notificationCenter addObserver:self selector:@selector(onMessageCallsMerged:) name:CallEventMessageCallsMerged object:nil];
+    [notificationCenter addObserver:self selector:@selector(onMessageSharedLocationEnabled:) name:CallEventMessageSharedLocationEnabled object:nil];
+    [notificationCenter addObserver:self selector:@selector(onMessageSharedLocationRestricted:) name:CallEventMessageSharedLocationRestricted object:nil];
+    [notificationCenter addObserver:self selector:@selector(onMessageLocationServicesDisabled:) name:CallEventMessageLocationServicesDisabled object:nil];
     [notificationCenter addObserver:self selector:@selector(onCameraControlZoomUpdate:) name:CallEventCameraControlZoomUpdate object:nil];
     
     [self.callService startCallWithOriginator:originator mode:videoBell ? CallStatusOutgoingVideoBell: isVideoCall ? CallStatusOutgoingVideoCall : CallStatusOutgoingCall viewController:self];
@@ -641,22 +671,33 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
         [self.view addSubview:defaultConfirmView];
         [defaultConfirmView showConfirmView];
     } else {
-        if ([self.twinmeApplication startOnboarding:OnboardingTypeRemoteCamera] && !self.showRemoteCameraOnboarding) {
-            self.showRemoteCameraOnboarding = YES;
-            
-            OnboardingConfirmView *onboardingConfirmView = [[OnboardingConfirmView alloc] init];
-            onboardingConfirmView.confirmViewDelegate = self;
-            onboardingConfirmView.tag = ONBOARDING_REMOTE_CAMERA;
-            onboardingConfirmView.forceDarkMode = YES;
-            [onboardingConfirmView initWithTitle:TwinmeLocalizedString(@"call_view_controller_camera_control_needs_help", nil) message: TwinmeLocalizedString(@"call_view_controller_camera_control_onboarding_part_2", nil) image:[UIImage imageNamed:@"OnboardingControlCamera"] action:TwinmeLocalizedString(@"application_ok", nil) actionColor:nil cancel:TwinmeLocalizedString(@"application_do_not_display", nil)];
-            
-            [self.view addSubview:onboardingConfirmView];
-            [onboardingConfirmView showConfirmView];
+        if (self.isGroupCallSubscribed) {
+            if (self.originator.capabilities.zoomable == TLVideoZoomableAsk) {
+                if ([self.twinmeApplication startOnboarding:OnboardingTypeRemoteCamera] && !self.showRemoteCameraOnboarding) {
+                    [self showCameraControlOnboarding];
+                    return;
+                }
+                
+                DefaultConfirmView *defaultConfirmView = [[DefaultConfirmView alloc] init];
+                defaultConfirmView.confirmViewDelegate = self;
+                defaultConfirmView.forceDarkMode = YES;
+                defaultConfirmView.tag = CONTROL_CAMERA_ASK_TAG;
+                NSString *message = [NSString stringWithFormat:TwinmeLocalizedString(@"call_view_controller_camera_control_ask_message", nil), self.originator.name];
+                [defaultConfirmView initWithTitle:TwinmeLocalizedString(@"call_view_controller_camera_control", nil) message:message image:nil avatar:nil action: TwinmeLocalizedString(@"application_confirm", nil) actionColor:nil cancel:TwinmeLocalizedString(@"application_cancel", nil)];
+                [self.view addSubview:defaultConfirmView];
+                [defaultConfirmView showConfirmView];
+            } else if (self.originator.capabilities.zoomable == TLVideoZoomableAllow) {
+                [self.participant remoteAskControl];
+            }
         } else {
-            [self showPremiumFeature:FeatureTypeRemoteControl];
+            if ([self.twinmeApplication startOnboarding:OnboardingTypeRemoteCamera] && !self.showRemoteCameraOnboarding) {
+                [self showCameraControlOnboarding];
+            } else {
+                [self showPremiumFeature:FeatureTypeGroupCall];
+            }
         }
     }
-    
+        
     [self.menuView updateMenuState:CallMenuViewStateDefault];
 }
 
@@ -665,14 +706,56 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
     
     [self.twinmeApplication hideGroupCallAnimation];
     [self.addParticipantImageView.layer removeAllAnimations];
-    [self showPremiumFeature:FeatureTypeGroupCall];
+    
+    CallState *callState = [self.callService currentCall];
+    if (!self.isGroupCallSubscribed) {
+        [self showPremiumFeature:FeatureTypeGroupCall];
+        return;
+    } else if (callState && self.callParticipantViews.count == 2 && [[callState mainParticipant] isGroupSupported] == CallGroupSupportNo) {
+        AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
+        alertMessageView.alertMessageViewDelegate = self;
+        [alertMessageView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:[NSString stringWithFormat:TwinmeLocalizedString(@"call_view_controller_not_supported_group_call_message", nil), [[callState mainParticipant] name]]];
+        [self.navigationController.view addSubview:alertMessageView];
+        [alertMessageView showAlertView];
+        return;
+    } else if (callState && self.callParticipantViews.count >= callState.maxMemberCount && callState.maxMemberCount != 0) {
+        AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
+        alertMessageView.alertMessageViewDelegate = self;
+        [alertMessageView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:[NSString stringWithFormat:TwinmeLocalizedString(@"call_view_controller_max_participant_message", nil), callState.maxMemberCount]];
+        [self.navigationController.view addSubview:alertMessageView];
+        [alertMessageView showAlertView];
+        return;
+    }
+    
+    NSMutableArray *participantsUUID = [[NSMutableArray alloc]init];
+    for (AbstractCallParticipantView *callParticipantView in self.callParticipantViews) {
+        if ([callParticipantView getCallParticipant]) {
+            CallParticipant *callParticipant = [callParticipantView getCallParticipant];
+            [participantsUUID addObject:callParticipant.participantPeerTwincodeOutboundId];
+        }
+    }
+    
+    AddCallParticipantViewController *addCallParticipantViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"AddCallParticipantViewController"];
+    addCallParticipantViewController.participantsUUID = participantsUUID;
+    addCallParticipantViewController.maxMemberCount = MAX_CALL_GROUP_PARTICIPANTS;
+    addCallParticipantViewController.addCallParticipantDelegate = self;
+    TwinmeNavigationController *navigationController = [[TwinmeNavigationController alloc]initWithRootViewController:addCallParticipantViewController];
+    [self.navigationController presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (IBAction)addStreamingAudio:(id)sender {
     DDLogVerbose(@"%@ addStreamingAudio", LOG_TAG);
     
-    [self showPremiumFeature:FeatureTypeStreaming];
     [self.menuView updateMenuState:CallMenuViewStateDefault];
+    
+    if (!self.isGroupCallSubscribed) {
+        [self showPremiumFeature:FeatureTypeStreaming];
+        return;
+    }
+    
+    StreamingAudioViewController *streamingAudioViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"StreamingAudioViewController"];
+    TwinmeNavigationController *upgradeNavigationController = [[TwinmeNavigationController alloc]initWithRootViewController:streamingAudioViewController];
+    [self.navigationController presentViewController:upgradeNavigationController animated:YES completion:nil];
 }
 
 - (IBAction)shareInvitation:(id)sender {
@@ -712,6 +795,138 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
     self.conversationView.hidden = NO;
     self.unreadMessageImageView.image = [UIImage imageNamed:@"CallMessageIcon"];
     [self.view bringSubviewToFront:self.conversationView];
+    [self.view bringSubviewToFront:self.menuView];
+    
+    [self.menuView updateMenuState:CallMenuViewStateDefault];
+}
+
+- (IBAction)openMap:(id)sender {
+    DDLogVerbose(@"%@ openMap", LOG_TAG);
+    
+    [self initMap:YES];
+}
+
+- (IBAction)shareLocation:(id)sender {
+    DDLogVerbose(@"%@ shareLocation", LOG_TAG);
+    
+    if ([self.callService isLocationStartShared]) {
+        [self stopShareLocation];
+        [self.menuView updateMenuState:CallMenuViewStateDefault];
+    } else {
+        [self initMap:NO];
+        if ([self.callService canDeviceShareLocation]) {
+            MKCoordinateRegion region = [self.mapView getMapRegion];
+            [self startShareLocation:region.span.latitudeDelta mapLongitudeDelta:region.span.longitudeDelta];
+        } else {
+            self.startShareLocationOnLocationEnable = YES;
+        }
+    }
+}
+
+- (void)initMap:(BOOL)showMap {
+    DDLogVerbose(@"%@ initMap: %@", LOG_TAG, showMap ? @"YES" : @"NO");
+    
+    [self.conversationView dismissKeyboard];
+    
+    if (!self.mapView) {
+        self.mapView = [[CallMapView alloc]init];
+        self.mapView.callMapDelegate = self;
+        self.mapView.avatar = self.callParticipantLocaleView.avatar;
+        self.mapView.name = self.callParticipantLocaleView.name;
+        [self.view addSubview:self.mapView];
+
+        [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.mapView
+                                                                  attribute:NSLayoutAttributeWidth
+                                                                  relatedBy:NSLayoutRelationEqual
+                                                                     toItem:self.view
+                                                                  attribute:NSLayoutAttributeWidth
+                                                                 multiplier:1.0
+                                                                   constant:0]];
+        
+        [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.mapView
+                                                                  attribute:NSLayoutAttributeLeading
+                                                                  relatedBy:NSLayoutRelationEqual
+                                                                     toItem:self.view
+                                                                  attribute:NSLayoutAttributeLeading
+                                                                 multiplier:1.0
+                                                                   constant:0]];
+        
+        [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.mapView
+                                                                  attribute:NSLayoutAttributeTrailing
+                                                                  relatedBy:NSLayoutRelationEqual
+                                                                     toItem:self.view
+                                                                  attribute:NSLayoutAttributeTrailing
+                                                                 multiplier:1.0
+                                                                   constant:0]];
+        
+        self.mapViewBottomConstraint = [NSLayoutConstraint constraintWithItem:self.mapView
+                                                                    attribute:NSLayoutAttributeBottom
+                                                                    relatedBy:NSLayoutRelationEqual
+                                                                       toItem:self.conversationView
+                                                                    attribute:NSLayoutAttributeBottom
+                                                                   multiplier:1.0
+                                                                     constant:0];
+        
+        [self.view addConstraint:self.mapViewBottomConstraint];
+        
+        self.mapViewTopConstraint = [NSLayoutConstraint constraintWithItem:self.mapView
+                                                                 attribute:NSLayoutAttributeTop
+                                                                 relatedBy:NSLayoutRelationEqual
+                                                                    toItem:self.headerView
+                                                                 attribute:NSLayoutAttributeBottom
+                                                                multiplier:1.0
+                                                                  constant:0];
+        
+        [self.view addConstraint:self.mapViewTopConstraint];
+        
+        self.mapViewFullScreenBottomConstraint = [NSLayoutConstraint constraintWithItem:self.mapView
+                                                                    attribute:NSLayoutAttributeBottom
+                                                                    relatedBy:NSLayoutRelationEqual
+                                                                       toItem:self.view
+                                                                    attribute:NSLayoutAttributeBottom
+                                                                   multiplier:1.0
+                                                                     constant:0];
+                
+        self.mapViewFullScreenTopConstraint = [NSLayoutConstraint constraintWithItem:self.mapView
+                                                                 attribute:NSLayoutAttributeTop
+                                                                 relatedBy:NSLayoutRelationEqual
+                                                                    toItem:self.view
+                                                                 attribute:NSLayoutAttributeTop
+                                                                multiplier:1.0
+                                                                  constant:0];
+        
+        self.mapView.frame = self.conversationView.frame;
+        [self.mapView loadViews];
+        
+        CallState *callState = [self.callService currentCall];
+        if (callState) {
+            NSArray<CallParticipant *> *participants = [callState getParticipants];
+            for (CallParticipant *callParticipant in participants) {
+                if (callParticipant.currentGeolocation) {
+                    [self.mapView updateLocation:callParticipant geolocationDescriptor:callParticipant.currentGeolocation];
+                }
+            }
+            
+            if (callState.currentGeolocation) {
+                self.mapView.isLocationShared = YES;
+                [self.mapView updateLocaleLocation:callState.currentGeolocation.latitude longitude:callState.currentGeolocation.longitude];
+            } else if ([self.callService getCurrentLocation]) {
+                CLLocation *currentLocation = [self.callService getCurrentLocation];
+                [self.mapView updateLocaleLocation:currentLocation.coordinate.latitude longitude:currentLocation.coordinate.longitude];
+            }
+        }
+        
+        [self.callService initShareLocation];
+    } else if (![self.callService canDeviceShareLocation]) {
+        [self.callService initShareLocation];
+    }
+    
+    self.mapView.canShareLocation = [self.callService canDeviceShareLocation];
+    self.mapView.canShareBackgroundLocation = [self.callService canDeviceShareBackgroundLocation];
+    [self.mapView initMapView];
+    
+    self.mapView.hidden = !showMap;
+    [self.view bringSubviewToFront:self.mapView];
     [self.view bringSubviewToFront:self.menuView];
     
     [self.menuView updateMenuState:CallMenuViewStateDefault];
@@ -788,7 +1003,6 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
     }
     
     if (self.uiInitialized && !self.networkAlertView) {
-        
         AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
         alertMessageView.tag = TERMINATE_ALERT_VIEW_TAG;
         alertMessageView.alertMessageViewDelegate = self;
@@ -796,6 +1010,50 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
         [alertMessageView initWithTitle:TwinmeLocalizedString(@"application_error", nil) message:TwinmeLocalizedString(@"application_operation_failure", nil)];
         [self.view addSubview:alertMessageView];
         [alertMessageView showAlertView];
+    }
+}
+
+#pragma mark - InAppSubscriptionViewControllerDelegate
+
+- (void)onSubscribeSuccess {
+    DDLogVerbose(@"%@ onSubscribeSuccess", LOG_TAG);
+    
+    ApplicationDelegate *delegate = (ApplicationDelegate *)[[UIApplication sharedApplication] delegate];
+    self.isGroupCallSubscribed = [delegate.twinmeApplication isSubscribedWithFeature:TLTwinmeApplicationFeatureGroupCall];
+    
+    if (self.isGroupCallSubscribed) {
+        CallState *callState = [self.callService currentCall];
+        [self updateView:callState.status];
+        if (callState && self.callParticipantViews.count == 2 && [[callState mainParticipant] isGroupSupported] == CallGroupSupportNo) {
+            AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
+            alertMessageView.alertMessageViewDelegate = self;
+            [alertMessageView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:[NSString stringWithFormat:TwinmeLocalizedString(@"call_view_controller_not_supported_group_call_message", nil), [[callState mainParticipant] name]]];
+            [self.view addSubview:alertMessageView];
+            [alertMessageView showAlertView];
+            return;
+        } else if (callState && self.callParticipantViews.count >= callState.maxMemberCount && callState.maxMemberCount != 0) {
+            AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
+            alertMessageView.alertMessageViewDelegate = self;
+            [alertMessageView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:[NSString stringWithFormat:TwinmeLocalizedString(@"call_view_controller_max_participant_message", nil), callState.maxMemberCount]];
+            [self.view addSubview:alertMessageView];
+            [alertMessageView showAlertView];
+            return;
+        }
+        
+        NSMutableArray *participantsUUID = [[NSMutableArray alloc]init];
+        for (AbstractCallParticipantView *callParticipantView in self.callParticipantViews) {
+            if ([callParticipantView getCallParticipant]) {
+                CallParticipant *callParticipant = [callParticipantView getCallParticipant];
+                [participantsUUID addObject:callParticipant.participantPeerTwincodeOutboundId];
+            }
+        }
+        
+        AddCallParticipantViewController *addCallParticipantViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"AddCallParticipantViewController"];
+        addCallParticipantViewController.participantsUUID = participantsUUID;
+        addCallParticipantViewController.maxMemberCount = callState.maxMemberCount;
+        addCallParticipantViewController.addCallParticipantDelegate = self;
+        TwinmeNavigationController *navigationController = [[TwinmeNavigationController alloc]initWithRootViewController:addCallParticipantViewController];
+        [self.navigationController presentViewController:navigationController animated:YES completion:nil];
     }
 }
 
@@ -987,25 +1245,72 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
 
 - (void)onPopDescriptorWithParticipant:(nonnull CallParticipant *)participant descriptor:(nonnull TLDescriptor *)descriptor {
     DDLogVerbose(@"%@ onPopDescriptorWithParticipant: %@ descriptor: %@", LOG_TAG, participant, descriptor);
-    
-    self.unreadMessageView.hidden = NO;
-    
-    if (self.conversationView.hidden) {
-        self.unreadMessageImageView.image = [UIImage imageNamed:@"CallNewMessageIcon"];
+
+    if ([descriptor isKindOfClass:[TLGeolocationDescriptor class]]) {
+        self.sharedLocationView.hidden = NO;
+        
+        if (self.unreadMessageView.hidden) {
+            self.sharedLocationViewTrailingConstraint.constant = self.headerViewHeightConstraint.constant;
+        } else {
+            self.sharedLocationViewTrailingConstraint.constant = 0;
+        }
+        
         [self hapticFeedBack:UIImpactFeedbackStyleMedium];
+        
+        if (self.mapView) {
+            [self.mapView updateLocation:participant geolocationDescriptor:(TLGeolocationDescriptor *)descriptor];
+        }
+        
+        AbstractCallParticipantView *callParticipantView = [self getParticipantView:participant];
+        if (!callParticipantView) {
+            return;
+        }
+        
+        if ([callParticipantView isRemoteParticipant]) {
+            CallParticipantRemoteView *callParticipantRemoteView = (CallParticipantRemoteView *)callParticipantView;
+            callParticipantRemoteView.callParticipant = participant;
+            [callParticipantView updateViews];
+        }
+    } else {
+        self.unreadMessageView.hidden = NO;
+        self.sharedLocationViewTrailingConstraint.constant = 0;
+        
+        if (self.conversationView.hidden) {
+            self.unreadMessageImageView.image = [UIImage imageNamed:@"CallNewMessageIcon"];
+            [self hapticFeedBack:UIImpactFeedbackStyleMedium];
+        }
+        
+        [self.conversationView addDescriptor:descriptor isLocal:NO needsReload:YES name:participant.name];
     }
-    
-    [self.conversationView addDescriptor:descriptor isLocal:NO needsReload:YES name:participant.name];
 }
 
 - (void)onUpdateGeolocationWithParticipant:(nonnull CallParticipant *)participant descriptor:(nonnull TLGeolocationDescriptor *)descriptor {
     DDLogVerbose(@"%@ onUpdateGeolocationWithParticipant: %@ descriptor: %@", LOG_TAG, participant, descriptor);
+
+    self.sharedLocationView.hidden = NO;
     
+    if (self.mapView) {
+        [self.mapView updateLocation:participant geolocationDescriptor:descriptor];
+    }
 }
 
 - (void)onDeleteDescriptorWithParticipant:(nonnull CallParticipant *)participant descriptorId:(nonnull TLDescriptorId *)descriptorId {
     DDLogVerbose(@"%@ onDeleteDescriptorWithParticipant: %@ descriptorId: %@", LOG_TAG, participant, descriptorId);
+
+    if (self.mapView) {
+        [self.mapView deleteLocation:participant.participantId];
+    }
     
+    AbstractCallParticipantView *callParticipantView = [self getParticipantView:participant];
+    if (!callParticipantView) {
+        return;
+    }
+    
+    if ([callParticipantView isRemoteParticipant]) {
+        CallParticipantRemoteView *callParticipantRemoteView = (CallParticipantRemoteView *)callParticipantView;
+        callParticipantRemoteView.callParticipant = participant;
+        [callParticipantView updateViews];
+    }
 }
 
 #pragma mark - CallServiceMessages
@@ -1087,6 +1392,10 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
     CallEventMessage *message = notification.object;
     if (!message) {
         return;
+    }
+    
+    if ([self.callService getCurrentLocation]) {
+        [self.callService stopShareLocation:YES];
     }
     
     CallState *activeCall = [self.callService currentCall];
@@ -1184,6 +1493,77 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
     }
 }
 
+- (void)onMessageSharedLocationEnabled:(nonnull NSNotification *)notification {
+    DDLogVerbose(@"%@ onMessageSharedLocationEnabled: %@", LOG_TAG, notification);
+    
+    if (self.uiInitialized && self.mapView) {
+    
+        if (self.startShareLocationOnLocationEnable && [self.callService canDeviceShareLocation]) {
+            self.startShareLocationOnLocationEnable = NO;
+            
+            MKCoordinateRegion region = [self.mapView getMapRegion];
+            [self startShareLocation:region.span.latitudeDelta mapLongitudeDelta:region.span.longitudeDelta];
+        }
+        
+        CLLocation *currentLocation = [self.callService getCurrentLocation];
+        if (currentLocation) {
+            [self.mapView updateLocaleLocation:currentLocation.coordinate.latitude longitude:currentLocation.coordinate.longitude];
+        }
+        
+        self.mapView.isLocationShared = [self.callService isLocationStartShared];
+        self.mapView.canShareLocation = [self.callService canDeviceShareLocation];
+        self.mapView.canShareBackgroundLocation = [self.callService canDeviceShareBackgroundLocation];
+        self.mapView.canShareFineLocation = [self.callService isExactLocation];
+        
+        if ([self.callService isLocationStartShared]) {
+            self.sharedLocationImageView.image = [UIImage imageNamed:@"ShareLocationIcon"];
+            
+            if (self.showShareLocationMessage) {
+                self.showShareLocationMessage = NO;
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [[UIApplication sharedApplication].keyWindow makeToast:TwinmeLocalizedString(@"call_view_controller_location_share_message", nil)];
+                });
+            }
+            
+        } else {
+            self.sharedLocationImageView.image = [UIImage imageNamed:@"CallLocationIcon"];
+            self.sharedLocationImageView.image = [self.sharedLocationImageView.image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+            self.sharedLocationImageView.tintColor = [UIColor whiteColor];
+        }
+        
+        [self.mapView initMapView];
+    }
+}
+
+- (void)onMessageSharedLocationRestricted:(nonnull NSNotification *)notification {
+    DDLogVerbose(@"%@ onMessageSharedLocationRestricted: %@", LOG_TAG, notification);
+    
+    if (self.uiInitialized) {
+        [DeviceAuthorization showLocationSettingsAlertInController:self];
+        
+        self.mapView.isLocationShared = NO;
+        self.mapView.canShareLocation = NO;        
+    }
+}
+
+- (void)onMessageLocationServicesDisabled:(nonnull NSNotification *)notification {
+    DDLogVerbose(@"%@ onMessageLocationServicesDisabled: %@", LOG_TAG, notification);
+    
+    if (self.uiInitialized) {
+        self.mapView.isLocationShared = NO;
+        self.mapView.canShareLocation = NO;
+        
+        dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(DELAY_LOCATION_SERVICES_ALERT * NSEC_PER_SEC));
+        dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+            AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
+            alertMessageView.alertMessageViewDelegate = self;
+            [alertMessageView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:TwinmeLocalizedString(@"call_view_controller_location_services_disabled", nil)];
+            [self.view addSubview:alertMessageView];
+            [alertMessageView showAlertView];
+        });
+    }
+}
+
 - (void)onCameraControlZoomUpdate:(nonnull NSNotification *)notification {
     DDLogVerbose(@"%@ onCameraControlZoomUpdate: %@", LOG_TAG, notification);
     
@@ -1242,14 +1622,11 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
 - (void)handleAcceptButtonClick:(AlertView *)alertView {
     DDLogVerbose(@"%@ handleAcceptButtonClick: %@", LOG_TAG, alertView);
     
-    if (alertView.view.tag == PREMIUM_ALERT_VIEW_TAG) {
-        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:TwinmeLocalizedString(@"twinme_plus_link", nil)] options:@{} completionHandler:nil];
-    }
 }
 
 - (void)handleCancelButtonClick:(AlertView *)alertView {
     DDLogVerbose(@"%@ handleCancelButtonClick: %@", LOG_TAG, alertView);
-    
+        
     if (self.networkAlertView) {
         [self.callService terminateCallWithTerminateReason:TLPeerConnectionServiceTerminateReasonConnectivityError];
         [self finish];
@@ -1287,6 +1664,77 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
     }
 }
 
+#pragma mark - ConfirmViewDelegate
+
+- (void)didTapConfirm:(nonnull AbstractConfirmView *)abstractConfirmView {
+    DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractConfirmView);
+    
+    if ([abstractConfirmView isKindOfClass:[InvitationCodeConfirmView class]]) {
+        CallState *callState = [self.callService currentCall];
+        if (callState) {
+            [self.twinmeService createUriWithKind:TLTwincodeURIKindInvitation twincodeOutbound:self.currentSpace.profile.twincodeOutbound withBlock:^(TLBaseServiceErrorCode errorCode, TLTwincodeURI *twincodeURI) {
+                if (twincodeURI && errorCode == TLBaseServiceErrorCodeSuccess) {
+                    TLDescriptor *invitationDescriptor = [callState createWithTwincode:twincodeURI.twincodeId schemaId:[TLProfile SCHEMA_ID] publicKey:twincodeURI.publicKey replyTo:nil copyAllowed:YES];
+                    if (![callState sendWithDescriptor:invitationDescriptor]) {
+                        // Descriptor was not sent: no active participant accepts receiving messages.
+                    }
+                }
+            }];
+        }
+    } else if ([abstractConfirmView isKindOfClass:[DefaultConfirmView class]]) {
+        if (abstractConfirmView.tag == CONTROL_CAMERA_ASK_TAG) {
+            [self.participant remoteAskControl];
+        } else if (abstractConfirmView.tag == CONTROL_CAMERA_STOP_TAG) {
+            [self.participant remoteStopControl];
+            [self updateView:[self.callService callStatus]];
+        } else if (abstractConfirmView.tag == CONTROL_CAMERA_ANSWER_TAG) {
+            [self.participant remoteAnswerControlWithGrant:YES];
+            [self updateView:[self.callService callStatus]];
+        } else {
+            [[UIApplication sharedApplication] openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString] options:@{} completionHandler:nil];
+        }
+    } else if ([abstractConfirmView isKindOfClass:[OnboardingConfirmView class]]) {
+        if (abstractConfirmView.tag == ONBOARDING_REMOTE_CAMERA) {
+            [self cameraControl:nil];
+        }
+    } else if (([abstractConfirmView isKindOfClass:[PremiumFeatureConfirmView class]])) {
+        InAppSubscriptionViewController *inAppSubscriptionViewController = [[UIStoryboard storyboardWithName:@"iPhone" bundle:nil] instantiateViewControllerWithIdentifier:@"InAppSubscriptionViewController"];
+        TwinmeNavigationController *navigationController = [[TwinmeNavigationController alloc]initWithRootViewController:inAppSubscriptionViewController];
+        [self.navigationController presentViewController:navigationController animated:YES completion:nil];
+    }
+    
+    [abstractConfirmView closeConfirmView];
+}
+
+- (void)didTapCancel:(nonnull AbstractConfirmView *)abstractConfirmView {
+    DDLogVerbose(@"%@ didTapCancel: %@", LOG_TAG, abstractConfirmView);
+    
+    [abstractConfirmView closeConfirmView];
+    
+    if ([abstractConfirmView isKindOfClass:[DefaultConfirmView class]]) {
+        if (abstractConfirmView.tag == CONTROL_CAMERA_ANSWER_TAG) {
+            [self.participant remoteAnswerControlWithGrant:NO];
+        }
+    } else if ([abstractConfirmView isKindOfClass:[OnboardingConfirmView class]]) {
+        if (abstractConfirmView.tag == ONBOARDING_REMOTE_CAMERA) {
+            [self.twinmeApplication setShowOnboardingType:OnboardingTypeRemoteCamera state:NO];
+            [self cameraControl:nil];
+        }
+    }
+}
+
+- (void)didClose:(nonnull AbstractConfirmView *)abstractConfirmView {
+    DDLogVerbose(@"%@ didClose: %@", LOG_TAG, abstractConfirmView);
+    
+    [abstractConfirmView closeConfirmView];
+}
+
+- (void)didFinishCloseAnimation:(nonnull AbstractConfirmView *)abstractConfirmView {
+    DDLogVerbose(@"%@ didFinishCloseAnimation: %@", LOG_TAG, abstractConfirmView);
+
+    [abstractConfirmView removeFromSuperview];
+}
+
 #pragma mark - CallQualityViewDelegate
 
 - (void)closeCallQuality {
@@ -1302,6 +1750,16 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
     [self finish];
 }
 
+#pragma mark - AddCallParticipantDelegate
+
+- (void)addParticipantsToCall:(nonnull NSMutableArray *)contacts {
+    DDLogVerbose(@"%@ addParticipantsToCall: %@", LOG_TAG, contacts);
+
+    for (TLContact *contact in contacts) {
+        [self.callService addCallParticipantWithOriginator:contact];
+    }
+}
+
 #pragma mark - CallParticipantViewDelegate
 
 - (void)didTapInfoCallParticipantView:(nonnull AbstractCallParticipantView *)callParticipantView {
@@ -1313,6 +1771,13 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
     [alertMessageView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:[NSString stringWithFormat:TwinmeLocalizedString(@"call_view_controller_not_supported_group_call_message", nil), [callParticipantView getName]]];
     [self.view addSubview:alertMessageView];
     [alertMessageView showAlertView];
+}
+
+- (void)didTapLocationCallParticipantView:(nonnull AbstractCallParticipantView *)callParticipantView {
+    DDLogVerbose(@"%@ didTapLocationCallParticipantView: %@", LOG_TAG, callParticipantView);
+    
+    [self initMap:YES];
+    [self.mapView zoomToParticipant:[callParticipantView getParticipantId]];
 }
 
 - (void)didDoubleTapCallParticipantView:(AbstractCallParticipantView *)callParticipantView {
@@ -1481,11 +1946,6 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
     self.zoomLevelLabel.text = [NSString stringWithFormat:@"%.0f%%", self.remoteZoom];
     
     [self.participant remoteCameraSetWithZoom:self.remoteZoom];
-}
-
-- (void)didTapLocationCallParticipantView:(nonnull AbstractCallParticipantView *)callParticipantView {
-    DDLogVerbose(@"%@ didTapLocationCallParticipantView: %@", LOG_TAG, callParticipantView);
-    
 }
 
 - (void)didTapFullScreenSharingScreenCallParticipantView:(nonnull AbstractCallParticipantView *)callParticipantView {
@@ -1676,73 +2136,6 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
     }
 }
 
-#pragma mark - ConfirmViewDelegate
-
-- (void)didTapConfirm:(nonnull AbstractConfirmView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractConfirmView);
-    
-    [abstractConfirmView closeConfirmView];
-    
-    if ([abstractConfirmView isKindOfClass:[InvitationCodeConfirmView class]]) {
-        CallState *callState = [self.callService currentCall];
-        if (callState) {
-            [self.twinmeService createUriWithKind:TLTwincodeURIKindInvitation twincodeOutbound:self.currentSpace.profile.twincodeOutbound withBlock:^(TLBaseServiceErrorCode errorCode, TLTwincodeURI *twincodeURI) {
-                if (twincodeURI && errorCode == TLBaseServiceErrorCodeSuccess) {
-                    TLDescriptor *invitationDescriptor = [callState createWithTwincode:twincodeURI.twincodeId schemaId:[TLProfile SCHEMA_ID] publicKey:twincodeURI.publicKey replyTo:nil copyAllowed:YES];
-                    if (![callState sendWithDescriptor:invitationDescriptor]) {
-                        // Descriptor was not sent: no active participant accepts receiving messages.
-                    }
-                }
-            }];
-        }
-    } else if ([abstractConfirmView isKindOfClass:[DefaultConfirmView class]]) {
-        if (abstractConfirmView.tag == CONTROL_CAMERA_ASK_TAG) {
-            [self.participant remoteAskControl];
-        } else if (abstractConfirmView.tag == CONTROL_CAMERA_STOP_TAG) {
-            [self.participant remoteStopControl];
-            [self updateView:[self.callService callStatus]];
-        } else if (abstractConfirmView.tag == CONTROL_CAMERA_ANSWER_TAG) {
-            [self.participant remoteAnswerControlWithGrant:YES];
-            [self updateView:[self.callService callStatus]];
-        }
-    } else if ([abstractConfirmView isKindOfClass:[OnboardingConfirmView class]]) {
-        if (abstractConfirmView.tag == ONBOARDING_REMOTE_CAMERA) {
-            [self cameraControl:nil];
-        }
-    } else if (([abstractConfirmView isKindOfClass:[PremiumFeatureConfirmView class]])) {
-        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:TwinmeLocalizedString(@"twinme_plus_link", nil)] options:@{} completionHandler:nil];
-    }
-}
-
-- (void)didTapCancel:(nonnull AbstractConfirmView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didTapCancel: %@", LOG_TAG, abstractConfirmView);
-    
-    [abstractConfirmView closeConfirmView];
-    
-    if ([abstractConfirmView isKindOfClass:[DefaultConfirmView class]]) {
-        if (abstractConfirmView.tag == CONTROL_CAMERA_ANSWER_TAG) {
-            [self.participant remoteAnswerControlWithGrant:NO];
-        }
-    } else if ([abstractConfirmView isKindOfClass:[OnboardingConfirmView class]]) {
-        if (abstractConfirmView.tag == ONBOARDING_REMOTE_CAMERA) {
-            [self.twinmeApplication setShowOnboardingType:OnboardingTypeRemoteCamera state:NO];
-            [self cameraControl:nil];
-        }
-    }
-}
-
-- (void)didClose:(nonnull AbstractConfirmView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didClose: %@", LOG_TAG, abstractConfirmView);
-    
-    [abstractConfirmView closeConfirmView];
-}
-
-- (void)didFinishCloseAnimation:(nonnull AbstractConfirmView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didFinishCloseAnimation: %@", LOG_TAG, abstractConfirmView);
-        
-    [abstractConfirmView removeFromSuperview];
-}
-
 #pragma mark - CallConversationDelegate
 
 - (void)closeConversation {
@@ -1759,6 +2152,7 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
         TLDescriptor *descriptor = [callState createWithMessage:text replyTo:nil copyAllowed:YES];
         if ([callState sendWithDescriptor:descriptor]) {
             self.unreadMessageView.hidden = NO;
+            self.sharedLocationViewTrailingConstraint.constant = 0;
             self.unreadMessageImageView.image = [UIImage imageNamed:@"CallMessageIcon"];
             [self.conversationView addDescriptor:descriptor isLocal:YES needsReload:YES name:self.originator.identityName];
         }
@@ -1779,6 +2173,97 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
     }
 }
 
+#pragma mark - CallMapDelegate
+
+- (void)closeMap {
+    DDLogVerbose(@"%@ closeMap", LOG_TAG);
+    
+    self.mapView.hidden = YES;
+}
+
+- (void)fullScreenMap:(BOOL)isFullScreen {
+    DDLogVerbose(@"%@ fullScreenMap: %@", LOG_TAG, isFullScreen ? @"YES":@"NO");
+    
+    [UIView animateWithDuration:0.5 animations:^{
+        if (isFullScreen) {
+            self.mapViewBottomConstraint.active = NO;
+            self.mapViewTopConstraint.active = NO;
+            
+            self.mapViewFullScreenBottomConstraint.active = YES;
+            self.mapViewFullScreenTopConstraint.active = YES;
+            
+            [self.view bringSubviewToFront:self.mapView];
+        } else {
+            self.mapViewFullScreenBottomConstraint.active = NO;
+            self.mapViewFullScreenTopConstraint.active = NO;
+            
+            self.mapViewBottomConstraint.active = YES;
+            self.mapViewTopConstraint.active = YES;
+            
+            [self.view bringSubviewToFront:self.menuView];
+        }
+        
+        [self.view setNeedsLayout];
+        [self.view setNeedsDisplay];
+    }];
+}
+
+- (void)showBackgroundAlert {
+    DDLogVerbose(@"%@ showBackgroundAlert", LOG_TAG);
+        
+    DefaultConfirmView *defaultConfirmView = [[DefaultConfirmView alloc] init];
+    defaultConfirmView.confirmViewDelegate = self;
+    [defaultConfirmView initWithTitle:TwinmeLocalizedString(@"call_view_controller_location_share", nil) message:TwinmeLocalizedString(@"call_view_controller_location_background_warning", nil) image:nil avatar:nil  action:TwinmeLocalizedString(@"application_authorization_go_settings", nil) actionColor:nil cancel:nil];
+    [self.view addSubview:defaultConfirmView];
+    [defaultConfirmView showConfirmView];
+}
+
+- (void)showExactLocationAlert {
+    DDLogVerbose(@"%@ showExactLocationAlert", LOG_TAG);
+        
+    DefaultConfirmView *defaultConfirmView = [[DefaultConfirmView alloc] init];
+    defaultConfirmView.confirmViewDelegate = self;
+    [defaultConfirmView initWithTitle:TwinmeLocalizedString(@"call_view_controller_location_share", nil) message:TwinmeLocalizedString(@"call_view_controller_location_exact_warning", nil) image:nil avatar:nil  action:TwinmeLocalizedString(@"application_authorization_go_settings", nil) actionColor:nil cancel:nil];
+    [self.view addSubview:defaultConfirmView];
+    [defaultConfirmView showConfirmView];
+}
+
+- (void)stopShareLocation {
+    DDLogVerbose(@"%@ stopShareLocation", LOG_TAG);
+ 
+    [self.callService stopShareLocation:NO];
+    
+    if (self.callParticipantLocaleView) {
+        self.callParticipantLocaleView.isLocationShared = NO;
+        [self.callParticipantLocaleView updateViews];
+    }
+    
+    self.sharedLocationImageView.image = [UIImage imageNamed:@"CallLocationIcon"];
+    self.sharedLocationImageView.image = [self.sharedLocationImageView.image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    self.sharedLocationImageView.tintColor = [UIColor whiteColor];
+}
+
+- (void)startShareLocation:(double)mapLatitudeDelta mapLongitudeDelta:(double)mapLongitudeDelta {
+    DDLogVerbose(@"%@ startShareLocation", LOG_TAG);
+    
+    self.showShareLocationMessage = YES;
+    [self.callService startShareLocation:mapLatitudeDelta mapLongitudeDelta:mapLongitudeDelta];
+    
+    if (self.callParticipantLocaleView) {
+        self.callParticipantLocaleView.isLocationShared = YES;
+        [self.callParticipantLocaleView updateViews];
+    }
+    
+    self.sharedLocationImageView.image = [UIImage imageNamed:@"ShareLocationIcon"];
+    self.sharedLocationView.hidden = NO;
+    
+    if (self.unreadMessageView.hidden) {
+        self.sharedLocationViewTrailingConstraint.constant = self.headerViewHeightConstraint.constant;
+    } else {
+        self.sharedLocationViewTrailingConstraint.constant = 0;
+    }
+}
+
 #pragma mark - CallMenuDelegate
 
 - (void)menuStateDidUpdated:(CallMenuViewState)callMenuViewState {
@@ -1789,6 +2274,8 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
     } else {
         self.menuViewBottomConstraint.constant = DESIGN_DEFAULT_MENU_MARGIN * Design.HEIGHT_RATIO;
     }
+    
+    [self updateMenu];
     
     [UIView animateWithDuration:MENU_ANIMATION_DURATION animations:^{
         [self.view layoutIfNeeded];
@@ -1811,7 +2298,14 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
 - (void)onAddHoldCall:(CallHoldView *)callHoldView {
     DDLogVerbose(@"%@ onAddHoldCall: %@", LOG_TAG, callHoldView);
     
-    [self showPremiumFeature:FeatureTypeGroupCall];
+    if (!self.isGroupCallSubscribed) {
+        [self showPremiumFeature:FeatureTypeGroupCall];
+    } else {
+        [self.callService mergeCall];
+        
+        self.callHoldView.hidden = YES;
+        [self animateMenu:YES];
+    }
 }
 
 - (void)onSwapHoldCall:(CallHoldView *)callHoldView {
@@ -1929,6 +2423,7 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
     [self.menuView.speakerOnButton addTarget:self action:@selector(speakerOn:) forControlEvents:UIControlEventTouchUpInside];
     [self.menuView.cameraMuteButton addTarget:self action:@selector(cameraMute:) forControlEvents:UIControlEventTouchUpInside];
     [self.menuView.conversationButton addTarget:self action:@selector(openConversation:) forControlEvents:UIControlEventTouchUpInside];
+    [self.menuView.mapButton addTarget:self action:@selector(shareLocation:) forControlEvents:UIControlEventTouchUpInside];
     [self.menuView.streamingAudioButton addTarget:self action:@selector(addStreamingAudio:) forControlEvents:UIControlEventTouchUpInside];
     [self.menuView.invitationButton addTarget:self action:@selector(shareInvitation:) forControlEvents:UIControlEventTouchUpInside];
     [self.menuView.pauseButton addTarget:self action:@selector(pauseCall:) forControlEvents:UIControlEventTouchUpInside];
@@ -1955,6 +2450,15 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
     [self.unreadMessageButton addTarget:self action:@selector(openConversation:) forControlEvents:UIControlEventTouchUpInside];
     self.unreadMessageImageViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     
+    self.sharedLocationViewTrailingConstraint.constant *= Design.WIDTH_RATIO;
+    self.sharedLocationView.hidden = YES;
+    [self.sharedLocationButton addTarget:self action:@selector(openMap:) forControlEvents:UIControlEventTouchUpInside];
+    
+    self.sharedLocationImageViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    
+    self.sharedLocationImageView.image = [self.sharedLocationImageView.image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    self.sharedLocationImageView.tintColor = [UIColor whiteColor];
+
     self.controlCameraViewTrailingConstraint.constant *= Design.WIDTH_RATIO;
     self.controlCameraView.hidden = YES;
     [self.controlCameraButton addTarget:self action:@selector(cameraControl:) forControlEvents:UIControlEventTouchUpInside];
@@ -2071,6 +2575,7 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
         self.certifiedRelationImageView.hidden = YES;
         self.addParticipantView.hidden = YES;
         self.unreadMessageView.hidden = YES;
+        self.sharedLocationView.hidden = YES;
         self.controlCameraView.hidden = YES;
         self.terminatedLabel.hidden = NO;
         
@@ -2227,6 +2732,22 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
             }
         }];
     }
+    
+    /*
+     dispatch_async(dispatch_get_main_queue(), ^{
+         [[UIApplication sharedApplication].keyWindow makeToast:TwinmeLocalizedString(@"streaming_audio_view_controller_error_message", nil)];
+     });
+     break;
+     
+ case StreamingEventUnsupported: {
+         needsUpdateParticipants = YES;
+         self.streamPlayer = nil;
+         [self.playerStreamingAudioView stopStreaming];
+         
+         dispatch_async(dispatch_get_main_queue(), ^{
+             [[UIApplication sharedApplication].keyWindow makeToast:[NSString stringWithFormat:TwinmeLocalizedString(@"streaming_audio_view_controller_unsupported_message", nil), self.contactName]];
+         });
+     */
 }
 
 - (void)updateModeInCall {
@@ -2235,10 +2756,11 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
     self.declineView.hidden = YES;
     self.menuView.hidden = NO;
     self.answerCallView.hidden = YES;
-    
     self.addParticipantView.hidden = NO;
     
     [self showCoachMark];
+    
+    //self.streamingAudioView.hidden = NO;
     
     self.messageLabel.hidden = NO;
     
@@ -2276,33 +2798,57 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
         
         NSMutableDictionary<NSUUID *, NSString *> *participantsName = [[NSMutableDictionary alloc]init];
         NSArray<CallParticipant *> *participants = [call getParticipants];
+        BOOL isOneLocationShared = call.currentGeolocation != nil;
+        
         for (CallParticipant *callParticipant in participants) {
             if (callParticipant.senderId) {
                 [participantsName setObject:callParticipant.name forKey:callParticipant.senderId];
             }
+            
+            if (callParticipant.currentGeolocation) {
+                isOneLocationShared = YES;
+            }
+        }
+        
+        self.sharedLocationView.hidden = !isOneLocationShared;
+        
+        if ([self.callService isLocationStartShared]) {
+            self.sharedLocationImageView.image = [UIImage imageNamed:@"ShareLocationIcon"];
+        } else {
+            self.sharedLocationImageView.image = [UIImage imageNamed:@"CallLocationIcon"];
+            self.sharedLocationImageView.image = [self.sharedLocationImageView.image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+            self.sharedLocationImageView.tintColor = [UIColor whiteColor];
         }
         
         BOOL unreadMessage = NO;
         
         for (TLDescriptor *descriptor in [call getDescriptors]) {
-            
-            BOOL isLocal = ![call isPeerDescriptor:descriptor];
-            NSString *name = @"";
-            
-            if (isLocal) {
-                name = self.originator.identityName;
-            } else if ([participantsName objectForKey:descriptor.descriptorId.twincodeOutboundId]) {
-                name = [participantsName objectForKey:descriptor.descriptorId.twincodeOutboundId];
+                  
+            if ([descriptor isKindOfClass:[TLObjectDescriptor class]]) {
+                BOOL isLocal = ![call isPeerDescriptor:descriptor];
+                NSString *name = @"";
+                
+                if (isLocal) {
+                    name = self.originator.identityName;
+                } else if ([participantsName objectForKey:descriptor.descriptorId.twincodeOutboundId]) {
+                    name = [participantsName objectForKey:descriptor.descriptorId.twincodeOutboundId];
+                }
+                
+                if (!isLocal && descriptor.readTimestamp == 0) {
+                    unreadMessage = YES;
+                }
+        
+                [self.conversationView addDescriptor:descriptor isLocal:![call isPeerDescriptor:descriptor] needsReload:NO name:name];
             }
-            
-            if (!isLocal && descriptor.readTimestamp == 0) {
-                unreadMessage = YES;
-            }
-            
-            [self.conversationView addDescriptor:descriptor isLocal:![call isPeerDescriptor:descriptor] needsReload:NO name:name];
         }
         
         self.unreadMessageView.hidden = ![self.conversationView hasDescriptors];
+        
+        if (self.unreadMessageView.hidden) {
+            self.sharedLocationViewTrailingConstraint.constant = self.headerViewHeightConstraint.constant;
+        } else {
+            self.sharedLocationViewTrailingConstraint.constant = 0;
+        }
         
         if (unreadMessage) {
             self.unreadMessageImageView.image = [UIImage imageNamed:@"CallNewMessageIcon"];
@@ -2386,7 +2932,7 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
         }
     }
 
-    [self.menuView updateMenu:isInCall isAudioMuted:[self.callService isAudioMuted] isSpeakerOn:[self.callService isSpeakerOn] isCameraMuted:[self.callService isCameraMuted] isLocalVideoTrack:isLocalVideoTrack isVideoAllowed:isVideoAllowed isConversationAllowed:[self isMessageSupported] isStreamingAudioSupported:[self isStreamingSupported] isShareInvitationAllowed:self.isCallReceiver isInPause:isInPause hideCertify:hideCertify isCertifyRunning:[self.callService isKeyCheckRunning] audioDevice:self.callService.getCurrentAudioDevice isHeadSetAvailable:self.callService.isHeadsetAvailable isCameraControlAllowed:isCameraControlAllowed isRemoteCameraControl:isRemoteCameraControl];
+    [self.menuView updateMenu:isInCall isAudioMuted:[self.callService isAudioMuted] isSpeakerOn:[self.callService isSpeakerOn] isCameraMuted:[self.callService isCameraMuted] isLocalVideoTrack:isLocalVideoTrack isVideoAllowed:isVideoAllowed isConversationAllowed:[self isMessageSupported] isStreamingAudioSupported:[self isStreamingSupported] isShareInvitationAllowed:self.isCallReceiver isShareLocationAllowed:[self isLocationSupported] isInPause:isInPause isLocationShared:[self.callService isLocationStartShared] hideCertify:hideCertify isCertifyRunning:[self.callService isKeyCheckRunning] audioDevice:self.callService.getCurrentAudioDevice isHeadSetAvailable:self.callService.isHeadsetAvailable isCameraControlAllowed:isCameraControlAllowed isRemoteCameraControl:isRemoteCameraControl];
 }
 
 - (BOOL)isMessageSupported {
@@ -2398,7 +2944,19 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
         }
     }
     
-    return NO;;
+    return NO;
+}
+
+- (BOOL)isLocationSupported {
+    DDLogVerbose(@"%@ isLocationSupported", LOG_TAG);
+    
+    for (AbstractCallParticipantView *callParticipantView in self.callParticipantViews) {
+        if (callParticipantView.isLocationSupported) {
+            return YES;
+        }
+    }
+    
+    return NO;
 }
 
 - (BOOL)isStreamingSupported {
@@ -2471,6 +3029,8 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
             
             self.callParticipantLocaleView.isAudioMute = !callState.audioSourceOn;
             self.callParticipantLocaleView.isVideoMute = !callState.videoSourceOn;
+            self.callParticipantLocaleView.isLocationShared = [self.callService isLocationStartShared];
+            
             self.callParticipantLocaleView.delegate = self;
             
             if ([self.callService localVideoTrack] && callState.videoSourceOn) {
@@ -2483,6 +3043,7 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
         } else if (self.originator) {
             self.callParticipantLocaleView.isAudioMute = !callState.audioSourceOn;
             self.callParticipantLocaleView.isVideoMute = !callState.videoSourceOn;
+            self.callParticipantLocaleView.isLocationShared = [self.callService isLocationStartShared];
             self.callParticipantLocaleView.name = self.originator.identityName;
             [self.twinmeService getIdentityImageWithContact:self.originator withBlock:^(UIImage *image) {
                 self.callParticipantLocaleView.avatar = image;
@@ -2712,6 +3273,9 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
     [[NSNotificationCenter defaultCenter] removeObserver:self name:CallEventMessageCallOnHold object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:CallEventMessageCallResumed object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:CallEventMessageCallsMerged object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:CallEventMessageSharedLocationEnabled object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:CallEventMessageSharedLocationRestricted object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:CallEventMessageLocationServicesDisabled object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:CallEventCameraControlZoomUpdate object:nil];
     
     if ([UIDevice currentDevice].proximityMonitoringEnabled) {
@@ -2746,6 +3310,10 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
     if (self.streamPlayer.streamer) {
         [self.callService stopStreaming];
         self.streamPlayer = nil;
+    }
+    
+    if ([self.callService getCurrentLocation]) {
+        [self.callService stopShareLocation:YES];
     }
     
     if (!isHoldCall) {
@@ -2896,7 +3464,7 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
         OnboardingConfirmView *onboardingConfirmView = [[OnboardingConfirmView alloc] init];
         onboardingConfirmView.confirmViewDelegate = self;
         
-        UIImage *image = [self.twinmeApplication darkModeEnable] ? [UIImage imageNamed:@"OnboardingAuthentifiedRelationDark"] : [UIImage imageNamed:@"OnboardingAuthentifiedRelation"];
+        UIImage *image = [self.twinmeApplication darkModeEnable:[self currentSpaceSettings]] ? [UIImage imageNamed:@"OnboardingAuthentifiedRelationDark"] : [UIImage imageNamed:@"OnboardingAuthentifiedRelation"];
         NSString *message = [NSString stringWithFormat:TwinmeLocalizedString(@"call_view_controller_certify_onboarding_start_message", nil), self.contactName];
         
         [onboardingConfirmView initWithTitle:TwinmeLocalizedString(@"authentified_relation_view_controller_to_be_certified_title", nil) message:message image:image action:TwinmeLocalizedString(@"authentified_relation_view_controller_start", nil) actionColor:nil cancel:nil];
@@ -3203,9 +3771,24 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
     PremiumFeatureConfirmView *premiumFeatureConfirmView = [[PremiumFeatureConfirmView alloc] init];
     premiumFeatureConfirmView.confirmViewDelegate = self;
     premiumFeatureConfirmView.forceDarkMode = YES;
-    [premiumFeatureConfirmView initWithPremiumFeature:[[UIPremiumFeature alloc]initWithFeatureType:featureType] parentViewController:self.navigationController];
+    [premiumFeatureConfirmView initWithPremiumFeature:[[UIPremiumFeature alloc]initWithFeatureType:featureType spaceSettings:self.currentSpaceSettings] parentViewController:self.navigationController];
     [self.navigationController.view addSubview:premiumFeatureConfirmView];
     [premiumFeatureConfirmView showConfirmView];
+}
+ 
+- (void)showCameraControlOnboarding {
+    DDLogVerbose(@"%@ showCameraControlOnboarding", LOG_TAG);
+    
+    self.showRemoteCameraOnboarding = YES;
+    
+    OnboardingConfirmView *onboardingConfirmView = [[OnboardingConfirmView alloc] init];
+    onboardingConfirmView.confirmViewDelegate = self;
+    onboardingConfirmView.tag = ONBOARDING_REMOTE_CAMERA;
+    onboardingConfirmView.forceDarkMode = YES;
+    [onboardingConfirmView initWithTitle:TwinmeLocalizedString(@"call_view_controller_camera_control_needs_help", nil) message: TwinmeLocalizedString(@"call_view_controller_camera_control_onboarding_part_2", nil) image:[UIImage imageNamed:@"OnboardingControlCamera"] action:TwinmeLocalizedString(@"application_ok", nil) actionColor:nil cancel:TwinmeLocalizedString(@"application_do_not_display", nil)];
+    
+    [self.view addSubview:onboardingConfirmView];
+    [onboardingConfirmView showConfirmView];
 }
 
 - (void)checkAuthorization {

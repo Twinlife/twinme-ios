@@ -318,7 +318,7 @@ static const CGFloat DESIGN_CUSTOM_PROGRESS_MARGIN = 10;
     if (sender.state == UIGestureRecognizerStateEnded) {
         if (self.showAllWhatsNew) {
             if (self.updateMode) {
-                [[UIApplication sharedApplication] openURL:[NSURL URLWithString:TwinmeLocalizedString(@"twinme_link", nil)] options:@{} completionHandler:nil];
+                [[UIApplication sharedApplication] openURL:[NSURL URLWithString:TwinmeLocalizedString(@"skred_link", nil)] options:@{} completionHandler:nil];
             } else {
                 [self closeActionView];
             }
@@ -404,7 +404,7 @@ static const CGFloat DESIGN_CUSTOM_PROGRESS_MARGIN = 10;
         [self.uiWhatsNew addObject:whatsNew];
     }
     
-    BOOL darkMode = [self.twinmeApplication darkModeEnable];
+    BOOL darkMode = [self.twinmeApplication darkModeEnable:[self currentSpaceSettings]];
     
     if (darkMode && lastVersion.updateImagesDark.count > 0) {
         [self.imagesToDwonload addObjectsFromArray:lastVersion.updateImagesDark];
@@ -467,7 +467,7 @@ static const CGFloat DESIGN_CUSTOM_PROGRESS_MARGIN = 10;
             CGFloat x = index == 0 ? 0 : index * customBarProgressWidth + (customBarMargin * index);
             CGRect frame = CGRectMake(x, 0, customBarProgressWidth, self.progressContainerViewHeightConstraint.constant);
             CustomProgressBarView *customBarProgressView = [[CustomProgressBarView alloc]initWithFrame:frame];
-            customBarProgressView.isDarkMode = [self.twinmeApplication darkModeEnable];
+            customBarProgressView.isDarkMode = [self.twinmeApplication darkModeEnable:[self currentSpaceSettings]];
             customBarProgressView.customProgressBarDelegate = self;
             [self.customProgressBarView addObject:customBarProgressView];
             [self.progressContainerView addSubview:customBarProgressView];
@@ -514,7 +514,7 @@ static const CGFloat DESIGN_CUSTOM_PROGRESS_MARGIN = 10;
         if (image) {
             whatsNewToUpdate.image = image;
         } else {
-            whatsNewToUpdate.image = [UIImage imageNamed:@"SplashScreenLogo"];
+            whatsNewToUpdate.image = [UIImage imageNamed:@"LogoRedBackground"];
         }
     }
     

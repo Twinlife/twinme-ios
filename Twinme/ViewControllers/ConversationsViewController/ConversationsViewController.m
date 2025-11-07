@@ -50,7 +50,9 @@
 #import <TwinmeCommon/MainViewController.h>
 #import <TwinmeCommon/TwinmeNavigationController.h>
 
+#import "AlertMessageView.h"
 #import "CellActionView.h"
+#import "SpaceSetting.h"
 #import "CustomTabView.h"
 #import "ResetConversationConfirmView.h"
 
@@ -91,7 +93,7 @@ static int LAST_USED_CONVERSATION_COUNT = 99999;
 // Interface: ConversationsViewController
 //
 
-@interface ConversationsViewController () <UITableViewDataSource, UITableViewDelegate, ChatServiceDelegate, UISearchBarDelegate, UISearchControllerDelegate, ConversationsActionDelegate, ConfirmViewDelegate, CustomTabViewDelegate, SearchSectionDelegate, EnableNotificationDelegate>
+@interface ConversationsViewController () <UITableViewDataSource, UITableViewDelegate, ChatServiceDelegate, UISearchBarDelegate, UISearchControllerDelegate, ConversationsActionDelegate, ConfirmViewDelegate, AlertMessageViewDelegate, CustomTabViewDelegate, SearchSectionDelegate, EnableNotificationDelegate>
 
 @property (weak, nonatomic) IBOutlet UITableView *conversationsTableView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *conversationsTableViewBottomConstraint;
@@ -283,6 +285,14 @@ static int LAST_USED_CONVERSATION_COUNT = 99999;
     [self.navigationController.navigationBar setPrefersLargeTitles:NO];
 }
 
+- (void)viewDidAppear:(BOOL)animated {
+    DDLogVerbose(@"%@ viewDidAppear: %d", LOG_TAG, animated);
+    
+    [super viewDidAppear:animated];
+    
+    [self setLeftBarButtonItem:self.chatService profile:self.currentSpace.profile];
+}
+
 - (BOOL)hidesBottomBarWhenPushed {
     DDLogVerbose(@"%@ hidesBottomBarWhenPushed", LOG_TAG);
     
@@ -332,8 +342,21 @@ static int LAST_USED_CONVERSATION_COUNT = 99999;
     [self reloadData];
     [self setLeftBarButtonItem:self.chatService profile:space.profile];
     
+    TLSpaceSettings *spaceSettings = space.settings;
+    if ([space.settings getBooleanWithName:PROPERTY_DEFAULT_APPEARANCE_SETTINGS defaultValue:YES]) {
+        spaceSettings = self.twinmeContext.defaultSpaceSettings;
+    }
+    
+    if (![Design.MAIN_STYLE isEqualToString:spaceSettings.style]) {
+        [Design setMainColor:spaceSettings.style];
+    }
+    
     TwinmeNavigationController *navigationController = (TwinmeNavigationController *) self.navigationController;
     [navigationController setNavigationBarStyle];
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self.conversationsTableView scrollsToTop];
+    });
 }
 
 - (void)onGetSpace:(nonnull TLSpace *)space avatar:(nullable UIImage *)avatar {
@@ -346,6 +369,9 @@ static int LAST_USED_CONVERSATION_COUNT = 99999;
     DDLogVerbose(@"%@ onUpdateSpace: %@", LOG_TAG, space);
     
     [self setLeftBarButtonItem:self.chatService profile:space.profile];
+    
+    TwinmeNavigationController *navigationController = (TwinmeNavigationController *) self.navigationController;
+    [navigationController setNavigationBarStyle];
 }
 
 - (void)onGetContacts:(NSArray *)contacts {
@@ -1137,6 +1163,19 @@ static int LAST_USED_CONVERSATION_COUNT = 99999;
     self.resetConversationConfirmView = nil;
 }
 
+#pragma mark - AlertMessageViewDelegate
+
+- (void)didCloseAlertMessage:(nonnull AlertMessageView *)alertMessageView {
+    DDLogVerbose(@"%@ didCloseAlertMessage: %@", LOG_TAG, alertMessageView);
+    
+    [alertMessageView closeAlertView];
+}
+
+- (void)didFinishCloseAlertMessageAnimation:(nonnull AlertMessageView *)alertMessageView {
+    DDLogVerbose(@"%@ didFinishCloseAlertMessageAnimation: %@", LOG_TAG, alertMessageView);
+    
+    [alertMessageView removeFromSuperview];
+}
 
 #pragma mark - ConversationsActionDelegate
 
@@ -1532,11 +1571,17 @@ static int LAST_USED_CONVERSATION_COUNT = 99999;
 - (IBAction)handleAddChatTapGesture:(id)sender {
     DDLogVerbose(@"%@ handleAddChatTapGesture: %@", LOG_TAG, sender);
     
-    if (!self.defaultProfile) {
+    if (!self.currentSpace.profile) {
         AddProfileViewController *addProfileViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"AddProfileViewController"];
         addProfileViewController.firstProfile = YES;
         addProfileViewController.fromConversationsTab = YES;
         [self.navigationController pushViewController:addProfileViewController animated:YES];
+    } else if (![self.currentSpace hasPermission:TLSpacePermissionTypeCreateGroup]) {
+        AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
+        alertMessageView.alertMessageViewDelegate = self;
+        [alertMessageView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:TwinmeLocalizedString(@"spaces_view_controller_permission_not_allowed", nil)];
+        [self.tabBarController.view addSubview:alertMessageView];
+        [alertMessageView showAlertView];
     } else {
         NewConversationViewController *newConversationViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"NewConversationViewController"];
         TwinmeNavigationController *navigationController = [[TwinmeNavigationController alloc]initWithRootViewController:newConversationViewController];
@@ -1547,14 +1592,14 @@ static int LAST_USED_CONVERSATION_COUNT = 99999;
 - (IBAction)handleAddContactTapGesture:(id)sender {
     DDLogVerbose(@"%@ handleAddContactTapGesture: %@", LOG_TAG, sender);
     
-    if (!self.defaultProfile) {
+    if (!self.currentSpace.profile) {
         AddProfileViewController *addProfileViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"AddProfileViewController"];
         addProfileViewController.firstProfile = YES;
         addProfileViewController.fromConversationsTab = YES;
         [self.navigationController pushViewController:addProfileViewController animated:YES];
     } else {
         AddContactViewController *addContactViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"AddContactViewController"];
-        [addContactViewController initWithProfile:self.defaultProfile invitationMode:InvitationModeScan];
+        [addContactViewController initWithProfile:self.currentSpace.profile invitationMode:InvitationModeScan];
         [self.navigationController pushViewController:addContactViewController animated:YES];
     }
 }
@@ -1608,7 +1653,7 @@ static int LAST_USED_CONVERSATION_COUNT = 99999;
         self.startConversationView.hidden = YES;
         self.inviteContactView.hidden = NO;
         self.noConversationImageViewHeightConstraint.constant = DESIGN_NO_CONTACT_IMAGE_HEIGHT * Design.HEIGHT_RATIO;
-        self.noConversationImageView.image = [self.twinmeApplication darkModeEnable] ? [UIImage imageNamed:@"OnboardingStep3Dark"] : [UIImage imageNamed:@"OnboardingStep3"];
+        self.noConversationImageView.image = [self.twinmeApplication darkModeEnable:[self currentSpaceSettings]] ? [UIImage imageNamed:@"OnboardingStep3Dark"] : [UIImage imageNamed:@"OnboardingStep3"];
         self.noConversationLabel.text = TwinmeLocalizedString(@"add_contact_view_controller_onboarding_message", nil);
         
         self.navigationItem.titleView = nil;
@@ -1628,7 +1673,7 @@ static int LAST_USED_CONVERSATION_COUNT = 99999;
         self.inviteContactView.hidden = YES;
         self.startConversationView.hidden = NO;
         self.noConversationImageViewHeightConstraint.constant = DESIGN_NO_CONVERSATION_IMAGE_HEIGHT * Design.HEIGHT_RATIO;
-        self.noConversationImageView.image = [self.twinmeApplication darkModeEnable] ? [UIImage imageNamed:@"OnboardingStep2Dark"] : [UIImage imageNamed:@"OnboardingStep2"];
+        self.noConversationImageView.image = [self.twinmeApplication darkModeEnable:[self currentSpaceSettings]] ? [UIImage imageNamed:@"OnboardingStep2Dark"] : [UIImage imageNamed:@"OnboardingStep2"];
         self.noConversationLabel.text = TwinmeLocalizedString(@"conversations_view_controller_no_conversation_message", nil);
         
         self.navigationItem.titleView = nil;
@@ -1827,6 +1872,14 @@ static int LAST_USED_CONVERSATION_COUNT = 99999;
     self.noResultFoundLabel.textColor = Design.FONT_COLOR_DESCRIPTION;
     
     [self.customTabView updateColor:Design.WHITE_COLOR mainColor:Design.MAIN_COLOR textSelectedColor:[UIColor whiteColor] borderColor:Design.GREY_ITEM];
+}
+
+- (void)updateCurrentSpace {
+    DDLogVerbose(@"%@ updateCurrentSpace", LOG_TAG);
+    
+    [self setLeftBarButtonItem:self.chatService profile:self.currentSpace.profile];
+    
+    [self updateColor];
 }
 
 @end

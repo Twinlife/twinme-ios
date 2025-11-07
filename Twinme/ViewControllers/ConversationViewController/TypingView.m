@@ -175,6 +175,14 @@ static CGFloat ANIMATION_DURATION = 0.2;
     [self.membersCollectionView reloadData];
 }
 
+- (void)setCustomAppearance:(nonnull CustomAppearance *)customAppearance {
+    DDLogVerbose(@"%@ setCustomAppearance: %@", LOG_TAG, customAppearance);
+    
+    self.leftRoundView.backgroundColor = [customAppearance getMainColor];
+    self.middleRoundView.backgroundColor = [customAppearance getMainColor];
+    self.rightRoundView.backgroundColor = [customAppearance getMainColor];
+}
+
 #pragma mark - UICollectionViewDataSource
 
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView {

@@ -27,7 +27,6 @@
 #import <TwinmeCommon/TwinmeNavigationController.h>
 
 #import "OnboardingConfirmView.h"
-
 #import "MenuPhotoView.h"
 #import "DefaultConfirmView.h"
 
@@ -76,6 +75,7 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
 @property (weak, nonatomic) IBOutlet UILabel *messageLabel;
 
 @property (nonatomic) BOOL keyboardHidden;
+@property (nonatomic) CGFloat yOffset;
 @property (nonatomic) BOOL updated;
 @property (nonatomic) BOOL creatingInProgress;
 @property (nonatomic) BOOL showOnboardingView;
@@ -118,6 +118,7 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
         _fromContactsTab = NO;
         _fromConversationsTab = NO;
         _showOnboardingView = NO;
+        _fromCreateSpace = NO;
         _createProfileService = [[CreateProfileService alloc] initWithTwinmeContext:self.twinmeContext delegate:self];
     }
     return self;
@@ -161,6 +162,18 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     DDLogVerbose(@"%@ viewDidAppear: %@", LOG_TAG, animated ? @"YES" : @"NO");
     
     [super viewDidAppear:animated];
+}
+
+- (void)backTap {
+    DDLogVerbose(@"%@ backTap", LOG_TAG);
+    
+    if (![self.lastLevelName isEqual:@""]) {
+        [self.createProfileService setLevel:self.lastLevelName];
+    } else {
+        [self.createProfileService setCurrentSpace];
+    }
+    
+    [self finish];
 }
 
 #pragma mark - UITextFieldDelegate
@@ -307,6 +320,7 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     
     self.avatarView.isAccessibilityElement = YES;
     self.avatarView.backgroundColor = DESIGN_AVATAR_PLACEHOLDER_COLOR;
+
     self.avatarView.userInteractionEnabled = YES;
     self.avatarView.clipsToBounds = YES;
     self.avatarView.layer.cornerRadius = self.avatarViewHeightConstraint.constant * 0.5;
@@ -515,13 +529,15 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     
     self.creatingInProgress = YES;
     
-    [self.createProfileService createProfile:self.nameTextField.text profileDescription:nil avatar:self.updatedProfileAvatar largeAvatar:self.updatedProfileAvatar nameSpace:TwinmeLocalizedString(@"space_appearance_view_controller_general_title", nil) createSpace:NO];
-}
-
-- (void)handleNextTapGesture:(UITapGestureRecognizer *)sender {
-    DDLogVerbose(@"%@ handleNextTapGesture: %@", LOG_TAG, sender);
-    
-    [self finish];
+    ApplicationDelegate *delegate = (ApplicationDelegate *)[[UIApplication sharedApplication] delegate];
+    MainViewController *mainViewController = delegate.mainViewController;
+    NSString *nameSpace;
+    if ([mainViewController numberSpaces:YES] == 0) {
+        nameSpace = TwinmeLocalizedString(@"space_appearance_view_controller_general_title", nil);
+    } else {
+        nameSpace = [NSString stringWithFormat:@"%@ %lu", TwinmeLocalizedString(@"settings_space_view_controller_space_category_title", nil), [mainViewController numberSpaces:YES] + 1];
+    }
+    [self.createProfileService createProfile:self.nameTextField.text profileDescription:nil avatar:self.updatedProfileAvatar largeAvatar:self.updatedProfileLargeAvatar nameSpace:nameSpace createSpace:self.fromCreateSpace];
 }
 
 - (void)takePhoto {
@@ -617,7 +633,7 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     
     message = mutableString;
     
-    UIImage *image = [self.twinmeApplication darkModeEnable] ? [UIImage imageNamed:@"OnboardingAddProfileDark"] : [UIImage imageNamed:@"OnboardingAddProfile"];
+    UIImage *image = [self.twinmeApplication darkModeEnable:self.currentSpaceSettings] ? [UIImage imageNamed:@"OnboardingAddProfileDark"] : [UIImage imageNamed:@"OnboardingAddProfile"];
     
     [onboardingConfirmView initWithTitle:title message:message image:image action:TwinmeLocalizedString(@"application_ok", nil) actionColor:nil cancel:nil];
     
@@ -635,13 +651,13 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     DefaultConfirmView *defaultConfirmView = [[DefaultConfirmView alloc] init];
     defaultConfirmView.confirmViewDelegate = self;
 
-    UIImage *image = [self.twinmeApplication darkModeEnable] ? [UIImage imageNamed:@"OnboardingAddProfileDark"] : [UIImage imageNamed:@"OnboardingAddProfile"];
+    UIImage *image = [self.twinmeApplication darkModeEnable:[self currentSpaceSettings]] ? [UIImage imageNamed:@"OnboardingAddProfileDark"] : [UIImage imageNamed:@"OnboardingAddProfile"];
     
     NSString *confirmTitle = incompleteProfile ? TwinmeLocalizedString(@"application_ok", nil) : TwinmeLocalizedString(@"show_profile_view_controller_create_profile", nil);
 
     [defaultConfirmView initWithTitle:nil message:TwinmeLocalizedString(@"create_profile_view_controller_incomplete_profile_message", nil) image:image avatar:nil action:confirmTitle actionColor:nil cancel:nil];
     [defaultConfirmView hideCancelAction];
-    [self.navigationController.view addSubview:defaultConfirmView];
+    [self.tabBarController.view addSubview:defaultConfirmView];
     [defaultConfirmView showConfirmView];
 }
 

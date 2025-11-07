@@ -37,6 +37,8 @@
 #import "PeerInvitationItem.h"
 #import "CallItem.h"
 #import "PeerCallItem.h"
+#import "LocationItem.h"
+#import "PeerLocationItem.h"
 #import "InvitationContactItem.h"
 #import "PeerInvitationContactItem.h"
 #import "NameItem.h"
@@ -64,6 +66,8 @@
 #import "CopyItemCell.h"
 #import "CallItemCell.h"
 #import "PeerCallItemCell.h"
+#import "LocationItemCell.h"
+#import "PeerLocationItemCell.h"
 #import "ClearItemCell.h"
 #import "PeerClearItemCell.h"
 #import "InvitationContactItemCell.h"
@@ -109,6 +113,8 @@ static NSString *CALL_ITEM_CELL_IDENTIFIER = @"CallItemCellIdentifier";
 static NSString *PEER_CALL_ITEM_CELL_IDENTIFIER = @"PeerCallItemCellIdentifier";
 static NSString *INVITATION_CONTACT_ITEM_CELL_IDENTIFIER = @"InvitationContactItemCellIdentifier";
 static NSString *PEER_INVITATION_CONTACT_ITEM_CELL_IDENTIFIER = @"PeerInvitationContactItemCellIdentifier";
+static NSString *LOCATION_ITEM_CELL_IDENTIFIER = @"LocationItemCellIdentifier";
+static NSString *PEER_LOCATION_ITEM_CELL_IDENTIFIER = @"PeerLocationItemCellIdentifier";
 static NSString *CLEAR_ITEM_CELL_IDENTIFIER = @"ClearItemCellIdentifier";
 static NSString *PEER_CLEAR_ITEM_CELL_IDENTIFIER = @"PeerClearItemCellIdentifier";
 static NSString *ANNOTATION_INFO_CELL_IDENTIFIER = @"AnnotationInfoCellIdentifier";
@@ -416,6 +422,8 @@ static const int ANNOTATIONS_SECTION = 5;
                 case ItemTypePeerInvitation:
                 case ItemTypeInvitationContact:
                 case ItemTypePeerInvitationContact:
+                case ItemTypeLocation:
+                case ItemTypePeerLocation:
                 case ItemTypeClear:
                 case ItemTypePeerClear:
                     numberOfRowsInSection = 0;
@@ -482,6 +490,7 @@ static const int ANNOTATIONS_SECTION = 5;
             
             self.item.replyAllowed = NO;
             switch (self.item.type) {
+                case ItemTypeInfoPrivacy:
                 case ItemTypeTime:
                 case ItemTypeName:
                     break;
@@ -630,6 +639,22 @@ static const int ANNOTATIONS_SECTION = 5;
                     return peerInvitationContactItemCell;
                 }
                     
+                case ItemTypeLocation: {
+                    LocationItem *locationItem = (LocationItem *)self.item;
+                    LocationItemCell *locationItemCell = (LocationItemCell *)[self.infoTableView dequeueReusableCellWithIdentifier:LOCATION_ITEM_CELL_IDENTIFIER forIndexPath:indexPath];
+                    [locationItemCell bindWithItem:locationItem conversationViewController:self.conversationViewController];
+                    locationItemCell.contentView.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
+                    return locationItemCell;
+                }
+                    
+                case ItemTypePeerLocation: {
+                    PeerLocationItem *peerLocationItem = (PeerLocationItem *)self.item;
+                    PeerLocationItemCell *peerLocationItemCell = (PeerLocationItemCell *)[self.infoTableView dequeueReusableCellWithIdentifier:PEER_LOCATION_ITEM_CELL_IDENTIFIER forIndexPath:indexPath];
+                    [peerLocationItemCell bindWithItem:peerLocationItem conversationViewController:self.conversationViewController];
+                    peerLocationItemCell.contentView.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
+                    return peerLocationItemCell;
+                }
+
                 case ItemTypeClear: {
                     ClearItem *clearItem = (ClearItem *)self.item;
                     ClearItemCell *clearItemCell = (ClearItemCell *)[self.infoTableView dequeueReusableCellWithIdentifier:CLEAR_ITEM_CELL_IDENTIFIER forIndexPath:indexPath];
@@ -749,6 +774,8 @@ static const int ANNOTATIONS_SECTION = 5;
     [self.infoTableView registerNib:[UINib nibWithNibName:@"InfoFileItemCell" bundle:nil] forCellReuseIdentifier:INFO_FILE_ITEM_CELL_IDENTIFIER];
     [self.infoTableView registerNib:[UINib nibWithNibName:@"InvitationContactItemCell" bundle:nil] forCellReuseIdentifier:INVITATION_CONTACT_ITEM_CELL_IDENTIFIER];
     [self.infoTableView registerNib:[UINib nibWithNibName:@"PeerInvitationContactItemCell" bundle:nil] forCellReuseIdentifier:PEER_INVITATION_CONTACT_ITEM_CELL_IDENTIFIER];
+    [self.infoTableView registerNib:[UINib nibWithNibName:@"LocationItemCell" bundle:nil] forCellReuseIdentifier:LOCATION_ITEM_CELL_IDENTIFIER];
+    [self.infoTableView registerNib:[UINib nibWithNibName:@"PeerLocationItemCell" bundle:nil] forCellReuseIdentifier:PEER_LOCATION_ITEM_CELL_IDENTIFIER];
     [self.infoTableView registerNib:[UINib nibWithNibName:@"ClearItemCell" bundle:nil] forCellReuseIdentifier:CLEAR_ITEM_CELL_IDENTIFIER];
     [self.infoTableView registerNib:[UINib nibWithNibName:@"PeerClearItemCell" bundle:nil] forCellReuseIdentifier:PEER_CLEAR_ITEM_CELL_IDENTIFIER];
     [self.infoTableView registerNib:[UINib nibWithNibName:@"AnnotationInfoCell" bundle:nil] forCellReuseIdentifier:ANNOTATION_INFO_CELL_IDENTIFIER];

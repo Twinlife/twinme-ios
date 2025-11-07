@@ -71,7 +71,7 @@ static const int ddLogLevel = DDLogLevelWarning;
 #define FLUSH_NOTIFICATIONS_DELAY 0.5   // Delay to wait before flushing the notifications after onTwinlifeOffline (500ms).
 #define HAVE_NOTIFICATION_FILTERING (YES)
 
-static NSString *APPLICATION_NAME = @"twinme";
+static NSString *APPLICATION_NAME = @"skred";
 
 @class NotificationServicePeerConnectionServiceDelegate;
 @class NotificationServiceConversationServiceDelegate;
@@ -196,7 +196,7 @@ typedef enum {
 
 - (instancetype)init {
     
-    self = [super initWithName:APPLICATION_NAME applicationVersion:[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"] serializers:@[[[TLMessageSerializer alloc] init], [[TLTypingSerializer alloc] init], [[TLRoomCommandSerializer alloc] init], [[TLRoomCommandResultSerializer alloc] init]] enableKeepAlive:NO enableSetup:NO enableCaches:NO enableReports:NO enableInvocations:YES enableSpaces:NO refreshBadgeDelay:-1.0];
+    self = [super initWithName:APPLICATION_NAME applicationVersion:[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"] serializers:@[[[TLMessageSerializer alloc] init], [[TLTypingSerializer alloc] init], [[TLRoomCommandSerializer alloc] init], [[TLRoomCommandResultSerializer alloc] init]] enableKeepAlive:NO enableSetup:NO enableCaches:NO enableReports:NO enableInvocations:YES enableSpaces:YES refreshBadgeDelay:-1.0];
     
     if (self) {
         // Disable auto registration.

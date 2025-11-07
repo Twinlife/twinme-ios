@@ -10,6 +10,7 @@
 
 #import "UICustomColor.h"
 #import "ColorCell.h"
+#import "EditSpaceViewController.h"
 
 #import <TwinmeCommon/Design.h>
 #import "UIColor+Hex.h"
@@ -35,6 +36,8 @@ static CGFloat DESIGN_CONTENT_PROPORTIONNAL_HEIGHT = 0.75f;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *colorViewHeightConstraint;
 @property (weak, nonatomic) IBOutlet UIView *colorView;
 
+@property (nonatomic) UICustomColor *customColor;
+
 @end
 
 //
@@ -51,6 +54,10 @@ static CGFloat DESIGN_CONTENT_PROPORTIONNAL_HEIGHT = 0.75f;
     
     self.isAccessibilityElement = YES;
     
+    UITapGestureRecognizer *tapContentGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onTouchUpInsideContentView:)];
+    tapContentGesture.cancelsTouchesInView = NO;
+    [self.contentView addGestureRecognizer:tapContentGesture];
+    
     self.colorViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     self.colorView.layer.cornerRadius = self.colorViewHeightConstraint.constant / 2.0;
     
@@ -62,6 +69,8 @@ static CGFloat DESIGN_CONTENT_PROPORTIONNAL_HEIGHT = 0.75f;
 
 - (void)bindWithColor:(UICustomColor *)customColor {
     DDLogVerbose(@"%@ bindWithColor: %@", LOG_TAG, customColor);
+    
+    self.customColor = customColor;
     
     if (customColor.color) {
         self.contentColorView.backgroundColor = [UIColor colorWithHexString:customColor.color alpha:1.0];
@@ -80,9 +89,7 @@ static CGFloat DESIGN_CONTENT_PROPORTIONNAL_HEIGHT = 0.75f;
         self.colorView.layer.borderColor = Design.BLACK_COLOR.CGColor;
     } else {
         self.colorView.layer.borderWidth = 0.0;
-    }
-    
-    [self updateColor];
+    }    
 }
 
 - (void)bindWithEditStyle:(BOOL)isSelected {
@@ -101,6 +108,14 @@ static CGFloat DESIGN_CONTENT_PROPORTIONNAL_HEIGHT = 0.75f;
     }
     
     [self updateColor];
+}
+
+- (void)onTouchUpInsideContentView:(UITapGestureRecognizer *)tapGesture {
+    DDLogVerbose(@"%@ onTouchUpInsideContentView: %@", LOG_TAG, tapGesture);
+    
+    if ([self.customColorDelegate respondsToSelector:@selector(didSelectCustomColor:)]) {
+        [self.customColorDelegate didSelectCustomColor:self.customColor];
+    }
 }
 
 - (void)updateColor {

@@ -22,6 +22,10 @@
 
 - (void)menuPhotoDidSelectGallery:(MenuPhotoView *)menuPhotoView;
 
+@optional
+
+- (void)menuPhotoDidSelectColor:(MenuPhotoView *)menuPhotoView;
+
 @end
 
 //
@@ -32,6 +36,7 @@
 @interface MenuPhotoView : AbstractMenuView
 
 @property (weak, nonatomic) id<MenuPhotoViewDelegate> menuPhotoViewDelegate;
+@property (nonatomic) BOOL showSelectColor;
 
 - (void)openMenu:(BOOL)hideTitle;
 

@@ -190,7 +190,8 @@ static NSString *TWINME_SETTINGS_CELL_IDENTIFIER = @"TwinmeSettingsCellIdentifie
     DDLogVerbose(@"%@ tableView: %@ didSelectRowAtIndexPath: %@", LOG_TAG, tableView, indexPath);
     
     if (indexPath.section == _COLORS_SECTION) {
-        ConversationAppearanceViewController *conversationAppearanceViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"ConversationAppearanceViewController"];
+        ConversationAppearanceViewController *conversationAppearanceViewController = (ConversationAppearanceViewController *)[self.storyboard instantiateViewControllerWithIdentifier:@"ConversationAppearanceViewController"];
+        [conversationAppearanceViewController initWithDefaultSpaceSettings];
         [self.navigationController pushViewController:conversationAppearanceViewController animated:YES];
     } else if (indexPath.section == _EMOJI_SECTION) {
         [self.twinmeApplication setEmojiSizeWithSize:(int)indexPath.row];

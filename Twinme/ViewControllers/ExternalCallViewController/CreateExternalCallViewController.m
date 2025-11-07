@@ -15,22 +15,26 @@
 #import <Twinme/UIImage+Resize.h>
 
 #import "CreateExternalCallViewController.h"
+#import <TwinmeCommon/TwinmeNavigationController.h>
 #import "InvitationExternalCallViewController.h"
 #import "TransferCallViewController.h"
 
 #import <Utils/NSString+Utils.h>
 
-#import <TwinmeCommon/Design.h>
 #import "SwitchView.h"
 #import "MenuCallCapabilitiesView.h"
 #import "MenuDateTimeView.h"
 #import "DeviceAuthorization.h"
+#import "MenuPhotoView.h"
+#import "UIPremiumFeature.h"
+#import "UITemplateExternalCall.h"
+
 #import <TwinmeCommon/ApplicationDelegate.h>
+#import <TwinmeCommon/CallReceiverService.h>
+#import <TwinmeCommon/Design.h>
 #import <TwinmeCommon/MainViewController.h>
 #import <TwinmeCommon/TwinmeNavigationController.h>
-#import "MenuPhotoView.h"
 
-#import <TwinmeCommon/CallReceiverService.h>
 
 #if 0
 static const int ddLogLevel = DDLogLevelVerbose;
@@ -145,6 +149,7 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
 @property (nonatomic) BOOL updated;
 @property (nonatomic) BOOL creatingInProgress;
 @property (nonatomic) BOOL showOnboardingView;
+@property (nonatomic) BOOL showPremiumFeatureDescription;
 @property (nonatomic) UIImage *updatedCallReceiverAvatar;
 @property (nonatomic) UIImage *updatedCallReceiverLargeAvatar;
 
@@ -160,6 +165,8 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
 @property (nonatomic) BOOL allowVoiceCall;
 @property (nonatomic) BOOL allowVideoCall;
 @property (nonatomic) BOOL allowGroupCall;
+
+@property (nonatomic) UITemplateExternalCall *uiTemplateExternalCall;
 
 @end
 
@@ -191,6 +198,7 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
         _creatingInProgress = NO;
         _keyboardHidden = YES;
         _showOnboardingView = NO;
+        _showPremiumFeatureDescription = NO;
         _scheduleEnable = NO;
         _allowVoiceCall = YES;
         _allowVideoCall = YES;
@@ -230,6 +238,12 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     DDLogVerbose(@"%@ viewDidAppear: %@", LOG_TAG, animated ? @"YES" : @"NO");
     
     [super viewDidAppear:animated];
+}
+
+- (void)initWithTemplate:(UITemplateExternalCall *)templateExternalCall {
+    DDLogVerbose(@"%@ initWithTemplate: %@", LOG_TAG, templateExternalCall);
+    
+    self.uiTemplateExternalCall = templateExternalCall;
 }
 
 #pragma mark - CallReceiverServiceDelegate
@@ -470,28 +484,13 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     [self.view addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(dismissKeyboard)]];
     
     [self setNavigationTitle:TwinmeLocalizedString(@"premium_services_view_controller_click_to_call_title", nil)];
-    
-    if (self.isTransfert) {
-        self.avatarView.image = [UIImage imageNamed:@"TransfertCallPlaceholder"];
-    } else {
-        [self.callReceiverService getImageWithProfile:self.currentSpace.profile withBlock:^(UIImage *image) {
-            self.avatarView.image = image;
-        }];
-    }
         
     [self.editAvatarView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleUpdateAvatarTapGesture)]];
-
     self.editAvatarView.isAccessibilityElement = YES;
     
     self.avatarView.backgroundColor = DESIGN_AVATAR_PLACEHOLDER_COLOR;
     self.avatarPlaceholderImageViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
-    
-    if (self.isTransfert) {
-        self.nameLabel.text = TwinmeLocalizedString(@"premium_services_view_controller_transfert_title", nil);
-    } else {
-        self.nameLabel.text = TwinmeLocalizedString(@"premium_services_view_controller_click_to_call_title", nil);
-    }
-    
+        
     self.nameViewTopConstraint.constant *= Design.HEIGHT_RATIO;
     self.nameViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     self.nameViewWidthConstraint.constant *= Design.WIDTH_RATIO;
@@ -506,12 +505,7 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     self.nameTextField.tintColor = Design.FONT_COLOR_DEFAULT;
     self.nameTextField.placeholder = TwinmeLocalizedString(@"application_name_hint", nil);
     [self.nameTextField setReturnKeyType:UIReturnKeyDone];
-    if (self.isTransfert) {
-        self.nameTextField.text = TwinmeLocalizedString(@"create_transfert_call_view_controller_name_placeholder", nil);
-    } else {
-        self.nameTextField.text = self.currentSpace.profile.name;
-    }
-    
+
     self.nameTextField.delegate = self;
     [self.nameTextField addTarget:self action:@selector(textFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
     
@@ -521,13 +515,6 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     self.counterNameLabel.font = Design.FONT_REGULAR26;
     self.counterNameLabel.textColor = Design.FONT_COLOR_DEFAULT;
     self.counterNameLabel.text = [NSString stringWithFormat:@"0/%d", MAX_NAME_LENGTH];
-    
-    if (self.currentSpace.profile.name.length > MAX_NAME_LENGTH) {
-        self.nameTextField.text = [self.currentSpace.profile.name substringToIndex:MAX_NAME_LENGTH];
-        self.counterNameLabel.text = [NSString stringWithFormat:@"%d/%d", MAX_NAME_LENGTH, MAX_NAME_LENGTH];
-    } else {
-        self.counterNameLabel.text = [NSString stringWithFormat:@"%lu/%d", (unsigned long)self.currentSpace.profile.name.length, MAX_NAME_LENGTH];
-    }
     
     self.descriptionViewWidthConstraint.constant *= Design.WIDTH_RATIO;
     self.descriptionViewHeightConstraint.constant = Design.DESCRIPTION_HEIGHT;
@@ -552,17 +539,8 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     
     self.counterDescriptionLabel.font = Design.FONT_REGULAR26;
     self.counterDescriptionLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    
-    if (self.currentSpace.profile.objectDescription && ![self.currentSpace.profile.objectDescription isEqualToString:@""]) {
-        self.descriptionTextView.text = self.currentSpace.profile.objectDescription;
-        self.descriptionTextView.textColor = Design.FONT_COLOR_DEFAULT;
-        self.counterDescriptionLabel.text = [NSString stringWithFormat:@"%lu/%d", (unsigned long)self.descriptionTextView.text.length, MAX_DESCRIPTION_LENGTH];
-    } else {
-        self.descriptionTextView.text = TwinmeLocalizedString(@"side_menu_view_controller_about", nil);
-        self.descriptionTextView.textColor = Design.PLACEHOLDER_COLOR;
-        self.counterDescriptionLabel.text = [NSString stringWithFormat:@"0/%d", MAX_DESCRIPTION_LENGTH];
-    }
-    
+    self.counterDescriptionLabel.text = [NSString stringWithFormat:@"0/%d", MAX_DESCRIPTION_LENGTH];
+
     self.settingsViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     self.settingsViewWidthConstraint.constant *= Design.WIDTH_RATIO;
     self.settingsViewTopConstraint.constant *= Design.HEIGHT_RATIO;
@@ -719,12 +697,7 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     self.messageLabel.font = Design.FONT_REGULAR32;
     self.messageLabel.textColor = Design.FONT_COLOR_DEFAULT;
     
-    if (self.isTransfert) {
-        self.messageLabel.text = TwinmeLocalizedString(@"create_transfert_call_view_controller_message", nil);
-    } else {
-        self.messageLabel.text = TwinmeLocalizedString(@"create_external_call_view_controller_message", nil);
-    }
-    
+    [self initCallReceiver];
     [self updateCallCapabilities];
     [self updateSchedule];
 }
@@ -817,43 +790,10 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     DDLogVerbose(@"%@ handleStartDateViewTapGesture: %@", LOG_TAG, sender);
     
     if (sender.state == UIGestureRecognizerStateEnded) {
-        [self openMenuDateTime:[NSDate date] menuDateTimeType:MenuDateTimeTypeStartDate];
-    }
-}
-
-- (void)handleStartHourViewTapGesture:(UITapGestureRecognizer *)sender {
-    DDLogVerbose(@"%@ handleStartHourViewTapGesture: %@", LOG_TAG, sender);
-    
-    if (sender.state == UIGestureRecognizerStateEnded) {
-        [self openMenuDateTime:[NSDate date] menuDateTimeType:MenuDateTimeTypeStartHour];
-    }
-}
-
-- (void)handleEndDateViewTapGesture:(UITapGestureRecognizer *)sender {
-    DDLogVerbose(@"%@ handleEndDateViewTapGesture: %@", LOG_TAG, sender);
-    
-    if (sender.state == UIGestureRecognizerStateEnded) {
+        
+        NSDate *date = [NSDate date];
         
         if (self.scheduleStartDate) {
-            NSDateComponents *startDateComponents = [[NSDateComponents alloc] init];
-            startDateComponents.day = self.scheduleStartDate.day;
-            startDateComponents.month = self.scheduleStartDate.month;
-            startDateComponents.year = self.scheduleStartDate.year;
-            
-            NSCalendar *calendar = [NSCalendar currentCalendar];
-            NSDate *minimumDate = [calendar dateFromComponents:startDateComponents];
-            [self openMenuDateTime:minimumDate menuDateTimeType:MenuDateTimeTypeEndDate];
-        } else {
-            [self openMenuDateTime:[NSDate date] menuDateTimeType:MenuDateTimeTypeEndDate];
-        }
-    }
-}
-
-- (void)handleEndHourViewTapGesture:(UITapGestureRecognizer *)sender {
-    DDLogVerbose(@"%@ handleStartHourViewTapGesture: %@", LOG_TAG, sender);
-    
-    if (sender.state == UIGestureRecognizerStateEnded) {
-        if (self.scheduleStartDate && self.scheduleStartTime) {
             NSDateComponents *startDateComponents = [[NSDateComponents alloc] init];
             startDateComponents.day = self.scheduleStartDate.day;
             startDateComponents.month = self.scheduleStartDate.month;
@@ -862,11 +802,104 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
             startDateComponents.minute = self.scheduleStartTime.minute;
             
             NSCalendar *calendar = [NSCalendar currentCalendar];
-            NSDate *minimumDate = [calendar dateFromComponents:startDateComponents];
-            [self openMenuDateTime:minimumDate menuDateTimeType:MenuDateTimeTypeEndHour];
-        } else {
-            [self openMenuDateTime:[NSDate date] menuDateTimeType:MenuDateTimeTypeEndHour];
+            date = [calendar dateFromComponents:startDateComponents];
         }
+        
+        [self openMenuDateTime:date minimumDate:[NSDate date] menuDateTimeType:MenuDateTimeTypeStartDate];
+    }
+}
+
+- (void)handleStartHourViewTapGesture:(UITapGestureRecognizer *)sender {
+    DDLogVerbose(@"%@ handleStartHourViewTapGesture: %@", LOG_TAG, sender);
+    
+    if (sender.state == UIGestureRecognizerStateEnded) {
+        
+        NSDate *date = [NSDate date];
+        
+        if (self.scheduleStartDate) {
+            NSDateComponents *startDateComponents = [[NSDateComponents alloc] init];
+            startDateComponents.day = self.scheduleStartDate.day;
+            startDateComponents.month = self.scheduleStartDate.month;
+            startDateComponents.year = self.scheduleStartDate.year;
+            startDateComponents.hour = self.scheduleStartTime.hour;
+            startDateComponents.minute = self.scheduleStartTime.minute;
+            
+            NSCalendar *calendar = [NSCalendar currentCalendar];
+            date = [calendar dateFromComponents:startDateComponents];
+        }
+        
+        [self openMenuDateTime:date minimumDate:[NSDate date] menuDateTimeType:MenuDateTimeTypeStartHour];
+    }
+}
+
+- (void)handleEndDateViewTapGesture:(UITapGestureRecognizer *)sender {
+    DDLogVerbose(@"%@ handleEndDateViewTapGesture: %@", LOG_TAG, sender);
+    
+    if (sender.state == UIGestureRecognizerStateEnded) {
+        
+        NSDate *date = [NSDate date];
+        NSDate *minimumDate = [NSDate date];
+        
+        if (self.scheduleEndDate) {
+            NSDateComponents *startDateComponents = [[NSDateComponents alloc] init];
+            startDateComponents.day = self.scheduleEndDate.day;
+            startDateComponents.month = self.scheduleEndDate.month;
+            startDateComponents.year = self.scheduleEndDate.year;
+            startDateComponents.hour = self.scheduleEndTime.hour;
+            startDateComponents.minute = self.scheduleEndTime.minute;
+            
+            NSCalendar *calendar = [NSCalendar currentCalendar];
+            date = [calendar dateFromComponents:startDateComponents];
+        }
+        
+        if (self.scheduleStartDate) {
+            NSDateComponents *startDateComponents = [[NSDateComponents alloc] init];
+            startDateComponents.day = self.scheduleStartDate.day;
+            startDateComponents.month = self.scheduleStartDate.month;
+            startDateComponents.year = self.scheduleStartDate.year;
+            startDateComponents.hour = self.scheduleStartTime.hour;
+            startDateComponents.minute = self.scheduleStartTime.minute;
+            
+            NSCalendar *calendar = [NSCalendar currentCalendar];
+            minimumDate = [calendar dateFromComponents:startDateComponents];
+        }
+            
+        [self openMenuDateTime:date minimumDate:minimumDate menuDateTimeType:MenuDateTimeTypeEndDate];
+    }
+}
+
+- (void)handleEndHourViewTapGesture:(UITapGestureRecognizer *)sender {
+    DDLogVerbose(@"%@ handleStartHourViewTapGesture: %@", LOG_TAG, sender);
+    
+    if (sender.state == UIGestureRecognizerStateEnded) {
+        NSDate *date = [NSDate date];
+        NSDate *minimumDate = [NSDate date];
+        
+        if (self.scheduleEndDate) {
+            NSDateComponents *startDateComponents = [[NSDateComponents alloc] init];
+            startDateComponents.day = self.scheduleEndDate.day;
+            startDateComponents.month = self.scheduleEndDate.month;
+            startDateComponents.year = self.scheduleEndDate.year;
+            startDateComponents.hour = self.scheduleEndTime.hour;
+            startDateComponents.minute = self.scheduleEndTime.minute;
+            
+            NSCalendar *calendar = [NSCalendar currentCalendar];
+            date = [calendar dateFromComponents:startDateComponents];
+        }
+        
+        if (self.scheduleStartDate) {
+            NSDateComponents *startDateComponents = [[NSDateComponents alloc] init];
+            startDateComponents.day = self.scheduleStartDate.day;
+            startDateComponents.month = self.scheduleStartDate.month;
+            startDateComponents.year = self.scheduleStartDate.year;
+            startDateComponents.hour = self.scheduleStartTime.hour;
+            startDateComponents.minute = self.scheduleStartTime.minute;
+            
+            NSCalendar *calendar = [NSCalendar currentCalendar];
+            minimumDate = [calendar dateFromComponents:startDateComponents];
+        }
+            
+        [self openMenuDateTime:date minimumDate:minimumDate menuDateTimeType:MenuDateTimeTypeEndHour];
     }
 }
 
@@ -890,9 +923,8 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
         identityDescription = @"";
     }
     
-    TLCapabilities *capabilities = [[TLCapabilities alloc]init];
+    TLCapabilities *capabilities = [[TLCapabilities alloc]initWithTwincodeKind:TLTwincodeKindCallReceiver admin:NO];
     if (self.isTransfert) {
-        capabilities = [[TLCapabilities alloc]init];
         [capabilities setCapTransferWithValue:YES];
         
         if (!self.updatedCallReceiverAvatar) {
@@ -996,12 +1028,64 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
             [invitationExternalCallViewController initWithCallReceiver:callReceiver];
             [selectedNavigationController pushViewController:invitationExternalCallViewController animated:YES];
         }
-        
     }];
     
-    [self.navigationController popViewControllerAnimated:YES];
+    [self.navigationController popToRootViewControllerAnimated:YES];
 
     [CATransaction commit];
+}
+
+- (void)initCallReceiver {
+    DDLogVerbose(@"%@ initCallReceiver", LOG_TAG);
+    
+    if (self.isTransfert) {
+        self.nameLabel.text = TwinmeLocalizedString(@"premium_services_view_controller_transfert_title", nil);
+        self.nameTextField.text = TwinmeLocalizedString(@"create_transfert_call_view_controller_name_placeholder", nil);
+        self.messageLabel.text = TwinmeLocalizedString(@"create_transfert_call_view_controller_message", nil);
+        self.avatarView.image = [UIImage imageNamed:@"TransfertCallPlaceholder"];
+    } else {
+        self.nameLabel.text = TwinmeLocalizedString(@"premium_services_view_controller_click_to_call_title", nil);
+        self.messageLabel.text = TwinmeLocalizedString(@"create_external_call_view_controller_message", nil);
+        self.nameTextField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:[self.uiTemplateExternalCall getPlaceholder] attributes:[NSDictionary dictionaryWithObject:Design.PLACEHOLDER_COLOR forKey:NSForegroundColorAttributeName]];
+    }
+    
+    if (self.uiTemplateExternalCall) {
+        if (self.uiTemplateExternalCall.templateType != TemplateExternalCallTypeOther) {
+            self.nameTextField.text = [self.uiTemplateExternalCall getName];
+        }
+        
+        if ([self.uiTemplateExternalCall getImage]) {
+            self.avatarView.image = [self.uiTemplateExternalCall getImage];
+            self.avatarView.backgroundColor = [UIColor clearColor];
+            
+            if ([self.uiTemplateExternalCall getImageUrl]) {
+                NSURL *url = [NSURL URLWithString:[self.uiTemplateExternalCall getImageUrl]];
+                NSURLRequest *urlRequest = [NSURLRequest requestWithURL:url];
+                NSURLSessionConfiguration *urlSessionConfiguration = [NSURLSessionConfiguration defaultSessionConfiguration];
+                NSURLSession *urlSession = [NSURLSession sessionWithConfiguration:urlSessionConfiguration delegate:nil delegateQueue:[NSOperationQueue mainQueue]];
+                NSURLSessionDataTask *urlSessionDataTask = [urlSession dataTaskWithRequest:urlRequest completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
+                    if (!error) {
+                        UIImage *image = [UIImage imageWithData:data];
+                        if (image) {
+                            self.avatarView.image = image;
+                            self.updatedCallReceiverLargeAvatar = image;
+                            self.updatedCallReceiverAvatar = [self.uiTemplateExternalCall getImage];
+                        }
+                    }
+                }];
+                [urlSessionDataTask resume];
+            }
+        }
+        
+        self.allowVoiceCall = [self.uiTemplateExternalCall voiceCallAllowed];
+        self.allowVideoCall = [self.uiTemplateExternalCall videoCallAllowed];
+        self.allowGroupCall = [self.uiTemplateExternalCall groupCallAllowed];
+        self.scheduleEnable = [self.uiTemplateExternalCall hasSchedule];
+        
+        if (self.scheduleEnable && !self.scheduleStartDate) {
+            [self initSchedule];
+        }
+    }
 }
 
 - (void)initSchedule {
@@ -1138,7 +1222,7 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     [menuPhotoView openMenu:YES];
 }
 
-- (void)openMenuDateTime:(NSDate *)date menuDateTimeType:(MenuDateTimeType)menuDateTimeType {
+- (void)openMenuDateTime:(NSDate *)date minimumDate:(NSDate *)minimumDate menuDateTimeType:(MenuDateTimeType)menuDateTimeType {
     DDLogVerbose(@"%@ openMenuDateTime", LOG_TAG);
     
     [self dismissKeyboard];
@@ -1148,7 +1232,7 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     [self.tabBarController.view addSubview:menuDateTimeView];
         
     [menuDateTimeView setMenuDateTimeTypeWithType:menuDateTimeType];
-    [menuDateTimeView openMenu:date];
+    [menuDateTimeView openMenu:minimumDate date:date];
 }
 
 - (void)updateFont {
@@ -1183,8 +1267,8 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     self.messageLabel.textColor = Design.FONT_COLOR_DEFAULT;
     if (self.isTransfert) {
         self.nameTextField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:TwinmeLocalizedString(@"create_transfert_call_view_controller_name_placeholder", nil) attributes:[NSDictionary dictionaryWithObject:Design.PLACEHOLDER_COLOR forKey:NSForegroundColorAttributeName]];
-    } else {
-        self.nameTextField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:TwinmeLocalizedString(@"application_name_hint", nil) attributes:[NSDictionary dictionaryWithObject:Design.PLACEHOLDER_COLOR forKey:NSForegroundColorAttributeName]];
+    } else if (self.uiTemplateExternalCall) {
+        self.nameTextField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:[self.uiTemplateExternalCall getPlaceholder] attributes:[NSDictionary dictionaryWithObject:Design.PLACEHOLDER_COLOR forKey:NSForegroundColorAttributeName]];
     }
     
     self.counterDescriptionLabel.textColor = Design.FONT_COLOR_DEFAULT;

@@ -55,6 +55,16 @@
     return [MPMediaLibrary authorizationStatus];
 }
 
++ (CLAuthorizationStatus)deviceLocationAuthorizationStatus {
+    
+    return [CLLocationManager authorizationStatus];
+}
+
++ (BOOL)deviceLocationServicesEnabled {
+    
+    return [CLLocationManager locationServicesEnabled];
+}
+
 + (void)showSettingsAlertInController:(UIViewController *)controller message:(NSString *)message {
     
     UIAlertController *alertController = [UIAlertController alertControllerWithTitle:TwinmeLocalizedString(@"application_authorization_title", nil) message:message  preferredStyle:UIAlertControllerStyleAlert];
@@ -96,6 +106,11 @@
 + (void)showMediaSettingsAlertInController:(UIViewController *)controller {
     
     [DeviceAuthorization showSettingsAlertInController:controller message:TwinmeLocalizedString(@"application_authorization_media", nil)];
+}
+
++ (void)showLocationSettingsAlertInController:(UIViewController*)controller {
+    
+    [DeviceAuthorization showSettingsAlertInController:controller message:TwinmeLocalizedString(@"application_authorization_location", nil)];
 }
 
 @end

@@ -13,9 +13,14 @@
 //
 
 @class TLProfile;
+@class UITemplateSpace;
 
 @interface EditProfileViewController : AbstractShowViewController
 
-- (void)initWithProfile:(TLProfile *)profile isActive:(BOOL)isActive;
+- (void)initWithProfile:(TLProfile *)profile;
+
+- (void)initWithSpace:(TLSpace *)space;
+
+- (void)initWithSpace:(TLSpace *)space templateSpace:(UITemplateSpace *)templateSpace;
 
 @end

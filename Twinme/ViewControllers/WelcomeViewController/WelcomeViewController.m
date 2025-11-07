@@ -23,6 +23,7 @@
 #import <TwinmeCommon/Design.h>
 #import "TTTAttributedLabel.h"
 #import "WebViewController.h"
+#import "SpaceSetting.h"
 
 #if 0
 static const int ddLogLevel = DDLogLevelVerbose;
@@ -179,7 +180,7 @@ static const int WELCOME_STEP_COUNT = 3;
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(nonnull NSIndexPath *)indexPath {
     DDLogVerbose(@"%@ collectionView: %@ cellForItemAtIndexPath: %@", LOG_TAG, collectionView, indexPath);
-            
+
     WelcomeCell *welcomeCell = [collectionView dequeueReusableCellWithReuseIdentifier:WELCOME_CELL_IDENTIFIER forIndexPath:indexPath];
     UIWelcome *uiWelcome = [self.uiWelcome objectAtIndex:indexPath.row];
     [welcomeCell bindWithTitle:[uiWelcome getMessage] image:[uiWelcome getImage] font:Design.FONT_MEDIUM34];
@@ -242,7 +243,6 @@ static const int WELCOME_STEP_COUNT = 3;
     self.logoViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     self.logoViewTopConstraint.constant *= Design.HEIGHT_RATIO;
     
-    self.welcomeCollectionView.backgroundColor = [UIColor redColor];
     self.welcomeCollectionViewTopConstraint.constant *= Design.HEIGHT_RATIO;
     self.welcomeCollectionViewBottomConstraint.constant *= Design.HEIGHT_RATIO;
     self.welcomeCollectionViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
@@ -377,10 +377,10 @@ static const int WELCOME_STEP_COUNT = 3;
     DDLogVerbose(@"%@ setupWelcome", LOG_TAG);
     
     self.uiWelcome = [[NSMutableArray alloc]init];
-    [self.uiWelcome addObject:[[UIWelcome alloc]initWithWelcomePart:WelcomePartOne]];
-    [self.uiWelcome addObject:[[UIWelcome alloc]initWithWelcomePart:WelcomePartTwo]];
-    [self.uiWelcome addObject:[[UIWelcome alloc]initWithWelcomePart:WelcomePartThree]];
-    [self.uiWelcome addObject:[[UIWelcome alloc]initWithWelcomePart:WelcomePartFour]];
+    [self.uiWelcome addObject:[[UIWelcome alloc]initWithWelcomePart:WelcomePartOne spaceSettings:self.currentSpace.settings]];
+    [self.uiWelcome addObject:[[UIWelcome alloc]initWithWelcomePart:WelcomePartTwo spaceSettings:self.currentSpace.settings]];
+    [self.uiWelcome addObject:[[UIWelcome alloc]initWithWelcomePart:WelcomePartThree spaceSettings:self.currentSpace.settings]];
+    [self.uiWelcome addObject:[[UIWelcome alloc]initWithWelcomePart:WelcomePartFour spaceSettings:self.currentSpace.settings]];
     
     self.welcomePageControl.numberOfPages = self.uiWelcome.count;
     

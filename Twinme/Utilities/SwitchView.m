@@ -57,7 +57,7 @@ static CGFloat DESIGN_BORDER_WIDTH = 2.5;
     return self;
 }
 
-- (void) setupDefaultValue {
+- (void)setupDefaultValue {
     
     _isOn = YES;
     _isEnabled = YES;
@@ -130,6 +130,17 @@ static CGFloat DESIGN_BORDER_WIDTH = 2.5;
 - (void)handleTapSwitch {
     
     if (!self.isEnabled) {
+        if ([self.switchViewDelegate respondsToSelector:@selector(switchViewDidTap:)]) {
+            [self.switchViewDelegate switchViewDidTap:self];
+        }
+        return;
+    }
+    
+    if (self.needsConfirm) {
+        if ([self.switchViewDelegate respondsToSelector:@selector(switchViewNeedsConfirm:)]) {
+            [self.switchViewDelegate switchViewNeedsConfirm:self];
+        }
+        
         return;
     }
     
@@ -187,6 +198,11 @@ static CGFloat DESIGN_BORDER_WIDTH = 2.5;
     } else {
         self.alpha = 0.5;
     }
+}
+
+- (void)setConfirm:(BOOL)confirm {
+    
+    self.needsConfirm = confirm;
 }
 
 - (void)resetSwitch {

@@ -100,6 +100,20 @@ static CGFloat MAX_COMPRESSION = 0.8f;
 
 @end
 
+//
+// Protocol: LocationActionDelegate
+//
+
+@class TLGeolocationDescriptor;
+
+@protocol LocationActionDelegate <NSObject>
+
+- (void)fullscreenMapWithGeolocationDescriptor:(TLGeolocationDescriptor *)locationDescriptor avatar:(UIImage *)avatar;
+
+- (void)saveMapWithPath:(NSString *)path geolocationDescriptor:(TLGeolocationDescriptor *)geolocationDescriptor;
+
+@end
+
 
 //
 // Protocol: CallActionDelegate
@@ -124,7 +138,6 @@ static CGFloat MAX_COMPRESSION = 0.8f;
 - (void)openTwincodeDescriptor:(TLTwincodeDescriptor *)twincodeDescriptor;
 
 @end
-
 
 //
 // Protocol: LinkActionDelegate
@@ -220,15 +233,19 @@ static CGFloat MAX_COMPRESSION = 0.8f;
 // Protocol:PreviewViewDelegate
 //
 
+@class CLLocation;
+
 @protocol PreviewViewDelegate <NSObject>
 
-- (void)sendFile:(NSString *)filePath allowCopyFile:(BOOL)allowCopyFile;
+- (void)sendFile:(NSString *)filePath allowCopyFile:(BOOL)allowCopyFile expireTimeout:(int64_t)timeout;
 
-- (void)sendImage:(NSString *)imagePath allowCopyFile:(BOOL)allowCopyFile;
+- (void)sendImage:(NSString *)imagePath allowCopyFile:(BOOL)allowCopyFile expireTimeout:(int64_t)timeout;
 
-- (void)sendVideo:(NSString *)videoPath allowCopyFile:(BOOL)allowCopyFile;
+- (void)sendVideo:(NSString *)videoPath allowCopyFile:(BOOL)allowCopyFile expireTimeout:(int64_t)timeout;
 
-- (void)sendMediaCaption:(NSString *)text allowCopyText:(BOOL)allowCopyText;
+- (void)sendMediaCaption:(NSString *)text allowCopyText:(BOOL)allowCopyText expireTimeout:(int64_t)timeout;
+
+- (void)sendLocation:(double)latitudeDelta longitudeDelta:(double)longitudeDelta location:(CLLocation *)userLocation text:(NSString *)text allowCopyText:(BOOL)allowCopyText allowCopyFile:(BOOL)allowCopyFile expireTimeout:(int64_t)timeout;
 
 @end
 
@@ -236,9 +253,14 @@ static CGFloat MAX_COMPRESSION = 0.8f;
 // Interface: ConversationViewController
 //
 
+@class CustomAppearance;
+@class TLSpace;
+
 @protocol TLOriginator;
 
 @interface ConversationViewController : SLKTextViewController
+
+@property (nonatomic) TLSpace *space;
 
 - (void)initWithContact:(id<TLOriginator>)contact;
 
@@ -252,9 +274,11 @@ static CGFloat MAX_COMPRESSION = 0.8f;
 
 - (UIImage *)getContactAvatarWithUUID:(NSUUID *)peerTwincodeOutboundId;
 
+- (UIImage *)getContactAvatarForMap:(NSUUID *)peerTwincodeOutboundId;
+
 - (BOOL)isSameDayWithDate1:(NSDate *)date1 date2:(NSDate *)date2;
 
-- (void)pushFileWithPath:(NSString *)path type:(TLDescriptorType)type toBeDeleted:(BOOL)toBeDeleted allowCopy:(BOOL)allowCopy;
+- (void)pushFileWithPath:(NSString *)path type:(TLDescriptorType)type toBeDeleted:(BOOL)toBeDeleted allowCopy:(BOOL)allowCopy expireTimeout:(int64_t)timeout;
 
 - (Item *)getSelectedItem;
 
@@ -267,6 +291,10 @@ static CGFloat MAX_COMPRESSION = 0.8f;
 - (id<TLOriginator>)getOriginator;
 
 - (void)updateInCall;
+
+- (BOOL)isViewAppearing;
+
+- (CustomAppearance *)getCustomAppearance;
 
 - (void)openMenuSendOptions;
 

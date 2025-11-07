@@ -16,7 +16,6 @@
 
 @interface ShowProfileViewController : AbstractShowViewController
 
-- (void)initWithProfile:(TLProfile *)profile isActive:(BOOL)isActive;
+- (void)initWithProfile:(TLProfile *)profile;
 
 @end
-

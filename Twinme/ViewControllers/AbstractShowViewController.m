@@ -62,7 +62,6 @@ static CGFloat ACTION_VIEW_MIN_MARGIN;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *identityTitleLabelLeadingConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *identityTitleLabelTrailingConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *identityTitleLabelTopConstraint;
-@property (weak, nonatomic) IBOutlet UILabel *identityTitleLabel;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *identityViewHeightConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *identityViewTopConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *identityImageViewLeadingConstraint;
@@ -76,6 +75,7 @@ static CGFloat ACTION_VIEW_MIN_MARGIN;
 @property (nonatomic) CALayer *avatarContainerViewLayer;
 @property (nonatomic) UIImage *avatar;
 
+@property (nonatomic) BOOL isAppear;
 @property (nonatomic) BOOL initActionViewPosition;
 
 @property (nonatomic) float lastOffset;

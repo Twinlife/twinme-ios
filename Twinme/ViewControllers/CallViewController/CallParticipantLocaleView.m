@@ -56,6 +56,7 @@ static const int ddLogLevel = DDLogLevelWarning;
             
     if (self) {
         self.isFrontCamera = YES;
+        self.isLocationShared = NO;
         self.needTransformVideoView = YES;
         [self initViews];
     }
@@ -213,6 +214,12 @@ static const int ddLogLevel = DDLogLevelWarning;
     } else {
         self.pauseView.hidden = YES;
         self.overlayView.hidden = YES;
+    }
+    
+    if (self.isLocationShared) {
+        self.locationView.hidden = NO;
+    } else {
+        self.locationView.hidden = YES;
     }
     
     CGFloat constraintValue = self.switchCameraBottomConstraint.constant;

@@ -30,7 +30,7 @@
 
 - (void)updateViews;
 
-- (void)send:(BOOL)allowCopyText allowCopyFile:(BOOL)allowCopyFile;
+- (void)send:(BOOL)allowCopyText allowCopyFile:(BOOL)allowCopyFile timeout:(int64_t)timeout;
 
 - (void)close;
 

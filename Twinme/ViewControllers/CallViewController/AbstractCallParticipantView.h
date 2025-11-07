@@ -50,6 +50,12 @@ typedef enum {
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *infoViewTopConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *infoViewLeadingConstraint;
 @property (weak, nonatomic) IBOutlet UIImageView *infoView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *locationViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *locationViewTopConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *locationViewLeadingConstraint;
+@property (weak, nonatomic) IBOutlet UIView *locationView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *locationImageViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet UIImageView *locationImageView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *switchCameraHeightConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *switchCameraBottomConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *switchCameraLeadingConstraint;
@@ -84,6 +90,8 @@ typedef enum {
 - (BOOL)isCameraMute;
 
 - (BOOL)isMessageSupported;
+
+- (BOOL)isLocationSupported;
 
 - (BOOL)isStreamingSupported;
 

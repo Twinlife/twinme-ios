@@ -33,16 +33,19 @@ static UIColor *DESIGN_PROGRESS_COLOR;
 
 @implementation CustomProgressBarView
 
++ (void)initialize {
+    
+    DESIGN_BACKGROUND_COLOR = [UIColor colorWithRed:255./255. green:32./255. blue:80./255. alpha:0.3];
+    DESIGN_BACKGROUND_DARK_COLOR = [UIColor colorWithRed:255./255. green:255./255. blue:255./255. alpha:0.3];
+    DESIGN_PROGRESS_COLOR = [UIColor colorWithRed:255./255. green:32./255. blue:80./255. alpha:1.0];
+}
+
 - (instancetype)initWithFrame:(CGRect)frame {
     
     self = [super initWithFrame:frame];
     
     if (self) {
         _startAnimationDeferred = NO;
-        
-        DESIGN_PROGRESS_COLOR = [Design MAIN_COLOR];
-        DESIGN_BACKGROUND_COLOR = [Design LIGHT_GREY_BACKGROUND_COLOR];
-        DESIGN_BACKGROUND_DARK_COLOR = [Design GREY_BACKGROUND_COLOR];
     }
     
     return self;

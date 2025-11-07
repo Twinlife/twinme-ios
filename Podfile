@@ -1,5 +1,6 @@
-target 'twinme' do
+target 'Skred' do
 platform :ios, '12.0'
+project 'Twinme.xcodeproj'
 
 pod 'CocoaLumberjack', :path => 'Pods/CocoaLumberjack', inhibit_warnings: true
 pod 'KissXML', :path => 'Pods/KissXML', inhibit_warnings: true

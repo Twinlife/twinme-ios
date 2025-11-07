@@ -8,6 +8,9 @@
 
 #import "UIQuality.h"
 
+#import <Twinme/TLSpace.h>
+#import <Twinme/TLSpaceSettings.h>
+
 #import <Utils/NSString+Utils.h>
 
 #import <TwinmeCommon/ApplicationDelegate.h>
@@ -30,12 +33,13 @@
 
 @implementation UIQuality
 
-- (nonnull instancetype)initWithQualityOfServicesPart:(QualityOfServicesPart)qualityOfServicesPart {
+- (nonnull instancetype)initWithQualityOfServicesPart:(QualityOfServicesPart)qualityOfServicesPart spaceSettings:(nullable TLSpaceSettings *)spaceSettings {
         
     self = [super init];
     
     if (self) {
         _qualityOfServicesPart = qualityOfServicesPart;
+        _spaceSettings = spaceSettings;
         
         [self initQualityOfServicesInformation];
     }
@@ -47,7 +51,7 @@
     ApplicationDelegate *delegate = (ApplicationDelegate *)[[UIApplication sharedApplication] delegate];
     TwinmeApplication *twinmeApplication = [delegate twinmeApplication];
      
-    BOOL darkMode = [twinmeApplication darkModeEnable];
+    BOOL darkMode = [twinmeApplication darkModeEnable:self.spaceSettings];
     
     switch (self.qualityOfServicesPart) {
         case QualityOfServicesPartOne:

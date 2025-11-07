@@ -12,6 +12,7 @@
 #import <Twinlife/TLConversationService.h>
 
 #import <Twinme/TLMessage.h>
+#import <Twinme/TLTwinmeAttributes.h>
 
 #import "PeerVideoItemCell.h"
 
@@ -31,6 +32,7 @@
 #import "EphemeralView.h"
 
 #import "UIView+Toast.h"
+#import "UIColor+Hex.h"
 #import "UIView+GradientBackgroundColor.h"
 
 #if 0
@@ -551,6 +553,14 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
     if (peerVideoItem.visibleAvatar) {
         self.avatarView.hidden = NO;
         self.avatarView.image = [conversationViewController getContactAvatarWithUUID:item.peerTwincodeOutboundId];
+        
+        if ([self.avatarView.image isEqual:[TLTwinmeAttributes DEFAULT_GROUP_AVATAR]]) {
+            self.avatarView.backgroundColor = [UIColor colorWithHexString:Design.DEFAULT_COLOR alpha:1.0];
+            self.avatarView.tintColor = [UIColor whiteColor];
+        } else {
+            self.avatarView.backgroundColor = [UIColor clearColor];
+            self.avatarView.tintColor = [UIColor clearColor];
+        }
     } else {
         self.avatarView.hidden = YES;
         self.avatarView.image = nil;

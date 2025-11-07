@@ -45,6 +45,18 @@ static const int ddLogLevel = DDLogLevelWarning;
     return self;
 }
 
+- (void)hideAvatar {
+    DDLogVerbose(@"%@ hideAvatar", LOG_TAG);
+    
+    self.avatarContainerView.hidden = YES;
+    self.avatarView.hidden = YES;
+    self.bulletView.hidden = YES;
+    self.iconView.hidden = YES;
+    self.iconImageView.hidden = YES;
+    self.avatarContainerViewTopConstraint.constant = 0;
+    self.avatarContainerViewHeightConstraint.constant = 0;
+}
+
 - (void)setConfirmTitle:(NSString *)confirmTitle {
     DDLogVerbose(@"%@ setConfirmTitle: %@", LOG_TAG, confirmTitle);
     

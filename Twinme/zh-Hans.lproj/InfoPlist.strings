@@ -1,5 +1,9 @@
-NSAppleMusicUsageDescription = "流式传输音乐";
+NSAppleMusicUsageDescription = "用于连接您的苹果音乐";
 NSCameraUsageDescription = "拍照和进行视频通话";
-NSMicrophoneUsageDescription = "进行语音和视频呼叫";
+NSContactsUsageDescription = "我们需要访问您的联系人列表，以便能够邀请其他人加入您。";
+NSFaceIDUsageDescription = "验证和解锁对应用程序的访问";
+NSLocationAlwaysAndWhenInUseUsage = "在通话期间实时分享您的位置";
+NSLocationWhenInUseUsageDescription = "在对话中分享您的位置";
+NSMicrophoneUsageDescription = "进行音频和视频呼叫";
 NSPhotoLibraryUsageDescription = "用于个人资料图片和聊天消息发送";
 NSPhotoLibraryAddUsageDescription = "将对话中交换的照片和视频以及邀请二维码保存到设备相册。";

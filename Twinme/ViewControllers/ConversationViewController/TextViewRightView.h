@@ -6,6 +6,8 @@
  *   Fabrice Trescartes (Fabrice.Trescartes@twin.life)
  */
 
+@class TLSpaceSettings;
+
 //
 // Interface: TextViewRightView
 //
@@ -14,6 +16,7 @@
 
 @property (weak, nonatomic) IBOutlet UIView *cameraView;
 @property (weak, nonatomic) IBOutlet UIView *microView;
+@property (nonatomic, nonnull) TLSpaceSettings *spaceSettings;
 
 - (void)updateColor;
 

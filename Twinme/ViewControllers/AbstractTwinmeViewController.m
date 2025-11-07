@@ -9,7 +9,6 @@
 
 #import <CocoaLumberjack.h>
 
-#import <TwinmeCommon/AbstractTwinmeViewController.h>
 #import "ShowContactViewController.h"
 #import "ShowGroupViewController.h"
 #import "ShowRoomViewController.h"
@@ -17,13 +16,16 @@
 #import <Twinme/TLSpace.h>
 #import <Twinme/TLContact.h>
 
+#import <TwinmeCommon/AbstractTwinmeViewController.h>
 #import <TwinmeCommon/ApplicationDelegate.h>
+#import <TwinmeCommon/Design.h>
 #import <TwinmeCommon/MainViewController.h>
 #import <TwinmeCommon/TwinmeNavigationController.h>
 #import <TwinmeCommon/AbstractTwinmeService.h>
-
-#import <TwinmeCommon/Design.h>
 #import <TwinmeCommon/Utils.h>
+
+#import "SpaceSetting.h"
+#import "UISpace.h"
 
 #import "LastVersionManager.h"
 
@@ -118,8 +120,15 @@ static CGFloat DESIGN_UPDATE_VERSION_MARGIN = 4.0;
 
 - (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection {
     
-    if (self.twinmeApplication.displayMode == DisplayModeSystem) {
-        [Design setupColors];
+    if (self.currentSpace) {
+        TLSpaceSettings *spaceSettings = self.currentSpace.settings;
+        if ([self.currentSpace.settings getBooleanWithName:PROPERTY_DEFAULT_APPEARANCE_SETTINGS defaultValue:YES]) {
+            spaceSettings = self.twinmeContext.defaultSpaceSettings;
+        }
+        
+        if ([[spaceSettings getStringWithName:PROPERTY_DISPLAY_MODE defaultValue:[NSString stringWithFormat:@"%d",DisplayModeSystem]]intValue] == DisplayModeSystem) {
+            [Design setupColors:DisplayModeSystem];
+        }
     }
     
     [self updateColor];
@@ -134,25 +143,7 @@ static CGFloat DESIGN_UPDATE_VERSION_MARGIN = 4.0;
 - (BOOL)darkStatusBar {
     
     if ([self adjustStatusBarAppearance]) {
-        BOOL darkMode = NO;
-        DisplayMode displayMode = self.twinmeApplication.displayMode;
-         switch (displayMode) {
-             case DisplayModeSystem:
-                 if (@available(iOS 13.0, *)) {
-                     if ([UIScreen mainScreen].traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark){
-                         darkMode = YES;
-                     }
-                 }
-                 break;
-                 
-             case DisplayModeDark:
-                 darkMode = YES;
-                 break;
-             default:
-                 break;
-         }
-        
-        return !darkMode;
+        return ![self.twinmeApplication darkModeEnable:[self currentSpaceSettings]];
     }
     
     return NO;
@@ -176,6 +167,10 @@ static CGFloat DESIGN_UPDATE_VERSION_MARGIN = 4.0;
     
 }
 
+- (void)updateCurrentSpace {
+    
+}
+
 - (void)updateInCall {
     
 }
@@ -193,6 +188,43 @@ static CGFloat DESIGN_UPDATE_VERSION_MARGIN = 4.0;
     
     ApplicationDelegate *delegate = (ApplicationDelegate *)[[UIApplication sharedApplication] delegate];
     return delegate.mainViewController.space;
+}
+
+- (nonnull TLSpaceSettings *)currentSpaceSettings {
+    DDLogVerbose(@"%@ currentSpaceSettings", LOG_TAG);
+    
+    TLSpaceSettings *spaceSettings;
+    if (self.currentSpace) {
+        spaceSettings = self.currentSpace.settings;
+        if ([self.currentSpace.settings getBooleanWithName:PROPERTY_DEFAULT_APPEARANCE_SETTINGS defaultValue:YES]) {
+            spaceSettings = self.twinmeContext.defaultSpaceSettings;
+        }
+    } else {
+        spaceSettings = self.twinmeContext.defaultSpaceSettings;
+    }
+    
+    return spaceSettings;
+}
+
+- (nonnull UISpace *)createUISpaceWithSpace:(nonnull TLSpace *)space service:(nonnull AbstractTwinmeService *)service withRefresh:(nonnull void (^)(void))block {
+    DDLogVerbose(@"%@ createUISpaceWithSpace: %@", LOG_TAG, space);
+
+    UISpace *uiSpace = [[UISpace alloc] initWithSpace:space defaultSpaceSettings:self.twinmeContext.defaultSpaceSettings];
+    if (space.avatarId) {
+        [service getImageWithSpace:space withBlock:^(UIImage *image) {
+            uiSpace.avatarSpace = image;
+            // [self.sideMenuViewController refreshTable];
+            block();
+        }];
+    }
+    if (space.profile) {
+        [service getImageWithProfile:space.profile withBlock:^(UIImage *image) {
+            uiSpace.avatar = image;
+            // [self.sideMenuViewController refreshTable];
+            block();
+        }];
+    }
+    return uiSpace;
 }
 
 - (TLProfile *)defaultProfile {
@@ -226,6 +258,16 @@ static CGFloat DESIGN_UPDATE_VERSION_MARGIN = 4.0;
     }];
 }
 
+- (void)getImageWithService:(nonnull AbstractTwinmeService *)service space:(nonnull TLSpace *)space withBlock:(nonnull void (^)(UIImage *_Nonnull image))block {
+    DDLogVerbose(@"%@ getImageWithService: %@", LOG_TAG, space);
+
+    if (space.avatarId) {
+        [service getImageWithSpace:space withBlock:block];
+    } else {
+        [service getImageWithProfile:space.profile withBlock:block];
+    }
+}
+
 - (void)setLeftBarButtonItem:(UIImage *)avatar {
     
     CGFloat customLeftViewWidth = DESIGN_LEFT_BUTTON_WIDTH * Design.WIDTH_RATIO;
@@ -248,6 +290,8 @@ static CGFloat DESIGN_UPDATE_VERSION_MARGIN = 4.0;
         updateVersionView.backgroundColor = Design.DELETE_COLOR_RED;
         updateVersionView.clipsToBounds = YES;
         updateVersionView.layer.cornerRadius = DESIGN_UPDATE_VERSION_HEIGHT * 0.5;
+        updateVersionView.layer.borderColor = Design.WHITE_COLOR.CGColor;
+        updateVersionView.layer.borderWidth = 1;
         [customLeftView addSubview:updateVersionView];
     }
     

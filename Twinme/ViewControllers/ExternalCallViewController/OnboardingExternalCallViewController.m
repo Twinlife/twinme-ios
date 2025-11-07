@@ -8,9 +8,12 @@
 
 #import <CocoaLumberjack.h>
 
+#import <Twinme/TLSpace.h>
+
 #import <Utils/NSString+Utils.h>
 
 #import "OnboardingExternalCallViewController.h"
+#import "TemplateExternalCallViewController.h"
 
 #import "OnboardingExternalCallCell.h"
 
@@ -20,7 +23,6 @@
 #import <TwinmeCommon/TwinmeNavigationController.h>
 
 #import "WelcomeFlowLayout.h"
-#import "PremiumFeatureConfirmView.h"
 #import "UIOnboarding.h"
 #import "UIPremiumFeature.h"
 
@@ -40,7 +42,7 @@ static NSString *ONBOARDING_CELL_IDENTIFIER = @"OnboardingExternalCallCellIdenti
 //
 // Interface: OnboardingExternalCallViewController ()
 
-@interface OnboardingExternalCallViewController () <OnboardingExternalCallDelegate, UICollectionViewDelegate, UICollectionViewDataSource, ConfirmViewDelegate>
+@interface OnboardingExternalCallViewController () <OnboardingExternalCallDelegate, UICollectionViewDelegate, UICollectionViewDataSource>
 
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *actionViewTopConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *actionViewBottomConstraint;
@@ -81,6 +83,7 @@ static NSString *ONBOARDING_CELL_IDENTIFIER = @"OnboardingExternalCallCellIdenti
     
     if (self) {
         _startFromSupportSection = NO;
+        _createExternalCallEnable = NO;
     }
     return self;
 }
@@ -114,34 +117,6 @@ static NSString *ONBOARDING_CELL_IDENTIFIER = @"OnboardingExternalCallCellIdenti
     [self didMoveToParentViewController:view];
     [self initOnboarding];
     [self showActionView];
-}
-
-#pragma mark - ConfirmViewDelegate
-
-- (void)didTapConfirm:(nonnull AbstractConfirmView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractConfirmView);
-    
-    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:TwinmeLocalizedString(@"twinme_plus_link", nil)] options:@{} completionHandler:nil];
-
-    [abstractConfirmView closeConfirmView];
-}
-
-- (void)didTapCancel:(nonnull AbstractConfirmView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didTapCancel: %@", LOG_TAG, abstractConfirmView);
-    
-    [abstractConfirmView closeConfirmView];
-}
-
-- (void)didClose:(nonnull AbstractConfirmView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didClose: %@", LOG_TAG, abstractConfirmView);
-    
-    [abstractConfirmView closeConfirmView];
-}
-
-- (void)didFinishCloseAnimation:(nonnull AbstractConfirmView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didFinishCloseAnimation: %@", LOG_TAG, abstractConfirmView);
-    
-    [abstractConfirmView removeFromSuperview];
 }
 
 #pragma mark - UICollectionViewDelegateFlowLayout
@@ -207,8 +182,7 @@ static NSString *ONBOARDING_CELL_IDENTIFIER = @"OnboardingExternalCallCellIdenti
     [self hapticFeedBack:UIImpactFeedbackStyleMedium];
         
     [self.twinmeApplication setShowOnboardingType:OnboardingTypeExternalCall state:NO];
-    
-    [self finish];
+    [self startExternalCallTemplate];
 }
 
 - (void)didTouchCreateExernalCall {
@@ -219,10 +193,7 @@ static NSString *ONBOARDING_CELL_IDENTIFIER = @"OnboardingExternalCallCellIdenti
     if (self.startFromSupportSection) {
         [self closeActionView];
     } else {
-        if ([self.onboardingExternalCallDelegate respondsToSelector:@selector(didTouchCreateExernalCall)]) {
-            [self.onboardingExternalCallDelegate didTouchCreateExernalCall];
-            [self finish];
-        }
+        [self startExternalCallTemplate];
     }
 }
 
@@ -397,6 +368,31 @@ static NSString *ONBOARDING_CELL_IDENTIFIER = @"OnboardingExternalCallCellIdenti
         
     [self removeFromParentViewController];
     [self.view removeFromSuperview];
+}
+
+- (void)startExternalCallTemplate {
+    DDLogVerbose(@"%@ startExternalCallTemplate", LOG_TAG);
+    
+    if (!self.createExternalCallEnable) {
+        if ([self.onboardingExternalCallDelegate respondsToSelector:@selector(didTouchCreateExernalCall)]) {
+            [self.onboardingExternalCallDelegate didTouchCreateExernalCall];
+        }
+        [self finish];
+        return;
+    }
+    
+    [CATransaction begin];
+    [CATransaction setCompletionBlock:^{
+        ApplicationDelegate *delegate = (ApplicationDelegate *)[[UIApplication sharedApplication] delegate];
+        MainViewController *mainViewController = delegate.mainViewController;
+        TwinmeNavigationController *selectedNavigationController = mainViewController.selectedViewController;
+        TemplateExternalCallViewController *templateExternalCallViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"TemplateExternalCallViewController"];
+        [selectedNavigationController pushViewController:templateExternalCallViewController animated:YES];
+    }];
+
+    [self finish];
+
+    [CATransaction commit];
 }
 
 - (void)updateFont {

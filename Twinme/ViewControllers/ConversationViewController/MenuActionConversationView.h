@@ -11,12 +11,13 @@
 //
 
 @class UIActionConversation;
+@class TLSpaceSettings;
 
 @protocol MenuActionConversationDelegate <NSObject>
 
 - (void)cancelMenuAction;
 
-- (void)didSelectAction:(UIActionConversation *)uiActionConversation;
+- (void)didSelectAction:(nonnull UIActionConversation *)uiActionConversation;
 
 @end
 
@@ -27,6 +28,8 @@
 @interface MenuActionConversationView : UIView
 
 @property (weak, nonatomic) id<MenuActionConversationDelegate> menuActionConversationDelegate;
+
+- (instancetype)initWithSpaceSettings:(nonnull TLSpaceSettings *)spaceSettings;
 
 - (void)openMenu;
 

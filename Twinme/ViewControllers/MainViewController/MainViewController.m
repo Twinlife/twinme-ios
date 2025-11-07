@@ -27,12 +27,9 @@
 
 #import <Utils/NSString+Utils.h>
 
-#import <TwinmeCommon/ApplicationDelegate.h>
-#import <TwinmeCommon/MainViewController.h>
-
-#import <TwinmeCommon/TwinmeNavigationController.h>
 #import "ConversationViewController.h"
 #import "AcceptInvitationViewController.h"
+#import "AcceptInvitationSubscriptionViewController.h"
 #import "ShareViewController.h"
 #import "UIGroupConversation.h"
 #import "WelcomeViewController.h"
@@ -42,23 +39,39 @@
 #import <TwinmeCommon/CallViewController.h>
 #import "PremiumServicesViewController.h"
 #import "FatalErrorViewController.h"
+#import "SkredBoardViewController.h"
+#import "AddProfileViewController.h"
+#import "EditProfileViewController.h"
+#import "LockScreenViewController.h"
 #import "WhatsNewViewController.h"
+#import "InAppSubscriptionViewController.h"
+#import "PremiumServicesViewController.h"
+#import "SecretSpaceViewController.h"
 #import "AccountMigrationViewController.h"
 #import "SuccessAuthentifiedRelationViewController.h"
 #import "SettingsAdvancedViewController.h"
 
 #import "MainService.h"
-#import <TwinmeCommon/CallService.h>
-#import <TwinmeCommon/CallState.h>
 
 #import <TwinmeCommon/ApplicationDelegate.h>
+#import <TwinmeCommon/CallService.h>
+#import <TwinmeCommon/CallState.h>
+#import <TwinmeCommon/CallViewController.h>
 #import <TwinmeCommon/Design.h>
+#import <TwinmeCommon/MainViewController.h>
+#import <TwinmeCommon/TwinmeNavigationController.h>
 #import <TwinmeCommon/TwinmeApplication.h>
+
+#import "AlertView.h"
+#import "SpaceSetting.h"
 #import "UIView+Toast.h"
 #import "UIColor+Hex.h"
 #import "UIViewController+ProgressIndicator.h"
 #import "UIProfile.h"
+#import "UISpace.h"
+#import "UIPremiumFeature.h"
 #import "CallFloatingView.h"
+#import "InAppPurchaseManager.h"
 #import "InfoFloatingView.h"
 #import "AlertMessageView.h"
 #import "DefaultConfirmView.h"
@@ -90,7 +103,7 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
 // Interface: MainViewController ()
 //
 
-@interface MainViewController () <MainServiceDelegate, SplashScreenDelegate, AlertMessageViewDelegate, ConfirmViewDelegate>
+@interface MainViewController () <MainServiceDelegate, SplashScreenDelegate, SkredBoardViewControllerDelegate, UIGestureRecognizerDelegate, LockScreenDelegate, InAppPurchaseManagerDelegate, AcceptInvitationSubscriptionDelegate, AlertMessageViewDelegate, ConfirmViewDelegate>
 
 @property (weak, nonatomic) IBOutlet UIView *sideMenuContainerView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *sideMenuContainerViewLeadingConstraint;
@@ -101,6 +114,8 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
 @property (nonatomic) SideMenuViewController *sideMenuViewController;
 @property (nonatomic) TabBarViewController *tabBarViewController;
 @property (nonatomic) SplashScreenViewController *splashScreenViewController;
+@property (strong, nonatomic) SkredBoardViewController *skredBoardViewController;
+@property (nonatomic) LockScreenViewController *lockScreenViewController;
 
 @property (nonatomic) UIView *overlayView;
 @property (nonatomic) CallFloatingView *callFloatingView;
@@ -112,10 +127,14 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
 @property (nonatomic) BOOL showSplashScreen;
 @property (nonatomic) BOOL showUpgradeScreen;
 @property (nonatomic) BOOL hasPendingNotifications;
+@property (nonatomic) BOOL onGetConversationsDone;
 @property (nonatomic) BOOL hasConversations;
 @property (nonatomic) int nbContacts;
 @property (nonatomic) BOOL isProfileNotFound;
+@property (nonatomic) BOOL createLevel;
 @property (nonatomic) BOOL videoCall;
+@property (nonatomic) BOOL doCreateProfileOnWillAppear;
+@property (nonatomic) BOOL doSuggestFriendsAfterCreateProfileOnWillAppear;
 @property (nonatomic) BOOL needRefresh;
 @property (nonatomic) BOOL isStatusBarDark;
 @property (nonatomic) TLConnectionStatus connectionStatus;
@@ -124,11 +143,11 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
 @property (nonatomic) TLTwinmeContext *twinmeContext;
 @property (nonatomic) MainService *mainService;
 
-@property (nonatomic) NSMutableArray *uiProfiles;
-
 @property (nonatomic) NSURL *url;
 @property (nonatomic, nullable) NSString *proxyToAdd;
 
+
+@property (nonatomic) NSMutableArray *uiSpaces;
 
 - (void)onMessageTerminateCall:(nonnull CallEventMessage *)message;
 
@@ -179,8 +198,12 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
         _nbContacts = 0;
         _sideMenuOpen = NO;
         _isProfileNotFound = NO;
+        _onGetConversationsDone = NO;
+        _doCreateProfileOnWillAppear = NO;
+        _createLevel = NO;
+        _uiSpaces = [[NSMutableArray alloc] init];
+        _doSuggestFriendsAfterCreateProfileOnWillAppear = NO;
         _connectionStatus = TLConnectionStatusConnected; // Necessary for onConnectionStatusChange
-        _uiProfiles = [[NSMutableArray alloc] init];
     }
     return self;
 }
@@ -192,11 +215,19 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
     
     if (@available(iOS 13.0, *)) {
         [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(applicationWillResignActive:)
+                                                     name:UISceneDidEnterBackgroundNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(applicationDidBecomeActive:)
                                                      name:UISceneDidActivateNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(applicationWillDeactivateNotification:)
+                                                     name:UISceneWillDeactivateNotification object:nil];
     }
     else {
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidBecomeActive:) name:UIApplicationDidBecomeActiveNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationWillResignActive:) name:UIApplicationWillResignActiveNotification object:nil];
+        
     }
     
     [self initViewsController];
@@ -206,7 +237,10 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
         self.splashScreenViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"SplashScreenViewController"];
         self.splashScreenViewController.splashScreenDelegate = self;
         [self.view addSubview:self.splashScreenViewController.view];
-        [self updateStatusBarDark];
+    }
+    
+    if ([InAppPurchaseManager sharedInstance:self]) {
+        [[InAppPurchaseManager sharedInstance:self] getProducts];
     }
 }
 
@@ -224,7 +258,10 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
         [self askNotification];
     }
     
-    if (self.splashScreenViewController == nil && ![self.twinmeApplication showWelcomeScreen] && [self.twinmeApplication showUpgradeScreen]) {
+    if ([self.twinmeApplication showLockScreen] && self.lockScreenViewController) {
+        [self.lockScreenViewController.view setHidden:NO];
+        [self.lockScreenViewController requestUnlockScreen];
+    } else if (self.splashScreenViewController == nil && ![self.twinmeApplication showWelcomeScreen] && [self.twinmeApplication showUpgradeScreen]) {
         self.showUpgradeScreen = YES;
         PremiumServicesViewController *premiumServicesViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"PremiumServicesViewController"];
         TwinmeNavigationController *upgradeNavigationController = [[TwinmeNavigationController alloc]initWithRootViewController:premiumServicesViewController];
@@ -240,6 +277,8 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
     } else if (self.splashScreenViewController == nil && [self.twinmeApplication showEnableNotificationScreen] && self.space.profile) {
         [self showEnableNotificationScreen];
     }
+    
+    self.visible = YES;
 
     if (![self.twinmeApplication canShowUpgradeScreenAtStart] && self.space) {
         [self.mainService getConversations];
@@ -249,18 +288,9 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
 
 - (UIStatusBarStyle)preferredStatusBarStyle {
     
-    UIViewController *topViewController = [UIViewController topViewController];
-    BOOL topViewControllerStatusBarDark = NO;
-    if ([topViewController isKindOfClass:[AbstractTwinmeViewController class]]) {
-        AbstractTwinmeViewController *viewController = (AbstractTwinmeViewController *)topViewController;
-        topViewControllerStatusBarDark = [viewController darkStatusBar];
-    }
-    
-    if (self.isStatusBarDark || topViewControllerStatusBarDark) {
+    if (self.isStatusBarDark) {
         if (@available(iOS 13.0, *)) {
             return UIStatusBarStyleDarkContent;
-        } else {
-            return UIStatusBarStyleDefault;
         }
     }
     return UIStatusBarStyleLightContent;
@@ -268,11 +298,22 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
 
 - (void)updateStatusBarDark {
     DDLogVerbose(@"%@ updateStatusBarDark", LOG_TAG);
-
+    
     if (!self.sideMenuOpen && !self.splashScreenViewController) {
         self.isStatusBarDark = NO;
-    } else {        
-        self.isStatusBarDark = ![self.twinmeApplication darkModeEnable];
+    } else {
+        TLSpaceSettings *spaceSettings;
+        if (self.space) {
+            spaceSettings = self.space.settings;
+            if ([self.space.settings getBooleanWithName:PROPERTY_DEFAULT_APPEARANCE_SETTINGS defaultValue:YES]) {
+                spaceSettings = self.twinmeContext.defaultSpaceSettings;
+            }
+        } else {
+            spaceSettings = self.twinmeContext.defaultSpaceSettings;
+        }
+        
+        BOOL darkMode = [self.twinmeApplication darkModeEnable:spaceSettings];
+        self.isStatusBarDark = !darkMode;
     }
     
     [UIView animateWithDuration:0.3 delay:0. options: UIViewAnimationOptionCurveEaseIn animations:^{
@@ -301,12 +342,28 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
     [super viewWillDisappear:animated];
 }
 
+- (void)viewDidLayoutSubviews {
+    DDLogVerbose(@"%@ viewDidLayoutSubviews", LOG_TAG);
+    
+    [super viewDidLayoutSubviews];
+    
+    [self.skredBoardViewController setSkredBoardDisplayState:self.skredBoardViewController.skredBoardDisplayState initialVelocity:0 animated:NO];
+}
+
 - (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection {
     DDLogVerbose(@"%@ traitCollectionDidChange: %@", LOG_TAG, previousTraitCollection);
     
-    if (self.twinmeApplication.displayMode == DisplayModeSystem) {
-        [Design setupColors];
+    if (self.space) {
+        TLSpaceSettings *spaceSettings = self.space.settings;
+        if ([self.space.settings getBooleanWithName:PROPERTY_DEFAULT_APPEARANCE_SETTINGS defaultValue:YES]) {
+            spaceSettings = self.twinmeContext.defaultSpaceSettings;
+        }
+        
+        if ([[spaceSettings getStringWithName:PROPERTY_DISPLAY_MODE defaultValue:[NSString stringWithFormat:@"%d",DisplayModeSystem]]intValue] == DisplayModeSystem) {
+            [Design setupColors:DisplayModeSystem];
+        }
     }
+    
     [self updateColor];
 }
 
@@ -318,13 +375,39 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
 
 - (void)applicationDidBecomeActive:(NSNotification *)notification {
     DDLogVerbose(@"%@ applicationDidBecomeActive: %@", LOG_TAG, notification);
-        
+    
+    if (![self.twinmeApplication showLockScreen] && self.lockScreenViewController) {
+        [self.lockScreenViewController.view removeFromSuperview];
+        self.lockScreenViewController = nil;
+    } else if ([self.twinmeApplication showLockScreen] && self.lockScreenViewController) {
+        [self.lockScreenViewController.view setHidden:NO];
+        [self.lockScreenViewController requestUnlockScreen];
+    }
+    
     dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC));
     dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
         TwinmeNavigationController *selectedNavigationController = self.selectedViewController;
         if (selectedNavigationController.viewControllers.count == 1 && self.tabBarViewController.tabBar.hidden) {
             self.tabBarViewController.tabBar.hidden = NO;
         }
+    });
+}
+
+- (void)applicationWillResignActive:(NSNotification *)notification {
+    DDLogVerbose(@"%@ applicationWillResignActive: %@", LOG_TAG, notification);
+        
+    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC));
+    dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+        [self showLockScreen];
+    });
+}
+
+- (void)applicationWillDeactivateNotification:(NSNotification *)notification {
+    DDLogVerbose(@"%@ applicationWillDeactivateNotification: %@", LOG_TAG, notification);
+        
+    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC));
+    dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+        [self showLockScreen];
     });
 }
 
@@ -415,12 +498,46 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
     [self.tabBarViewController setSelectedIndex:self.tabBarViewController.selectedIndex];
 }
 
-- (void)activeProfile:(nonnull TLProfile *)profile {
-    DDLogVerbose(@"%@ activeProfile: ", LOG_TAG);
+- (void)setCurrentSpace:(TLSpace *)space {
+    DDLogVerbose(@"%@ setCurrentSpace: %@", LOG_TAG, space);
     
-    if (![self.profile.uuid isEqual:profile.uuid]) {
-        [self.mainService activeProfile:profile];
+    [self.mainService setCurrentSpace:space];
+}
+
+- (void)searchSecretSpace {
+    DDLogVerbose(@"%@ searchSecretSpace", LOG_TAG);
+    
+    SecretSpaceViewController *secretSpaceViewController = [[UIStoryboard storyboardWithName:@"Space" bundle:nil] instantiateViewControllerWithIdentifier:@"SecretSpaceViewController"];
+    [secretSpaceViewController showInViewController:self];
+}
+
+- (NSUInteger)numberSpaces:(BOOL)countSecretSpace {
+    DDLogVerbose(@"%@ countSecretSpace: %@", LOG_TAG, countSecretSpace ? @"YES":@"NO");
+    
+    if (countSecretSpace) {
+        return self.uiSpaces.count;
     }
+    
+    NSUInteger count = 0;
+    for (UISpace *uiSpace in self.uiSpaces) {
+        if (!uiSpace.space.settings.isSecret) {
+            count++;
+        }
+    }
+    
+    return count;
+}
+
+- (TLSpace *)getNextDefaultSpace:(TLSpace *)oldDefaultSpace {
+    DDLogVerbose(@"%@ getNextDefaultSpace: %@", LOG_TAG, oldDefaultSpace);
+    
+    for (UISpace *uiSpace in self.uiSpaces) {
+        if (!uiSpace.space.settings.isSecret && ![uiSpace.space.uuid isEqual:oldDefaultSpace.uuid]) {
+            return uiSpace.space;
+        }
+    }
+    
+    return nil;
 }
 
 #pragma mark - SplashScreenDelegate
@@ -440,9 +557,16 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
                 self.splashScreenViewController = nil;
             }];
             return;
-        }
-        
-        if ([self.twinmeApplication showWelcomeScreen]) {
+        } else if ([self.twinmeApplication showLockScreen] && !self.lockScreenViewController) {
+            self.lockScreenViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"LockScreenViewController"];
+            self.lockScreenViewController.lockScreenDelegate = self;
+            if (self.presentedViewController) {
+                [self.presentedViewController.view addSubview:self.lockScreenViewController.view];
+            } else {
+                [self.view addSubview:self.lockScreenViewController.view];
+            }
+            [self.lockScreenViewController requestUnlockScreen];
+        } else if ([self.twinmeApplication showWelcomeScreen]) {
             WelcomeViewController *welcomeViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"WelcomeViewController"];
             TwinmeNavigationController *welcomeNavigationController = [[TwinmeNavigationController alloc]initWithRootViewController:welcomeViewController];
             [self presentViewController:welcomeNavigationController animated:NO completion:^{
@@ -475,6 +599,26 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
         
         [self.splashScreenViewController.view removeFromSuperview];
         self.splashScreenViewController = nil;
+    }
+}
+
+#pragma mark - LockScreenDelegate
+
+- (void)unlockScreenSuccess {
+    DDLogVerbose(@"%@ unlockScreenSuccess", LOG_TAG);
+    
+    if (self.lockScreenViewController) {
+        if ([self.twinmeApplication showWelcomeScreen]) {
+            WelcomeViewController *welcomeViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"WelcomeViewController"];
+            TwinmeNavigationController *welcomeNavigationController = [[TwinmeNavigationController alloc]initWithRootViewController:welcomeViewController];
+            [self presentViewController:welcomeNavigationController animated:NO completion:^{
+                [self.lockScreenViewController.view removeFromSuperview];
+                self.lockScreenViewController = nil;
+            }];
+            return;
+        }
+        [self.lockScreenViewController.view removeFromSuperview];
+        self.lockScreenViewController = nil;
     }
 }
 
@@ -572,58 +716,148 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
 
 - (void)onSetCurrentSpace:(TLSpace *)space {
     DDLogVerbose(@"%@ onSetCurrentSpace: %@", LOG_TAG, space);
-        
+    
+    BOOL isDefaultSpace = [self.twinmeContext isDefaultSpace:space];
+
+    NSString *lastLevelName = @"";
+    if (self.space) {
+        lastLevelName = self.space.settings.name;
+    }
+    
     self.space = space;
     self.profile = space.profile;
     self.isProfileNotFound = NO;
     
-    if (self.profile) {
-        [self.mainService getImageWithProfile:self.profile withBlock:^(UIImage *image) {
-            UIProfile *uiProfile = [[UIProfile alloc] initWithProfile:self.profile];
-            [uiProfile updateAvatar:image];
-            [self.sideMenuViewController setProfile:uiProfile];
-        }];
+    for (UISpace *uiSpace in self.uiSpaces) {
+        if ([uiSpace.space.uuid isEqual:space.uuid]) {
+            [uiSpace setIsCurrentSpace:YES];
+        } else {
+            [uiSpace setIsCurrentSpace:NO];
+        }
     }
     
+    TwinmeNavigationController *twinmeNavigationController = [self selectedViewController];
+    [twinmeNavigationController setNavigationBarStyle];
+    
+    if ([twinmeNavigationController.topViewController isKindOfClass:[AbstractTwinmeViewController class]] ) {
+        AbstractTwinmeViewController *viewController = (AbstractTwinmeViewController *) twinmeNavigationController.topViewController;
+        [viewController updateFont];
+        [viewController updateColor];
+    }
+    
+    if (self.space) {
+        TLSpaceSettings *spaceSettings = self.space.settings;
+        if ([self.space.settings getBooleanWithName:PROPERTY_DEFAULT_APPEARANCE_SETTINGS defaultValue:YES]) {
+            spaceSettings = self.twinmeContext.defaultSpaceSettings;
+        }
+        
+        [Design setupColors:[[spaceSettings getStringWithName:PROPERTY_DISPLAY_MODE defaultValue:[NSString stringWithFormat:@"%d",DisplayModeSystem]]intValue]];
+        
+        [self.sideMenuViewController setSpace:[self createUISpaceWithSpace:self.space]];
+    }
+    
+    if (!self.space.profile && !isDefaultSpace && self.createLevel) {
+        self.createLevel = NO;
+       AddProfileViewController *addProfileViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"AddProfileViewController"];
+       addProfileViewController.lastLevelName = lastLevelName;
+       [twinmeNavigationController pushViewController:addProfileViewController animated:YES];
+    }
+    
+    [self.sideMenuViewController setUISpaces:self.uiSpaces];
     [self.sideMenuViewController reloadMenu];
+    [self.tabBarViewController setCurrentSpace];
+    
     if (self.url) {
         NSURL *url = self.url;
         self.url = nil;
         [self handleOpenURL:url];
     }
     
-    [UIView animateWithDuration:0.25 animations:^{
-        if (self.space.settings.style) {
-            [self.tabBarViewController.tabBar setTintColor:[UIColor colorWithHexString:self.space.settings.style alpha:1.0]];
-        } else {
-            [self.tabBarViewController.tabBar setTintColor:Design.MAIN_COLOR];
-        }
-    }];
+    [self.tabBarViewController updateColor];
 }
 
-- (void)onGetProfiles:(NSArray *)profiles {
-    DDLogVerbose(@"%@ onGetProfiles: %@", LOG_TAG, profiles);
+- (void)onCreateSpace:(TLSpace *)space {
+    DDLogVerbose(@"%@ onCreateSpace: %@", LOG_TAG, space);
     
-    [self.uiProfiles removeAllObjects];
+    [self updateUISpace:space];
+    [self.sideMenuViewController setUISpaces:self.uiSpaces];
+}
+
+- (void)onUpdateSpace:(TLSpace *)space {
+    DDLogVerbose(@"%@ onUpdateSpace: %@", LOG_TAG, space);
     
-    for (TLProfile *profile in profiles) {
-        [self updateUIProfile:profile avatar:nil];
+    if ([space.uuid isEqual:self.space.uuid]) {
+        self.space = space;
+        
+        if (self.space) {
+            TLSpaceSettings *spaceSettings = self.space.settings;
+            if ([self.space.settings getBooleanWithName:PROPERTY_DEFAULT_APPEARANCE_SETTINGS defaultValue:YES]) {
+                spaceSettings = self.twinmeContext.defaultSpaceSettings;
+            }
+            
+            [Design setupColors:[[spaceSettings getStringWithName:PROPERTY_DISPLAY_MODE defaultValue:[NSString stringWithFormat:@"%d",DisplayModeSystem]]intValue]];
+
+            [self.sideMenuViewController setSpace:[self createUISpaceWithSpace:self.space]];
+        }
+        
+        [self.tabBarViewController updateColor];
     }
     
-    [self.sideMenuViewController setUIProfiles:self.uiProfiles];
+    [self updateUISpace:space];
+    [self.sideMenuViewController setUISpaces:self.uiSpaces];
 }
 
-- (void)onDeleteProfile:(NSUUID*)profileId {
-    DDLogVerbose(@"%@ onDeleteProfile: %@", LOG_TAG, profileId);
+- (void)onDeleteSpace:(NSUUID *)spaceId {
+    DDLogVerbose(@"%@ onDeleteSpace: %@", LOG_TAG, spaceId);
     
-    for (UIProfile *uiProfile in self.uiProfiles) {
-        if ([uiProfile.profile.uuid isEqual:profileId]) {
-            [self.uiProfiles removeObject:uiProfile];
+    for (UISpace *lUISpace in self.uiSpaces) {
+        if ([lUISpace.space.uuid isEqual:spaceId]) {
+            [self.uiSpaces removeObject:lUISpace];
             break;
         }
     }
     
-    [self.sideMenuViewController setUIProfiles:self.uiProfiles];
+    [self.sideMenuViewController setUISpaces:self.uiSpaces];
+}
+
+- (void)onGetSpaces:(NSArray *)spaces {
+    DDLogVerbose(@"%@ onGetSpaces: %@", LOG_TAG, spaces);
+    
+    [self.uiSpaces removeAllObjects];
+    
+    for (TLSpace *space in spaces) {
+        [self updateUISpace:space];
+    }
+    
+    [self.sideMenuViewController setUISpaces:self.uiSpaces];
+    [self.tabBarViewController updateSpace];
+}
+
+- (void)onUpdateDefaultProfile:(TLProfile *)profile {
+    DDLogVerbose(@"%@ onUpdateDefaultProfile: %@", LOG_TAG, profile);
+    
+    TLSpace *space = profile.space;
+    if ([space.uuid isEqual:self.space.uuid]) {
+        self.space = space;
+        self.profile = profile;
+        [self.sideMenuViewController setSpace:[self createUISpaceWithSpace:self.space]];
+        [self.sideMenuViewController reloadMenu];
+    }
+    
+    [self updateUISpace:space];
+}
+
+- (void)onGetDefaultProfileNotFound {
+    DDLogVerbose(@"%@ onGetDefaultProfileNotFound", LOG_TAG);
+    
+    self.isProfileNotFound = YES;
+    [self.twinmeApplication setFirstInstallation];
+    
+    if (self.url) {
+        NSURL *url = self.url;
+        self.url = nil;
+        [self handleOpenURL:url];
+    }
 }
 
 - (void)onGetTransfertCall:(TLCallReceiver *)callReceiver {
@@ -650,68 +884,15 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
     [self.sideMenuViewController deleteTransferCall:callReceiverId];
 }
 
-- (void)onUpdateSpace:(TLSpace *)space {
-    DDLogVerbose(@"%@ onUpdateSpace: %@", LOG_TAG, space);
-        
-    if ([space.uuid isEqual:self.space.uuid]) {
-        self.space = space;
-        self.profile = space.profile;
-        
-        if (self.profile) {
-            [self.mainService getImageWithProfile:self.profile withBlock:^(UIImage *image) {
-                UIProfile *uiProfile = [[UIProfile alloc] initWithProfile:self.profile];
-                [uiProfile updateAvatar:image];
-                [self.sideMenuViewController setProfile:uiProfile];
-            }];
-        }
-        
-        [self.sideMenuViewController reloadMenu];
-        
-        [UIView animateWithDuration:0.25 animations:^{
-            if (self.space.settings.style) {
-                [self.tabBarViewController.tabBar setTintColor:[UIColor colorWithHexString:self.space.settings.style alpha:1.0]];
-            } else {
-                [self.tabBarViewController.tabBar setTintColor:Design.MAIN_COLOR];
-            }
-        }];
-    }
-}
-
-- (void)onUpdateDefaultProfile:(TLProfile *)profile {
-    DDLogVerbose(@"%@ onUpdateDefaultProfile: %@", LOG_TAG, profile);
+- (void)onGetSpacesNotifications:(NSDictionary<NSUUID *, TLNotificationServiceNotificationStat *> *)spacesNotifications {
+    DDLogVerbose(@"%@ onGetSpacesNotifications: %@", LOG_TAG, spacesNotifications);
     
-    self.profile = profile;
-    
-    if (self.profile) {
-        [self.mainService getImageWithProfile:self.profile withBlock:^(UIImage *image) {
-            UIProfile *uiProfile = [[UIProfile alloc] initWithProfile:self.profile];
-            [uiProfile updateAvatar:image];
-            [self.sideMenuViewController setProfile:uiProfile];
-        }];
+    for (UISpace *uiSpace in self.uiSpaces) {
+        TLNotificationServiceNotificationStat *stat = spacesNotifications[uiSpace.space.uuid];
+        uiSpace.hasNotification = stat != nil && stat.pendingCount > 0;
     }
     
     [self.sideMenuViewController reloadMenu];
-    
-    if (self.url) {
-        NSURL *url = self.url;
-        self.url = nil;
-        [self handleOpenURL:url];
-    }
-}
-
-- (void)onGetDefaultProfileNotFound {
-    DDLogVerbose(@"%@ onGetDefaultProfileNotFound", LOG_TAG);
-    
-    self.isProfileNotFound = YES;
-    [self.twinmeApplication setFirstInstallation];
-    
-    [self.tabBarViewController profileNotFound];
-    
-    if (self.url) {
-        NSURL *url = self.url;
-        self.url = nil;
-        [self handleOpenURL:url];
-    }
 }
 
 - (void)onUpdatePendingNotifications:(BOOL)hasPendingNotifications {
@@ -726,10 +907,11 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
     
     self.hasConversations = hasConversations;
     
-    if (hasConversations) {
+    if (!self.onGetConversationsDone && hasConversations) {
         self.tabBarViewController.selectedIndex = self.twinmeApplication.defaultTab;
+        self.onGetConversationsDone = YES;
     }
-    
+        
     [self canShowUpgradeScreen];
 }
 
@@ -784,14 +966,14 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
     if (self.sideMenuOpen) {
         self.sideMenuOpen = NO;
         if (animated) {
-            [UIView animateWithDuration:MENU_ANIMATION_DURATION delay:0 options: UIViewAnimationOptionCurveEaseIn animations:^{
+            [UIView animateWithDuration:MENU_ANIMATION_DURATION delay:0 options:UIViewAnimationOptionCurveEaseOut animations:^{
                 self.sideMenuContainerViewLeadingConstraint.constant = -self.sideMenuContainerViewWidthConstraint.constant;
                 self.tabBarContainerViewLeadingConstraint.constant = 0;
                 self.overlayView.alpha = 0;
                 [self.view layoutIfNeeded];
             } completion:^(BOOL finished) {
                 self.overlayView.hidden = YES;
-                [self.sideMenuViewController closeSideMenu];
+                [self.sideMenuViewController resetContentOffset];
                 [self updateStatusBarDark];
             }];
         } else {
@@ -799,16 +981,15 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
             self.tabBarContainerViewLeadingConstraint.constant = 0;
             self.overlayView.alpha = 0;
             self.overlayView.hidden = YES;
-            [self.sideMenuViewController closeSideMenu];
+            [self.sideMenuViewController resetContentOffset];
             [self updateStatusBarDark];
         }
     } else {
         self.sideMenuOpen = YES;
         self.overlayView.hidden = NO;
         [self.tabBarContainerView bringSubviewToFront:self.overlayView];
-        
         if (animated) {
-            [UIView animateWithDuration:MENU_ANIMATION_DURATION delay:0 options:UIViewAnimationOptionCurveEaseIn animations:^{
+            [UIView animateWithDuration:MENU_ANIMATION_DURATION delay:0 options:UIViewAnimationOptionCurveEaseOut animations:^{
                 self.sideMenuContainerViewLeadingConstraint.constant = 0;
                 self.tabBarContainerViewLeadingConstraint.constant = self.sideMenuContainerViewWidthConstraint.constant;
                 self.overlayView.alpha = OVERLAY_OPACITY;
@@ -842,7 +1023,7 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
                 [self.view layoutIfNeeded];
             } completion:^(BOOL finished) {
                 self.overlayView.hidden = YES;
-                [self.sideMenuViewController closeSideMenu];
+                [self.sideMenuViewController resetContentOffset];
                 [self updateStatusBarDark];
             }];
         } else {
@@ -850,10 +1031,101 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
             self.tabBarContainerViewLeadingConstraint.constant = 0;
             self.overlayView.alpha = 0;
             self.overlayView.hidden = YES;
-            [self.sideMenuViewController closeSideMenu];
+            [self.sideMenuViewController resetContentOffset];
             [self updateStatusBarDark];
         }
     }
+}
+
+- (void)updateUISpace:(TLSpace *)space {
+    DDLogVerbose(@"%@ updateUISpace: %@", LOG_TAG, space);
+    
+    UISpace *uiSpace = nil;
+    for (UISpace *lUISpace in self.uiSpaces) {
+        if ([lUISpace.space.uuid isEqual:space.uuid]) {
+            uiSpace = lUISpace;
+            break;
+        }
+    }
+    
+    // TBD Sort using id order when name are equals
+    if (uiSpace)  {
+        [self.uiSpaces removeObject:uiSpace];
+        [uiSpace setSpace:space defaultSpaceSettings:self.twinmeContext.defaultSpaceSettings];
+        if (space.avatarId) {
+            [self.mainService getImageWithSpace:space withBlock:^(UIImage *image) {
+                uiSpace.avatarSpace = image;
+                [self.sideMenuViewController refreshTable];
+            }];
+        }
+        if (self.space.profile) {
+            [self.mainService getImageWithProfile:space.profile withBlock:^(UIImage *image) {
+                uiSpace.avatar = image;
+                [self.sideMenuViewController refreshTable];
+            }];
+        }
+    } else {
+        uiSpace = [self createUISpaceWithSpace:space];
+    }
+    
+    BOOL added = NO;
+    NSInteger count = self.uiSpaces.count;
+    for (NSInteger i = 0; i < count; i++) {
+        UISpace *lUISpace = self.uiSpaces[i];
+        if ([lUISpace.nameSpace caseInsensitiveCompare:uiSpace.nameSpace] == NSOrderedDescending) {
+            [self.uiSpaces insertObject:uiSpace atIndex:i];
+            added = YES;
+            break;
+        }
+    }
+    
+    if (self.space && [self.space.uuid isEqual:space.uuid]) {
+        uiSpace.isCurrentSpace = YES;
+    } else {
+        uiSpace.isCurrentSpace = NO;
+    }
+    
+    if (!added) {
+        [self.uiSpaces addObject:uiSpace];
+    }
+}
+
+- (void)onSubscribeSuccess {
+    DDLogVerbose(@"%@ onSubscribeSuccess", LOG_TAG);
+    
+}
+
+- (void)onSubscribeFailed:(TLBaseServiceErrorCode)errorCode {
+    DDLogVerbose(@"%@ onSubscribeFailed errorCode: %d", LOG_TAG, errorCode);
+    
+}
+
+#pragma mark - InAppPurchaseManagerDelegate
+
+- (void)onGetProducts:(NSArray *)products {
+    DDLogVerbose(@"%@ onGetProducts: %@", LOG_TAG, products);
+    
+}
+
+- (void)onTransactionSuccess:(SKPaymentTransaction *)transaction receipt:(NSString *)receipt {
+    DDLogVerbose(@"%@ onTransactionSuccess: %@ receipt: %@", LOG_TAG, transaction, receipt);
+    
+    UIViewController *topViewController = [UIViewController topViewController];
+    
+    if (![topViewController isKindOfClass:[InAppSubscriptionViewController class]]) {
+        [self.mainService subscribeFeature:transaction.payment.productIdentifier purchaseToken:receipt purchaseOrderId:transaction.transactionIdentifier];
+    }
+    
+}
+
+- (void)onTransactionRestored {
+    DDLogVerbose(@"%@ onTransactionRestored", LOG_TAG);
+    
+}
+
+- (void)onTransactionFailed:(SKPaymentTransaction *)transaction {
+    DDLogVerbose(@"%@ onTransactionFailed: %@", LOG_TAG, transaction);
+    
 }
 
 #pragma mark - CallServiceMessages
@@ -880,6 +1152,65 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
 
 - (void)onMessageVideoUpdate:(nonnull NSNotification *)notification {
     DDLogVerbose(@"%@ onMessageVideoUpdate: %@", LOG_TAG, notification);
+    
+}
+
+#pragma mark - SkredBoardViewControllerDelegate
+
+- (void)dismissSkredBoardViewController:(SkredBoardViewController *)skredBoardViewController {
+    DDLogVerbose(@"%@ dismissSkredBoardViewController: %@", LOG_TAG, skredBoardViewController);
+    
+    [skredBoardViewController setSkredBoardDisplayState:SkredBoardDisplayStateClose initialVelocity:0 animated:YES];
+}
+
+- (void)skredBoardViewController:(SkredBoardViewController *)skredBoardViewController didValidateCode:(NSString *)code onMode:(SkredBoardMode)mode {
+    DDLogVerbose(@"%@ SkredBoardViewController did validate code %@ on %@", LOG_TAG, code, mode == SkredBoardModeCreateAccount ? @"create mode" : @"access mode");
+    
+    switch (mode) {
+        case SkredBoardModeAccessAccount:
+            [self.mainService setLevelWithName:code];
+            break;
+            
+        case SkredBoardModeCreateAccount:
+            self.createLevel = YES;
+            [self.mainService createLevelWithName:code];
+            break;
+            
+        case SkredBoardModeDeleteAccount:
+            [self.mainService deleteLevelWithName:code];
+            break;
+        default:
+            break;
+    }
+    
+    [skredBoardViewController setSkredBoardDisplayState:SkredBoardDisplayStateClose initialVelocity:0 animated:YES];
+}
+
+#pragma mark - AcceptInvitationSubscriptionDelegate Methods
+
+- (void)invitationSubscriptionDidFinish:(TLBaseServiceErrorCode)errorCode  {
+    DDLogVerbose(@"%@ invitationDidFinish: %u", LOG_TAG, errorCode);
+
+    if (errorCode != TLBaseServiceErrorCodeSuccess) {
+        NSString *errorMessage;
+        if (errorCode == TLBaseServiceErrorCodeExpired) {
+            errorMessage = TwinmeLocalizedString(@"in_app_subscription_view_controller_expired_code", nil);
+        } else if (errorCode == TLBaseServiceErrorCodeLimitReached) {
+            errorMessage = TwinmeLocalizedString(@"in_app_subscription_view_controller_used_code", nil);
+        } else {
+            errorMessage = TwinmeLocalizedString(@"in_app_subscription_view_controller_invalid_code", nil);
+        }
+        
+        AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
+        alertMessageView.alertMessageViewDelegate = self;
+        [alertMessageView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:errorMessage];
+        [self.tabBarController.view addSubview:alertMessageView];
+        [alertMessageView showAlertView];
+    }
+}
+
+- (void)invitationSubscriptionDidCancel {
+    DDLogVerbose(@"%@ invitationSubscriptionDidCancel", LOG_TAG);
     
 }
 
@@ -917,6 +1248,18 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
         [swipeGestureRecognizer setDirection:UISwipeGestureRecognizerDirectionLeft];
     }
     [self.view addGestureRecognizer:swipeGestureRecognizer];
+    
+    UISwipeGestureRecognizer *panGesture = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(handlePanGestureRecognizer:)];
+    panGesture.delegate = self;
+    panGesture.cancelsTouchesInView = NO;
+    panGesture.direction = UISwipeGestureRecognizerDirectionDown;
+    [self.view addGestureRecognizer:panGesture];
+    
+    self.skredBoardViewController = [[SkredBoardViewController alloc] initWithNibName:@"SkredBoardViewController" bundle:[NSBundle mainBundle]];
+    self.skredBoardViewController.delegate = self;
+    
+    [self.skredBoardViewController addToViewControllerWithoutStickGesture:self];
+    [self.view bringSubviewToFront:self.skredBoardViewController.view];
 }
 
 - (void)swipeHandler:(UISwipeGestureRecognizer *)recognizer {
@@ -924,6 +1267,22 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
     
     if (self.sideMenuOpen) {
         [self closeSideMenu:YES];
+    }
+}
+
+-(BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:    (UITouch *)touch {
+    
+    return YES;
+}
+
+- (void)handlePanGestureRecognizer:(UISwipeGestureRecognizer *)recognizer {
+    DDLogVerbose(@"%@ handlePanGestureRecognizer: %@", LOG_TAG, recognizer);
+    
+    if (recognizer.state == UIGestureRecognizerStateEnded) {
+        TwinmeNavigationController *twinmeNavigationController = self.tabBarViewController.selectedViewController;
+        if (twinmeNavigationController.viewControllers.count == 1) {
+            [self.skredBoardViewController setSkredBoardDisplayState:SkredBoardDisplayStateOpen initialVelocity:1 animated:YES];
+        }
     }
 }
 
@@ -1062,9 +1421,17 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
     [self dismissModalViewController];
     
     if (twincodeUri.kind == TLTwincodeURIKindInvitation) {
-        AcceptInvitationViewController *acceptInvitationViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"AcceptInvitationViewController"];
-        [acceptInvitationViewController initWithProfile:self.profile url:url descriptorId:nil originatorId:nil isGroup:NO notification:nil popToRootViewController:NO];
-        [acceptInvitationViewController showInView:self.view];
+        
+        if (twincodeUri.twincodeOptions) {
+            AcceptInvitationSubscriptionViewController *acceptInvitationSubscriptionViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"AcceptInvitationSubscriptionViewController"];
+            acceptInvitationSubscriptionViewController.acceptInvitationSubscriptionDelegate = self;
+            [acceptInvitationSubscriptionViewController initWithPeerTwincodeOutboundId:twincodeUri.twincodeId activationCode:twincodeUri.twincodeOptions];
+            [acceptInvitationSubscriptionViewController showInView:self.view];
+        } else {
+            AcceptInvitationViewController *acceptInvitationViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"AcceptInvitationViewController"];
+            [acceptInvitationViewController initWithProfile:self.profile url:url descriptorId:nil originatorId:nil isGroup:NO notification:nil popToRootViewController:NO];
+            [acceptInvitationViewController showInView:self.view];
+        }
     } else if (twincodeUri.kind == TLTwincodeURIKindAuthenticate) {
         [self.mainService verifyAuthenticateWithURI:url withBlock:^(TLBaseServiceErrorCode errorCode, TLContact *contact) {
             if (errorCode == TLBaseServiceErrorCodeSuccess) {
@@ -1121,15 +1488,15 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
         [self.callFloatingView removeFromSuperview];
         self.callFloatingView = nil;
         
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:CallEventMessageTerminateCall object:nil];
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:CallEventMessageVideoUpdate object:nil];
+        
         ApplicationDelegate *delegate = (ApplicationDelegate *)[[UIApplication sharedApplication] delegate];
         CallState *call = [delegate.callService currentCall];
         if (!call) {
             return;
         }
 
-        [[NSNotificationCenter defaultCenter] removeObserver:self name:CallEventMessageTerminateCall object:nil];
-        [[NSNotificationCenter defaultCenter] removeObserver:self name:CallEventMessageVideoUpdate object:nil];
-        
         CallViewController *callViewController = (CallViewController *)[[UIStoryboard storyboardWithName:@"Call" bundle:nil] instantiateViewControllerWithIdentifier:@"CallViewController"];
         [callViewController initCallWithOriginator:call.originator isVideoCall:[call isVideo]];
         [self.selectedViewController pushViewController:callViewController animated:YES];
@@ -1141,48 +1508,6 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
     
     if (sender.state == UIGestureRecognizerStateEnded) {
         [self.infoFloatingView tapAction];
-    }
-}
-
-- (void)updateUIProfile:(nonnull TLProfile *)profile avatar:(nullable UIImage *)avatar {
-    DDLogVerbose(@"%@ updateUIProfile: %@", LOG_TAG, profile);
-    
-    UIProfile *uiProfile = nil;
-    for (UIProfile *lUIProfile in self.uiProfiles) {
-        if ([lUIProfile.profile.uuid isEqual:profile.uuid]) {
-            uiProfile = lUIProfile;
-            break;
-        }
-    }
-    
-    // TBD Sort using id order when name are equals
-    if (uiProfile)  {
-        [self.uiProfiles removeObject:uiProfile];
-        [uiProfile setProfile:profile];
-    } else {
-        uiProfile = [[UIProfile alloc] initWithProfile:profile];
-    }
-    if (!avatar) {
-        [self.mainService getImageWithProfile:profile withBlock:^(UIImage *image) {
-            [uiProfile updateAvatar:avatar];
-            [self.sideMenuViewController refreshTable];
-        }];
-    } else {
-        [uiProfile updateAvatar:avatar];
-    }
-    
-    BOOL added = NO;
-    NSInteger count = self.uiProfiles.count;
-    for (NSInteger i = 0; i < count; i++) {
-        UIProfile *lUIProfile = self.uiProfiles[i];
-        if ([lUIProfile.name caseInsensitiveCompare:uiProfile.name] == NSOrderedDescending) {
-            [self.uiProfiles insertObject:uiProfile atIndex:i];
-            added = YES;
-            break;
-        }
-    }
-    if (!added) {
-        [self.uiProfiles addObject:uiProfile];
     }
 }
 
@@ -1204,8 +1529,20 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
                 dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
                     DefaultConfirmView *defaultConfirmView = [[DefaultConfirmView alloc] init];
                     defaultConfirmView.confirmViewDelegate = self;
-                    UIImage *image = [self.twinmeApplication darkModeEnable] ? [UIImage imageNamed:@"EnableNotificationDark"] : [UIImage imageNamed:@"EnableNotification"];
+                    
+                    TLSpaceSettings *spaceSettings;
+                    if (self.space) {
+                        spaceSettings = self.space.settings;
+                        if ([self.space.settings getBooleanWithName:PROPERTY_DEFAULT_APPEARANCE_SETTINGS defaultValue:YES]) {
+                            spaceSettings = self.twinmeContext.defaultSpaceSettings;
+                        }
+                    } else {
+                        spaceSettings = self.twinmeContext.defaultSpaceSettings;
+                    }
+                    
+                    UIImage *image = [self.twinmeApplication darkModeEnable:spaceSettings] ? [UIImage imageNamed:@"EnableNotificationDark"] : [UIImage imageNamed:@"EnableNotification"];
                     [defaultConfirmView initWithTitle:TwinmeLocalizedString(@"quality_of_services_view_controller_settings", nil) message:TwinmeLocalizedString(@"quality_of_services_view_controller_enable_notifications_warning", nil) image:image avatar:nil action:TwinmeLocalizedString(@"quality_of_services_view_controller_enable_notifications", nil) actionColor:nil cancel:nil];
+
                     [self.view addSubview:defaultConfirmView];
                     
                     [defaultConfirmView showConfirmView];
@@ -1215,6 +1552,34 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
     }];
 }
 
+- (void)showLockScreen {
+    DDLogVerbose(@"%@ showLockScreen", LOG_TAG);
+        
+    if (([self.twinmeApplication isScreenLock] || self.twinmeApplication.isLastScreenHidden) && !self.lockScreenViewController && [[UIApplication sharedApplication]applicationState] != UIApplicationStateActive) {
+        [self.twinmeApplication setResignActiveDateWithDate:[NSDate date]];
+        
+        self.lockScreenViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"LockScreenViewController"];
+        self.lockScreenViewController.lockScreenDelegate = self;
+        
+        [self.lockScreenViewController.view setHidden:!self.twinmeApplication.isLastScreenHidden];
+        
+        
+        
+        if (self.presentedViewController) {
+            UIViewController *topViewController = [UIViewController topViewController];
+            if ([topViewController isKindOfClass:[AbstractTwinmeViewController class]]) {
+                [self.presentedViewController dismissViewControllerAnimated:NO completion:^{
+                    [self.view addSubview:self.lockScreenViewController.view];
+                }];
+            } else {
+                [self.view addSubview:self.lockScreenViewController.view];
+            }
+        } else {
+            [self.view addSubview:self.lockScreenViewController.view];
+        }
+    }
+}
+    
 - (void)dismissModalViewController {
     DDLogVerbose(@"%@ dismissModalViewController", LOG_TAG);
     
@@ -1310,6 +1675,25 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
     [self.tabBarViewController updateColor];
     [self.sideMenuViewController reloadMenu];
     [[UITextField appearanceWhenContainedInInstancesOfClasses:@[[UISearchBar class]]] setTintColor:Design.FONT_COLOR_DEFAULT];
+}
+
+- (nonnull UISpace *)createUISpaceWithSpace:(nonnull TLSpace *)space {
+    DDLogVerbose(@"%@ createUISpaceWithSpace: %@", LOG_TAG, space);
+
+    UISpace *uiSpace = [[UISpace alloc] initWithSpace:space defaultSpaceSettings:self.twinmeContext.defaultSpaceSettings];
+    if (space.avatarId) {
+        [self.mainService getImageWithSpace:space withBlock:^(UIImage *image) {
+            uiSpace.avatarSpace = image;
+            [self.sideMenuViewController refreshTable];
+        }];
+    }
+    if (space.profile) {
+        [self.mainService getImageWithProfile:space.profile withBlock:^(UIImage *image) {
+            uiSpace.avatar = image;
+            [self.sideMenuViewController refreshTable];
+        }];
+    }
+    return uiSpace;
 }
 
 @end

@@ -14,7 +14,6 @@
 #import "WebViewController.h"
 #import "WhatsNewViewController.h"
 
-#import "AboutCell.h"
 #import "SettingsInformationCell.h"
 #import "TwinmeSettingsItemCell.h"
 #import "SettingsSectionHeaderCell.h"
@@ -44,7 +43,6 @@ static const int LICENCES_ROW = 2;
 
 static NSString *HEADER_SETTINGS_CELL_IDENTIFIER = @"HeaderSettingsCellIdentifier";
 static NSString *FOOTER_SETTINGS_CELL_IDENTIFIER = @"SettingsSectionFooterCellIdentifier";
-static NSString *ABOUT_CELL_IDENTIFIER = @"AboutCellIdentifier";
 static NSString *TWINME_SETTINGS_CELL_IDENTIFIER = @"TwinmeSettingsCellIdentifier";
 static NSString *SETTINGS_VALUE_CELL_IDENTIFIER = @"SettingsValueCellIdentifier";
 static NSString *UPDATE_AVAILABLE_CELL_IDENTIFIER = @"UpdateAvailableCellIdentifier";
@@ -96,9 +94,7 @@ static NSString *SETTINGS_INFORMATION_CELL_IDENTIFIER = @"SettingsInformationCel
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath  {
     DDLogVerbose(@"%@ tableView: %@ heightForRowAtIndexPath: %@", LOG_TAG, tableView, indexPath);
     
-    if (indexPath.section == ABOUT_VIEW_SECTION && indexPath.row == 0) {
-        return UITableViewAutomaticDimension;
-    } else if (indexPath.section == ABOUT_VIEW_SECTION && indexPath.row == 2) {
+    if (indexPath.section == ABOUT_VIEW_SECTION && indexPath.row == 1) {
         return DESIGN_UPDTAE_AVAILABLE_HEIGHT * Design.HEIGHT_RATIO;
     }
     return Design.SETTING_CELL_HEIGHT;
@@ -124,9 +120,9 @@ static NSString *SETTINGS_INFORMATION_CELL_IDENTIFIER = @"SettingsInformationCel
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     DDLogVerbose(@"%@ tableView: %@ numberOfRowsInSection: %ld", LOG_TAG, tableView, (long)section);
-    
+        
     if (section == ABOUT_VIEW_SECTION) {
-        return [self.twinmeApplication.lastVersionManager isNewVersionAvailable] ? 3 : 2;
+        return [self.twinmeApplication.lastVersionManager isNewVersionAvailable] ? 2 : 1;
     } else if (section == OPEN_SOURCE_VIEW_SECTION) {
         return 3;
     }
@@ -181,14 +177,6 @@ static NSString *SETTINGS_INFORMATION_CELL_IDENTIFIER = @"SettingsInformationCel
     
     if (indexPath.section == ABOUT_VIEW_SECTION) {
         if (indexPath.row == 0) {
-            AboutCell *cell = [tableView dequeueReusableCellWithIdentifier:ABOUT_CELL_IDENTIFIER];
-            if (!cell) {
-                cell = [[AboutCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:ABOUT_CELL_IDENTIFIER];
-            }
-            
-            [cell bindWithText:TwinmeLocalizedString(@"about_view_controller_message", nil)];
-            return cell;
-        } else if (indexPath.row == 1) {
             SettingsValueItemCell *cell = [tableView dequeueReusableCellWithIdentifier:SETTINGS_VALUE_CELL_IDENTIFIER];
             if (!cell) {
                 cell = [[SettingsValueItemCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:SETTINGS_VALUE_CELL_IDENTIFIER];
@@ -265,7 +253,7 @@ static NSString *SETTINGS_INFORMATION_CELL_IDENTIFIER = @"SettingsInformationCel
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     DDLogVerbose(@"%@ tableView: %@ didSelectRowAtIndexPath: %@", LOG_TAG, tableView, indexPath);
     
-    if (indexPath.section == ABOUT_VIEW_SECTION && indexPath.row == 1) {
+    if (indexPath.section == ABOUT_VIEW_SECTION) {
         if ([self.twinmeApplication.lastVersionManager isCurrentVersion]) {
             WhatsNewViewController *whatsNewViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"WhatsNewViewController"];
             [whatsNewViewController showInView:self.navigationController];
@@ -317,7 +305,6 @@ static NSString *SETTINGS_INFORMATION_CELL_IDENTIFIER = @"SettingsInformationCel
     [self setNavigationTitle:TwinmeLocalizedString(@"side_menu_view_controller_about", nil)];
     
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    [self.tableView registerNib:[UINib nibWithNibName:@"AboutCell" bundle:nil] forCellReuseIdentifier:ABOUT_CELL_IDENTIFIER];
     [self.tableView registerNib:[UINib nibWithNibName:@"TwinmeSettingsItemCell" bundle:nil] forCellReuseIdentifier:TWINME_SETTINGS_CELL_IDENTIFIER];
     [self.tableView registerNib:[UINib nibWithNibName:@"SettingsValueItemCell" bundle:nil] forCellReuseIdentifier:SETTINGS_VALUE_CELL_IDENTIFIER];
     [self.tableView registerNib:[UINib nibWithNibName:@"SettingsSectionHeaderCell" bundle:nil] forCellReuseIdentifier:HEADER_SETTINGS_CELL_IDENTIFIER];

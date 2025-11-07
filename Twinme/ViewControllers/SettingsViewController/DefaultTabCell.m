@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2021 twinlife SA.
+ *  Copyright (c) 2021-2022 twinlife SA.
  *  SPDX-License-Identifier: AGPL-3.0-only
  *
  *  Contributors:
@@ -29,10 +29,10 @@ static const int ddLogLevel = DDLogLevelWarning;
 
 @interface DefaultTabCell()
 
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *profilesTabViewLeadingConstraint;
-@property (weak, nonatomic) IBOutlet UIView *profilesTabView;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *profilesImageTabViewHeightConstraint;
-@property (weak, nonatomic) IBOutlet UIImageView *profilesImageTabView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *spacesTabViewLeadingConstraint;
+@property (weak, nonatomic) IBOutlet UIView *spacesTabView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *spacesImageTabViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet UIImageView *spacesImageTabView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *callsTabViewLeadingConstraint;
 @property (weak, nonatomic) IBOutlet UIView *callsTabView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *callsImageTabViewHeightConstraint;
@@ -56,6 +56,8 @@ static const int ddLogLevel = DDLogLevelWarning;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *separatorViewHeightConstraint;
 @property (weak, nonatomic) IBOutlet UIView *separatorView;
 
+@property UIColor *defaultColor;
+
 @end
 
 //
@@ -72,23 +74,24 @@ static const int ddLogLevel = DDLogLevelWarning;
     
     [super awakeFromNib];
     
+    self.defaultColor = Design.MAIN_COLOR;
+    
     self.selectionStyle = UITableViewCellSelectionStyleNone;
     self.contentView.backgroundColor = Design.WHITE_COLOR;
     
-    self.profilesTabViewLeadingConstraint.constant *= Design.WIDTH_RATIO;
-    self.profilesTabView.userInteractionEnabled = YES;
-    self.profilesTabView.isAccessibilityElement = YES;
-    UITapGestureRecognizer *profilesTabTapGesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(handleProfilesTapGesture:)];
-    [self.profilesTabView addGestureRecognizer:profilesTabTapGesture];
-    self.profilesTabView.accessibilityLabel = TwinmeLocalizedString(@"application_profile", nil);
+    self.spacesTabViewLeadingConstraint.constant *= Design.WIDTH_RATIO;
+    self.spacesTabView.userInteractionEnabled = YES;
+    self.spacesTabView.isAccessibilityElement = YES;
+    UITapGestureRecognizer *spacesTabTapGesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(handleSpacesTapGesture:)];
+    [self.spacesTabView addGestureRecognizer:spacesTabTapGesture];
+    self.spacesTabView.accessibilityLabel = TwinmeLocalizedString(@"settings_space_view_controller_space_category_title", nil);
     
-    self.profilesImageTabViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
-    self.profilesImageTabView.tintColor = Design.UNSELECTED_TAB_COLOR;
-    self.profilesImageTabView.userInteractionEnabled = YES;
+    self.spacesImageTabViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    self.spacesImageTabView.tintColor = Design.UNSELECTED_TAB_COLOR;
+    self.spacesImageTabView.userInteractionEnabled = YES;
     
     self.callsTabViewLeadingConstraint.constant *= Design.WIDTH_RATIO;
     self.callsTabView.userInteractionEnabled = YES;
-    self.callsTabView.isAccessibilityElement = YES;
     UITapGestureRecognizer *callsTabTapGesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(handleCallsTapGesture:)];
     [self.callsTabView addGestureRecognizer:callsTabTapGesture];
     self.callsTabView.accessibilityLabel = TwinmeLocalizedString(@"history_view_controller_title", nil);
@@ -98,7 +101,6 @@ static const int ddLogLevel = DDLogLevelWarning;
     
     self.contactsTabViewLeadingConstraint.constant *= Design.WIDTH_RATIO;
     self.contactsTabView.userInteractionEnabled = YES;
-    self.contactsTabView.isAccessibilityElement = YES;
     UITapGestureRecognizer *contactsTabTapGesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(handleContactsTapGesture:)];
     [self.contactsTabView addGestureRecognizer:contactsTabTapGesture];
     self.contactsTabView.accessibilityLabel = TwinmeLocalizedString(@"contacts_view_controller_title", nil);
@@ -108,7 +110,6 @@ static const int ddLogLevel = DDLogLevelWarning;
     
     self.conversationsTabViewLeadingConstraint.constant *= Design.WIDTH_RATIO;
     self.conversationsTabView.userInteractionEnabled = YES;
-    self.conversationsTabView.isAccessibilityElement = YES;
     UITapGestureRecognizer *conversationsTabTapGesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(handleConversationsTapGesture:)];
     [self.conversationsTabView addGestureRecognizer:conversationsTabTapGesture];
     self.conversationsTabView.accessibilityLabel = TwinmeLocalizedString(@"conversations_view_controller_title", nil);
@@ -119,7 +120,6 @@ static const int ddLogLevel = DDLogLevelWarning;
     self.notificationsTabViewLeadingConstraint.constant *= Design.WIDTH_RATIO;
     
     self.notificationsTabView.userInteractionEnabled = YES;
-    self.notificationsTabView.isAccessibilityElement = YES;
     UITapGestureRecognizer *notificationTabTapGesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(handleNotificationTapGesture:)];
     [self.notificationsTabView addGestureRecognizer:notificationTabTapGesture];
     self.notificationsTabView.accessibilityLabel = TwinmeLocalizedString(@"application_notifications", nil);
@@ -130,7 +130,7 @@ static const int ddLogLevel = DDLogLevelWarning;
     self.selectTabViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     self.selectTabViewLeadingConstraint.constant *= Design.WIDTH_RATIO;
     self.selectTabViewBottomConstraint.constant *= Design.HEIGHT_RATIO;
-    self.selectTabView.backgroundColor = Design.MAIN_COLOR;
+    self.selectTabView.backgroundColor = self.defaultColor;
     
     self.separatorViewHeightConstraint.constant = Design.SEPARATOR_HEIGHT;
     self.separatorView.backgroundColor = Design.SEPARATOR_COLOR_GREY;
@@ -141,18 +141,20 @@ static const int ddLogLevel = DDLogLevelWarning;
     
 }
 
-- (void)bind {
-    DDLogVerbose(@"%@ bind", LOG_TAG);
+- (void)bind:(UIColor *)defaultColor {
+    DDLogVerbose(@"%@ bind: %@", LOG_TAG, defaultColor);
+    
+    self.defaultColor = defaultColor;
     
     [self updateTab];
     [self updateColor];
 }
 
-- (void)handleProfilesTapGesture:(UITapGestureRecognizer *)sender {
-    DDLogVerbose(@"%@ handleProfilesTapGesture: %@", LOG_TAG, sender);
+- (void)handleSpacesTapGesture:(UITapGestureRecognizer *)sender {
+    DDLogVerbose(@"%@ handleSpacesTapGesture: %@", LOG_TAG, sender);
     
     if (sender.state == UIGestureRecognizerStateEnded) {
-        [self selectTab:DefaultTabProfiles];
+        [self selectTab:DefaultTabSpaces];
     }
 }
 
@@ -202,7 +204,7 @@ static const int ddLogLevel = DDLogLevelWarning;
     ApplicationDelegate *delegate = (ApplicationDelegate *)[[UIApplication sharedApplication] delegate];
     TwinmeApplication *twinmeApplication = [delegate twinmeApplication];
     
-    self.profilesImageTabView.tintColor = Design.UNSELECTED_TAB_COLOR;
+    self.spacesImageTabView.tintColor = Design.UNSELECTED_TAB_COLOR;
     self.callsImageTabView.tintColor = Design.UNSELECTED_TAB_COLOR;
     self.contactsImageTabView.tintColor = Design.UNSELECTED_TAB_COLOR;
     self.conversationsImageTabView.tintColor = Design.UNSELECTED_TAB_COLOR;
@@ -211,29 +213,29 @@ static const int ddLogLevel = DDLogLevelWarning;
     CGFloat sizeView = Design.DISPLAY_WIDTH / 5.0;
     
     switch (twinmeApplication.defaultTab) {
-        case DefaultTabProfiles:
+        case DefaultTabSpaces:
             self.selectTabViewLeadingConstraint.constant = 0;
-            self.profilesImageTabView.tintColor = Design.MAIN_COLOR;
+            self.spacesImageTabView.tintColor = self.defaultColor;
             break;
             
         case DefaultTabCalls:
             self.selectTabViewLeadingConstraint.constant = sizeView;
-            self.callsImageTabView.tintColor = Design.MAIN_COLOR;
+            self.callsImageTabView.tintColor = self.defaultColor;
             break;
             
         case DefaultTabContacts:
             self.selectTabViewLeadingConstraint.constant = sizeView * 2;
-            self.contactsImageTabView.tintColor = Design.MAIN_COLOR;
+            self.contactsImageTabView.tintColor = self.defaultColor;
             break;
             
         case DefaultTabConversations:
             self.selectTabViewLeadingConstraint.constant = sizeView * 3;
-            self.conversationsImageTabView.tintColor = Design.MAIN_COLOR;
+            self.conversationsImageTabView.tintColor = self.defaultColor;
             break;
             
         case DefaultTabNotifications:
             self.selectTabViewLeadingConstraint.constant = sizeView * 4;
-            self.notificationsImageTabView.tintColor = Design.MAIN_COLOR;
+            self.notificationsImageTabView.tintColor = self.defaultColor;
             break;
             
         default:
@@ -246,7 +248,7 @@ static const int ddLogLevel = DDLogLevelWarning;
     
     self.contentView.backgroundColor = Design.WHITE_COLOR;
     self.separatorView.backgroundColor = Design.SEPARATOR_COLOR_GREY;
-    self.selectTabView.backgroundColor = Design.MAIN_COLOR;
+    self.selectTabView.backgroundColor = self.defaultColor;
 }
 
 @end

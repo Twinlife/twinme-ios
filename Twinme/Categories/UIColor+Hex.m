@@ -30,7 +30,9 @@ static const int ddLogLevel = DDLogLevelWarning;
     
     unsigned rgbValue = 0;
     NSScanner *scanner = [NSScanner scannerWithString:hexString];
-    [scanner setScanLocation:1];
+    if ([hexString hasPrefix:@"#"]) {
+        [scanner setScanLocation:1];
+    }
     [scanner scanHexInt:&rgbValue];
     
     return [UIColor colorWithRed:((rgbValue & 0xFF0000) >> 16) / 255. green:((rgbValue & 0xFF00) >> 8) / 255. blue:(rgbValue & 0xFF) / 255. alpha:alpha];

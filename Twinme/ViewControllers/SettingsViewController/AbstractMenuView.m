@@ -54,7 +54,7 @@ static const int ddLogLevel = DDLogLevelWarning;
     [self updateFont];
     [self updateColor];
     [self reloadData];
-    
+
     self.actionView.frame = CGRectMake(0, Design.DISPLAY_HEIGHT, Design.DISPLAY_WIDTH, self.actionView.frame.size.height);
         
     [UIView animateWithDuration:Design.ANIMATION_VIEW_DURATION

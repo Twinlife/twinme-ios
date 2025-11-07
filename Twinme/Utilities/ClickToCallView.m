@@ -39,10 +39,6 @@ static UIColor *DESIGN_ACTION_BORDER_COLOR;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *logoViewTopConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *logoViewHeightConstraint;
 @property (weak, nonatomic) IBOutlet UIImageView *logoView;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *logoTwinmeViewTopConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *logoTwinmeViewHeightConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *logoTwinmeViewWidthConstraint;
-@property (weak, nonatomic) IBOutlet UIImageView *logoTwinmeView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *invitationViewHeightConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *invitationViewWidthConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *invitationViewTopConstraint;
@@ -153,13 +149,7 @@ static UIColor *DESIGN_ACTION_BORDER_COLOR;
     
     self.logoViewTopConstraint.constant *= Design.HEIGHT_RATIO;
     self.logoViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
-    
-    self.logoTwinmeViewTopConstraint.constant *= Design.HEIGHT_RATIO;
-    self.logoTwinmeViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
-    self.logoTwinmeViewWidthConstraint.constant *= Design.WIDTH_RATIO;
-    
-    self.logoTwinmeView.tintColor = [UIColor whiteColor];
-            
+                
     self.invitationViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     self.invitationViewWidthConstraint.constant *= Design.WIDTH_RATIO;
     self.invitationViewTopConstraint.constant *= Design.HEIGHT_RATIO;

@@ -31,10 +31,6 @@ static CGFloat DESIGN_AVATAR_BORDER_WIDTH = 6;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *logoViewTopConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *logoViewHeightConstraint;
 @property (weak, nonatomic) IBOutlet UIImageView *logoView;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *logoTwinmeViewTopConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *logoTwinmeViewHeightConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *logoTwinmeViewWidthConstraint;
-@property (weak, nonatomic) IBOutlet UIImageView *logoTwinmeView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *profileViewTopConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *profileViewHeightConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *profileViewWidthConstraint;
@@ -115,12 +111,6 @@ static CGFloat DESIGN_AVATAR_BORDER_WIDTH = 6;
     
     self.logoViewTopConstraint.constant *= Design.HEIGHT_RATIO;
     self.logoViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
-    
-    self.logoTwinmeViewTopConstraint.constant *= Design.HEIGHT_RATIO;
-    self.logoTwinmeViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
-    self.logoTwinmeViewWidthConstraint.constant *= Design.WIDTH_RATIO;
-    
-    self.logoTwinmeView.tintColor = [UIColor blackColor];
     
     self.profileViewTopConstraint.constant *= Design.HEIGHT_RATIO;
     self.profileViewHeightConstraint.constant *= Design.HEIGHT_RATIO;

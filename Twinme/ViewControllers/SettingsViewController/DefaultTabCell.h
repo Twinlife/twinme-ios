@@ -12,6 +12,6 @@
 
 @interface DefaultTabCell : UITableViewCell
 
-- (void)bind;
+- (void)bind:(UIColor *)defaultColor;
 
 @end

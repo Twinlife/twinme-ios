@@ -112,20 +112,27 @@ static CGFloat DESIGN_TITLE_LARGE_WIDTH = 620;
     [self updateColor];
 }
 
-- (void)bindWithTitle:(nullable NSString *)title value:(nonnull NSString *)value {
-    DDLogVerbose(@"%@ bindWithTitle: %@ value: %@", LOG_TAG, title, value);
+- (void)bindWithTitle:(nullable NSString *)title value:(nonnull NSString *)value backgroundColor:(nonnull UIColor *)backgroundColor {
+    DDLogVerbose(@"%@ bindWithTitle: %@ value: %@ backgroundColor: %@", LOG_TAG, title, value, backgroundColor);
     
+    self.contentView.backgroundColor = backgroundColor;
+  
     self.valueLabel.hidden = YES;
     self.selectImageView.hidden = NO;
     self.titleLabelWidthConstraint.constant = DESIGN_TITLE_LARGE_WIDTH * Design.WIDTH_RATIO;
     
+    UIColor *titleColor = Design.FONT_COLOR_DEFAULT;
+    if (self.forceDarkMode) {
+        titleColor = [UIColor whiteColor];
+    }
+    
     if (title) {
-        NSMutableAttributedString *valueAttributedString = [[NSMutableAttributedString alloc] initWithString:title attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_REGULAR32, NSFontAttributeName, Design.FONT_COLOR_DEFAULT, NSForegroundColorAttributeName, nil]];
+        NSMutableAttributedString *valueAttributedString = [[NSMutableAttributedString alloc] initWithString:title attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_REGULAR32, NSFontAttributeName, titleColor, NSForegroundColorAttributeName, nil]];
         [valueAttributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:@"\n"]];
         [valueAttributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:value attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_REGULAR32, NSFontAttributeName, Design.FONT_COLOR_GREY, NSForegroundColorAttributeName, nil]]];
         self.titleLabel.attributedText = valueAttributedString;
     } else {
-        NSMutableAttributedString *valueAttributedString = [[NSMutableAttributedString alloc] initWithString:value attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_REGULAR32, NSFontAttributeName, Design.FONT_COLOR_DEFAULT, NSForegroundColorAttributeName, nil]];
+        NSMutableAttributedString *valueAttributedString = [[NSMutableAttributedString alloc] initWithString:value attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_REGULAR32, NSFontAttributeName, titleColor, NSForegroundColorAttributeName, nil]];
         self.titleLabel.attributedText = valueAttributedString;
     }
     
@@ -144,7 +151,7 @@ static CGFloat DESIGN_TITLE_LARGE_WIDTH = 620;
     DDLogVerbose(@"%@ updateColor", LOG_TAG);
     
     if (self.forceDarkMode) {
-        self.contentView.backgroundColor = [UIColor blackColor];
+        self.contentView.backgroundColor = [UIColor colorWithRed:72./255. green:72./255. blue:72./255. alpha:1];
         self.separatorView.backgroundColor = [UIColor colorWithRed:199./255. green:199./255. blue:255./255. alpha:0.3];
         self.valueLabel.textColor = [UIColor whiteColor];
         

@@ -13,10 +13,12 @@
 #import <Twinlife/TLConversationService.h>
 
 #import <Twinme/TLContact.h>
+#import <Twinme/TLSpace.h>
 
 #import <Utils/NSString+Utils.h>
 
 #import "LastCallsViewController.h"
+#import "InAppSubscriptionViewController.h"
 
 #import "CallCell.h"
 #import "CellActionView.h"
@@ -24,6 +26,7 @@
 #import <TwinmeCommon/CallsService.h>
 #import <TwinmeCommon/CallViewController.h>
 #import <TwinmeCommon/Design.h>
+#import <TwinmeCommon/TwinmeNavigationController.h>
 
 #import "DeleteConfirmView.h"
 #import "CallAgainConfirmView.h"
@@ -388,11 +391,12 @@ static NSString *CALL_CELL_IDENTIFIER = @"CallCellIdentifier";
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     DDLogVerbose(@"%@ tableView: %@ didSelectRowAtIndexPath: %@", LOG_TAG, tableView, indexPath);
     
+    ApplicationDelegate *delegate = (ApplicationDelegate *)[[UIApplication sharedApplication] delegate];
     if (!self.isCallReceiver && !self.twinmeApplication.inCall && self.callOriginator) {
-        if (self.callOriginator.isGroup) {
+        if (self.callOriginator.isGroup && ![delegate.twinmeApplication isSubscribedWithFeature:TLTwinmeApplicationFeatureGroupCall]) {
             PremiumFeatureConfirmView *premiumFeatureConfirmView = [[PremiumFeatureConfirmView alloc] init];
             premiumFeatureConfirmView.confirmViewDelegate = self;
-            [premiumFeatureConfirmView initWithPremiumFeature:[[UIPremiumFeature alloc]initWithFeatureType:FeatureTypeGroupCall] parentViewController:self.navigationController];
+            [premiumFeatureConfirmView initWithPremiumFeature:[[UIPremiumFeature alloc]initWithFeatureType:FeatureTypeGroupCall spaceSettings:[self currentSpaceSettings]] parentViewController:self.navigationController];
             [self.navigationController.view addSubview:premiumFeatureConfirmView];
             [premiumFeatureConfirmView showConfirmView];
             return;
@@ -445,8 +449,10 @@ static NSString *CALL_CELL_IDENTIFIER = @"CallCellIdentifier";
             TLCallDescriptor *callDescriptor = self.allCalls[i];
             [self.callsService deleteCallDescriptor:callDescriptor];
         }
-    } else {
-        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:TwinmeLocalizedString(@"twinme_plus_link", nil)] options:@{} completionHandler:nil];
+    } else if ([abstractConfirmView isKindOfClass:[PremiumFeatureConfirmView class]]) {
+        InAppSubscriptionViewController *inAppSubscriptionViewController = [[UIStoryboard storyboardWithName:@"iPhone" bundle:nil] instantiateViewControllerWithIdentifier:@"InAppSubscriptionViewController"];
+        TwinmeNavigationController *navigationController = [[TwinmeNavigationController alloc]initWithRootViewController:inAppSubscriptionViewController];
+        [self.navigationController presentViewController:navigationController animated:YES completion:nil];
     }
     
     [abstractConfirmView closeConfirmView];

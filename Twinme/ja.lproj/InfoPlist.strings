@@ -1,5 +1,9 @@
-NSAppleMusicUsageDescription = "音楽をストリーミングします";
-NSCameraUsageDescription = "写真を撮ったりビデオ通話をしたりできます";
-NSMicrophoneUsageDescription = "音声通話やビデオ通話ができます";
-NSPhotoLibraryUsageDescription = "プロフィール画像とチャットメッセージを送信します";
+NSAppleMusicUsageDescription = "Apple Music を接続するため";
+NSCameraUsageDescription = "写真を撮ったり、ビデオ通話をしたりします";
+NSContactsUsageDescription = "人々を招待できるようにするには、連絡先リストにアクセスする必要があります。";
+NSFaceIDUsageDescription = "アプリケーションへのアクセスを認証およびロック解除する";
+NSLocationAlwaysAndWhenInUseUsage = "通話中にリアルタイムで位置情報を共有する";
+NSLocationWhenInUseUsageDescription = "会話中に位置情報を共有する";
+NSMicrophoneUsageDescription = "音声通話とビデオ通話を行う";
+NSPhotoLibraryUsageDescription = "プロフィール画像とチャットメッセージの送信のため";
 NSPhotoLibraryAddUsageDescription = "会話で交換された写真やビデオ、および招待用 QR コードをデバイスのフォト アルバムに保存します。";

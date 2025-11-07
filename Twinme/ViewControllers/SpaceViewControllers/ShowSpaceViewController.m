@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2020-2022 twinlife SA.
+ *  Copyright (c) 2020-2024 twinlife SA.
  *  SPDX-License-Identifier: AGPL-3.0-only
  *
  *  Contributors:
@@ -20,7 +20,6 @@
 #import <TwinmeCommon/TwinmeNavigationController.h>
 #import "EditProfileViewController.h"
 #import "EditSpaceViewController.h"
-#import "EditManagedSpaceViewController.h"
 #import "ContactsSpaceViewController.h"
 #import "AddProfileViewController.h"
 #import "AddContactViewController.h"
@@ -35,7 +34,7 @@
 
 #import "UIContact.h"
 
-#import "AlertView.h"
+#import "AlertMessageView.h"
 #import <TwinmeCommon/Design.h>
 #import "InsideBorderView.h"
 #import "MenuSelectValueView.h"
@@ -45,6 +44,8 @@
 #import "SlideContactView.h"
 #import "SwitchView.h"
 #import "SpaceSetting.h"
+#import "UIPremiumFeature.h"
+#import "SpaceActionConfirmView.h"
 
 #if 0
 static const int ddLogLevel = DDLogLevelVerbose;
@@ -53,20 +54,16 @@ static const int ddLogLevel = DDLogLevelWarning;
 #endif
 
 static UIColor *DESIGN_SPACE_NAME_COLOR;
-static CGFloat DESIGN_ACTION_VIEW_TOP_MARGIN = 160;
 static CGFloat DESIGN_HEADER_VIEW_TOP_MARGIN = 36;
 static CGFloat DESIGN_HEADER_VIEW_NO_PROFILE_TOP_MARGIN = 92;
 static CGFloat DESIGN_SPACE_LABEL_TOP_MARGIN = 20;
 static CGFloat DESIGN_PROFILE_AVATAR_HEIGHT = 216;
 
-static NSInteger CREATE_PROFILE_ALERT_VIEW_TAG = 1;
-static NSInteger SECRET_ALERT_VIEW_TAG = 2;
-
 //
 // Interface: ShowSpaceViewController ()
 //
 
-@interface ShowSpaceViewController () <ShowSpaceServiceDelegate, AlertViewDelegate, SwitchViewDelegate, MenuSelectValueDelegate>
+@interface ShowSpaceViewController () <ShowSpaceServiceDelegate, AlertMessageViewDelegate, SwitchViewDelegate, MenuSelectValueDelegate, ConfirmViewDelegate>
 
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *identityAvatarViewTopConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *identityNameViewTopConstraint;
@@ -159,9 +156,6 @@ static NSInteger SECRET_ALERT_VIEW_TAG = 2;
 @property (nonatomic) BOOL toRootView;
 @property (nonatomic) BOOL canUpdate;
 
-@property (nonatomic) MenuSelectValueView *menuSelectValueView;
-@property (nonatomic) UIView *overlayView;
-
 @property (nonatomic) TLSpace *space;
 
 @property (nonatomic) ShowSpaceService *showSpaceService;
@@ -235,11 +229,11 @@ static NSInteger SECRET_ALERT_VIEW_TAG = 2;
     DDLogVerbose(@"%@ identityTap", LOG_TAG);
     
     if (self.space.profile) {
-        ShowProfileViewController *showProfileViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"ShowProfileViewController"];
+        ShowProfileViewController *showProfileViewController = [[UIStoryboard storyboardWithName:@"iPhone" bundle:nil] instantiateViewControllerWithIdentifier:@"ShowProfileViewController"];
         [showProfileViewController initWithProfile:self.space.profile];
         [self.navigationController pushViewController:showProfileViewController animated:YES];
     } else {
-        AddProfileViewController *addProfileViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"AddProfileViewController"];
+        AddProfileViewController *addProfileViewController = [[UIStoryboard storyboardWithName:@"iPhone" bundle:nil] instantiateViewControllerWithIdentifier:@"AddProfileViewController"];
         addProfileViewController.firstProfile = NO;
         [self.navigationController pushViewController:addProfileViewController animated:YES];
     }
@@ -248,15 +242,9 @@ static NSInteger SECRET_ALERT_VIEW_TAG = 2;
 - (void)editTap {
     DDLogVerbose(@"%@ editTap", LOG_TAG);
     
-    if (self.space.isManagedSpace) {
-        EditManagedSpaceViewController *editManagedSpaceViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"EditManagedSpaceViewController"];
-        [editManagedSpaceViewController initWithSpace:self.space];
-        [self.navigationController pushViewController:editManagedSpaceViewController animated:YES];
-    } else {
     EditSpaceViewController *editSpaceViewController = [[UIStoryboard storyboardWithName:@"Space" bundle:nil] instantiateViewControllerWithIdentifier:@"EditSpaceViewController"];
     [editSpaceViewController initWithSpace:self.space];
     [self.navigationController pushViewController:editSpaceViewController animated:YES];
-    }
 }
 
 - (BOOL)hasPeer {
@@ -280,11 +268,11 @@ static NSInteger SECRET_ALERT_VIEW_TAG = 2;
 
 #pragma mark - ShowSpaceServiceDelegate
 
-- (void)onGetSpace:(nonnull TLSpace *)space {
-    DDLogVerbose(@"%@ onGetSpace: %@", LOG_TAG, space);
+- (void)onGetSpace:(nonnull TLSpace *)space  avatar:(nullable UIImage *)avatar {
+    DDLogVerbose(@"%@ onGetSpace: %@ image: %fx%f", LOG_TAG, space, avatar.size.width, avatar.size.height);
     
     self.space = space;
-    self.avatar = nil;
+    self.avatar = avatar;
     
     [self updateSpace];
 }
@@ -294,15 +282,21 @@ static NSInteger SECRET_ALERT_VIEW_TAG = 2;
     
 }
 
-- (void)onUpdateSpace:(nonnull TLSpace *)space avatar:(nullable UIImage *)avatar {
-    DDLogVerbose(@"%@ onUpdateSpace: %@ avatar: %@", LOG_TAG, space, avatar);
+- (void)onUpdateSpace:(nonnull TLSpace *)space {
+    DDLogVerbose(@"%@ onUpdateSpace: %@", LOG_TAG, space);
     
     if ([self.space.uuid isEqual:space.uuid]) {
         self.space = space;
-        self.avatar = avatar;
         
         [self updateSpace];
     }
+}
+
+- (void)onUpdateSpaceAvatar:(nonnull UIImage *)avatar {
+    DDLogVerbose(@"%@ onUpdateSpaceAvatar: %fx%f", LOG_TAG, avatar.size.width, avatar.size.height);
+
+    self.avatar = avatar;
+    self.avatarView.image = avatar;
 }
 
 - (void)onDeleteSpace:(nonnull NSUUID *)spaceId {
@@ -337,59 +331,74 @@ static NSInteger SECRET_ALERT_VIEW_TAG = 2;
     _space = space;
 }
 
-#pragma mark - AlertViewDelegate
+#pragma mark - ConfirmViewDelegate
 
-- (void)handleAcceptButtonClick:(AlertView *)alertView {
-    DDLogVerbose(@"%@ handleAcceptButtonClick: %@", LOG_TAG, alertView);
+- (void)didTapConfirm:(nonnull AbstractConfirmView *)abstractConfirmView {
+    DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractConfirmView);
     
-    if (alertView.view.tag == CREATE_PROFILE_ALERT_VIEW_TAG) {
-        [self identityTap];
+    if ([abstractConfirmView isKindOfClass:[SpaceActionConfirmView class]]) {
+        SpaceActionConfirmView *spaceActionConfirmView = (SpaceActionConfirmView *)abstractConfirmView;
+        
+        if (spaceActionConfirmView.spaceActionConfirmType == SpaceActionConfirmTypeSecret) {
+            [self.secretSwitch setOn:YES];
+            [self switchViewDidTap:self.secretSwitch];
+            [self.secretSwitch setConfirm:NO];
+        } else if (spaceActionConfirmView.spaceActionConfirmType == SpaceActionConfirmTypeProfile) {
+            [self identityTap];
+        }
     }
+    
+    [abstractConfirmView closeConfirmView];
 }
 
-- (void)handleCancelButtonClick:(AlertView *)alertView {
-    DDLogVerbose(@"%@ handleCancelButtonClick: %@", LOG_TAG, alertView);
+- (void)didTapCancel:(nonnull AbstractConfirmView *)abstractConfirmView {
+    DDLogVerbose(@"%@ didTapCancel: %@", LOG_TAG, abstractConfirmView);
     
-    if (alertView.view.tag == SECRET_ALERT_VIEW_TAG) {
-        [self.secretSwitch setOn:YES];
-        [self switchViewDidTap:self.secretSwitch];
-        [self.secretSwitch setConfirm:NO];
-    }
+    [abstractConfirmView closeConfirmView];
+}
+
+- (void)didClose:(nonnull AbstractConfirmView *)abstractConfirmView {
+    DDLogVerbose(@"%@ didClose: %@", LOG_TAG, abstractConfirmView);
+    
+    [abstractConfirmView closeConfirmView];
+}
+
+- (void)didFinishCloseAnimation:(nonnull AbstractConfirmView *)abstractConfirmView {
+    DDLogVerbose(@"%@ didFinishCloseAnimation: %@", LOG_TAG, abstractConfirmView);
+    
+    [abstractConfirmView removeFromSuperview];
 }
 
 #pragma mark - MenuSelectValueDelegate
 
-- (void)selectValue:(int)value {
+- (void)selectValue:(MenuSelectValueView *)menuSelectValueView value:(int)value {
     DDLogVerbose(@"%@ selectValue: %d", LOG_TAG, value);
     
-    [self closeMenu];
+    [menuSelectValueView removeFromSuperview];
     
     if (value == 0) {
         [self editTap];
     } else {
-        EditProfileViewController *editProfileViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"EditProfileViewController"];
+        EditProfileViewController *editProfileViewController = [[UIStoryboard storyboardWithName:@"iPhone" bundle:nil] instantiateViewControllerWithIdentifier:@"EditProfileViewController"];
         [editProfileViewController initWithProfile:self.space.profile];
         [self.navigationController pushViewController:editProfileViewController animated:YES];
     }
 }
 
-- (void)cancelMenu {
+- (void)cancelMenuSelectValue:(MenuSelectValueView *)menuSelectValueView {
     DDLogVerbose(@"%@ cancelMenu", LOG_TAG);
     
-    self.menuSelectValueView.hidden = YES;
-    self.overlayView.hidden = YES;
-
-    [self closeMenu];
+    [menuSelectValueView removeFromSuperview];
 }
-
 
 #pragma mark - SwitchViewDelegate
 
 - (void)switchViewDidTap:(SwitchView *)switchView {
     DDLogVerbose(@"%@ switchViewDidTap: %@", LOG_TAG, switchView);
     
+    ApplicationDelegate *delegate = (ApplicationDelegate *)[[UIApplication sharedApplication] delegate];
+    
     if (switchView.isOn && [self.twinmeContext isDefaultSpace:self.space]) {
-        ApplicationDelegate *delegate = (ApplicationDelegate *)[[UIApplication sharedApplication] delegate];
         MainViewController *mainViewController = delegate.mainViewController;
         
         TLSpace *nextDefaultSpace = [mainViewController getNextDefaultSpace:self.space];
@@ -409,14 +418,31 @@ static NSInteger SECRET_ALERT_VIEW_TAG = 2;
 
 - (void)switchViewNeedsConfirm:(SwitchView *)switchView {
     DDLogVerbose(@"%@ switchViewDidTap: %@", LOG_TAG, switchView);
-    
+      
     NSMutableString *message = [[NSMutableString alloc] initWithString:TwinmeLocalizedString(@"show_space_view_controller_secret_message", nil)];
     [message appendString:@"\n\n"];
     [message appendString:TwinmeLocalizedString(@"show_space_view_controller_secret_message_confirm", nil)];
-        
-    AlertView *alertView = [[AlertView alloc] initWithTitle:TwinmeLocalizedString(@"settings_space_view_controller_secret_title", nil) message:message cancelButtonTitle:TwinmeLocalizedString(@"application_yes", nil) otherButtonTitles:TwinmeLocalizedString(@"application_no", nil) alertViewDelegate:self];
-    alertView.view.tag = SECRET_ALERT_VIEW_TAG;
-    [alertView showInView:self.tabBarController];
+    
+    SpaceActionConfirmView *spaceActionConfirmView = [[SpaceActionConfirmView alloc] init];
+    spaceActionConfirmView.confirmViewDelegate = self;
+    spaceActionConfirmView.spaceActionConfirmType = SpaceActionConfirmTypeSecret;
+    [spaceActionConfirmView initWithTitle:TwinmeLocalizedString(@"application_are_you_sure", nil) message:message spaceName:self.space.settings.name spaceStyle:self.space.settings.style avatar:self.avatar icon:[UIImage imageNamed:@"PremiumSpaceDarkIcon4"] confirmTitle:TwinmeLocalizedString(@"show_space_view_controller_secret_confirm", nil) cancelTitle:TwinmeLocalizedString(@"application_cancel", nil)];
+    [self.view addSubview:spaceActionConfirmView];
+    [spaceActionConfirmView showConfirmView];
+}
+
+#pragma mark - AlertMessageViewDelegate
+
+- (void)didCloseAlertMessage:(nonnull AlertMessageView *)alertMessageView {
+    DDLogVerbose(@"%@ didCloseAlertMessage: %@", LOG_TAG, alertMessageView);
+    
+    [alertMessageView closeAlertView];
+}
+
+- (void)didFinishCloseAlertMessageAnimation:(nonnull AlertMessageView *)alertMessageView {
+    DDLogVerbose(@"%@ didFinishCloseAlertMessageAnimation: %@", LOG_TAG, alertMessageView);
+    
+    [alertMessageView removeFromSuperview];
 }
 
 #pragma mark - Private methods
@@ -444,7 +470,7 @@ static NSInteger SECRET_ALERT_VIEW_TAG = 2;
     self.identityAvatarView.layer.borderWidth = 2;
     self.identityAvatarView.layer.borderColor = Design.WHITE_COLOR.CGColor;
     
-    [self.identityAvatarView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTwincodeTapGesture:)]];
+    [self.identityAvatarView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleProfileTapGesture:)]];
     
     self.twincodeViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     self.twincodeViewWidthConstraint.constant *= Design.WIDTH_RATIO;
@@ -546,6 +572,9 @@ static NSInteger SECRET_ALERT_VIEW_TAG = 2;
     UILongPressGestureRecognizer *longPressGesture = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPressSecretGesture:)];
     [self.secretView addGestureRecognizer:longPressGesture];
     
+    UITapGestureRecognizer *secretTapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSecretTapGesture:)];
+    [self.secretView addGestureRecognizer:secretTapGesture];
+    
     self.secretImageViewLeadingConstraint.constant *= Design.WIDTH_RATIO;
     self.secretImageViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     self.secretImageView.tintColor = Design.UNSELECTED_TAB_COLOR;
@@ -629,21 +658,6 @@ static NSInteger SECRET_ALERT_VIEW_TAG = 2;
     
     self.cleanAccessoryView.tintColor = Design.ACCESSORY_COLOR;
     self.cleanAccessoryView.image = [self.cleanAccessoryView.image imageFlippedForRightToLeftLayoutDirection];
-    
-    self.menuSelectValueView = [[MenuSelectValueView alloc] init];
-    self.menuSelectValueView.hidden = YES;
-    self.menuSelectValueView.menuSelectValueDelegate = self;
-    [self.tabBarController.view addSubview:self.menuSelectValueView];
-    
-    self.overlayView = [UIView new];
-    self.overlayView.frame = CGRectMake(0, 0, Design.DISPLAY_WIDTH, Design.DISPLAY_HEIGHT);
-    self.overlayView.backgroundColor = Design.OVERLAY_COLOR;
-    self.overlayView.hidden = YES;
-    self.overlayView.userInteractionEnabled = YES;
-    [self.tabBarController.view addSubview:self.overlayView];
-    
-    UITapGestureRecognizer *tapOverlayGesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(handleOverlayTapGesture:)];
-    [self.overlayView addGestureRecognizer:tapOverlayGesture];
 }
 
 - (void)finish {
@@ -659,17 +673,10 @@ static NSInteger SECRET_ALERT_VIEW_TAG = 2;
         [CATransaction setCompletionBlock:^{}];
         [self.navigationController popToRootViewControllerAnimated:YES];
         [CATransaction commit];
+        
+        self.navigationController.navigationBarHidden = NO;
     } else {
         [self.navigationController popViewControllerAnimated:YES];
-    }
-}
-
-- (void)handleOverlayTapGesture:(UITapGestureRecognizer *)sender {
-    DDLogVerbose(@"%@ handleOverlayTapGesture: %@", LOG_TAG, sender);
-    
-    if (sender.state == UIGestureRecognizerStateEnded) {
-        self.menuSelectValueView.hidden = YES;
-        self.overlayView.hidden = YES;
     }
 }
 
@@ -677,31 +684,34 @@ static NSInteger SECRET_ALERT_VIEW_TAG = 2;
     DDLogVerbose(@"%@ handleLongPressSecretGesture: %@", LOG_TAG, longPressGesture);
     
     if (longPressGesture.state == UIGestureRecognizerStateBegan) {
-        AlertView *alertView = [[AlertView alloc] initWithTitle:TwinmeLocalizedString(@"settings_space_view_controller_secret_title", nil) message:TwinmeLocalizedString(@"settings_space_view_controller_secret_message", nil) cancelButtonTitle:TwinmeLocalizedString(@"application_ok", nil) otherButtonTitles:nil alertViewDelegate:nil];
-        [alertView showInView:self.tabBarController];
+        AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
+        alertMessageView.alertMessageViewDelegate = self;
+        [alertMessageView initWithTitle:TwinmeLocalizedString(@"settings_space_view_controller_secret_title", nil) message:TwinmeLocalizedString(@"settings_space_view_controller_secret_message", nil)];
+        [self.tabBarController.view addSubview:alertMessageView];
+        [alertMessageView showAlertView];
     }
 }
 
-- (void)closeMenu {
-    DDLogVerbose(@"%@ closeMenu", LOG_TAG);
+- (void)handleSecretTapGesture:(UITapGestureRecognizer *)sender {
+    DDLogVerbose(@"%@ handleSecretTapGesture: %@", LOG_TAG, sender);
     
-    self.overlayView.hidden = YES;
-    self.menuSelectValueView.hidden = YES;
+    if (sender.state == UIGestureRecognizerStateEnded && !self.secretSwitch.isEnabled) {
+        AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
+        alertMessageView.alertMessageViewDelegate = self;
+        [alertMessageView initWithTitle:TwinmeLocalizedString(@"settings_space_view_controller_secret_title", nil) message:TwinmeLocalizedString(@"show_space_view_controller_secret_disabled_message", nil)];
+        [self.tabBarController.view addSubview:alertMessageView];
+        [alertMessageView showAlertView];
+    }
 }
 
 - (void)openMenuSelectValue {
     DDLogVerbose(@"%@ openMenuSelectValue", LOG_TAG);
     
-    self.overlayView.hidden = NO;
-    self.menuSelectValueView.hidden = NO;
-    [self.tabBarController.view bringSubviewToFront:self.overlayView];
-    [self.tabBarController.view bringSubviewToFront:self.menuSelectValueView];
-    
-    CGRect rectMenu = self.menuSelectValueView.frame;
-    rectMenu.origin.y = Design.DISPLAY_HEIGHT;
-    self.menuSelectValueView.frame = rectMenu;
-    
-    [self.menuSelectValueView openMenu];
+    MenuSelectValueView *menuSelectValueView = [[MenuSelectValueView alloc]init];
+    menuSelectValueView.menuSelectValueDelegate = self;
+    [self.tabBarController.view addSubview:menuSelectValueView];
+    [menuSelectValueView setMenuSelectValueTypeWithType:MenuSelectValueTypeEditSpace];
+    [menuSelectValueView openMenu];
 }
 
 - (void)handleTwincodeTapGesture:(UITapGestureRecognizer *)sender {
@@ -709,14 +719,28 @@ static NSInteger SECRET_ALERT_VIEW_TAG = 2;
     
     if (sender.state == UIGestureRecognizerStateEnded) {
         if (self.space.profile) {
-            ShowProfileViewController *showProfileViewController = [[UIStoryboard storyboardWithName:@"iPhone" bundle:nil] instantiateViewControllerWithIdentifier:@"ShowProfileViewController"];
-            [showProfileViewController initWithProfile:self.space.profile];
-            [self.navigationController pushViewController:showProfileViewController animated:YES];
+            AddContactViewController *addContactViewController = [[UIStoryboard storyboardWithName:@"iPhone" bundle:nil] instantiateViewControllerWithIdentifier:@"AddContactViewController"];
+            [addContactViewController initWithProfile:self.space.profile invitationMode:YES];
+            [self.navigationController pushViewController:addContactViewController animated:YES];
         } else {
-            EditProfileViewController *editProfileViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"EditProfileViewController"];
+            EditProfileViewController *editProfileViewController = [[UIStoryboard storyboardWithName:@"iPhone" bundle:nil] instantiateViewControllerWithIdentifier:@"EditProfileViewController"];
             [editProfileViewController initWithSpace:self.space];
             [self.navigationController pushViewController:editProfileViewController animated:YES];
         }
+    }
+}
+
+- (void)handleProfileTapGesture:(UITapGestureRecognizer *)sender {
+    DDLogVerbose(@"%@ handleProfileTapGesture", LOG_TAG);
+    
+    if (self.space.profile) {
+        ShowProfileViewController *showProfileViewController = [[UIStoryboard storyboardWithName:@"iPhone" bundle:nil] instantiateViewControllerWithIdentifier:@"ShowProfileViewController"];
+        [showProfileViewController initWithProfile:self.space.profile];
+        [self.navigationController pushViewController:showProfileViewController animated:YES];
+    } else {
+        EditProfileViewController *editProfileViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"EditProfileViewController"];
+        [editProfileViewController initWithSpace:self.space];
+        [self.navigationController pushViewController:editProfileViewController animated:YES];
     }
 }
 
@@ -729,16 +753,22 @@ static NSInteger SECRET_ALERT_VIEW_TAG = 2;
         MainViewController *mainViewController = delegate.mainViewController;
         
         if (self.space.profile && [mainViewController numberSpaces:YES] <= 1) {
-            AlertView *alertView = [[AlertView alloc] initWithTitle:TwinmeLocalizedString(@"create_space_view_controller_contact_list", nil) message:TwinmeLocalizedString(@"show_space_view_controller_move_message", nil) cancelButtonTitle:TwinmeLocalizedString(@"application_ok", nil) otherButtonTitles:nil alertViewDelegate:nil];
-            [alertView showInView:self.tabBarController];
+            AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
+            alertMessageView.alertMessageViewDelegate = self;
+            [alertMessageView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:TwinmeLocalizedString(@"show_space_view_controller_move_message", nil)];
+            [self.tabBarController.view addSubview:alertMessageView];
+            [alertMessageView showAlertView];
         } else if (self.space.profile) {
             ContactsSpaceViewController *contactsSpaceViewController = [[UIStoryboard storyboardWithName:@"Space" bundle:nil] instantiateViewControllerWithIdentifier:@"ContactsSpaceViewController"];
             [contactsSpaceViewController initWithSpace:self.space];
             [self.navigationController pushViewController:contactsSpaceViewController animated:YES];
         } else {
-            AlertView *alertView = [[AlertView alloc] initWithTitle:TwinmeLocalizedString(@"application_profile", nil) message:TwinmeLocalizedString(@"create_space_view_controller_contacts_no_profile", nil) cancelButtonTitle:TwinmeLocalizedString(@"application_later", nil) otherButtonTitles:TwinmeLocalizedString(@"application_now", nil) alertViewDelegate:self];
-            alertView.view.tag = CREATE_PROFILE_ALERT_VIEW_TAG;
-            [alertView showInView:self.tabBarController];
+            SpaceActionConfirmView *spaceActionConfirmView = [[SpaceActionConfirmView alloc] init];
+            spaceActionConfirmView.confirmViewDelegate = self;
+            spaceActionConfirmView.spaceActionConfirmType = SpaceActionConfirmTypeProfile;
+            [spaceActionConfirmView initWithTitle:TwinmeLocalizedString(@"show_profile_view_controller_create_profile", nil) message:TwinmeLocalizedString(@"create_space_view_controller_contacts_no_profile", nil) spaceName:self.space.settings.name spaceStyle:self.space.settings.style avatar:self.avatar icon:[UIImage imageNamed:@"ActionBarAddContact"] confirmTitle:TwinmeLocalizedString(@"application_now", nil) cancelTitle:TwinmeLocalizedString(@"application_later", nil)];
+            [self.view addSubview:spaceActionConfirmView];
+            [spaceActionConfirmView showConfirmView];
         }
     }
 }
@@ -747,24 +777,9 @@ static NSInteger SECRET_ALERT_VIEW_TAG = 2;
     DDLogVerbose(@"%@ handleConfigurationTapGesture", LOG_TAG);
     
     if (sender.state == UIGestureRecognizerStateEnded) {
-        if (self.space.profile) {
-            SettingsSpaceViewController *settingsSpaceViewController = [[UIStoryboard storyboardWithName:@"Space" bundle:nil] instantiateViewControllerWithIdentifier:@"SettingsSpaceViewController"];
-            [settingsSpaceViewController initWithSpace:self.space];
-            [self.navigationController pushViewController:settingsSpaceViewController animated:YES];
-        } else {
-            [self identityTap];
-        }
-    }
-}
-
-- (void)handleSpaceListTapGesture:(UITapGestureRecognizer *)sender {
-    DDLogVerbose(@"%@ handleSpaceListTapGesture", LOG_TAG);
-    
-    if (sender.state == UIGestureRecognizerStateEnded) {
-        SpacesViewController *spacesViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"SpacesViewController"];
-        spacesViewController.pickerMode = YES;
-        TwinmeNavigationController *navigationController = [[TwinmeNavigationController alloc] initWithRootViewController:spacesViewController];
-        [self.navigationController presentViewController:navigationController animated:YES completion:nil];
+        SettingsSpaceViewController *settingsSpaceViewController = [[UIStoryboard storyboardWithName:@"Space" bundle:nil] instantiateViewControllerWithIdentifier:@"SettingsSpaceViewController"];
+        [settingsSpaceViewController initWithSpace:self.space];
+        [self.navigationController pushViewController:settingsSpaceViewController animated:YES];
     }
 }
 
@@ -775,7 +790,6 @@ static NSInteger SECRET_ALERT_VIEW_TAG = 2;
         if (!self.space.profile) {
             [self editTap];
         } else {
-            [self.menuSelectValueView setMenuSelectValueTypeWithType:MenuSelectValueTypeEditSpace];
             [self openMenuSelectValue];
         }
     }
@@ -785,14 +799,17 @@ static NSInteger SECRET_ALERT_VIEW_TAG = 2;
     DDLogVerbose(@"%@ handleAddContactTapGesture: %@", LOG_TAG, sender);
     
     if (!self.currentSpace.profile) {
-        AddProfileViewController *addProfileViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"AddProfileViewController"];
+        AddProfileViewController *addProfileViewController = [[UIStoryboard storyboardWithName:@"iPhone" bundle:nil] instantiateViewControllerWithIdentifier:@"AddProfileViewController"];
         addProfileViewController.firstProfile = YES;
         [self.navigationController pushViewController:addProfileViewController animated:YES];
     } else if (![self.currentSpace hasPermission:TLSpacePermissionTypeCreateContact]) {
-        AlertView *alertView = [[AlertView alloc] initWithTitle:TwinmeLocalizedString(@"settings_space_view_controller_space_category_title", nil) message:TwinmeLocalizedString(@"spaces_view_controller_permission_not_allowed", nil) cancelButtonTitle:TwinmeLocalizedString(@"application_ok", nil) otherButtonTitles:nil alertViewDelegate:nil];
-        [alertView showInView:self.tabBarController];
+        AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
+        alertMessageView.alertMessageViewDelegate = self;
+        [alertMessageView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:TwinmeLocalizedString(@"spaces_view_controller_permission_not_allowed", nil)];
+        [self.tabBarController.view addSubview:alertMessageView];
+        [alertMessageView showAlertView];
     } else {
-        AddContactViewController *addContactViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"AddContactViewController"];
+        AddContactViewController *addContactViewController = [[UIStoryboard storyboardWithName:@"iPhone" bundle:nil] instantiateViewControllerWithIdentifier:@"AddContactViewController"];
         [addContactViewController initWithProfile:self.currentSpace.profile invitationMode:NO];
         [self.navigationController pushViewController:addContactViewController animated:YES];
     }
@@ -834,24 +851,23 @@ static NSInteger SECRET_ALERT_VIEW_TAG = 2;
         self.actionView.hidden = NO;
         
         self.nameLabel.text = self.space.settings.name;
-        self.descriptionLabel.text = self.space.settings.spaceDescription;
+        self.descriptionLabel.text = self.space.settings.objectDescription;
         
-        self.identityAvatarView.image = [self.showSpaceService getImageWithProfile:self.space.profile];
+        [self.showSpaceService getImageWithProfile:self.space.profile withBlock:^(UIImage *image) {
+            self.identityAvatarView.image = image;
+        }];
         self.identityAvatarView.hidden = NO;
         self.avatarView.backgroundColor = [UIColor clearColor];
         
         if (self.avatar) {
             self.avatarView.image = self.avatar;
+            self.avatarView.backgroundColor = [UIColor clearColor];
         } else if (!self.space.avatarId) {
-            self.avatarView.image = [UIImage imageNamed:@"TwinmeLogo3D"];
-            self.avatarView.backgroundColor = Design.BACKGROUND_SPACE_AVATAR_COLOR;
-        } else {
-            UIImage *image = [self.showSpaceService getImageWithSpace:self.space];
-            self.avatarView.image = image;
+            self.avatarView.image = [UIImage imageNamed:@"SkredLogo3D"];
+            self.avatarView.backgroundColor = Design.MAIN_COLOR;
         }
         
         if (self.space.profile) {
-            self.configurationView.alpha = 1.0;
             self.identityAvatarView.hidden = NO;
             self.nameLabel.hidden = NO;
             self.identityLabel.text = self.space.profile.name;
@@ -862,13 +878,11 @@ static NSInteger SECRET_ALERT_VIEW_TAG = 2;
             self.spaceLabelHeightConstraint.constant = self.nameLabel.font.lineHeight;
             self.spaceLabelTopConstraint.constant = DESIGN_SPACE_LABEL_TOP_MARGIN * Design.HEIGHT_RATIO;
         } else {
-            self.configurationView.alpha = 0.5;
             self.identityAvatarView.hidden = YES;
             self.identityLabel.text = self.space.settings.name;
             self.nameLabel.hidden = YES;
             self.twincodeImageView.image = [UIImage imageNamed:@"ActionBarAddContact"];
-            self.twincodeLabel.text = TwinmeLocalizedString(@"edit_profile_view_controller_add", nil);
-
+            self.twincodeLabel.text = TwinmeLocalizedString(@"profiles_view_controller_add_profile", nil);
             self.identityAvatarViewTopConstraint.constant = -(DESIGN_PROFILE_AVATAR_HEIGHT * Design.HEIGHT_RATIO);
             self.identityNameViewTopConstraint.constant = DESIGN_HEADER_VIEW_NO_PROFILE_TOP_MARGIN * Design.HEIGHT_RATIO;
             self.spaceLabelHeightConstraint.constant = 0;
@@ -887,7 +901,6 @@ static NSInteger SECRET_ALERT_VIEW_TAG = 2;
         [self.secretSwitch setOn:self.space.settings.isSecret];
         [self.secretSwitch setConfirm:!self.space.settings.isSecret];
         
-        
         if (([mainViewController numberSpaces:NO] > 1 && !self.space.settings.isSecret) || self.space.settings.isSecret) {
             [self.secretSwitch setEnabled:YES];
             self.secretView.alpha = 1.0;
@@ -901,7 +914,7 @@ static NSInteger SECRET_ALERT_VIEW_TAG = 2;
         self.avatarView.hidden = YES;
         self.actionView.hidden = YES;
         
-        [self setLeftBarButtonItem:[self.showSpaceService getImageWithProfile:self.space.profile]];
+        [self setLeftBarButtonItem:self.showSpaceService profile:self.space.profile];
     }
 }
 
@@ -950,6 +963,13 @@ static NSInteger SECRET_ALERT_VIEW_TAG = 2;
     self.cleanLabel.textColor = Design.FONT_COLOR_DEFAULT;
     self.nameLabel.textColor = DESIGN_SPACE_NAME_COLOR;
     self.identityLabel.textColor = Design.FONT_COLOR_DEFAULT;
+    self.twincodeView.backgroundColor = Design.MAIN_COLOR;
+    
+    if (self.avatar || self.space.avatarId) {
+        self.avatarView.backgroundColor = [UIColor clearColor];
+    } else {
+        self.avatarView.backgroundColor = Design.MAIN_COLOR;
+    }
 }
 
 - (void)updateCurrentSpace {

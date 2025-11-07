@@ -24,10 +24,10 @@
                         <nil key="textColor"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="251" text=".new" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="swg-88-5r9">
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="251" text=".new" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="aCK-zj-cjA">
                         <rect key="frame" x="87" y="110" width="65" height="50"/>
                         <constraints>
-                            <constraint firstAttribute="height" constant="50" id="GhN-pr-cm1"/>
+                            <constraint firstAttribute="height" constant="50" id="1So-B3-FJO"/>
                         </constraints>
                         <fontDescription key="fontDescription" type="system" pointSize="32"/>
                         <color key="textColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -43,13 +43,13 @@
                 </subviews>
                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                 <constraints>
-                    <constraint firstItem="swg-88-5r9" firstAttribute="bottom" secondItem="QIa-BO-jU0" secondAttribute="bottom" id="0IX-5X-Jhb"/>
                     <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="QIa-BO-jU0" secondAttribute="trailing" constant="34" id="0p0-7q-H0L"/>
                     <constraint firstItem="QIa-BO-jU0" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="34" id="2Mx-Gj-KSn"/>
+                    <constraint firstItem="aCK-zj-cjA" firstAttribute="bottom" secondItem="QIa-BO-jU0" secondAttribute="bottom" id="3Oz-hR-u5R"/>
                     <constraint firstAttribute="bottom" secondItem="vtr-xo-t0x" secondAttribute="bottom" id="FJR-O2-9qm"/>
                     <constraint firstAttribute="bottom" secondItem="QIa-BO-jU0" secondAttribute="bottom" constant="14" id="KJh-MO-WXE"/>
+                    <constraint firstItem="aCK-zj-cjA" firstAttribute="leading" secondItem="QIa-BO-jU0" secondAttribute="trailing" constant="12" id="W2b-bo-ROE"/>
                     <constraint firstItem="vtr-xo-t0x" firstAttribute="width" secondItem="H2p-sc-9uM" secondAttribute="width" id="ray-Dc-Srd"/>
-                    <constraint firstItem="swg-88-5r9" firstAttribute="leading" secondItem="QIa-BO-jU0" secondAttribute="trailing" constant="12" id="vew-f0-IO1"/>
                     <constraint firstItem="vtr-xo-t0x" firstAttribute="centerX" secondItem="H2p-sc-9uM" secondAttribute="centerX" id="xPA-9h-Ar1"/>
                 </constraints>
             </tableViewCellContentView>
@@ -58,9 +58,9 @@
             <connections>
                 <outlet property="separatorView" destination="vtr-xo-t0x" id="WH6-tb-Vki"/>
                 <outlet property="separatorViewHeightConstraint" destination="Ty1-E6-L9I" id="3bI-Lr-gFg"/>
-                <outlet property="settingsNewLabel" destination="swg-88-5r9" id="b0T-oo-Pzu"/>
-                <outlet property="settingsNewLabelHeightConstraint" destination="GhN-pr-cm1" id="Z62-lA-url"/>
-                <outlet property="settingsNewLabelLeadingConstraint" destination="vew-f0-IO1" id="eS0-OB-PwK"/>
+                <outlet property="settingsNewLabel" destination="aCK-zj-cjA" id="CpB-uR-2Hb"/>
+                <outlet property="settingsNewLabelHeightConstraint" destination="1So-B3-FJO" id="JTz-DU-b9W"/>
+                <outlet property="settingsNewLabelLeadingConstraint" destination="W2b-bo-ROE" id="r9m-O5-4aM"/>
                 <outlet property="title" destination="QIa-BO-jU0" id="XCE-70-X7m"/>
                 <outlet property="titleBottomConstraint" destination="KJh-MO-WXE" id="ThL-6K-7x1"/>
                 <outlet property="titleLeadingConstraint" destination="2Mx-Gj-KSn" id="Ylu-wz-kCf"/>

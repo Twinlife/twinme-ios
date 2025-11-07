@@ -1,5 +1,9 @@
-NSAppleMusicUsageDescription = "para transmitir música";
+NSAppleMusicUsageDescription = "para ligar à sua música da Apple";
 NSCameraUsageDescription = "para tirar fotos e fazer chamadas de vídeo";
-NSMicrophoneUsageDescription = "para fazer chamadas de voz e vídeo";
+NSContactsUsageDescription = "Precisamos de aceder à sua lista de contactos para poder convidar pessoas para o acompanhar.";
+NSFaceIDUsageDescription = "para autenticar e desbloquear o acesso ao aplicativo";
+NSLocationAlwaysAndWhenInUseUsage = "para partilhar a sua localização em tempo real durante uma chamada";
+NSLocationWhenInUseUsageDescription = "para partilhar a sua localização numa conversa";
+NSMicrophoneUsageDescription = "para fazer chamadas de áudio e vídeo";
 NSPhotoLibraryUsageDescription = "para imagens de perfil e enviar mensagens de chat";
 NSPhotoLibraryAddUsageDescription = "Para guardar fotografias e vídeos trocados em conversas, bem como QR-codes de convite, no álbum de fotografias do dispositivo.";

@@ -12,8 +12,10 @@
 // Interface: PreviewAppearanceCell
 //
 
+@class CustomAppearance;
+
 @interface PreviewAppearanceCell : UITableViewCell
 
-- (void)bind;
+- (void)bindWithAppearance:(CustomAppearance *)customAppearance conversationBackgroundImage:(UIImage *)backgroundImage;
 
 @end

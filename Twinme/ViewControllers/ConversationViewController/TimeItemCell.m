@@ -21,6 +21,8 @@
 
 #import "DashedLine.h"
 
+#import "CustomAppearance.h"
+
 #if 0
 static const int ddLogLevel = DDLogLevelVerbose;
 #else
@@ -88,6 +90,8 @@ static const CGFloat DESIGN_TIME_CELL_MARGIN1 = 61;
     
     self.item = item;
     
+    [self.messageLabel setTextColor:[[conversationViewController getCustomAppearance] getConversationBackgroundText]];
+    
     TimeItem *timeItem = (TimeItem *)item;
     self.messageLabel.text = [NSString formatItemTimeInterval:timeItem.timestamp / 1000];
     
@@ -97,6 +101,8 @@ static const CGFloat DESIGN_TIME_CELL_MARGIN1 = 61;
     } else {
         self.overlayView.hidden = YES;
     }
+    
+    [self setNeedsDisplay];
 }
 
 - (UILabel *)messageLabel {

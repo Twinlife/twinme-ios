@@ -8,6 +8,10 @@
 
 #import "UIActionConversation.h"
 
+#import <Twinme/TLTwinmeContext.h>
+#import <Twinme/TLSpace.h>
+#import <Twinme/TLSpaceSettings.h>
+
 #import <Utils/NSString+Utils.h>
 #import <TwinmeCommon/Design.h>
 
@@ -20,12 +24,13 @@
 
 @implementation UIActionConversation
 
-- (nonnull instancetype)initWithConversationActionType:(ConversationActionType)conversationActionType {
+- (nonnull instancetype)initWithConversationActionType:(ConversationActionType)conversationActionType spaceSettings:(nullable TLSpaceSettings *)spaceSettings {
     
     self = [super init];
     
     if (self) {
         _conversationActionType = conversationActionType;
+        _spaceSettings = spaceSettings;
         [self initAction];
     }
     return self;
@@ -36,7 +41,7 @@
     ApplicationDelegate *delegate = (ApplicationDelegate *)[[UIApplication sharedApplication] delegate];
     TwinmeApplication *twinmeApplication = [delegate twinmeApplication];
      
-    BOOL darkMode = [twinmeApplication darkModeEnable];
+    BOOL darkMode = [twinmeApplication darkModeEnable:self.spaceSettings];
     
     switch (self.conversationActionType) {
         case ConversationActionTypeCamera:
@@ -61,6 +66,12 @@
             self.title = TwinmeLocalizedString(@"conversation_view_controller_manage_conversation", nil);
             self.icon = [UIImage imageNamed:@"SettingsIcon"];
             self.iconColor = darkMode ? [UIColor colorWithRed:230./255. green:230./255. blue:230./255. alpha:1] : [UIColor colorWithRed:110./255. green:110./255. blue:110./255. alpha:1];
+            break;
+            
+        case ConversationActionTypeLocation:
+            self.title = TwinmeLocalizedString(@"call_view_controller_location_share", nil).capitalizedString;
+            self.icon = [UIImage imageNamed:@"ToolbarLocationGrey"];
+            self.iconColor = [UIColor colorWithRed:210./255. green:218./255. blue:119./255. alpha:1];
             break;
             
         case ConversationActionTypeMediasAndFiles:

@@ -15,6 +15,8 @@
 #import <Twinme/TLSpace.h>
 
 #import "CleanUpViewController.h"
+#import "InAppSubscriptionViewController.h"
+#import <TwinmeCommon/TwinmeNavigationController.h>
 #import "MessageSettingsViewController.h"
 
 #import "SettingsInformationCell.h"
@@ -27,6 +29,8 @@
 #import "SettingsValueItemCell.h"
 #import "MenuCleanUpExpirationView.h"
 #import "PremiumFeatureConfirmView.h"
+#import "DeleteConfirmView.h"
+#import "DeleteSpaceConfirmView.h"
 #import "SwitchView.h"
 
 #import <TwinmeCommon/CleanUpService.h>
@@ -156,10 +160,9 @@ static NSString *SETTINGS_ITEM_CELL_IDENTIFIER = @"SettingsCellIdentifier";
     self.cleanUpService = [[CleanUpService alloc] initWithTwinmeContext:self.twinmeContext delegate:self space:space contact:nil group:nil];
 }
 
-- (void)initCleanUpWithCurrentSpace {
-    DDLogVerbose(@"%@ initCleanUpWithCurrentSpace", LOG_TAG);
+- (void)initCleanUpApplication {
+    DDLogVerbose(@"%@ initCleanUpApplication", LOG_TAG);
     
-    self.space = self.currentSpace;
     self.cleanUpService = [[CleanUpService alloc] initWithTwinmeContext:self.twinmeContext delegate:self space:nil contact:nil group:nil];
 }
 
@@ -439,11 +442,34 @@ static NSString *SETTINGS_ITEM_CELL_IDENTIFIER = @"SettingsCellIdentifier";
     if (exportActionType == ExportActionTypeCancel) {
         [self finish];
     } else if ([self canCleanup]) {
-        PremiumFeatureConfirmView *premiumFeatureConfirmView = [[PremiumFeatureConfirmView alloc] init];
-        premiumFeatureConfirmView.confirmViewDelegate = self;
-        [premiumFeatureConfirmView initWithPremiumFeature:[[UIPremiumFeature alloc]initWithFeatureType:FeatureTypeConversation] parentViewController:self.tabBarController];
-        [self.tabBarController.view addSubview:premiumFeatureConfirmView];
-        [premiumFeatureConfirmView showConfirmView];
+        ApplicationDelegate *delegate = (ApplicationDelegate *)[[UIApplication sharedApplication] delegate];
+        if ([delegate.twinmeApplication isSubscribedWithFeature:TLTwinmeApplicationFeatureGroupCall]) {
+            if (self.contact) {
+                [self.cleanUpService getImageWithContact:self.contact withBlock:^(UIImage *image) {
+                    [self openDeleteConfirmView:image];
+                }];
+            } else if (self.group) {
+                [self.cleanUpService getImageWithGroup:self.group withBlock:^(UIImage *image) {
+                    [self openDeleteConfirmView:image];
+                }];
+            } else if (self.space) {
+                if (self.space.avatarId) {
+                    [self.cleanUpService getImageWithSpace:self.space withBlock:^(UIImage *image) {
+                        [self openDeleteConfirmView:image];
+                    }];
+                } else {
+                    [self openDeleteConfirmView:nil];
+                }
+            } else {
+                [self openDeleteConfirmView:nil];
+            }
+        } else {
+            PremiumFeatureConfirmView *premiumFeatureConfirmView = [[PremiumFeatureConfirmView alloc] init];
+            premiumFeatureConfirmView.confirmViewDelegate = self;
+            [premiumFeatureConfirmView initWithPremiumFeature:[[UIPremiumFeature alloc]initWithFeatureType:FeatureTypeConversation spaceSettings:[self currentSpaceSettings]] parentViewController:self.tabBarController];
+            [self.tabBarController.view addSubview:premiumFeatureConfirmView];
+            [premiumFeatureConfirmView showConfirmView];
+        }
     }
 }
 
@@ -472,8 +498,27 @@ static NSString *SETTINGS_ITEM_CELL_IDENTIFIER = @"SettingsCellIdentifier";
 - (void)didTapConfirm:(nonnull AbstractConfirmView *)abstractConfirmView {
     DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractConfirmView);
     
-    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:TwinmeLocalizedString(@"twinme_plus_link", nil)] options:@{} completionHandler:nil];
-
+    if ([abstractConfirmView isKindOfClass:[PremiumFeatureConfirmView class]]) {
+        InAppSubscriptionViewController *inAppSubscriptionViewController = [[UIStoryboard storyboardWithName:@"iPhone" bundle:nil] instantiateViewControllerWithIdentifier:@"InAppSubscriptionViewController"];
+        TwinmeNavigationController *navigationController = [[TwinmeNavigationController alloc]initWithRootViewController:inAppSubscriptionViewController];
+        [self.navigationController presentViewController:navigationController animated:YES completion:nil];
+    } else {
+        UIExport *allContent = [self.contents lastObject];
+        if (allContent.checked) {
+            if (self.cleanUpType == CleanUpTypeLocal) {
+                [self.cleanUpService startCleanUpFrom:[self.cleanUpExpiration clearDate] clearMode:TLConversationServiceClearLocal];
+            } else {
+                [self.cleanUpService startCleanUpFrom:[self.cleanUpExpiration clearDate] clearMode:TLConversationServiceClearBoth];
+            }
+        } else {
+            if (self.cleanUpType == CleanUpTypeLocal) {
+                [self.cleanUpService startCleanUpFrom:[self.cleanUpExpiration clearDate] clearMode:TLConversationServiceClearMedia];
+            } else {
+                [self.cleanUpService startCleanUpFrom:[self.cleanUpExpiration clearDate] clearMode:TLConversationServiceClearBothMedia];
+            }
+        }
+    }
+    
     [abstractConfirmView closeConfirmView];
 }
 
@@ -640,6 +685,30 @@ static NSString *SETTINGS_ITEM_CELL_IDENTIFIER = @"SettingsCellIdentifier";
     }
     
     [self.navigationController popViewControllerAnimated:YES];
+}
+
+- (void)openDeleteConfirmView:(UIImage *)avatar {
+    DDLogVerbose(@"%@ openDeleteConfirmView", LOG_TAG);
+    
+    if (self.space) {
+        DeleteSpaceConfirmView *deleteConfirmView = [[DeleteSpaceConfirmView alloc] init];
+        deleteConfirmView.confirmViewDelegate = self;
+        [deleteConfirmView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:TwinmeLocalizedString(@"cleanup_view_controller_delete_confirmation_message", nil) spaceName:self.space.settings.name spaceStyle:self.space.settings.style avatar:avatar icon:[UIImage imageNamed:@"ActionBarDelete"]];
+        [self.tabBarController.view addSubview:deleteConfirmView];
+        [deleteConfirmView showConfirmView];
+    } else {
+        DeleteConfirmView *deleteConfirmView = [[DeleteConfirmView alloc] init];
+        deleteConfirmView.confirmViewDelegate = self;
+        deleteConfirmView.deleteConfirmType = DeleteConfirmTypeFile;
+        [deleteConfirmView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:TwinmeLocalizedString(@"cleanup_view_controller_delete_confirmation_message", nil) avatar:avatar icon:[UIImage imageNamed:@"ActionBarDelete"]];
+        
+        if (!avatar) {
+            [deleteConfirmView hideAvatar];
+        }
+       
+        [self.tabBarController.view addSubview:deleteConfirmView];
+        [deleteConfirmView showConfirmView];
+    }
 }
 
 - (BOOL)isInformationPath:(NSIndexPath *)indexPath {

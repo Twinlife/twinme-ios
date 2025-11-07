@@ -31,6 +31,7 @@
 #import "DeleteConfirmView.h"
 #import "NotificationCell.h"
 #import "UINotification.h"
+#import "SpaceSetting.h"
 #import "UIView+Toast.h"
 
 #import "ConversationViewController.h"
@@ -152,7 +153,9 @@ static NSString *NOTIFICATION_CELL_IDENTIFIER = @"NotificationCellIdentifier";
         [self.notificationService getNotifications];
     }
     
-    [self setLeftBarButtonItem:self.notificationService profile:self.defaultProfile];
+    [self setLeftBarButtonItem:self.notificationService profile:self.currentSpace.profile];
+    
+    [self updateCurrentSpace];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -189,13 +192,35 @@ static NSString *NOTIFICATION_CELL_IDENTIFIER = @"NotificationCellIdentifier";
 - (void)onSetCurrentSpace:(nonnull TLSpace *)space {
     DDLogVerbose(@"%@ onSetCurrentSpace: %@", LOG_TAG, space);
     
+    TLSpaceSettings *spaceSettings = space.settings;
+    if ([space.settings getBooleanWithName:PROPERTY_DEFAULT_APPEARANCE_SETTINGS defaultValue:YES]) {
+        spaceSettings = self.twinmeContext.defaultSpaceSettings;
+    }
+    
+    if (![Design.MAIN_STYLE isEqualToString:spaceSettings.style]) {
+        [Design setMainColor:spaceSettings.style];
+    }
+
     [self setLeftBarButtonItem:self.notificationService profile:space.profile];
+
+    TwinmeNavigationController *navigationController = (TwinmeNavigationController *)self.navigationController;
+    [navigationController setNavigationBarStyle];
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self.tableView scrollsToTop];
+    });
+    
+    [self updateCurrentSpace];
+    [self.notificationService getNotifications];
 }
 
 - (void)onUpdateSpace:(TLSpace *)space {
     DDLogVerbose(@"%@ onUpdateSpace: %@", LOG_TAG, space);
     
     [self setLeftBarButtonItem:self.notificationService profile:space.profile];
+    
+    TwinmeNavigationController *navigationController = (TwinmeNavigationController *) self.navigationController;
+    [navigationController setNavigationBarStyle];
 }
 
 - (void)onGetNotifications:(NSArray *)notifications {
@@ -536,6 +561,7 @@ static NSString *NOTIFICATION_CELL_IDENTIFIER = @"NotificationCellIdentifier";
         case TLNotificationTypeNewAudioMessage:
         case TLNotificationTypeNewVideoMessage:
         case TLNotificationTypeNewFileMessage:
+        case TLNotificationTypeNewGeolocation:
         case TLNotificationTypeUpdatedAnnotation:
         case TLNotificationTypeResetConversation: {
             if ([subject isKindOfClass:[TLGroup class]]) {
@@ -778,6 +804,12 @@ static NSString *NOTIFICATION_CELL_IDENTIFIER = @"NotificationCellIdentifier";
             [self.tableView reloadData];
         });
     }
+}
+
+- (void)updateCurrentSpace {
+    DDLogVerbose(@"%@ updateCurrentSpace", LOG_TAG);
+    
+    [self setLeftBarButtonItem:self.notificationService profile:self.currentSpace.profile];
 }
 
 @end

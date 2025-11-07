@@ -270,9 +270,10 @@ static CGFloat TEXT_MARGIN = 44;
     DDLogVerbose(@"%@ initQualityOfServices", LOG_TAG);
     
     self.uiQualities = [[NSMutableArray alloc]init];
-    [self.uiQualities addObject:[[UIQuality alloc]initWithQualityOfServicesPart:QualityOfServicesPartOne]];
-    [self.uiQualities addObject:[[UIQuality alloc]initWithQualityOfServicesPart:QualityOfServicesPartTwo]];
-    [self.uiQualities addObject:[[UIQuality alloc]initWithQualityOfServicesPart:QualityOfServicesPartThree]];
+
+    [self.uiQualities addObject:[[UIQuality alloc]initWithQualityOfServicesPart:QualityOfServicesPartOne spaceSettings:[self currentSpaceSettings]]];
+    [self.uiQualities addObject:[[UIQuality alloc]initWithQualityOfServicesPart:QualityOfServicesPartTwo spaceSettings:[self currentSpaceSettings]]];
+    [self.uiQualities addObject:[[UIQuality alloc]initWithQualityOfServicesPart:QualityOfServicesPartThree spaceSettings:[self currentSpaceSettings]]];
     
     CGFloat titleWidth = Design.DISPLAY_WIDTH - (self.titleLabelLeadingConstraint.constant * 2);
     CGRect titleRect = [self.titleLabel.text boundingRectWithSize:CGSizeMake(titleWidth, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin|NSStringDrawingUsesFontLeading attributes:@{

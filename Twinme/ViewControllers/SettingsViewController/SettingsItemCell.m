@@ -111,6 +111,12 @@ static const int ddLogLevel = DDLogLevelWarning;
     [self.choiceSwitch setOn:switchState];
     [self.choiceSwitch setEnabled:!disableSwitch];
     
+    if (disableSwitch) {
+        self.title.alpha = 0.5f;
+    } else {
+        self.title.alpha = 1.f;
+    }
+    
     self.separatorView.hidden = hiddenSeparator;
     
     if (icon) {

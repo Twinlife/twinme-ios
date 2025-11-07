@@ -17,6 +17,7 @@
 #import <Twinme/TLContact.h>
 #import <Twinme/TLProfile.h>
 #import <Twinme/TLSchedule.h>
+#import <Twinme/TLSpace.h>
 
 #import <Utils/NSString+Utils.h>
 
@@ -31,7 +32,7 @@
 #import "EditContactViewController.h"
 #import "EditIdentityViewController.h"
 #import "ConversationViewController.h"
-
+#import "SpacesViewController.h"
 #import "LastCallsViewController.h"
 #import "ContactCapabilitiesViewController.h"
 #import "CoachMarkViewController.h"
@@ -46,7 +47,13 @@
 #import "OnboardingConfirmView.h"
 #import "SlideContactView.h"
 #import "MenuCertifyView.h"
+#import "UIColor+Hex.h"
 #import "UIView+Toast.h"
+
+#import <TwinmeCommon/CoachMark.h>
+#import <TwinmeCommon/Design.h>
+#import <TwinmeCommon/CallViewController.h>
+#import <TwinmeCommon/TwinmeNavigationController.h>
 
 #if 0
 static const int ddLogLevel = DDLogLevelVerbose;
@@ -138,6 +145,18 @@ static CGFloat DESIGN_NAME_DEFAULT_WIDTH = 420;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *lastCallAccessoryViewTrailingConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *lastCallAccessoryViewHeightConstraint;
 @property (weak, nonatomic) IBOutlet UIImageView *lastCallAccessoryView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *spaceViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet InsideBorderView *spaceView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *spaceImageViewLeadingConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *spaceImageViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet UIImageView *spaceImageView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *spaceAvatarViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *spaceAvatarViewTrailingConstraint;
+@property (weak, nonatomic) IBOutlet UIImageView *spaceAvatarView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *spaceLabelLeadingConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *spaceLabelTrailingConstraint;
+@property (weak, nonatomic) IBOutlet UILabel *spaceLabel;
+@property (weak, nonatomic) IBOutlet UILabel *spaceAvatarLabel;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *conversationsTitleLabelLeadingConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *conversationsTitleLabelTrailingConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *conversationsTitleLabelTopConstraint;
@@ -258,8 +277,12 @@ static CGFloat DESIGN_NAME_DEFAULT_WIDTH = 420;
     
     if ([self.contact hasPrivateIdentity]) {
         self.identityName = self.contact.identityName;
+        [self.showContactService getIdentityImageWithContact:contact withBlock:^(UIImage *image) {
+            self.identityAvatar = image;
+        }];
     } else {
         self.identityName = nil;
+        self.identityAvatar = [TLContact ANONYMOUS_AVATAR];
     }
     
     if (self.contact.objectDescription.length > 0) {
@@ -267,6 +290,8 @@ static CGFloat DESIGN_NAME_DEFAULT_WIDTH = 420;
     } else {
         self.contactDescription = self.contact.peerDescription;
     }
+    
+    [self checkSpacePermission];
 }
 
 - (void)editTap {
@@ -284,10 +309,18 @@ static CGFloat DESIGN_NAME_DEFAULT_WIDTH = 420;
     DDLogVerbose(@"%@ identityTap", LOG_TAG);
     
     if ([self.contact hasPrivatePeer]) {
-        self.navigationController.navigationBarHidden = NO;
-        EditIdentityViewController *editIdentityViewController = (EditIdentityViewController *)[[UIStoryboard storyboardWithName:@"iPhone" bundle:nil] instantiateViewControllerWithIdentifier:@"EditIdentityViewController"];
-        [editIdentityViewController initWithContact:self.contact];
-        [self.navigationController pushViewController:editIdentityViewController animated:YES];
+        if (![self.contact.space hasPermission:TLSpacePermissionTypeUpdateIdentity]) {
+            AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
+            alertMessageView.alertMessageViewDelegate = self;
+            [alertMessageView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:TwinmeLocalizedString(@"spaces_view_controller_permission_not_allowed", nil)];
+            [self.view addSubview:alertMessageView];
+            [alertMessageView showAlertView];
+        } else {
+            self.navigationController.navigationBarHidden = NO;
+            EditIdentityViewController *editIdentityViewController = (EditIdentityViewController *)[[UIStoryboard storyboardWithName:@"iPhone" bundle:nil] instantiateViewControllerWithIdentifier:@"EditIdentityViewController"];
+            [editIdentityViewController initWithContact:self.contact];
+            [self.navigationController pushViewController:editIdentityViewController animated:YES];
+        }
     } else {
         dispatch_async(dispatch_get_main_queue(), ^{
             [[UIApplication sharedApplication].keyWindow makeToast:TwinmeLocalizedString(@"show_contact_view_controller_pending_message",nil)];
@@ -338,8 +371,12 @@ static CGFloat DESIGN_NAME_DEFAULT_WIDTH = 420;
         }
         if ([self.contact hasPrivateIdentity]) {
             self.identityName = self.contact.identityName;
+            [self.showContactService getIdentityImageWithContact:contact withBlock:^(UIImage *image) {
+                self.identityAvatar = image;
+            }];
         } else {
             self.identityName = nil;
+            self.identityAvatar = [TLContact ANONYMOUS_AVATAR];
         }
         
         if (self.contact.objectDescription.length > 0) {
@@ -356,6 +393,7 @@ static CGFloat DESIGN_NAME_DEFAULT_WIDTH = 420;
     }
     
     [self updateContact];
+    [self checkSpacePermission];
 }
 
 - (void)onDeleteContact:(NSUUID *)contactId {
@@ -442,7 +480,7 @@ static CGFloat DESIGN_NAME_DEFAULT_WIDTH = 420;
         OnboardingConfirmView *onboardingConfirmView = [[OnboardingConfirmView alloc] init];
         onboardingConfirmView.confirmViewDelegate = self;
         onboardingConfirmView.tag = OnboardingTypeCertifiedRelation;
-        UIImage *image = [self.twinmeApplication darkModeEnable] ? [UIImage imageNamed:@"OnboardingAuthentifiedRelationDark"] : [UIImage imageNamed:@"OnboardingAuthentifiedRelation"];
+        UIImage *image = [self.twinmeApplication darkModeEnable:[self currentSpaceSettings]] ? [UIImage imageNamed:@"OnboardingAuthentifiedRelationDark"] : [UIImage imageNamed:@"OnboardingAuthentifiedRelation"];
         NSString *message = [NSString stringWithFormat:@"%@\n\n%@", TwinmeLocalizedString(@"authentified_relation_view_controller_onboarding_message", nil), TwinmeLocalizedString(@"call_view_controller_certify_onboarding_message", nil)];
         
         NSMutableAttributedString *attributedTitle = [[NSMutableAttributedString alloc] initWithString:TwinmeLocalizedString(@"authentified_relation_view_controller_to_be_certified_title", nil) attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_BOLD36, NSFontAttributeName, Design.FONT_COLOR_DEFAULT, NSForegroundColorAttributeName, nil]];
@@ -679,6 +717,49 @@ static CGFloat DESIGN_NAME_DEFAULT_WIDTH = 420;
     self.lastCallLabel.font = Design.FONT_REGULAR34;
     self.lastCallLabel.textColor = Design.FONT_COLOR_DEFAULT;
     
+    self.spaceViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    UITapGestureRecognizer *spaceViewGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSpaceTapGesture:)];
+    [self.spaceView addGestureRecognizer:spaceViewGestureRecognizer];
+    
+    [self.spaceView setBorder:Design.SEPARATOR_COLOR_GREY borderWidth:Design.SEPARATOR_HEIGHT width:Design.DISPLAY_WIDTH height:self.spaceViewHeightConstraint.constant left:false right:false top:false bottom:true];
+    
+    self.spaceImageViewLeadingConstraint.constant *= Design.WIDTH_RATIO;
+    self.spaceImageViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    
+    self.spaceImageView.tintColor = Design.UNSELECTED_TAB_COLOR;
+    
+    self.spaceAvatarLabel.font = Design.FONT_BOLD44;
+    self.spaceAvatarLabel.textColor = [UIColor whiteColor];
+    self.spaceAvatarLabel.hidden = YES;
+    
+    NSString *nameSpace = @"";
+    NSString *nameProfile = @"";
+    if (self.contact.space.settings.name) {
+        nameSpace = self.contact.space.settings.name;
+    }
+    if (self.contact.space.profile.name) {
+        nameProfile = self.contact.space.profile.name;
+    }
+    
+    self.spaceLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
+    self.spaceLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
+    
+    NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:@""];
+    [attributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:nameSpace attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_MEDIUM34, NSFontAttributeName, Design.FONT_COLOR_DEFAULT, NSForegroundColorAttributeName, nil]]];
+    [attributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:@"\n"]];
+    [attributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:nameProfile attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_MEDIUM32, NSFontAttributeName, Design.FONT_COLOR_PROFILE_GREY, NSForegroundColorAttributeName, nil]]];
+    self.spaceLabel.attributedText = attributedString;
+    
+    self.spaceAvatarViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    self.spaceAvatarViewTrailingConstraint.constant *= Design.WIDTH_RATIO;
+    
+    self.spaceAvatarView.clipsToBounds = YES;
+    self.spaceAvatarView.layer.cornerRadius = Design.SPACE_RADIUS_RATIO * self.spaceAvatarViewHeightConstraint.constant;
+    
+    [self getImageWithService:self.showContactService space:self.contact.space withBlock:^(UIImage *image) {
+        self.spaceAvatarView.image = image;
+    }];
+    
     self.conversationsTitleLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
     self.conversationsTitleLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
     self.conversationsTitleLabelTopConstraint.constant *= Design.HEIGHT_RATIO;
@@ -806,6 +887,27 @@ static CGFloat DESIGN_NAME_DEFAULT_WIDTH = 420;
     
     self.navigationController.navigationBarHidden = NO;
     [self.navigationController popViewControllerAnimated:YES];
+}
+
+- (void)handleSpaceTapGesture:(UITapGestureRecognizer *)sender {
+    DDLogVerbose(@"%@ handleSpaceTapGesture: %@", LOG_TAG, sender);
+    
+    if (sender.state == UIGestureRecognizerStateEnded) {
+        if (![self.contact.space hasPermission:TLSpacePermissionTypeMoveContact]) {
+            AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
+            alertMessageView.alertMessageViewDelegate = self;
+            [alertMessageView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:TwinmeLocalizedString(@"spaces_view_controller_permission_not_allowed", nil)];
+            [self.view addSubview:alertMessageView];
+            [alertMessageView showAlertView];
+        } else {
+            SpacesViewController *spacesViewController = [[UIStoryboard storyboardWithName:@"Space" bundle:nil] instantiateViewControllerWithIdentifier:@"SpacesViewController"];
+            [spacesViewController initWithContact:self.contact];
+            spacesViewController.pickerMode = YES;
+            TwinmeNavigationController *navigationController = [[TwinmeNavigationController alloc] initWithRootViewController:spacesViewController];
+            [self.navigationController presentViewController:navigationController animated:YES completion:nil];
+            self.startModal = YES;
+        }
+    }
 }
 
 - (void)handleChatTapGesture:(UITapGestureRecognizer *)sender {
@@ -1082,6 +1184,37 @@ static CGFloat DESIGN_NAME_DEFAULT_WIDTH = 420;
     }
     
     self.identityLabel.text = self.identityName;
+
+    if (self.contact.space.avatarId) {
+        [self.showContactService getImageWithSpace:self.contact.space withBlock:^(UIImage *image) {
+            self.spaceAvatarView.image = image;
+            self.spaceAvatarLabel.hidden = YES;
+        }];
+    } else {
+        self.spaceAvatarView.image = nil;
+        self.spaceAvatarLabel.hidden = NO;
+        if (self.contact.space.settings.style) {
+            self.spaceAvatarView.backgroundColor = [UIColor colorWithHexString:self.contact.space.settings.style alpha:1.0];
+        } else {
+            self.spaceAvatarView.backgroundColor = Design.MAIN_COLOR;
+        }
+        self.spaceAvatarLabel.text = [NSString firstCharacter:self.contact.space.settings.name];
+    }
+    
+    NSString *nameSpace = @"";
+    NSString *nameProfile = @"";
+    if (self.contact.space.settings.name) {
+        nameSpace = self.contact.space.settings.name;
+    }
+    if (self.contact.space.profile.name) {
+        nameProfile = self.contact.space.profile.name;
+    }
+    
+    NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:@""];
+    [attributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:nameSpace attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_MEDIUM34, NSFontAttributeName, Design.FONT_COLOR_DEFAULT, NSForegroundColorAttributeName, nil]]];
+    [attributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:@"\n"]];
+    [attributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:nameProfile attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_MEDIUM32, NSFontAttributeName, Design.FONT_COLOR_PROFILE_GREY, NSForegroundColorAttributeName, nil]]];
+    self.spaceLabel.attributedText = attributedString;
     [self.showContactService getIdentityImageWithContact:self.contact withBlock:^(UIImage *image) {
         self.identityAvatarView.image = image;
     }];
@@ -1166,6 +1299,22 @@ static CGFloat DESIGN_NAME_DEFAULT_WIDTH = 420;
     self.filesLabel.font = Design.FONT_REGULAR34;
     self.exportLabel.font = Design.FONT_REGULAR34;
     self.cleanLabel.font = Design.FONT_REGULAR34;
+    self.spaceAvatarLabel.font = Design.FONT_BOLD44;
+    
+    NSString *nameSpace = @"";
+    NSString *nameProfile = @"";
+    if (self.contact.space.settings.name) {
+        nameSpace = self.contact.space.settings.name;
+    }
+    if (self.contact.space.profile.name) {
+        nameProfile = self.contact.space.profile.name;
+    }
+    
+    NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:@""];
+    [attributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:nameSpace attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_MEDIUM34, NSFontAttributeName, Design.FONT_COLOR_DEFAULT, NSForegroundColorAttributeName, nil]]];
+    [attributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:@"\n"]];
+    [attributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:nameProfile attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_MEDIUM32, NSFontAttributeName, Design.FONT_COLOR_PROFILE_GREY, NSForegroundColorAttributeName, nil]]];
+    self.spaceLabel.attributedText = attributedString;
     self.authentifiedRelationLabel.font = Design.FONT_REGULAR34;
 }
 
@@ -1188,6 +1337,22 @@ static CGFloat DESIGN_NAME_DEFAULT_WIDTH = 420;
     self.exportLabel.textColor = Design.FONT_COLOR_DEFAULT;
     self.cleanLabel.textColor = Design.FONT_COLOR_DEFAULT;
     self.authentifiedRelationLabel.textColor = Design.FONT_COLOR_DEFAULT;
+}
+
+- (void)checkSpacePermission {
+    DDLogVerbose(@"%@ checkSpacePermission", LOG_TAG);
+    
+    if (![self.contact.space hasPermission:TLSpacePermissionTypeMoveContact]) {
+        self.spaceLabel.alpha = .5f;
+    } else {
+        self.spaceLabel.alpha = 1.f;
+    }
+    
+    if (![self.contact.space hasPermission:TLSpacePermissionTypeUpdateIdentity]) {
+        self.identityView.alpha = .5f;
+    } else {
+        self.identityView.alpha = 1.f;
+    }
 }
 
 - (BOOL)hasSchedule {

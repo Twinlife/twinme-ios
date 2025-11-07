@@ -1,0 +1,18 @@
+//
+//  Config.xcconfig
+//  Twinme
+//
+//  Created by Stephane Carrez on 08/03/2023.
+//  Copyright © 2023 Twinlife-Systems. All rights reserved.
+//
+
+// Configuration settings file format documentation can be found at:
+// https://help.apple.com/xcode/#/dev745c5c974
+
+#include "Pods/Target Support Files/Pods-Skred/Pods-skred.debug.xcconfig"
+
+VERSION_NUMBER=21.3
+
+BUILD_NUMBER=333
+
+GCC_PREPROCESSOR_DEFINITIONS=$(inherited) SKRED

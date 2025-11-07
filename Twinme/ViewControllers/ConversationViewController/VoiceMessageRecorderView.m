@@ -9,6 +9,7 @@
 #import "VoiceMessageRecorderView.h"
 
 #import <Twinme/TLSpace.h>
+
 #import <Twinme/TLTwinmeContext.h>
 
 #import <AVFoundation/AVFoundation.h>
@@ -26,6 +27,8 @@
 #import <TwinmeCommon/Design.h>
 #import <TwinmeCommon/TwinmeApplication.h>
 #import <TwinmeCommon/Utils.h>
+
+#import "SpaceSetting.h"
 
 static CGFloat DESIGN_LINE_SPACE = 2;
 static CGFloat DESIGN_LINE_WIDTH = 1;
@@ -417,12 +420,21 @@ static CGFloat MIN_DECIBEL = 45;
         TwinmeApplication *twinmeApplication = [delegate twinmeApplication];
         [Utils hapticFeedback:UIImpactFeedbackStyleMedium hapticFeedbackMode:twinmeApplication.hapticFeedbackMode];
         
+        TLSpaceSettings *spaceSettings = self.conversationViewController.space.settings;
+        BOOL allowCopyFile = self.conversationViewController.space.settings.fileCopyAllowed;
+        BOOL allowEphemeral = [spaceSettings getBooleanWithName:PROPERTY_ALLOW_EPHEMERAL_MESSAGE defaultValue:NO];
+        int64_t timeout = [[spaceSettings getStringWithName:PROPERTY_TIMEOUT_EPHEMERAL_MESSAGE defaultValue:[NSString stringWithFormat:@"%d", DEFAULT_TIMEOUT_MESSAGE]]integerValue];
+        
+        if (!allowEphemeral) {
+            timeout = 0;
+        }
+        
         if (self.recorder.isRecording) {
             self.recorderTime += self.recorder.currentTime;
             [self.recorder stop];
             self.sendFile = YES;
             if (![self mergeAudioTrack]) {
-                [self.conversationViewController pushFileWithPath:self.url.path type:TLDescriptorTypeAudioDescriptor toBeDeleted:YES allowCopy:twinmeApplication.allowCopyFile];
+                [self.conversationViewController pushFileWithPath:self.url.path type:TLDescriptorTypeAudioDescriptor toBeDeleted:YES allowCopy:allowCopyFile expireTimeout:timeout];
                 self.url = nil;
                 
                 recognizer.view.transform = CGAffineTransformMakeScale(0.9, 0.9);
@@ -434,7 +446,7 @@ static CGFloat MIN_DECIBEL = 45;
             }
             
         } else {
-            [self.conversationViewController pushFileWithPath:self.url.path type:TLDescriptorTypeAudioDescriptor toBeDeleted:YES allowCopy:twinmeApplication.allowCopyFile];
+            [self.conversationViewController pushFileWithPath:self.url.path type:TLDescriptorTypeAudioDescriptor toBeDeleted:YES allowCopy:allowCopyFile expireTimeout:timeout];
             self.url = nil;
             
             recognizer.view.transform = CGAffineTransformMakeScale(0.9, 0.9);
@@ -714,10 +726,17 @@ static CGFloat MIN_DECIBEL = 45;
                 self.sendFile = NO;
                 
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    ApplicationDelegate *delegate = (ApplicationDelegate *)[[UIApplication sharedApplication] delegate];
-                    TwinmeApplication *twinmeApplication = [delegate twinmeApplication];
-                    [self.conversationViewController pushFileWithPath:exportSession.outputURL.path type:TLDescriptorTypeAudioDescriptor toBeDeleted:YES allowCopy:twinmeApplication.allowCopyFile];
-
+                    TLSpaceSettings *spaceSettings = self.conversationViewController.space.settings;
+                    BOOL allowCopyFile = self.conversationViewController.space.settings.fileCopyAllowed;
+                    BOOL allowEphemeral = [spaceSettings getBooleanWithName:PROPERTY_ALLOW_EPHEMERAL_MESSAGE defaultValue:NO];
+                    int64_t timeout = [[spaceSettings getStringWithName:PROPERTY_TIMEOUT_EPHEMERAL_MESSAGE defaultValue:[NSString stringWithFormat:@"%d", DEFAULT_TIMEOUT_MESSAGE]]integerValue];
+                    
+                    if (!allowEphemeral) {
+                        timeout = 0;
+                    }
+                    
+                    [self.conversationViewController pushFileWithPath:exportSession.outputURL.path type:TLDescriptorTypeAudioDescriptor toBeDeleted:YES allowCopy:allowCopyFile expireTimeout:timeout];
+                    
                     [self resetViews];
                 });
                 

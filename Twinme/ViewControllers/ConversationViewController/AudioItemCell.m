@@ -11,6 +11,7 @@
 
 #import <CocoaLumberjack.h>
 
+#import <Twinme/TLTwinmeAttributes.h>
 #import <Twinlife/TLConversationService.h>
 
 #import <Twinme/TLMessage.h>
@@ -27,6 +28,8 @@
 #import "AnnotationCell.h"
 #import "AnnotationCountCell.h"
 
+#import "Cache.h"
+#import "CustomAppearance.h"
 #import <TwinmeCommon/AsyncAudioTrackLoader.h>
 #import <TwinmeCommon/AsyncImageLoader.h>
 #import <TwinmeCommon/AsyncVideoLoader.h>
@@ -36,6 +39,7 @@
 #import "EphemeralView.h"
 #import "UIView+Toast.h"
 #import "AudioTrackView.h"
+#import "UIColor+Hex.h"
 
 #if 0
 static const int ddLogLevel = DDLogLevelVerbose;
@@ -97,6 +101,9 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
 @property (weak, nonatomic) IBOutlet UIImageView *replyImageView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *replyToImageContentViewTopConstraint;
 @property (weak, nonatomic) IBOutlet UIView *replyToImageContentView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *ephemeralViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *ephemeralViewTrailingConstraint;
+@property (weak, nonatomic) IBOutlet EphemeralView *ephemeralView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *replyActionImageViewHeightConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *replyActionImageViewLeadingConstraint;
 @property (weak, nonatomic) IBOutlet UIImageView *replyActionImageView;
@@ -122,6 +129,9 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
 @property float currentTime;
 @property NSTimer *timer;
 @property BOOL isPaused;
+
+@property (nonatomic) CAShapeLayer *borderLayer;
+@property (nonatomic) CustomAppearance *customAppearance;
 
 @property (nonatomic) NSTimer *updateEphemeralTimer;
 @property (nonatomic) AudioItem *audioItem;
@@ -266,6 +276,11 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
     self.replyImageView.clipsToBounds = YES;
     self.replyImageView.layer.cornerRadius = 6.0;
     
+    self.ephemeralViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    self.ephemeralViewTrailingConstraint.constant *= Design.WIDTH_RATIO;
+    
+    self.ephemeralView.tintColor = [UIColor whiteColor];
+    
     self.replyActionImageViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     self.replyActionImageViewLeadingConstraint.constant *= Design.WIDTH_RATIO;
     self.replyActionImageView.tintColor = Design.BLACK_COLOR;
@@ -343,6 +358,11 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
     
     [super bindWithItem:item conversationViewController:conversationViewController];
     
+    self.customAppearance = [conversationViewController getCustomAppearance];
+    
+    [self.contentAudioView setBackgroundColor:[self.customAppearance getMessageBackgroundColor]];
+    self.durationLabel.textColor = [self.customAppearance getMessageTextColor];
+    
     AudioItem *audioItem = (AudioItem *)item;
     self.audioItem = audioItem;
     CGFloat topMargin = [conversationViewController getTopMarginWithMask:audioItem.corners & ITEM_TOP_RIGHT item:item];
@@ -383,6 +403,11 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
     self.durationLabel.text = [NSString convertWithInterval:audioItem.audioDescriptor.duration format:format];
     self.contentDeleteAudioView.hidden = YES;
     
+    [self.contentAudioView setBackgroundColor:[[conversationViewController getCustomAppearance] getMessageBackgroundColor]];
+    
+    self.playerImageView.tintColor = [[conversationViewController getCustomAppearance] getMessageBackgroundColor];
+    self.pauseImageView.tintColor = [[conversationViewController getCustomAppearance] getMessageBackgroundColor];
+    
     self.replyImageViewHeightConstraint.constant = 0;
     self.replyImageViewTopConstraint.constant = 0;
     self.replyImageViewBottomConstraint.constant = 0;
@@ -409,6 +434,15 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
                 self.replyViewTopConstraint.constant = topMargin;
                 [self.replyLabel setPaddingWithTop:heightPadding left:widthPadding bottom:heightPadding right:widthPadding];
                 self.replyLabel.text = TwinmeLocalizedString(@"conversation_view_controller_audio_message", nil);
+                break;
+            }
+                
+            case TLDescriptorTypeGeolocationDescriptor: {
+                self.replyView.hidden = NO;
+                self.replyToImageContentView.hidden = YES;
+                self.replyViewTopConstraint.constant = topMargin;
+                [self.replyLabel setPaddingWithTop:heightPadding left:widthPadding bottom:heightPadding right:widthPadding];
+                self.replyLabel.text = TwinmeLocalizedString(@"application_location", nil);
                 break;
             }
                 
@@ -478,7 +512,22 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
         self.replyToImageContentViewTopConstraint.constant = 0;
     }
     
+    if (self.item.isEphemeralItem) {
+        self.ephemeralView.hidden = NO;
+        
+        if (self.updateEphemeralTimer) {
+            [self.updateEphemeralTimer invalidate];
+            self.updateEphemeralTimer = nil;
+        }
+        
+        [self updateEphemeralView];
+        self.updateEphemeralTimer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(updateEphemeralView) userInfo:nil repeats:YES];
+    } else {
+        self.ephemeralView.hidden = YES;
+    }
+    
     self.stateImageView.backgroundColor = [UIColor clearColor];
+    self.stateImageView.tintColor = [UIColor clearColor];
     
     int corners = audioItem.corners;
     switch (audioItem.state) {
@@ -508,9 +557,9 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
             self.stateImageView.hidden = NO;
             [self.stateImageView.layer removeAllAnimations];
             self.stateImageView.image = [conversationViewController getContactAvatarWithUUID:[audioItem peerTwincodeOutboundId]];
-            
             if ([self.stateImageView.image isEqual:[TLTwinmeAttributes DEFAULT_GROUP_AVATAR]]) {
-                self.stateImageView.backgroundColor = Design.GREY_ITEM;
+                self.stateImageView.backgroundColor = [UIColor colorWithHexString:Design.DEFAULT_COLOR alpha:1.0];
+                self.stateImageView.tintColor = [UIColor whiteColor];
             }
             break;
             
@@ -696,6 +745,22 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
     }
 }
 
+- (void)updateEphemeralView {
+    
+    if (self.item.state == ItemStateRead) {
+        CGFloat timeSinceRead = ([[NSDate date] timeIntervalSince1970] * 1000) - self.item.readTimestamp;
+        CGFloat percent = 1.0 - (timeSinceRead / self.item.expireTimeout);
+        if (percent < 0) {
+            percent = 0.0;
+        } else if (percent > 1) {
+            percent = 1.0;
+        }
+        [self.ephemeralView updateWithPercent:percent color:[self.customAppearance getMessageTextColor] size:self.ephemeralViewHeightConstraint.constant];
+    } else {
+        [self.ephemeralView updateWithPercent:1.0 color:[self.customAppearance getMessageTextColor] size:self.ephemeralViewHeightConstraint.constant];
+    }
+}
+
 #pragma mark - IBActions
 
 - (void)onLongPressInsideContent:(UILongPressGestureRecognizer *)longPressGesture {
@@ -822,6 +887,18 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
     self.contentAudioView.layer.masksToBounds = YES;
     self.contentAudioView.layer.mask = mask;
     
+    if (self.borderLayer) {
+        [self.borderLayer removeFromSuperlayer];
+    }
+    
+    self.borderLayer = [CAShapeLayer layer];
+    self.borderLayer.path = mask.path;
+    self.borderLayer.fillColor = [UIColor clearColor].CGColor;
+    self.borderLayer.strokeColor = [self.customAppearance getMessageBorderColor].CGColor;
+    self.borderLayer.lineWidth = Design.ITEM_BORDER_WIDTH;
+    self.borderLayer.frame = self.contentAudioView.bounds;
+    [self.contentAudioView.layer addSublayer:self.borderLayer];
+    
     CAShapeLayer *maskDelete = [CAShapeLayer layer];
     maskDelete.path = path.CGPath;
     self.contentDeleteAudioView.layer.masksToBounds = YES;
@@ -939,6 +1016,7 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
             self.isPaused = NO;
             [self.timer invalidate];
             self.currentTime = 0;
+            
             if ([UIDevice currentDevice].proximityMonitoringEnabled) {
                 [UIDevice currentDevice].proximityMonitoringEnabled = NO;
                 [[NSNotificationCenter defaultCenter] removeObserver:self name:UIDeviceProximityStateDidChangeNotification object:nil];
@@ -961,9 +1039,6 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
 - (void)updateColor {
     DDLogVerbose(@"%@ updateColor", LOG_TAG);
     
-    [self.contentAudioView setBackgroundColor:Design.MAIN_COLOR];
-    self.playerImageView.tintColor = Design.MAIN_COLOR;
-    self.pauseImageView.tintColor = Design.MAIN_COLOR;
     self.overlayView.backgroundColor = Design.BACKGROUND_COLOR_WHITE_OPACITY85;
 }
 

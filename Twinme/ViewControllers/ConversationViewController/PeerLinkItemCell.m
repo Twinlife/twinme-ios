@@ -9,6 +9,7 @@
 #import <CocoaLumberjack.h>
 
 #import <Twinme/TLMessage.h>
+#import <Twinme/TLTwinmeAttributes.h>
 
 #import "PeerLinkItemCell.h"
 
@@ -21,12 +22,15 @@
 #import <Utils/NSString+Utils.h>
 
 #import <TwinmeCommon/AsyncImageLoader.h>
+#import <TwinmeCommon/AsyncLinkLoader.h>
 #import <TwinmeCommon/AsyncVideoLoader.h>
 #import <TwinmeCommon/Design.h>
 #import <TwinmeCommon/Utils.h>
+
 #import "EphemeralView.h"
 #import "DecoratedLabel.h"
-#import <TwinmeCommon/AsyncLinkLoader.h>
+#import "CustomAppearance.h"
+#import "UIColor+Hex.h"
 
 #if 0
 static const int ddLogLevel = DDLogLevelVerbose;
@@ -119,6 +123,8 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
 @property (nonatomic) AsyncLinkLoader *linkLoader;
 @property (nonatomic) NSURL *url;
 
+@property (nonatomic) CustomAppearance *customAppearance;
+
 @end
 
 //
@@ -194,7 +200,7 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
     self.titleLinkLabel.text = @"";
     self.titleLinkLabel.font = Design.FONT_MEDIUM32;
     self.titleLinkLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    
+
     self.contentLabel.font = self.messageFont;
     self.contentLabel.textColor = Design.FONT_COLOR_DEFAULT;
     self.contentLabel.numberOfLines = 0;
@@ -365,7 +371,13 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
     
     [super bindWithItem:item conversationViewController:conversationViewController];
     
+    self.customAppearance = [conversationViewController getCustomAppearance];
     self.messageFont = [conversationViewController getMessageFont];
+    [self.titleLinkView setBackgroundColor:[[conversationViewController getCustomAppearance] getPeerMessageBackgroundColor]];
+    [self.titleLinkLabel setTextColor:[[conversationViewController getCustomAppearance] getPeerMessageTextColor]];
+    [self.contentLabel setDecorColor:[[conversationViewController getCustomAppearance] getPeerMessageBackgroundColor]];
+    [self.contentLabel setTextColor:[[conversationViewController getCustomAppearance] getPeerMessageTextColor]];
+    [self.contentLabel setBorderColor:[[conversationViewController getCustomAppearance] getPeerMessageBorderColor]];
     
     PeerLinkItem *peerLinkItem = (PeerLinkItem *)item;
     CGFloat topMargin = [conversationViewController getTopMarginWithMask:peerLinkItem.corners & ITEM_TOP_LEFT item:item];
@@ -373,6 +385,12 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
     self.avatarViewTopConstraint.constant = topMargin;
     self.contentLabelTopConstraint.constant = topMargin;
     self.contentLabelBottomConstraint.constant = -[conversationViewController getBottomMarginWithMask:peerLinkItem.corners & ITEM_BOTTOM_LEFT item:item];
+    
+    NSMutableDictionary *mutableLinkAttributes = [NSMutableDictionary dictionary];
+    [mutableLinkAttributes setObject:[NSNumber numberWithBool:YES] forKey:(NSString *)kCTUnderlineStyleAttributeName];
+    [mutableLinkAttributes setObject:(__bridge id)[Design.FONT_COLOR_DEFAULT CGColor] forKey:(NSString *)kCTForegroundColorAttributeName];
+    [mutableLinkAttributes setObject:[UIFont systemFontOfSize:self.messageFont.pointSize weight:UIFontWeightSemibold] forKey:NSFontAttributeName];
+    self.contentLabel.linkAttributes = [NSDictionary dictionaryWithDictionary:mutableLinkAttributes];
         
     if (item.likeDescriptorAnnotations.count > 0 || item.forwarded) {
         self.annotationCollectionView.hidden = NO;
@@ -385,7 +403,7 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
     self.contentLabel.font = self.messageFont;
         
     @try {
-        NSAttributedString *attributedString = [NSString formatText:peerLinkItem.content fontSize:self.messageFont.pointSize fontColor:Design.FONT_COLOR_DEFAULT fontSearch:nil];
+        NSAttributedString *attributedString = [NSString formatText:peerLinkItem.content fontSize:self.messageFont.pointSize fontColor:[[conversationViewController getCustomAppearance] getPeerMessageTextColor] fontSearch:nil];
         self.contentLabel.text = attributedString;
     } @catch (NSException *exception) {
         self.contentLabel.text = peerLinkItem.content;
@@ -440,10 +458,7 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
         [self.activityIndicatorView stopAnimating];
         self.linkViewHeightConstraint.constant = 0;
     }
-    
-    self.contentLabel.text = peerLinkItem.content;
-    self.contentLabel.font = self.messageFont;
-    
+ 
     self.replyImageViewHeightConstraint.constant = 0;
     self.replyImageViewTopConstraint.constant = 0;
     self.replyImageViewBottomConstraint.constant = 0;
@@ -586,6 +601,15 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
         self.avatarView.image = [conversationViewController getContactAvatarWithUUID:item.peerTwincodeOutboundId];
         self.avatarView.hidden = NO;
         self.avatarViewHeightConstraint.constant = self.avatarHeightConstraintValue;
+        
+        if ([self.avatarView.image isEqual:[TLTwinmeAttributes DEFAULT_GROUP_AVATAR]]) {
+            self.avatarView.backgroundColor = [UIColor colorWithHexString:Design.DEFAULT_COLOR alpha:1.0];
+            self.avatarView.tintColor = [UIColor whiteColor];
+        } else {
+            self.avatarView.backgroundColor = [UIColor clearColor];
+            self.avatarView.tintColor = [UIColor clearColor];
+        }
+        
     } else {
         self.avatarViewTopConstraint.constant = 0;
         self.avatarViewHeightConstraint.constant = 0;
@@ -601,6 +625,7 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
             [self.contentView bringSubviewToFront:self.replyView];
             [self.contentView bringSubviewToFront:self.replyToImageContentView];
             [self.contentView bringSubviewToFront:self.contentLabel];
+            [self.contentView bringSubviewToFront:self.ephemeralView];
             [self.contentView bringSubviewToFront:self.linkView];
             [self.contentView bringSubviewToFront:self.annotationCollectionView];
         }
@@ -831,10 +856,6 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
 - (void)updateColor {
     DDLogVerbose(@"%@ updateColor", LOG_TAG);
     
-    self.linkView.backgroundColor = Design.GREY_ITEM;
-    self.contentLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    [self.contentLabel setDecorColor:Design.GREY_ITEM];
-    [self.contentLabel setBorderColor:[UIColor clearColor]];
     self.overlayView.backgroundColor = Design.BACKGROUND_COLOR_WHITE_OPACITY85;
 }
 

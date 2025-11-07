@@ -8,6 +8,10 @@
 
 #import "UIWelcome.h"
 
+#import <Twinme/TLTwinmeContext.h>
+#import <Twinme/TLSpace.h>
+#import <Twinme/TLSpaceSettings.h>
+
 #import <Utils/NSString+Utils.h>
 
 #import <TwinmeCommon/ApplicationDelegate.h>
@@ -30,12 +34,13 @@
 
 @implementation UIWelcome
 
-- (nonnull instancetype)initWithWelcomePart:(WelcomePart)welcomePart {
+- (nonnull instancetype)initWithWelcomePart:(WelcomePart)welcomePart spaceSettings:(nullable TLSpaceSettings *)spaceSettings {
         
     self = [super init];
     
     if (self) {
         _welcomePart = welcomePart;
+        _spaceSettings = spaceSettings;
         
         [self initWelcomePart];
     }
@@ -46,8 +51,7 @@
     
     ApplicationDelegate *delegate = (ApplicationDelegate *)[[UIApplication sharedApplication] delegate];
     TwinmeApplication *twinmeApplication = [delegate twinmeApplication];
-     
-    BOOL darkMode = [twinmeApplication darkModeEnable];
+    BOOL darkMode = [twinmeApplication darkModeEnable:self.spaceSettings];
     
     switch (self.welcomePart) {
         case WelcomePartOne:

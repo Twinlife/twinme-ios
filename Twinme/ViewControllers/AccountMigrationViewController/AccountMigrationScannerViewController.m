@@ -121,7 +121,7 @@ static const CGFloat DESIGN_HIGHLIGHT_VIEW_CORNER_RADIUS = 4;
         OnboardingConfirmView *onboardingConfirmView = [[OnboardingConfirmView alloc] init];
         onboardingConfirmView.confirmViewDelegate = self;
 
-        UIImage *image = [self.twinmeApplication darkModeEnable] ? [UIImage imageNamed:@"OnboardingMigrationDark"] : [UIImage imageNamed:@"OnboardingMigration"];
+        UIImage *image = [self.twinmeApplication darkModeEnable:[self currentSpaceSettings]] ? [UIImage imageNamed:@"OnboardingMigrationDark"] : [UIImage imageNamed:@"OnboardingMigration"];
         
         [onboardingConfirmView initWithTitle:TwinmeLocalizedString(@"account_view_controller_migration_title", nil) message: TwinmeLocalizedString(@"account_view_controller_migration_message", nil) image:image action:TwinmeLocalizedString(@"application_ok", nil) actionColor:nil cancel:TwinmeLocalizedString(@"application_do_not_display", nil)];
         
@@ -584,8 +584,10 @@ static const CGFloat DESIGN_HIGHLIGHT_VIEW_CORNER_RADIUS = 4;
         
         DefaultConfirmView *migrationConfirmView = [[DefaultConfirmView alloc] init];
         migrationConfirmView.confirmViewDelegate = self;
-        UIImage *image = [self.twinmeApplication darkModeEnable] ? [UIImage imageNamed:@"OnboardingMigrationDark"] : [UIImage imageNamed:@"OnboardingMigration"];
+
+        UIImage *image = [self.twinmeApplication darkModeEnable:[self currentSpaceSettings]] ? [UIImage imageNamed:@"OnboardingMigrationDark"] : [UIImage imageNamed:@"OnboardingMigration"];
         [migrationConfirmView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:message image:image avatar:nil action:TwinmeLocalizedString(@"account_migration_view_controller_start", nil) actionColor:nil cancel:nil];
+
         [self.tabBarController.view addSubview:migrationConfirmView];
         [migrationConfirmView showConfirmView];
     }

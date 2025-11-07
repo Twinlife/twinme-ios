@@ -30,6 +30,10 @@
 
 + (nonnull NSString *)localizedStringForKey:(nonnull NSString *)key replaceValue:(nullable NSString *)comment;
 
++ (nonnull NSString *)capitalizedFirstLetter:(nonnull NSString *)string;
+
++ (nonnull NSString *)formatTimeout:(int64_t)timeout;
+
 + (nonnull NSString *)firstCharacter:(nonnull NSString *)string;
 
 + (nonnull NSString *)convertEmoji:(nonnull NSString *)string;

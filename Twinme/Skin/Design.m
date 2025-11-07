@@ -10,16 +10,21 @@
 
 #import <CocoaLumberjack.h>
 
-#import <CoreText/CoreText.h>
+#import <Twinme/TLSpace.h>
+#import <Twinme/TLTwinmeContext.h>
 
+#import <CoreText/CoreText.h>
 #import <Twinlife/TLConfigIdentifier.h>
 #import <TwinmeCommon/Design.h>
 
 #import "UIImage+ImageEffects.h"
 #import "UIColor+Hex.h"
 #import "UICustomColor.h"
+#import "SpaceSetting.h"
 
 #import <TwinmeCommon/ApplicationDelegate.h>
+#import <TwinmeCommon/Design.h>
+#import <TwinmeCommon/MainViewController.h>
 #import <TwinmeCommon/TwinmeApplication.h>
 
 #if 0
@@ -62,6 +67,11 @@ static UIColor* DESIGN_DELETE_BORDER_COLOR_RED;
 
 static UIColor* DESIGN_BORDER_COLOR_GREY;
 static UIColor* DESIGN_SEPARATOR_COLOR_GREY;
+static UIColor* DESIGN_FONT_COLOR_DESCRIPTION;
+static UIColor* DESIGN_SEGMENTED_CONTROL_TINT_COLOR;
+static UIColor* DESIGN_CHECKMARK_BORDER_COLOR;
+static UIColor* DESIGN_BACKGROUND_GREY_COLOR;
+static UIColor* DESIGN_BACKGROUND_SPACE_AVATAR_COLOR;
 
 static UIColor* DESIGN_FONT_COLOR_DESCRIPTION;
 static UIColor* DESIGN_SEGMENTED_CONTROL_TINT_COLOR;
@@ -87,6 +97,8 @@ static UIColor* DESIGN_ACTION_IMAGE_CALL_COLOR;
 static UIColor* DESIGN_EDIT_AVATAR_BACKGROUND_COLOR;
 static UIColor* DESIGN_EDIT_AVATAR_IMAGE_COLOR;
 static UIColor* DESIGN_CONVERSATION_BACKGROUND_COLOR;
+static UIColor* DESIGN_ITEM_BACKGROUND_COLOR;
+static UIColor* DESIGN_ITEM_FONT_COLOR;
 static UIColor* DESIGN_TEXTFIELD_BACKGROUND_COLOR;
 static UIColor* DESIGN_TEXTFIELD_POPUP_BACKGROUND_COLOR;
 static UIColor* DESIGN_TEXTFIELD_CONVERSATION_BACKGROUND_COLOR;
@@ -97,6 +109,9 @@ static UIColor* DESIGN_REPLY_BACKGROUND_COLOR;
 static UIColor* DESIGN_FORWARD_ITEM_COLOR;
 static UIColor* DESIGN_FORWARD_BORDER_COLOR;
 static UIColor* DESIGN_FORWARD_COMMENT_COLOR;
+static UIColor* SHADOW_COLOR;
+static UIColor* DESIGN_BUTTON_GRADIENT_COLOR_GREEN_1;
+static UIColor* DESIGN_BUTTON_GRADIENT_COLOR_GREEN_2;
 static UIColor* DESIGN_OVERLAY_COLOR;
 static UIColor* DESIGN_AUDIO_TRACK_COLOR;
 static UIColor* DESIGN_PEER_AUDIO_TRACK_COLOR;
@@ -108,6 +123,8 @@ static UIColor* DESIGN_CUSTOM_TAB_BACKGROUND_COLOR;
 static UIColor* DESIGN_ACTION_BORDER_COLOR;
 static UIColor* DESIGN_ZOOM_COLOR;
 static NSArray* DESIGN_BACKGROUND_GRADIENT_COLORS_BLACK;
+
+static NSMutableArray* DESIGN_SPACES_COLOR;
 
 static NSMutableArray* DESIGN_COLORS;
 
@@ -129,6 +146,7 @@ static UIFont *DESIGN_REGULAR50;
 static UIFont *DESIGN_REGULAR58;
 static UIFont *DESIGN_REGULAR64;
 static UIFont *DESIGN_REGULAR68;
+static UIFont *DESIGN_REGULAR88;
 
 static UIFont *DESIGN_MEDIUM16;
 static UIFont *DESIGN_MEDIUM20;
@@ -152,9 +170,11 @@ static UIFont *DESIGN_MEDIUM_ITALIC40;
 static UIFont *DESIGN_BOLD20;
 static UIFont *DESIGN_BOLD26;
 static UIFont *DESIGN_BOLD28;
+static UIFont *DESIGN_BOLD32;
 static UIFont *DESIGN_BOLD34;
 static UIFont *DESIGN_BOLD36;
 static UIFont *DESIGN_BOLD44;
+static UIFont *DESIGN_BOLD54;
 static UIFont *DESIGN_BOLD68;
 static UIFont *DESIGN_BOLD88;
 
@@ -209,6 +229,7 @@ static CGFloat DESIGN_BUTTON_PADDING;
 
 static float DESIGN_CONTAINER_RADIUS = 11;
 static float DESIGN_POPUP_RADIUS = 14;
+static float DESIGN_SPACE_RADIUS_RATIO = 18.f / 53.f;
 
 static float DESIGN_SWITCH_WIDTH = 29;
 static float DESIGN_SWITCH_HEIGHT = 20;
@@ -220,7 +241,7 @@ static CGFloat DESIGN_ANIMATION_VIEW_DURATION = 0.3;
 static CFMutableCharacterSetRef DESIGN_EMOJI_CHARACTER_SET;
 
 static NSString *MAIN_STYLE = @"MainStyle";
-static NSString *DEFAULT_COLOR = @"#00AEFF";
+static NSString *DEFAULT_COLOR = @"#FB1C5B";
 static TLStringConfigIdentifier *mainStyleConfig;
 
 //
@@ -229,6 +250,12 @@ static TLStringConfigIdentifier *mainStyleConfig;
 
 #undef LOG_TAG
 #define LOG_TAG @"Design"
+
+#define UIColorFromRGB(rgbValue) \
+[UIColor colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0 \
+green:((float)((rgbValue & 0xFF00) >> 8))/255.0 \
+blue:((float)(rgbValue & 0xFF))/255.0 \
+alpha:1.0]
 
 @implementation Design
 
@@ -277,12 +304,20 @@ static TLStringConfigIdentifier *mainStyleConfig;
     DESIGN_ACCESSORY_COLOR = [UIColor colorWithRed:209./255. green:209./255. blue:214./255. alpha:1.0];
     DESIGN_SHADOW_COLOR_DEFAULT =  [UIColor colorWithRed:0 green:0 blue:0 alpha:0.2];
     DESIGN_OVERLAY_COLOR = [UIColor colorWithRed:13./255. green:13./255. blue:13./255. alpha:0.46];
+    SHADOW_COLOR = [UIColor blackColor];
+    DESIGN_BUTTON_GRADIENT_COLOR_GREEN_1 = [UIColor colorWithRed:112./255. green:226./255. blue:205./255. alpha:1];
+    DESIGN_BUTTON_GRADIENT_COLOR_GREEN_2 = [UIColor colorWithRed:61./255. green:193./255. blue:158./255. alpha:1];
+    
+    DESIGN_ITEM_BACKGROUND_COLOR = [UIColor colorWithRed:120./255. green:137./255. blue:159./255. alpha:1.0];
+    DESIGN_ITEM_FONT_COLOR = [UIColor colorWithRed:44./255. green:44./255. blue:44./255. alpha:1.0];
     DESIGN_AUDIO_TRACK_COLOR = [UIColor colorWithRed:51./255. green:51./255. blue:51./255. alpha:1];
     DESIGN_UNSELECTED_TAB_COLOR = [UIColor colorWithRed:119./255. green:138./255. blue:159./255. alpha:1.0];
     DESIGN_FORWARD_ITEM_COLOR = [UIColor colorWithRed:241./255. green:241./255. blue:241./255. alpha:1.0];
     DESIGN_FORWARD_BORDER_COLOR = [UIColor colorWithRed:227./255. green:227./255. blue:227./255. alpha:1.0];
     DESIGN_FONT_COLOR_DESCRIPTION = [UIColor colorWithRed:142./255. green:142./255. blue:147./255. alpha:1.0];
     DESIGN_CHECKMARK_BORDER_COLOR = [UIColor colorWithRed:114./255. green:140./255. blue:161./255. alpha:0.56];
+    DESIGN_BACKGROUND_SPACE_AVATAR_COLOR = [UIColor colorWithRed:239./255. green:239./255. blue:239./255. alpha:1.0];
+    DESIGN_TEXTFIELD_POPUP_BACKGROUND_COLOR = [UIColor colorWithRed:213./255. green:215./255. blue:224./255. alpha:0.3];
     DESIGN_ACTION_BORDER_COLOR = [UIColor colorWithRed:84./255. green:84./255. blue:84./255. alpha:1.0];
     DESIGN_TEXTFIELD_POPUP_BACKGROUND_COLOR = [UIColor colorWithRed:213./255. green:215./255. blue:224./255. alpha:0.3];
     DESIGN_ZOOM_COLOR = [UIColor colorWithRed:255./255. green:161./255. blue:0./255. alpha:1.0];
@@ -292,8 +327,8 @@ static TLStringConfigIdentifier *mainStyleConfig;
     DESIGN_BACKGROUND_GRADIENT_COLORS_BLACK = @[(id)blackGradientColorStart.CGColor, (id)blackGradientColorEnd.CGColor];
     
     [self setupFont];
-    [self setupMainColors];
-    [self setupColors];
+    [self setupSpacesColors];
+    [self setupColors:DisplayModeSystem];
     
     //
     // To be reviewed
@@ -327,6 +362,7 @@ static TLStringConfigIdentifier *mainStyleConfig;
     DESIGN_REPLY_IMAGE_MAX_HEIGHT = 290 * DESIGN_HEIGHT_RATIO;
     DESIGN_REPLY_VIEW_IMAGE_TOP = 28 * DESIGN_HEIGHT_RATIO;
     DESIGN_SWIPE_WIDTH_TO_REPLY = 120 * DESIGN_HEIGHT_RATIO;
+
     DESIGN_IMAGE_CELL_MAX_WIDTH = 500 * DESIGN_WIDTH_RATIO;
     DESIGN_IMAGE_CELL_MAX_HEIGHT = 889 * DESIGN_HEIGHT_RATIO;
     DESIGN_FORWARDED_IMAGE_CELL_MAX_HEIGHT = 240 * DESIGN_HEIGHT_RATIO;
@@ -403,6 +439,7 @@ static TLStringConfigIdentifier *mainStyleConfig;
     DESIGN_REGULAR58 = [UIFont systemFontOfSize:(58 * DESIGN_FONT_RATIO) + adjustFontSize weight:UIFontWeightRegular];
     DESIGN_REGULAR64 = [UIFont systemFontOfSize:(64 * DESIGN_FONT_RATIO) + adjustFontSize weight:UIFontWeightRegular];
     DESIGN_REGULAR68 = [UIFont systemFontOfSize:(68 * DESIGN_FONT_RATIO) + adjustFontSize weight:UIFontWeightRegular];
+    DESIGN_REGULAR88 = [UIFont systemFontOfSize:(88 * DESIGN_FONT_RATIO) + adjustFontSize weight:UIFontWeightRegular];
     
     DESIGN_MEDIUM16 = [UIFont systemFontOfSize:(16 * DESIGN_FONT_RATIO) + adjustFontSize weight:UIFontWeightMedium];
     DESIGN_MEDIUM20 = [UIFont systemFontOfSize:(20 * DESIGN_FONT_RATIO) + adjustFontSize weight:UIFontWeightMedium];
@@ -426,9 +463,11 @@ static TLStringConfigIdentifier *mainStyleConfig;
     DESIGN_BOLD20 = [UIFont systemFontOfSize:(20 * DESIGN_FONT_RATIO) + adjustFontSize weight:UIFontWeightBold];
     DESIGN_BOLD26 = [UIFont systemFontOfSize:(26 * DESIGN_FONT_RATIO) + adjustFontSize weight:UIFontWeightBold];
     DESIGN_BOLD28 = [UIFont systemFontOfSize:(28 * DESIGN_FONT_RATIO) + adjustFontSize weight:UIFontWeightBold];
+    DESIGN_BOLD32 = [UIFont systemFontOfSize:(32 * DESIGN_FONT_RATIO) + adjustFontSize weight:UIFontWeightBold];
     DESIGN_BOLD34 = [UIFont systemFontOfSize:(34 * DESIGN_FONT_RATIO) + adjustFontSize weight:UIFontWeightBold];
     DESIGN_BOLD36 = [UIFont systemFontOfSize:(36 * DESIGN_FONT_RATIO) + adjustFontSize weight:UIFontWeightBold];
     DESIGN_BOLD44 = [UIFont systemFontOfSize:(44 * DESIGN_FONT_RATIO) + adjustFontSize weight:UIFontWeightBold];
+    DESIGN_BOLD54 = [UIFont systemFontOfSize:(54 * DESIGN_FONT_RATIO) + adjustFontSize weight:UIFontWeightBold];
     DESIGN_BOLD68 = [UIFont systemFontOfSize:(68 * DESIGN_FONT_RATIO) + adjustFontSize weight:UIFontWeightBold];
     DESIGN_BOLD88 = [UIFont systemFontOfSize:(88 * DESIGN_FONT_RATIO) + adjustFontSize weight:UIFontWeightBold];
     
@@ -456,13 +495,25 @@ static TLStringConfigIdentifier *mainStyleConfig;
     }
 }
 
-+ (void)setupColors {
++ (void)setupSpacesColors {
+    DDLogVerbose(@"%@ setupSpacesColors", LOG_TAG);
+    
+    DESIGN_SPACES_COLOR = [[NSMutableArray alloc] init];
+    [DESIGN_SPACES_COLOR addObject:[[UICustomColor alloc] initWithColor:nil]];
+    [DESIGN_SPACES_COLOR addObject:[[UICustomColor alloc]initWithColor:@"#4B90E2"]];
+    [DESIGN_SPACES_COLOR addObject:[[UICustomColor alloc]initWithColor:@"#F07675"]];
+    [DESIGN_SPACES_COLOR addObject:[[UICustomColor alloc]initWithColor:@"#9DEDB4"]];
+    [DESIGN_SPACES_COLOR addObject:[[UICustomColor alloc]initWithColor:@"#9DDBED"]];
+    [DESIGN_SPACES_COLOR addObject:[[UICustomColor alloc]initWithColor:@"#89AC8F"]];
+    [DESIGN_SPACES_COLOR addObject:[[UICustomColor alloc]initWithColor:@"#E99616"]];
+    [DESIGN_SPACES_COLOR addObject:[[UICustomColor alloc]initWithColor:@"#F0CB26"]];
+    [DESIGN_SPACES_COLOR addObject:[[UICustomColor alloc]initWithColor:@"#EBBDBF"]];
+}
+
++ (void)setupColors:(DisplayMode)displayMode {
     DDLogVerbose(@"%@ setupColors", LOG_TAG);
     
-    ApplicationDelegate *delegate = (ApplicationDelegate *)[[UIApplication sharedApplication] delegate];
-    TwinmeApplication *twinmeApplication = [delegate twinmeApplication];
-    
-    switch (twinmeApplication.displayMode) {
+    switch (displayMode) {
         case DisplayModeSystem:
             if (@available(iOS 13.0, *)) {
                 if ([UIScreen mainScreen].traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark){
@@ -482,6 +533,7 @@ static TLStringConfigIdentifier *mainStyleConfig;
         case DisplayModeDark:
             [self setupDarkColors];
             break;
+            
         default:
             break;
     }
@@ -541,7 +593,7 @@ static TLStringConfigIdentifier *mainStyleConfig;
     DESIGN_BLACK_COLOR = [UIColor blackColor];
     DESIGN_FONT_COLOR_DEFAULT = [UIColor colorWithRed:44./255. green:44./255. blue:44./255. alpha:1];
     DESIGN_LIGHT_GREY_BACKGROUND_COLOR = [UIColor colorWithRed:249./255. green:249./255. blue:249./255. alpha:1];
-    DESIGN_NAVIGATION_BACKGROUND_COLOR = [UIColor colorWithRed:0 green:174./255. blue:255./255. alpha:1];
+    DESIGN_NAVIGATION_BACKGROUND_COLOR = [UIColor colorWithRed:251./255. green:28./255. blue:91./255. alpha:1];
     DESIGN_POPUP_BACKGROUND_COLOR = [UIColor whiteColor];
     DESIGN_BACKGROUND_COLOR_WHITE_OPACITY85 = [UIColor colorWithWhite:1 alpha:0.85];
     DESIGN_BACKGROUND_COLOR_WHITE_OPACITY36 = [UIColor colorWithWhite:1 alpha:0.36];
@@ -557,7 +609,7 @@ static TLStringConfigIdentifier *mainStyleConfig;
     DESIGN_BUTTON_GREEN_COLOR = [UIColor colorWithRed:49./255. green:230./255. blue:204./255. alpha:1.0];
     DESIGN_ACTION_CALL_COLOR = [UIColor whiteColor];
     DESIGN_ACTION_IMAGE_CALL_COLOR = [UIColor blackColor];
-    DESIGN_CONVERSATION_BACKGROUND_COLOR = [UIColor whiteColor];
+    DESIGN_CONVERSATION_BACKGROUND_COLOR = [UIColor colorWithRed:239./255. green:239./255. blue:239./255. alpha:1];
     DESIGN_GREY_ITEM = [UIColor colorWithRed:243./255. green:243./255. blue:243./255. alpha:1];
     DESIGN_SEPARATOR_COLOR_GREY = [UIColor colorWithRed:199./255. green:199./255. blue:204./255. alpha:1];
     DESIGN_BACKGROUND_COLOR_GREY = [UIColor colorWithRed:239./255. green:239./255. blue:239./255. alpha:1];
@@ -577,21 +629,6 @@ static TLStringConfigIdentifier *mainStyleConfig;
     } else {
         DESIGN_SEGMENTED_CONTROL_TINT_COLOR = [UIColor whiteColor];
     }
-}
-
-+ (void)setupMainColors {
-    DDLogVerbose(@"%@ setupMainColors", LOG_TAG);
-
-    DESIGN_COLORS = [[NSMutableArray alloc]init];
-    [DESIGN_COLORS addObject:[[UICustomColor alloc]initWithColor:nil]];
-    [DESIGN_COLORS addObject:[[UICustomColor alloc]initWithColor:@"#4B90E2"]];
-    [DESIGN_COLORS addObject:[[UICustomColor alloc]initWithColor:@"#F07675"]];
-    [DESIGN_COLORS addObject:[[UICustomColor alloc]initWithColor:@"#9DEDB4"]];
-    [DESIGN_COLORS addObject:[[UICustomColor alloc]initWithColor:@"#9DDBED"]];
-    [DESIGN_COLORS addObject:[[UICustomColor alloc]initWithColor:@"#89AC8F"]];
-    [DESIGN_COLORS addObject:[[UICustomColor alloc]initWithColor:@"#E99616"]];
-    [DESIGN_COLORS addObject:[[UICustomColor alloc]initWithColor:@"#F0CB26"]];
-    [DESIGN_COLORS addObject:[[UICustomColor alloc]initWithColor:@"#EBBDBF"]];
 }
 
 + (CGFloat)REFERENCE_HEIGHT {
@@ -739,6 +776,11 @@ static TLStringConfigIdentifier *mainStyleConfig;
     return DESIGN_LIGHT_GREY_BACKGROUND_COLOR;
 }
 
++ (UIColor *)BACKGROUND_SPACE_AVATAR_COLOR {
+    
+    return DESIGN_BACKGROUND_SPACE_AVATAR_COLOR;
+}
+
 + (UIColor *)NAVIGATION_BACKGROUND_COLOR {
     
     return DESIGN_NAVIGATION_BACKGROUND_COLOR;
@@ -809,6 +851,15 @@ static TLStringConfigIdentifier *mainStyleConfig;
     return DESIGN_EDIT_AVATAR_IMAGE_COLOR;
 }
 
++ (NSMutableArray *)SPACES_COLOR {
+    
+    for (UICustomColor *colorSpace in DESIGN_SPACES_COLOR) {
+        colorSpace.selectedColor = NO;
+    }
+    
+    return DESIGN_SPACES_COLOR;
+}
+
 + (UIColor *)CONVERSATION_BACKGROUND_COLOR {
     
     return DESIGN_CONVERSATION_BACKGROUND_COLOR;
@@ -819,14 +870,32 @@ static TLStringConfigIdentifier *mainStyleConfig;
     return DESIGN_TEXTFIELD_CONVERSATION_BACKGROUND_COLOR;
 }
 
++ (UIColor *)TEXTFIELD_POPUP_BACKGROUND_COLOR {
+    
+    return DESIGN_TEXTFIELD_POPUP_BACKGROUND_COLOR;
+}
+
 + (UIColor *)TEXTFIELD_BACKGROUND_COLOR {
     
     return DESIGN_TEXTFIELD_BACKGROUND_COLOR;
 }
 
-+ (UIColor *)TEXTFIELD_POPUP_BACKGROUND_COLOR {
++ (UIColor *)ITEM_BACKGROUND_COLOR {
     
-    return DESIGN_TEXTFIELD_POPUP_BACKGROUND_COLOR;
+    if ([[self MAIN_STYLE] isEqualToString:DEFAULT_COLOR]) {
+        return DESIGN_ITEM_BACKGROUND_COLOR;
+    }
+    
+    return [self MAIN_COLOR];
+}
+
++ (UIColor *)ITEM_FONT_COLOR {
+    
+    if ([[self MAIN_STYLE] isEqualToString:DEFAULT_COLOR]) {
+        return DESIGN_ITEM_FONT_COLOR;
+    }
+    
+    return [UIColor whiteColor];
 }
 
 + (UIColor *)NAVIGATION_BAR_BACKGROUND_COLOR {
@@ -834,9 +903,14 @@ static TLStringConfigIdentifier *mainStyleConfig;
     UIColor *backgroundColor = Design.MAIN_COLOR;
     
     ApplicationDelegate *delegate = (ApplicationDelegate *)[[UIApplication sharedApplication] delegate];
-    TwinmeApplication *twinmeApplication = [delegate twinmeApplication];
+    MainViewController *mainViewController = delegate.mainViewController;
+    DisplayMode displayMode = [[delegate.twinmeContext.defaultSpaceSettings getStringWithName:PROPERTY_DISPLAY_MODE defaultValue:[NSString stringWithFormat:@"%d", DisplayModeSystem]]intValue];
     
-    switch (twinmeApplication.displayMode) {
+    if (mainViewController.space && ![mainViewController.space.settings getBooleanWithName:PROPERTY_DEFAULT_APPEARANCE_SETTINGS defaultValue:YES]) {
+        displayMode = [[mainViewController.space.settings getStringWithName:PROPERTY_DISPLAY_MODE defaultValue:[NSString stringWithFormat:@"%d", DisplayModeSystem]]intValue];
+    }
+        
+    switch (displayMode) {
         case DisplayModeSystem:
             if (@available(iOS 13.0, *) ) {
                 if ([UIScreen mainScreen].traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark){
@@ -853,9 +927,38 @@ static TLStringConfigIdentifier *mainStyleConfig;
             break;
     }
     
-    
-    
     return backgroundColor;
+}
+
++ (BOOL)isDarkMode {
+        
+    ApplicationDelegate *delegate = (ApplicationDelegate *)[[UIApplication sharedApplication] delegate];
+    MainViewController *mainViewController = delegate.mainViewController;
+    DisplayMode displayMode = [[delegate.twinmeContext.defaultSpaceSettings getStringWithName:PROPERTY_DISPLAY_MODE defaultValue:[NSString stringWithFormat:@"%d", DisplayModeSystem]]intValue];
+    
+    if (mainViewController.space && ![mainViewController.space.settings getBooleanWithName:PROPERTY_DEFAULT_APPEARANCE_SETTINGS defaultValue:YES]) {
+        displayMode = [[mainViewController.space.settings getStringWithName:PROPERTY_DISPLAY_MODE defaultValue:[NSString stringWithFormat:@"%d", DisplayModeSystem]]intValue];
+    }
+        
+    switch (displayMode) {
+        case DisplayModeSystem:
+            if (@available(iOS 13.0, *) ) {
+                if ([UIScreen mainScreen].traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark){
+                    return YES;
+                }
+            }
+            return NO;
+            break;
+            
+        case DisplayModeDark:
+            return YES;
+            break;
+            
+        default:
+            break;
+    }
+    
+    return NO;
 }
 
 + (UIColor *)ITEM_BORDER_COLOR {
@@ -891,6 +994,56 @@ static TLStringConfigIdentifier *mainStyleConfig;
 + (UIColor *)FORWARD_COMMENT_COLOR {
     
     return DESIGN_FORWARD_COMMENT_COLOR;
+}
+
++ (UIColor *)SHADOW_COLOR {
+    
+    return SHADOW_COLOR;
+}
+
+/*
+ Returns an array of UIColor used to setup gradient on digits.
+ /!\
+ This array must be converted into an array of CGColor
+ Method `updateGradientColors` define on UIView+gradientBackgroundColor does it internally
+ /!\
+ */
++ (NSArray<UIColor *> *)colorsForDigit:(NSInteger)digit {
+    
+    switch (digit) {
+        case 0:
+            return @[UIColorFromRGB(0x5fd9c0), UIColorFromRGB(0x3dbf9b)];
+            
+        case 1:
+            return @[UIColorFromRGB(0xfd5553), UIColorFromRGB(0xfe2f5f)];
+            
+        case 2:
+            return @[UIColorFromRGB(0x402aad), UIColorFromRGB(0xa256ca)];
+            
+        case 3:
+            return @[UIColorFromRGB(0x3548b9), UIColorFromRGB(0x2f3d93)];
+            
+        case 4:
+            return @[UIColorFromRGB(0x35b346), UIColorFromRGB(0x36b947)];
+            
+        case 5:
+            return @[UIColorFromRGB(0x3587b9), UIColorFromRGB(0x3588bb)];
+            
+        case 6:
+            return @[UIColorFromRGB(0xb5ba36), UIColorFromRGB(0xb4b936)];
+            
+        case 7:
+            return @[UIColorFromRGB(0xb93a36), UIColorFromRGB(0xb93a36)];
+            
+        case 8:
+            return @[UIColorFromRGB(0x02ffb3), UIColorFromRGB(0x02ffb4)];
+            
+        case 9:
+            return @[UIColorFromRGB(0xb935a4), UIColorFromRGB(0xb935a5)];
+            
+        default:
+            return @[UIColorFromRGB(0xffffff), UIColorFromRGB(0xffffff)];
+    }
 }
 
 + (UIColor *)OVERLAY_COLOR {
@@ -961,15 +1114,7 @@ static TLStringConfigIdentifier *mainStyleConfig;
 + (NSArray *)BACKGROUND_GRADIENT_COLORS_BLACK {
     
     return DESIGN_BACKGROUND_GRADIENT_COLORS_BLACK;
-}
-
-+ (NSMutableArray *)COLORS {
     
-    for (UICustomColor *customColor in DESIGN_COLORS) {
-        customColor.selectedColor = NO;
-    }
-    
-    return DESIGN_COLORS;
 }
 
 + (UIColor *)MAIN_COLOR {
@@ -1005,6 +1150,11 @@ static TLStringConfigIdentifier *mainStyleConfig;
     } else {
         mainStyleConfig.stringValue = mainColor;
     }
+}
+
++ (NSArray *)BUTTON_GRADIENT_COLORS_GREEN {
+    
+    return @[(id)DESIGN_BUTTON_GRADIENT_COLOR_GREEN_1.CGColor, (id)DESIGN_BUTTON_GRADIENT_COLOR_GREEN_2.CGColor];
 }
 
 + (UIFont *)FONT_REGULAR16 {
@@ -1085,6 +1235,11 @@ static TLStringConfigIdentifier *mainStyleConfig;
 + (UIFont *)FONT_REGULAR68 {
     
     return DESIGN_REGULAR68;
+}
+
++ (UIFont *)FONT_REGULAR88 {
+    
+    return DESIGN_REGULAR88;
 }
 
 + (UIFont *)FONT_MEDIUM16 {
@@ -1187,6 +1342,11 @@ static TLStringConfigIdentifier *mainStyleConfig;
     return DESIGN_BOLD28;
 }
 
++ (UIFont *)FONT_BOLD32 {
+    
+    return DESIGN_BOLD32;
+}
+
 + (UIFont *)FONT_BOLD34 {
     
     return DESIGN_BOLD34;
@@ -1200,6 +1360,11 @@ static TLStringConfigIdentifier *mainStyleConfig;
 + (UIFont *)FONT_BOLD44 {
     
     return DESIGN_BOLD44;
+}
+
++ (UIFont *)FONT_BOLD54 {
+    
+    return DESIGN_BOLD54;
 }
 
 + (UIFont *)FONT_BOLD68 {
@@ -1458,6 +1623,123 @@ static TLStringConfigIdentifier *mainStyleConfig;
 + (CGFloat)POPUP_RADIUS {
     
     return DESIGN_POPUP_RADIUS;
+}
+
++ (CGFloat)SPACE_RADIUS_RATIO {
+    
+    return DESIGN_SPACE_RADIUS_RATIO;
+}
+
++ (UIImage *)defaultBackgroundWithImage:(UIImage *)image {
+    
+    CGSize size = image.size;
+    // Step 1: scale image
+    CGSize scaledSize = CGSizeMake(DESIGN_BACKGROUND_WIDTH, DESIGN_BACKGROUND_HEIGHT);
+    UIImage *backgroundImage = image;
+    if (!CGSizeEqualToSize(size, scaledSize)) {
+        CGFloat width = size.width;
+        CGFloat height = size.height;
+        CGFloat scaledWidth = scaledSize.width;
+        CGFloat scaledHeight = scaledSize.height;
+        CGFloat widthFactor = scaledWidth / width;
+        CGFloat heightFactor = scaledHeight / height;
+        CGRect rect = CGRectMake(0, 0, 0, 0);
+        CGFloat scaleFactor = MAX(widthFactor, heightFactor);
+        rect.size.width = width * scaleFactor;
+        rect.size.height = height * scaleFactor;
+        if (widthFactor > heightFactor) {
+            rect.origin.y = (scaledHeight - rect.size.height) * 0.5;
+        } else if (widthFactor < heightFactor) {
+            rect.origin.x = (scaledWidth - rect.size.width) * 0.5;
+        }
+        UIGraphicsBeginImageContext(scaledSize);
+        [image drawInRect:rect];
+        backgroundImage = UIGraphicsGetImageFromCurrentImageContext();
+        UIGraphicsEndImageContext();
+    }
+    
+    CGRect scaledRect = CGRectMake(0, 0, scaledSize.width, scaledSize.height);
+    UIGraphicsBeginImageContext(scaledSize);
+    [backgroundImage drawInRect:scaledRect];
+    
+    // Step 2: add first gradient
+    CAGradientLayer *layer1 = [CAGradientLayer layer];
+    layer1.frame = CGRectMake(0, 0, scaledSize.width, scaledSize.height);
+    layer1.colors = @[(__bridge id)[UIColor whiteColor].CGColor,
+                      (__bridge id)[UIColor whiteColor].CGColor,
+                      (__bridge id)[UIColor clearColor].CGColor];
+    layer1.locations = @[@0,@0.3,@1];
+    [layer1 renderInContext:UIGraphicsGetCurrentContext()];
+    backgroundImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    
+    // Step 3: adapt saturation
+    backgroundImage = [Design adaptBrightnessWithImage:backgroundImage];
+    
+    // Step 4: blur
+    backgroundImage = [backgroundImage applyBlurWithRadius:36 tintColor:nil saturationDeltaFactor:1 maskImage:nil];
+    
+    // Step 5: add second gradient
+    CAGradientLayer *layer2 = [CAGradientLayer layer];
+    layer2.frame = CGRectMake(0, 0, scaledSize.width, scaledSize.height);
+    layer2.colors = @[(__bridge id)[UIColor whiteColor].CGColor,
+                      (__bridge id)[[UIColor whiteColor] colorWithAlphaComponent:0.2].CGColor];
+    UIGraphicsBeginImageContext(scaledSize);
+    [backgroundImage drawInRect:scaledRect];
+    [layer2 renderInContext:UIGraphicsGetCurrentContext()];
+    backgroundImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    return backgroundImage;
+}
+
+static const CGFloat MIN_BRIGHTNESS = 144;
+static const CGFloat MAX_BRIGHTNESS = 208;
+static const CGFloat MEAN_BRIGHTNESS = (MIN_BRIGHTNESS + MAX_BRIGHTNESS) / 2;
+
+typedef uint8_t Pixel[4];
+
++ (UIImage *)adaptBrightnessWithImage:(UIImage *)image {
+    
+    CGRect rect = { CGPointZero, image.size };
+    UIGraphicsBeginImageContext(image.size);
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    CGContextScaleCTM(context, 1, -1);
+    CGContextTranslateCTM(context, 0, -image.size.height);
+    CGContextDrawImage(context, rect, image.CGImage);
+    size_t width = CGBitmapContextGetWidth(context);
+    size_t height = CGBitmapContextGetHeight(context);
+    void *data = CGBitmapContextGetData(context);
+    uint8_t *pixels = (uint8_t *)data;
+    size_t index = 0;
+    uint64_t red = 0;
+    uint64_t green = 0;
+    uint64_t blue = 0;
+    for (size_t i = 0; i < height; i++) {
+        for (size_t j = 0; j < width; j++, index+=4) {
+            uint8_t *pixel = pixels + index;
+            red += pixel[0];
+            green += pixel[1];
+            blue += pixel[2];
+        }
+    }
+    float brightness = (0.299 * red + 0.587 * green + 0.114 * blue) / (width * height);
+    if (brightness > MIN_BRIGHTNESS && brightness < MAX_BRIGHTNESS) {
+        UIGraphicsEndImageContext();
+        return image;
+    }
+    int delta = (int)(MEAN_BRIGHTNESS - brightness);
+    index = 0;
+    for (size_t i = 0; i < height; i++) {
+        for (size_t j = 0; j < width; j++, index+=4) {
+            uint8_t *pixel = pixels + index;
+            pixel[0] = MAX(MIN(pixel[0] + delta, 255), 0);
+            pixel[1] = MAX(MIN(pixel[1] + delta, 255), 0);
+            pixel[2] = MAX(MIN(pixel[2] + delta, 255), 0);
+        }
+    }
+    UIImage *adaptedImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    return adaptedImage;
 }
 
 //

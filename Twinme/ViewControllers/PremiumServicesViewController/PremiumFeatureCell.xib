@@ -21,7 +21,7 @@
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="foh-D3-r8g">
                         <rect key="frame" x="40" y="0.0" width="670" height="1028"/>
                         <subviews>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="TwinmePlusLogo" translatesAutoresizingMaskIntoConstraints="NO" id="bPs-0h-hNq">
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="LogoRedBackground" translatesAutoresizingMaskIntoConstraints="NO" id="bPs-0h-hNq">
                                 <rect key="frame" x="268" y="38" width="134" height="68"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="68" id="O9o-XH-put"/>
@@ -192,9 +192,9 @@
         </collectionViewCell>
     </objects>
     <resources>
-        <image name="CheckMark" width="160" height="116"/>
+        <image name="CheckMark" width="27" height="27"/>
+        <image name="LogoRedBackground" width="400" height="400"/>
         <image name="PremiumFeatureGroupCall" width="187" height="164"/>
-        <image name="TwinmePlusLogo" width="249" height="167"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>

@@ -9,6 +9,7 @@
 #import <CocoaLumberjack.h>
 
 #import "TextViewRightView.h"
+
 #import <TwinmeCommon/Design.h>
 
 #if 0
@@ -87,7 +88,7 @@ static CGFloat DESIGN_HEIGHT_INSET = 24;
 
 - (void)updateColor {
     DDLogVerbose(@"%@ initViews", LOG_TAG);
-    
+
     self.cameraImageView.tintColor = Design.MAIN_COLOR;
     self.recordImageView.tintColor = Design.MAIN_COLOR;
 }

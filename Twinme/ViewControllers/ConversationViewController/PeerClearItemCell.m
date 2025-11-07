@@ -8,6 +8,8 @@
 
 #import <CocoaLumberjack.h>
 
+#import <Twinme/TLTwinmeAttributes.h>
+
 #import "PeerClearItemCell.h"
 
 #import <Utils/NSString+Utils.h>
@@ -16,6 +18,8 @@
 
 #import <TwinmeCommon/Design.h>
 #import "PeerClearItem.h"
+
+#import "UIColor+Hex.h"
 
 #if 0
 static const int ddLogLevel = DDLogLevelVerbose;
@@ -126,6 +130,11 @@ static const CGFloat DESIGN_AVATAR_LEADING = 36;
     PeerClearItem *peerClearItem = (PeerClearItem *)item;
     self.clearLabel.text = [NSString stringWithFormat:TwinmeLocalizedString(@"conversation_view_controller_cleanup_conversation_by_peer", nil), peerClearItem.name];
     self.avatarView.image = [conversationViewController getContactAvatarWithUUID:item.peerTwincodeOutboundId];
+    
+    if ([self.avatarView.image isEqual:[TLTwinmeAttributes DEFAULT_GROUP_AVATAR]]) {
+        self.avatarView.backgroundColor = [UIColor colorWithHexString:Design.DEFAULT_COLOR alpha:1.0];
+        self.avatarView.tintColor = [UIColor whiteColor];
+    }
     
     if ([conversationViewController isMenuOpen]) {
         self.overlayView.hidden = NO;

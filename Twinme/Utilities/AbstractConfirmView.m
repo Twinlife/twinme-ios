@@ -14,6 +14,7 @@
 
 #import <TwinmeCommon/Design.h>
 #import <Utils/NSString+Utils.h>
+#import "UIColor+Hex.h"
 
 #if 0
 static const int ddLogLevel = DDLogLevelVerbose;
@@ -33,7 +34,6 @@ static const int ddLogLevel = DDLogLevelWarning;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *slideMarkViewHeightConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *slideMarkViewWidthConstraint;
 @property (weak, nonatomic) IBOutlet UIView *slideMarkView;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *avatarContainerViewTopConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *iconViewHeightConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *iconImageViewHeightConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *bulletViewHeightConstraint;
@@ -73,9 +73,11 @@ static const int ddLogLevel = DDLogLevelWarning;
         self.avatarView.hidden = NO;
         
         if ([avatar isEqual:[TLTwinmeAttributes DEFAULT_GROUP_AVATAR]]) {
-            self.avatarView.backgroundColor = Design.GREY_ITEM;
+            self.avatarView.backgroundColor = [UIColor colorWithHexString:Design.DEFAULT_COLOR alpha:1.0];
+            self.avatarView.tintColor = [UIColor whiteColor];
         } else {
             self.avatarView.backgroundColor = [UIColor clearColor];
+            self.avatarView.tintColor = [UIColor clearColor];
         }
     } else {
         self.avatarView.hidden = YES;

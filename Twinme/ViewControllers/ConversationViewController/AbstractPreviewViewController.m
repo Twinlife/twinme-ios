@@ -8,13 +8,16 @@
 
 #import <CocoaLumberjack.h>
 
+#import <Twinme/TLSpace.h>
+
 #import <Utils/NSString+Utils.h>
 
 #import "AbstractPreviewViewController.h"
 #import "MenuSendOptionsView.h"
-#import "PremiumFeatureConfirmView.h"
+#import "MenuSelectValueView.h"
+#import "UITimeout.h"
 
-#import "UIPremiumFeature.h"
+#import "SpaceSetting.h"
 
 #if 0
 static const int ddLogLevel = DDLogLevelVerbose;
@@ -33,7 +36,7 @@ static const int MAX_VISIBLE_LINES = 5;
 // Interface: AbstractPreviewViewController ()
 //
 
-@interface AbstractPreviewViewController ()<UITextViewDelegate, SwitchViewDelegate, ConfirmViewDelegate, MenuSendOptionsDelegate>
+@interface AbstractPreviewViewController ()<UITextViewDelegate, SwitchViewDelegate, MenuSendOptionsDelegate>
 
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *closeViewHeightConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *closeViewWidthConstraint;
@@ -66,6 +69,8 @@ static const int MAX_VISIBLE_LINES = 5;
 
 @property (nonatomic) BOOL menuSendOptionsOpen;
 @property (nonatomic) BOOL allowCopy;
+@property (nonatomic) BOOL allowEphemeralMessage;
+@property (nonatomic) int64_t expireTimeout;
 
 @property (nonatomic) NSString *contactName;
 @property (nonatomic) UIImage *contactAvatar;
@@ -99,6 +104,8 @@ static const int MAX_VISIBLE_LINES = 5;
     if (self) {
         _keyboardHidden = YES;
         _menuSendOptionsOpen = NO;
+        _allowEphemeralMessage = NO;
+        _expireTimeout = 0;
     }
     return self;
 }
@@ -160,8 +167,8 @@ static const int MAX_VISIBLE_LINES = 5;
     DDLogVerbose(@"%@ close", LOG_TAG);
 }
 
-- (void)send:(BOOL)allowCopyText allowCopyFile:(BOOL)allowCopyFile {
-    DDLogVerbose(@"%@ send: %@ allowCopyFile: %@", LOG_TAG, allowCopyText ? @"YES" : @"NO", allowCopyFile ? @"YES" : @"NO");
+- (void)send:(BOOL)allowCopyText allowCopyFile:(BOOL)allowCopyFile timeout:(int64_t)timeout {
+    DDLogVerbose(@"%@ send: %@ allowCopyFile: %@ timeout: %lld", LOG_TAG, allowCopyText ? @"YES" : @"NO", allowCopyFile ? @"YES" : @"NO", timeout);
     
 }
 
@@ -261,34 +268,6 @@ static const int MAX_VISIBLE_LINES = 5;
     }];
 }
 
-#pragma mark - ConfirmViewDelegate
-
-- (void)didTapConfirm:(nonnull AbstractConfirmView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractConfirmView);
-    
-    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:TwinmeLocalizedString(@"twinme_plus_link", nil)] options:@{} completionHandler:nil];
-    
-    [abstractConfirmView closeConfirmView];
-}
-
-- (void)didTapCancel:(nonnull AbstractConfirmView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didTapCancel: %@", LOG_TAG, abstractConfirmView);
-    
-    [abstractConfirmView closeConfirmView];
-}
-
-- (void)didClose:(nonnull AbstractConfirmView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didClose: %@", LOG_TAG, abstractConfirmView);
-    
-    [abstractConfirmView closeConfirmView];
-}
-
-- (void)didFinishCloseAnimation:(nonnull AbstractConfirmView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didFinishCloseAnimation: %@", LOG_TAG, abstractConfirmView);
-    
-    [abstractConfirmView removeFromSuperview];
-}
-
 #pragma mark - MenuSendOptionsDelegate
 
 - (void)cancelMenuSendOptions:(MenuSendOptionsView *)menuSendOptionsView {
@@ -298,8 +277,8 @@ static const int MAX_VISIBLE_LINES = 5;
     [menuSendOptionsView removeFromSuperview];
 }
 
-- (void)sendFromOptionsMenu:(MenuSendOptionsView *)menuSendOptionsView allowCopy:(BOOL)allowCopy allowEphemeral:(BOOL)allowEphemeral expireTimeout:(int)expireTimeout {
-    DDLogVerbose(@"%@ sendFromOptionsMenu: %@ allowEphemeral: %@ expireTimeout: %d", LOG_TAG, allowCopy ? @"YES" : @"NO", allowEphemeral ? @"YES" : @"NO", expireTimeout);
+- (void)sendFromOptionsMenu:(MenuSendOptionsView *)menuSendOptionsView allowCopy:(BOOL)allowCopy allowEphemeral:(BOOL)allowEphemeral expireTimeout:(int64_t) expireTimeout {
+    DDLogVerbose(@"%@ sendFromOptionsMenu: %@ allowEphemeral: %@ expireTimeout: %lld", LOG_TAG, allowCopy ? @"YES" : @"NO", allowEphemeral ? @"YES" : @"NO", expireTimeout);
     
     [menuSendOptionsView removeFromSuperview];
     
@@ -310,7 +289,7 @@ static const int MAX_VISIBLE_LINES = 5;
         allowCopyFile = allowCopy;
     }
     
-    [self send:allowCopyText allowCopyFile:allowCopyFile];
+    [self send:allowCopyText allowCopyFile:allowCopyFile timeout:expireTimeout];
 }
 
 #pragma mark - Private methods
@@ -415,17 +394,6 @@ static const int MAX_VISIBLE_LINES = 5;
     [self.messageTextView resignFirstResponder];
 }
 
-- (void)handleEphemeralTapGesture:(UITapGestureRecognizer *)sender {
-    DDLogVerbose(@"%@ handleEphemeralTapGesture: %@", LOG_TAG, sender);
-    
-    PremiumFeatureConfirmView *premiumFeatureConfirmView = [[PremiumFeatureConfirmView alloc] init];
-    premiumFeatureConfirmView.confirmViewDelegate = self;
-    premiumFeatureConfirmView.forceDarkMode = YES;
-    [premiumFeatureConfirmView initWithPremiumFeature:[[UIPremiumFeature alloc]initWithFeatureType:FeatureTypePrivacy] parentViewController:self];
-    [self.view addSubview:premiumFeatureConfirmView];
-    [premiumFeatureConfirmView showConfirmView];
-}
-
 - (void)handleCloseTapGesture:(UITapGestureRecognizer *)sender {
     DDLogVerbose(@"%@ handleCloseTapGesture: %@", LOG_TAG, sender);
     
@@ -439,14 +407,27 @@ static const int MAX_VISIBLE_LINES = 5;
     
     if (sender.state == UIGestureRecognizerStateEnded) {
         
-        BOOL allowCopyText = self.twinmeApplication.allowCopyText;
-        BOOL allowCopyFile = self.twinmeApplication.allowCopyFile;
+        TLSpaceSettings *spaceSettings = self.currentSpace.settings;
+        if ([self.currentSpace.settings getBooleanWithName:PROPERTY_DEFAULT_MESSAGE_SETTINGS defaultValue:YES]) {
+            spaceSettings = self.twinmeContext.defaultSpaceSettings;
+        }
+        
+        BOOL allowCopyText = spaceSettings.messageCopyAllowed;
+        BOOL allowCopyFile = spaceSettings.fileCopyAllowed;
+        BOOL allowEphemeral = [spaceSettings getBooleanWithName:PROPERTY_ALLOW_EPHEMERAL_MESSAGE defaultValue:NO];
+        int64_t timeout = [[spaceSettings getStringWithName:PROPERTY_TIMEOUT_EPHEMERAL_MESSAGE defaultValue:[NSString stringWithFormat:@"%d", DEFAULT_TIMEOUT_MESSAGE]]integerValue];
         if (self.menuSendOptionsOpen) {
             allowCopyText = self.allowCopy;
             allowCopyFile = self.allowCopy;
+            allowEphemeral = self.allowEphemeralMessage;
+            timeout = self.expireTimeout;
         }
         
-        [self send:allowCopyText allowCopyFile:allowCopyFile];
+        if (!allowEphemeral) {
+            timeout = 0;
+        }
+        
+        [self send:allowCopyText allowCopyFile:allowCopyFile timeout:timeout];
     }
 }
 
@@ -467,8 +448,14 @@ static const int MAX_VISIBLE_LINES = 5;
         
         self.allowCopy = NO;
         
-        BOOL allowCopyText = self.twinmeApplication.allowCopyText;
-        BOOL allowCopyFile = self.twinmeApplication.allowCopyFile;
+        TLSpaceSettings *spaceSettings = self.currentSpace.settings;
+        if ([self.currentSpace.settings getBooleanWithName:PROPERTY_DEFAULT_MESSAGE_SETTINGS defaultValue:YES]) {
+            spaceSettings = self.twinmeContext.defaultSpaceSettings;
+        }
+        
+        BOOL allowCopyText = spaceSettings.messageCopyAllowed;
+        BOOL allowCopyFile = spaceSettings.fileCopyAllowed;
+        BOOL allowEphemeral = [spaceSettings getBooleanWithName:PROPERTY_ALLOW_EPHEMERAL_MESSAGE defaultValue:NO];
         
         BOOL isTextToSend = NO;
         
@@ -484,7 +471,9 @@ static const int MAX_VISIBLE_LINES = 5;
             self.allowCopy = allowCopyFile;
         }
         
-        [menuSendOptionsView openMenu:self.allowCopy];
+        int64_t timeout = [[spaceSettings getStringWithName:PROPERTY_TIMEOUT_EPHEMERAL_MESSAGE defaultValue:[NSString stringWithFormat:@"%d", DEFAULT_TIMEOUT_MESSAGE]] integerValue];
+        self.expireTimeout = timeout;
+        [menuSendOptionsView openMenu:self.allowCopy allowEphemeralMessage:allowEphemeral timeout:timeout];
     }
 }
 

@@ -50,6 +50,8 @@ static const int ddLogLevel = DDLogLevelWarning;
     
     [super awakeFromNib];
     
+    self.forceDarkMode = NO;
+    
     self.selectionStyle = UITableViewCellSelectionStyleNone;
     self.contentView.backgroundColor = [UIColor clearColor];
     
@@ -80,7 +82,12 @@ static const int ddLogLevel = DDLogLevelWarning;
 - (void)bindWithTitle:(NSString *)title subTitle:(NSString *)subtitle checked:(BOOL)checked hideBorder:(BOOL)hideBorder hideSeparator:(BOOL)hideSeparator {
     DDLogVerbose(@"%@ bindWithTitle: %@ subTitle: %@", LOG_TAG, title, subtitle);
         
-    NSMutableAttributedString *valueAttributedString = [[NSMutableAttributedString alloc] initWithString:title attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_REGULAR34, NSFontAttributeName, Design.FONT_COLOR_DEFAULT, NSForegroundColorAttributeName, nil]];
+    UIColor *titleColor = Design.FONT_COLOR_DEFAULT;
+    if (self.forceDarkMode) {
+        titleColor = [UIColor whiteColor];
+    }
+    
+    NSMutableAttributedString *valueAttributedString = [[NSMutableAttributedString alloc] initWithString:title attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_REGULAR34, NSFontAttributeName, titleColor, NSForegroundColorAttributeName, nil]];
     
     if (![subtitle isEqualToString:@""]) {
         [valueAttributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:@"\n"]];
@@ -88,8 +95,6 @@ static const int ddLogLevel = DDLogLevelWarning;
     }
     
     self.valueLabel.attributedText = valueAttributedString;
-    
-    self.checkMarkImageView.tintColor = Design.MAIN_COLOR;
     
     if (hideBorder) {
         if (checked) {
@@ -107,6 +112,23 @@ static const int ddLogLevel = DDLogLevelWarning;
     }
     
     self.separatorView.hidden = hideSeparator;
+    
+    [self updateColor];
+}
+
+- (void)updateColor {
+    DDLogVerbose(@"%@ updateColor", LOG_TAG);
+    
+    if (self.forceDarkMode) {
+        self.valueLabel.textColor = [UIColor whiteColor];
+        self.separatorView.backgroundColor = [UIColor colorWithRed:199./255. green:199./255. blue:255./255. alpha:0.3];
+    } else {
+        self.valueLabel.textColor = Design.FONT_COLOR_DEFAULT;
+        self.separatorView.backgroundColor = Design.SEPARATOR_COLOR_GREY;
+    }
+    
+    self.checkMarkImageView.tintColor = Design.MAIN_COLOR;
+
 }
 
 @end

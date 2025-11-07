@@ -86,6 +86,11 @@
                 break;
             }
                 
+            case TLDescriptorTypeGeolocationDescriptor: {
+                lastMessage = [[NSAttributedString alloc]initWithString:TwinmeLocalizedString(@"notification_center_geolocation_message_received", nil)];
+                break;
+            }
+                
             case TLDescriptorTypeCallDescriptor: {
                 TLCallDescriptor *callDescriptor = (TLCallDescriptor *)self.lastDescriptor;
                 if (!callDescriptor.isAccepted && callDescriptor.isIncoming) {

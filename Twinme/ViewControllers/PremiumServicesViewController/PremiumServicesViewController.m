@@ -8,7 +8,10 @@
 
 #import <CocoaLumberjack.h>
 
+#import <Twinme/TLSpace.h>
+
 #import "PremiumServicesViewController.h"
+#import "InAppSubscriptionViewController.h"
 
 #import "PremiumFeatureCell.h"
 
@@ -16,7 +19,11 @@
 
 #import <Utils/NSString+Utils.h>
 
+#import <TwinmeCommon/ApplicationDelegate.h>
 #import <TwinmeCommon/Design.h>
+#import <TwinmeCommon/MainViewController.h>
+#import <TwinmeCommon/TwinmeNavigationController.h>
+
 #import "UIView+GradientBackgroundColor.h"
 
 #if 0
@@ -83,7 +90,6 @@ static CGFloat FEATURE_CELL_HEIGHT;
     }
     return self;
 }
-
 
 - (void)viewDidLoad {
     DDLogVerbose(@"%@ viewDidLoad", LOG_TAG);
@@ -192,10 +198,8 @@ static CGFloat FEATURE_CELL_HEIGHT;
         self.featurePageControl.currentPage = 3;
     } else  if (offset < (cellHeight * 4.5)) {
         self.featurePageControl.currentPage = 4;
-    } else  if (offset < (cellHeight * 5.5)) {
-        self.featurePageControl.currentPage = 5;
     } else {
-        self.featurePageControl.currentPage = 6;
+        self.featurePageControl.currentPage = 5;
     }
 }
     
@@ -214,7 +218,7 @@ static CGFloat FEATURE_CELL_HEIGHT;
     self.updateView.backgroundColor = Design.MAIN_COLOR;
     self.updateView.userInteractionEnabled = YES;
     self.updateView.isAccessibilityElement = YES;
-    self.updateView.accessibilityLabel = TwinmeLocalizedString(@"migration_twinme_plus_view_controller_upgrade_title", nil);
+    self.updateView.accessibilityLabel = TwinmeLocalizedString(@"side_menu_view_controller_subscribe", nil);
     self.updateView.layer.cornerRadius = Design.CONTAINER_RADIUS;
     self.updateView.clipsToBounds = YES;
     [self.updateView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleUpdateTapGesture:)]];
@@ -222,7 +226,7 @@ static CGFloat FEATURE_CELL_HEIGHT;
     self.updateLabelWidthConstraint.constant *= Design.WIDTH_RATIO;
     self.updateLabel.font = Design.FONT_BOLD36;
     self.updateLabel.textColor = [UIColor whiteColor];
-    self.updateLabel.text = TwinmeLocalizedString(@"migration_twinme_plus_view_controller_upgrade_title", nil);
+    self.updateLabel.text = TwinmeLocalizedString(@"side_menu_view_controller_subscribe", nil);
     self.updateLabel.adjustsFontSizeToFitWidth = YES;
     
     self.featureCollectionView.backgroundColor = [UIColor blackColor];
@@ -244,7 +248,7 @@ static CGFloat FEATURE_CELL_HEIGHT;
 
     self.featurePageControl.backgroundColor = [UIColor clearColor];
     self.featurePageControl.pageIndicatorTintColor = [UIColor colorWithRed:244./255. green:244./255. blue:244./255. alpha:1.0];
-    self.featurePageControl.currentPageIndicatorTintColor = Design.BACKGROUND_COLOR_BLUE;
+    self.featurePageControl.currentPageIndicatorTintColor = Design.MAIN_COLOR;
     self.featurePageControl.numberOfPages = self.premiumFeatures.count;
     
     CGAffineTransform rotateTransform = CGAffineTransformMakeRotation(M_PI / 2);
@@ -292,21 +296,26 @@ static CGFloat FEATURE_CELL_HEIGHT;
     DDLogVerbose(@"%@ initFeatures", LOG_TAG);
     
     self.premiumFeatures = [[NSMutableArray alloc]init];
-    [self.premiumFeatures addObject:[[UIPremiumFeature alloc]initWithFeatureType:FeatureTypePrivacy]];
-    [self.premiumFeatures addObject:[[UIPremiumFeature alloc]initWithFeatureType:FeatureTypeSpaces]];
-    [self.premiumFeatures addObject:[[UIPremiumFeature alloc]initWithFeatureType:FeatureTypeGroupCall]];
-    [self.premiumFeatures addObject:[[UIPremiumFeature alloc]initWithFeatureType:FeatureTypeStreaming]];
-    [self.premiumFeatures addObject:[[UIPremiumFeature alloc]initWithFeatureType:FeatureTypeTransfertCall]];
-    [self.premiumFeatures addObject:[[UIPremiumFeature alloc]initWithFeatureType:FeatureTypeClickToCall]];
-    [self.premiumFeatures addObject:[[UIPremiumFeature alloc]initWithFeatureType:FeatureTypeConversation]];
-    [self.premiumFeatures addObject:[[UIPremiumFeature alloc]initWithFeatureType:FeatureTypeRemoteControl]];
+    [self.premiumFeatures addObject:[[UIPremiumFeature alloc]initWithFeatureType:FeatureTypeGroupCall spaceSettings:self.currentSpace.settings]];
+    [self.premiumFeatures addObject:[[UIPremiumFeature alloc]initWithFeatureType:FeatureTypeStreaming spaceSettings:self.currentSpace.settings]];
+    [self.premiumFeatures addObject:[[UIPremiumFeature alloc]initWithFeatureType:FeatureTypeTransfertCall spaceSettings:self.currentSpace.settings]];
+    [self.premiumFeatures addObject:[[UIPremiumFeature alloc]initWithFeatureType:FeatureTypeClickToCall spaceSettings:self.currentSpace.settings]];
+    [self.premiumFeatures addObject:[[UIPremiumFeature alloc]initWithFeatureType:FeatureTypeConversation spaceSettings:self.currentSpace.settings]];
+    [self.premiumFeatures addObject:[[UIPremiumFeature alloc]initWithFeatureType:FeatureTypeRemoteControl spaceSettings:self.currentSpace.settings]];
 }
 
 - (void)handleUpdateTapGesture:(UITapGestureRecognizer *)sender {
     DDLogVerbose(@"%@ handleUpgradeTapGesture: %@", LOG_TAG, sender);
     
     if (sender.state == UIGestureRecognizerStateEnded) {
-        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:TwinmeLocalizedString(@"twinme_plus_link", nil)] options:@{} completionHandler:nil];
+        [self dismissViewControllerAnimated:YES completion:^{
+            ApplicationDelegate *delegate = (ApplicationDelegate *)[[UIApplication sharedApplication] delegate];
+            MainViewController *mainViewController = delegate.mainViewController;
+            TwinmeNavigationController *selectedNavigationController = mainViewController.selectedViewController;
+            InAppSubscriptionViewController *inAppSubscriptionViewController = [[UIStoryboard storyboardWithName:@"iPhone" bundle:nil] instantiateViewControllerWithIdentifier:@"InAppSubscriptionViewController"];
+            TwinmeNavigationController *navigationController = [[TwinmeNavigationController alloc]initWithRootViewController:inAppSubscriptionViewController];
+            [selectedNavigationController presentViewController:navigationController animated:YES completion:nil];
+        }];
     }
 }
 
@@ -322,6 +331,7 @@ static CGFloat FEATURE_CELL_HEIGHT;
     DDLogVerbose(@"%@ handleCloseTapGesture: %@", LOG_TAG, sender);
     
     if (sender.state == UIGestureRecognizerStateEnded) {
+        
         [self dismissViewControllerAnimated:YES completion:nil];
     }
 }

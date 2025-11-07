@@ -12,6 +12,7 @@
 #import <Twinlife/TLConversationService.h>
 
 #import <Twinme/TLMessage.h>
+#import <Twinme/TLTwinmeAttributes.h>
 
 #import "PeerFileItemCell.h"
 
@@ -24,12 +25,15 @@
 
 #import <TwinmeCommon/AsyncImageLoader.h>
 #import <TwinmeCommon/AsyncVideoLoader.h>
-#import <TwinmeCommon/Design.h>
 #import <TwinmeCommon/Utils.h>
-#import "DecoratedLabel.h"
 #import <TwinmeCommon/Design.h>
+
+#import "Cache.h"
+#import "CustomAppearance.h"
+#import "DecoratedLabel.h"
 #import "EphemeralView.h"
 #import "PeerFileItem.h"
+#import "UIColor+Hex.h"
 
 #if 0
 static const int ddLogLevel = DDLogLevelVerbose;
@@ -110,6 +114,8 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
 @property (nonatomic) CGFloat bottomRightRadius;
 @property (nonatomic) CGFloat bottomLeftRadius;
 @property (nonatomic) CAShapeLayer *borderLayer;
+
+@property (nonatomic) CustomAppearance *customAppearance;
 
 @property (nonatomic) NSTimer *updateEphemeralTimer;
 
@@ -322,6 +328,12 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
     
     [super bindWithItem:item conversationViewController:conversationViewController];
     
+    self.customAppearance = [conversationViewController getCustomAppearance];
+    
+    [self.contentFileView setBackgroundColor:[self.customAppearance getPeerMessageBackgroundColor]];
+    self.titleFileLabel.textColor = [self.customAppearance getPeerMessageTextColor];
+    self.sizeFileLabel.textColor = [self.customAppearance getPeerMessageTextColor];
+    
     PeerFileItem* peerFileItem = (PeerFileItem *)item;
     self.namedFileDescriptor = peerFileItem.namedFileDescriptor;
     
@@ -417,16 +429,16 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
                 self.replyImageViewHeightConstraint.constant = Design.REPLY_IMAGE_MAX_HEIGHT;
                 self.replyImageViewTopConstraint.constant = Design.REPLY_VIEW_IMAGE_TOP;
                 self.replyImageViewBottomConstraint.constant = Design.REPLY_VIEW_IMAGE_TOP;
-
+                
                 if (!self.replyImageLoader) {
                     TLImageDescriptor *imageDescriptor = (TLImageDescriptor *)peerFileItem.replyToDescriptor;
-                                        
+                    
                     self.replyImageLoader = [[AsyncImageLoader alloc] initWithItem:item imageDescriptor:imageDescriptor size:CGSizeMake(Design.REPLY_IMAGE_MAX_WIDTH, Design.REPLY_IMAGE_MAX_HEIGHT)];
                     if (!self.replyImageLoader.image) {
                         [asyncManager addItemWithAsyncLoader:self.replyImageLoader];
                     }
                 }
-
+                
                 self.replyImageView.image = self.replyImageLoader.image;
                 
                 break;
@@ -449,7 +461,7 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
                         [asyncManager addItemWithAsyncLoader:self.replyVideoLoader];
                     }
                 }
-
+                
                 self.replyImageView.image = self.replyVideoLoader.image;
                 
                 break;
@@ -494,6 +506,14 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
     if (peerFileItem.visibleAvatar) {
         self.avatarView.hidden = NO;
         self.avatarView.image = [conversationViewController getContactAvatarWithUUID:item.peerTwincodeOutboundId];
+        
+        if ([self.avatarView.image isEqual:[TLTwinmeAttributes DEFAULT_GROUP_AVATAR]]) {
+            self.avatarView.backgroundColor = [UIColor colorWithHexString:Design.DEFAULT_COLOR alpha:1.0];
+            self.avatarView.tintColor = [UIColor whiteColor];
+        } else {
+            self.avatarView.backgroundColor = [UIColor clearColor];
+            self.avatarView.tintColor = [UIColor clearColor];
+        }
     } else {
         self.avatarView.hidden = YES;
         self.avatarView.image = nil;
@@ -530,9 +550,9 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
     if (self.item.state == ItemStateRead) {
         CGFloat timeSinceRead = ([[NSDate date] timeIntervalSince1970] * 1000) - self.item.readTimestamp;
         CGFloat percent = 1.0 - [Utils progressWithTime:timeSinceRead duration:self.item.expireTimeout];
-        [self.ephemeralView updateWithPercent:percent color:Design.BLACK_COLOR size:self.ephemeralViewHeightConstraint.constant];
+        [self.ephemeralView updateWithPercent:percent color:[self.customAppearance getPeerMessageTextColor] size:self.ephemeralViewHeightConstraint.constant];
     } else {
-        [self.ephemeralView updateWithPercent:1.0 color:Design.BLACK_COLOR size:self.ephemeralViewHeightConstraint.constant];
+        [self.ephemeralView updateWithPercent:1.0 color:[self.customAppearance getPeerMessageTextColor] size:self.ephemeralViewHeightConstraint.constant];
     }
 }
 
@@ -705,7 +725,7 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
     self.borderLayer = [CAShapeLayer layer];
     self.borderLayer.path = mask.path;
     self.borderLayer.fillColor = [UIColor clearColor].CGColor;
-    self.borderLayer.strokeColor = [UIColor clearColor].CGColor;
+    self.borderLayer.strokeColor = [self.customAppearance getPeerMessageBorderColor].CGColor;
     self.borderLayer.lineWidth = Design.ITEM_BORDER_WIDTH;
     self.borderLayer.frame = self.contentFileView.bounds;
     [self.contentFileView.layer addSublayer:self.borderLayer];
@@ -769,8 +789,6 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
     DDLogVerbose(@"%@ updateColor", LOG_TAG);
     
     self.overlayView.backgroundColor = Design.BACKGROUND_COLOR_WHITE_OPACITY85;
-    self.titleFileLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    self.sizeFileLabel.textColor = Design.FONT_COLOR_DEFAULT;
 }
 
 @end

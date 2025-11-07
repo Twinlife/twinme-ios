@@ -20,10 +20,14 @@
 #import "InvitationContactItem.h"
 #import "ConversationViewController.h"
 
+#import "CustomAppearance.h"
+
 #import <TwinmeCommon/ApplicationDelegate.h>
 #import <TwinmeCommon/Design.h>
 #import <TwinmeCommon/TwinmeApplication.h>
+
 #import "UIView+Toast.h"
+#import "UIColor+Hex.h"
 
 #if 0
 static const int ddLogLevel = DDLogLevelVerbose;
@@ -74,6 +78,9 @@ static const int ddLogLevel = DDLogLevelWarning;
 
 @property (nonatomic) NSString *name;
 @property (nonatomic, nullable) TLGetTwincodeAction *twincodeAction;
+
+@property (nonatomic) CAShapeLayer *borderLayer;
+@property (nonatomic) CustomAppearance *customAppearance;
 
 @end
 
@@ -220,6 +227,11 @@ static const int ddLogLevel = DDLogLevelWarning;
     
     [super bindWithItem:item conversationViewController:conversationViewController];
     
+    self.customAppearance = [conversationViewController getCustomAppearance];
+    
+    self.invitationLabel.textColor = [self.customAppearance getMessageTextColor];
+    [self.contentInvitationView setBackgroundColor:[self.customAppearance getMessageBackgroundColor]];
+        
     InvitationContactItem *invitationContactItem = (InvitationContactItem *)item;
     self.twincodeDescriptor = invitationContactItem.twincodeDescriptor;
     self.contentInvitationViewTopConstraint.constant = [conversationViewController getTopMarginWithMask:invitationContactItem.corners & ITEM_TOP_RIGHT item:item];
@@ -244,6 +256,9 @@ static const int ddLogLevel = DDLogLevelWarning;
     [self.twincodeAction start];
 
     self.contentDeleteView.hidden = YES;
+    
+    self.stateImageView.backgroundColor = [UIColor clearColor];
+    self.stateImageView.tintColor = [UIColor clearColor];
     
     int corners = invitationContactItem.corners;
     switch (invitationContactItem.state) {
@@ -273,6 +288,10 @@ static const int ddLogLevel = DDLogLevelWarning;
             self.stateImageView.hidden = NO;
             [self.stateImageView.layer removeAllAnimations];
             self.stateImageView.image = [conversationViewController getContactAvatarWithUUID:[item peerTwincodeOutboundId]];
+            if ([self.stateImageView.image isEqual:[TLTwinmeAttributes DEFAULT_GROUP_AVATAR]]) {
+                self.stateImageView.backgroundColor = [UIColor colorWithHexString:Design.DEFAULT_COLOR alpha:1.0];
+                self.stateImageView.tintColor = [UIColor whiteColor];
+            }
             break;
             
         case ItemStateNotSent:
@@ -442,6 +461,18 @@ static const int ddLogLevel = DDLogLevelWarning;
     self.contentInvitationView.layer.masksToBounds = YES;
     self.contentInvitationView.layer.mask = mask;
     
+    if (self.borderLayer) {
+        [self.borderLayer removeFromSuperlayer];
+    }
+    
+    self.borderLayer = [CAShapeLayer layer];
+    self.borderLayer.path = mask.path;
+    self.borderLayer.fillColor = [UIColor clearColor].CGColor;
+    self.borderLayer.strokeColor = [self.customAppearance getMessageBorderColor].CGColor;
+    self.borderLayer.lineWidth = Design.ITEM_BORDER_WIDTH;
+    self.borderLayer.frame = self.contentInvitationView.bounds;
+    [self.contentInvitationView.layer addSublayer:self.borderLayer];
+    
     CAShapeLayer *maskDelete = [CAShapeLayer layer];
     maskDelete.path = path.CGPath;
     self.contentDeleteView.layer.masksToBounds = YES;
@@ -465,7 +496,6 @@ static const int ddLogLevel = DDLogLevelWarning;
 - (void)updateColor {
     DDLogVerbose(@"%@ updateColor", LOG_TAG);
     
-    [self.contentInvitationView setBackgroundColor:Design.MAIN_COLOR];
     self.overlayView.backgroundColor = Design.BACKGROUND_COLOR_WHITE_OPACITY85;
 }
 

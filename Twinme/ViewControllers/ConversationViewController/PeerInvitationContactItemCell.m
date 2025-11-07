@@ -21,9 +21,13 @@
 #import "ConversationViewController.h"
 #import "PeerInvitationContactItem.h"
 
+#import "CustomAppearance.h"
+
 #import <TwinmeCommon/ApplicationDelegate.h>
 #import <TwinmeCommon/Design.h>
 #import <TwinmeCommon/TwinmeApplication.h>
+
+#import "UIColor+Hex.h"
 
 #if 0
 static const int ddLogLevel = DDLogLevelVerbose;
@@ -72,6 +76,8 @@ static const int ddLogLevel = DDLogLevelWarning;
 
 @property (nonatomic) NSString *name;
 @property (nonatomic, nullable) TLGetTwincodeAction *twincodeAction;
+
+@property (nonatomic) CustomAppearance *customAppearance;
 
 @end
 
@@ -214,6 +220,11 @@ static const int ddLogLevel = DDLogLevelWarning;
     
     [super bindWithItem:item conversationViewController:conversationViewController];
     
+    self.customAppearance = [conversationViewController getCustomAppearance];
+    
+    self.invitationLabel.textColor = [self.customAppearance getPeerMessageTextColor];
+    [self.contentInvitationView setBackgroundColor:[self.customAppearance getPeerMessageBackgroundColor]];
+    
     PeerInvitationContactItem *peerInvitationContactItem = (PeerInvitationContactItem *)item;
     self.twincodeDescriptor = peerInvitationContactItem.twincodeDescriptor;
     self.contentInvitationViewTopConstraint.constant = [conversationViewController getTopMarginWithMask:peerInvitationContactItem.corners & ITEM_TOP_LEFT item:item];
@@ -246,6 +257,14 @@ static const int ddLogLevel = DDLogLevelWarning;
     if (peerInvitationContactItem.visibleAvatar) {
         self.avatarView.hidden = NO;
         self.avatarView.image = [conversationViewController getContactAvatarWithUUID:item.peerTwincodeOutboundId];
+        
+        if ([self.avatarView.image isEqual:[TLTwinmeAttributes DEFAULT_GROUP_AVATAR]]) {
+            self.avatarView.backgroundColor = [UIColor colorWithHexString:Design.DEFAULT_COLOR alpha:1.0];
+            self.avatarView.tintColor = [UIColor whiteColor];
+        } else {
+            self.avatarView.backgroundColor = [UIColor clearColor];
+            self.avatarView.tintColor = [UIColor clearColor];
+        }
     } else {
         self.avatarView.hidden = YES;
         self.avatarView.image = nil;
@@ -349,7 +368,7 @@ static const int ddLogLevel = DDLogLevelWarning;
     self.borderLayer = [CAShapeLayer layer];
     self.borderLayer.path = mask.path;
     self.borderLayer.fillColor = [UIColor clearColor].CGColor;
-    self.borderLayer.strokeColor = [UIColor clearColor].CGColor;
+    self.borderLayer.strokeColor = [self.customAppearance getPeerMessageBorderColor].CGColor;
     self.borderLayer.lineWidth = Design.ITEM_BORDER_WIDTH;
     self.borderLayer.frame = self.contentInvitationView.bounds;
     [self.contentInvitationView.layer addSublayer:self.borderLayer];
@@ -372,7 +391,6 @@ static const int ddLogLevel = DDLogLevelWarning;
 - (void)updateColor {
     DDLogVerbose(@"%@ updateColor", LOG_TAG);
     
-    self.invitationLabel.textColor = Design.FONT_COLOR_DEFAULT;
     self.overlayView.backgroundColor = Design.BACKGROUND_COLOR_WHITE_OPACITY85;
 }
 

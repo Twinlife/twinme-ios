@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2017-2020 twinlife SA.
+ *  Copyright (c) 2017-2021 twinlife SA.
  *  SPDX-License-Identifier: AGPL-3.0-only
  *
  *  Contributors:
@@ -15,6 +15,8 @@
 #import "UIContact.h"
 #import "UIConversation.h"
 #import "UIGroupConversation.h"
+
+#import "UIColor+Hex.h"
 
 #import <TwinmeCommon/Design.h>
 
@@ -127,7 +129,7 @@ static const CGFloat DESIGN_NAME_TRAILING = 20;
     self.moreMembersLabelHeightConstraint.constant = memberAvatarHeight;
     self.moreMembersLabel.layer.cornerRadius = memberAvatarRadius;
     self.moreMembersLabel.layer.masksToBounds = YES;
-    self.moreMembersLabel.backgroundColor = Design.MAIN_COLOR;
+    self.moreMembersLabel.backgroundColor = Design.FONT_COLOR_GREY;
     self.moreMembersLabel.font = Design.FONT_MEDIUM20;
     self.moreMembersLabel.textColor = [UIColor whiteColor];
     
@@ -201,8 +203,9 @@ static const CGFloat DESIGN_NAME_TRAILING = 20;
 - (void)bindWithConversation:(UIConversation *)uiConversation topMargin:(CGFloat)topMargin hideSeparator:(BOOL)hideSeparator {
     
     self.uiConversation = uiConversation;
-    
+        
     self.avatarImageView.backgroundColor = [UIColor clearColor];
+    self.avatarImageView.tintColor = [UIColor clearColor];
     self.tagView.hidden = YES;
     self.messageLabel.hidden = NO;
     self.dateLabel.hidden = NO;
@@ -213,11 +216,10 @@ static const CGFloat DESIGN_NAME_TRAILING = 20;
     if ([uiConversation isKindOfClass:[UIGroupConversation class]]) {
         UIGroupConversation *groupConversation = (UIGroupConversation *)uiConversation;
         if (![groupConversation.uiContact.avatar isEqual:[TLTwinmeAttributes DEFAULT_GROUP_AVATAR]] || groupConversation.groupAvatars.count < 2) {
-            
             if ([groupConversation.uiContact.avatar isEqual:[TLTwinmeAttributes DEFAULT_GROUP_AVATAR]]) {
-                    self.avatarImageView.backgroundColor = Design.GREY_ITEM;
+                self.avatarImageView.backgroundColor = [UIColor colorWithHexString:Design.DEFAULT_COLOR alpha:1.0];
+                self.avatarImageView.tintColor = [UIColor whiteColor];
             }
-            
             self.avatarImageView.image = groupConversation.uiContact.avatar;
             self.avatarImageView.hidden = NO;
             
@@ -347,7 +349,7 @@ static const CGFloat DESIGN_NAME_TRAILING = 20;
 - (void)updateColor {
     
     self.backgroundColor = Design.WHITE_COLOR;
-    self.moreMembersLabel.backgroundColor = Design.MAIN_COLOR;
+    self.moreMembersLabel.backgroundColor = Design.FONT_COLOR_GREY;
     self.unreadView.backgroundColor = Design.MAIN_COLOR;
     self.nameLabel.textColor = Design.FONT_COLOR_DEFAULT;
     self.separatorView.backgroundColor = Design.SEPARATOR_COLOR_GREY;

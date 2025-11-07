@@ -31,7 +31,7 @@
 
 #import "Configuration.h"
 
-static NSString *APPLICATION_NAME = @"twinme";
+static NSString *APPLICATION_NAME = @"skred";
 
 #define NOTIFICATION_REFRESH_DELAY  (0.5)
 
@@ -43,14 +43,14 @@ static NSString *APPLICATION_NAME = @"twinme";
 
 - (instancetype)init {
     
-    self = [super initWithName:APPLICATION_NAME applicationVersion:[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"] serializers:@[[[TLMessageSerializer alloc] init], [[TLTypingSerializer alloc] init], [[TLRoomCommandSerializer alloc] init], [[TLRoomCommandResultSerializer alloc] init], [[TLRoomConfigResultSerializer alloc] init]] enableKeepAlive:YES enableSetup:YES enableCaches:YES enableReports:YES enableInvocations:YES enableSpaces:NO refreshBadgeDelay:NOTIFICATION_REFRESH_DELAY];
+    self = [super initWithName:APPLICATION_NAME applicationVersion:[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"] serializers:@[[[TLMessageSerializer alloc] init], [[TLTypingSerializer alloc] init], [[TLRoomCommandSerializer alloc] init], [[TLRoomCommandResultSerializer alloc] init], [[TLRoomConfigResultSerializer alloc] init]] enableKeepAlive:YES enableSetup:YES enableCaches:YES enableReports:YES enableInvocations:YES enableSpaces:YES refreshBadgeDelay:NOTIFICATION_REFRESH_DELAY];
     
     if (self) {
         self.accountServiceConfiguration.defaultAuthenticationAuthority = TLAccountServiceAuthenticationAuthorityDevice;
         self.accountServiceConfiguration.serviceOn = true;
         self.conversationServiceConfiguration.serviceOn = true;
         self.conversationServiceConfiguration.enableScheduler = true;
-
+        
         // Database conversation locking is enabled when the NotificationServiceExtension is used.
         if (@available(iOS 13.0, *)) {
             self.conversationServiceConfiguration.lockIdentifier = 1;

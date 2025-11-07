@@ -7,17 +7,21 @@
  *   Stephane Carrez (Stephane.Carrez@twin.life)
  */
 
-#import <Foundation/Foundation.h>
-#import <UIKit/UIKit.h>
-
 //
 // Protocol: ShareExtensionServiceDelegate
 //
 
 @class TLContact;
 @class TLGroup;
+@class TLSpace;
 
 @protocol ShareExtensionServiceDelegate
+
+- (void)onGetCurrentSpace:(nonnull TLSpace*)space;
+
+- (void)onGetSpaces:(nonnull NSArray<TLSpace *> *)spaces;
+
+- (void)onUpdateSpace:(nonnull TLSpace *)space avatar:(nonnull UIImage *)avatar;
 
 - (void)onGetContacts:(nonnull NSArray<TLContact *> *)contacts;
 
@@ -68,6 +72,8 @@
 
 /// Build a URL to redirect to the Twinme application with the given Contact/Group.  The URL allows to launch Twinme.
 - (nonnull NSURL *)getConversationURLWithOriginator:(nonnull id<TLOriginator>)originator;
+
+- (void)setCurrentSpace:(nonnull TLSpace *)space;
 
 - (nonnull TLSpaceSettings *)getDefaultSpaceSettings;
 

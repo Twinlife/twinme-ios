@@ -1,5 +1,9 @@
-NSAppleMusicUsageDescription = ">per lo streaming di musica";
-NSCameraUsageDescription = "per scattare foto e fare video chiamate";
-NSMicrophoneUsageDescription = "di effettuare chiamate vocali e video";
+NSAppleMusicUsageDescription = "per connettere la tua musica Apple";
+NSCameraUsageDescription = "per scattare foto ed effettuare videochiamate";
+NSContactsUsageDescription = "Dobbiamo accedere al tuo elenco di contatti per poter invitare le persone a unirsi a te.";
+NSFaceIDUsageDescription = "per autenticare e sbloccare l’accesso all’applicazione";
+NSLocationAlwaysAndWhenInUseUsage = "per condividere la tua posizione in tempo reale durante una chiamata";
+NSLocationWhenInUseUsageDescription = "per condividere la tua posizione in una conversazione";
+NSMicrophoneUsageDescription = "per effettuare chiamate audio e video";
 NSPhotoLibraryUsageDescription = "per le immagini del profilo e per inviare messaggi di chat";
 NSPhotoLibraryAddUsageDescription = "Per salvare foto e video dalle conversazioni, nonché codici QR di invito, nell'album fotografico del dispositivo.";

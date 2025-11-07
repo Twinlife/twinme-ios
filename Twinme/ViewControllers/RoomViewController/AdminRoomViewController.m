@@ -93,9 +93,6 @@ static CGFloat MIN_BOTTOM_APPEARANCE;
 @property (weak, nonatomic) IBOutlet UILabel *removeLabel;
 @property (nonatomic) UIBarButtonItem *saveBarButtonItem;
 
-@property (nonatomic) UIView *overlayView;
-@property (nonatomic) MenuPhotoView *menuPhotoView;
-
 @property (nonatomic) CALayer *avatarContainerViewLayer;
 @property (nonatomic) UIImage *avatar;
 @property (nonatomic) UIImage *largeAvatar;
@@ -331,21 +328,21 @@ static CGFloat MIN_BOTTOM_APPEARANCE;
 - (void)menuPhotoDidSelectCamera:(MenuPhotoView *)menuPhotoView {
     DDLogVerbose(@"%@ menuPhotoDidSelectCamera", LOG_TAG);
     
-    [self closeMenu];
+    [menuPhotoView removeFromSuperview];
     [self takePhoto];
 }
 
 - (void)menuPhotoDidSelectGallery:(MenuPhotoView *)menuPhotoView {
     DDLogVerbose(@"%@ menuPhotoDidSelectGallery", LOG_TAG);
     
-    [self closeMenu];
+    [menuPhotoView removeFromSuperview];
     [self selectPhoto];
 }
 
-- (void)cancelMenu:(MenuPhotoView *)menuPhotoView {
-    DDLogVerbose(@"%@ cancelMenu", LOG_TAG);
-    
-    [self closeMenu];
+- (void)cancelMenuPhoto:(MenuPhotoView *)menuPhotoView {
+    DDLogVerbose(@"%@ menuPhotoDidSelectCamera", LOG_TAG);
+ 
+    [menuPhotoView removeFromSuperview];
 }
 
 #pragma mark - Private methods
@@ -493,21 +490,6 @@ static CGFloat MIN_BOTTOM_APPEARANCE;
     self.removeLabel.textColor = Design.DELETE_COLOR_RED;
     self.removeLabel.text = TwinmeLocalizedString(@"application_delete", nil);
     
-    self.overlayView = [UIView new];
-    self.overlayView.frame = CGRectMake(0, 0, Design.DISPLAY_WIDTH, Design.DISPLAY_HEIGHT);
-    self.overlayView.backgroundColor = Design.OVERLAY_COLOR;
-    self.overlayView.hidden = YES;
-    self.overlayView.userInteractionEnabled = YES;
-    [self.tabBarController.view addSubview:self.overlayView];
-    
-    UITapGestureRecognizer *tapOverlayGesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(handleOverlayTapGesture:)];
-    [self.overlayView addGestureRecognizer:tapOverlayGesture];
-    
-    self.menuPhotoView = [[MenuPhotoView alloc] init];
-    self.menuPhotoView.hidden = YES;
-    self.menuPhotoView.menuPhotoViewDelegate = self;
-    [self.tabBarController.view addSubview:self.menuPhotoView];
-    
     [self updateRoom];
     [self centerTextDescription:self.welcomeMessageTextView];
 }
@@ -529,14 +511,6 @@ static CGFloat MIN_BOTTOM_APPEARANCE;
     if (!self.keyboardHidden) {
         [self.nameTextField resignFirstResponder];
         [self.welcomeMessageTextView resignFirstResponder];
-    }
-}
-
-- (void)handleOverlayTapGesture:(UITapGestureRecognizer *)sender {
-    DDLogVerbose(@"%@ handleOverlayTapGesture: %@", LOG_TAG, sender);
-    
-    if (sender.state == UIGestureRecognizerStateEnded) {
-        [self closeMenu];
     }
 }
 
@@ -695,13 +669,6 @@ static CGFloat MIN_BOTTOM_APPEARANCE;
     menuPhotoView.menuPhotoViewDelegate = self;
     [self.tabBarController.view addSubview:menuPhotoView];
     [menuPhotoView openMenu:YES];
-}
-
-- (void)closeMenu {
-    DDLogVerbose(@"%@ closeMenu", LOG_TAG);
-    
-    self.overlayView.hidden = YES;
-    self.menuPhotoView.hidden = YES;
 }
 
 - (void)updateRoom {

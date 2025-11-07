@@ -21,6 +21,7 @@ static const int ITEM_DEFAULT_SEQUENCE_ID = -1;
 //
 
 typedef enum {
+    ItemTypeInfoPrivacy,
     ItemTypeTime,
     ItemTypeMessage,
     ItemTypePeerMessage,
@@ -36,6 +37,8 @@ typedef enum {
     ItemTypePeerFile,
     ItemTypeInvitation,
     ItemTypePeerInvitation,
+    ItemTypeLocation,
+    ItemTypePeerLocation,
     ItemTypeName,
     ItemTypeCall,
     ItemTypePeerCall,

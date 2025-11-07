@@ -11,8 +11,11 @@
 //
 
 @class UICustomColor;
+@protocol CustomColorDelegate;
 
 @interface ColorCell : UICollectionViewCell
+
+@property (weak, nonatomic) id<CustomColorDelegate> customColorDelegate;
 
 - (void)bindWithColor:(UICustomColor *)customColor;
 

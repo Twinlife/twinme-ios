@@ -14,6 +14,7 @@
 #import <Twinme/TLOriginator.h>
 #import <Twinme/TLContact.h>
 #import <Twinme/TLGroup.h>
+#import <Twinme/TLSpace.h>
 #import <Twinme/TLGroupMember.h>
 #import <Twinme/TLSchedule.h>
 #import <Twinme/UIImage+Resize.h>
@@ -22,9 +23,11 @@
 #import <Utils/NSString+Utils.h>
 
 #import "ShowGroupViewController.h"
+#import "SpacesViewController.h"
 #import "GroupMemberViewController.h"
 #import "EditIdentityViewController.h"
 #import "EditGroupViewController.h"
+#import "InAppSubscriptionViewController.h"
 #import "AddGroupMemberViewController.h"
 #import "LastCallsViewController.h"
 #import "ExportViewController.h"
@@ -42,10 +45,11 @@
 #import "ShowMemberCell.h"
 #import "UIContact.h"
 
+#import "PremiumFeatureConfirmView.h"
 #import "InsideBorderView.h"
 #import "SlideContactView.h"
-#import "PremiumFeatureConfirmView.h"
 #import "DeviceAuthorization.h"
+#import "UIColor+Hex.h"
 #import "UIView+Toast.h"
 #import "UIPremiumFeature.h"
 #import "AlertMessageView.h"
@@ -106,6 +110,18 @@ static int MAX_GROUP_MEMBER = 5;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *membersCollectionViewLeadingConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *membersCollectionViewTrailingConstraint;
 @property (weak, nonatomic) IBOutlet UICollectionView *membersCollectionView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *spaceViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet InsideBorderView *spaceView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *spaceImageViewLeadingConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *spaceImageViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet UIImageView *spaceImageView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *spaceAvatarViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *spaceAvatarViewTrailingConstraint;
+@property (weak, nonatomic) IBOutlet UIImageView *spaceAvatarView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *spaceLabelLeadingConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *spaceLabelTrailingConstraint;
+@property (weak, nonatomic) IBOutlet UILabel *spaceLabel;
+@property (weak, nonatomic) IBOutlet UILabel *spaceAvatarLabel;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *configurationTitleLabelLeadingConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *configurationTitleLabelTrailingConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *configurationTitleLabelTopConstraint;
@@ -268,6 +284,7 @@ static int MAX_GROUP_MEMBER = 5;
     [self.showGroupService getTwincodeOutboundWithTwincodeOutboundId:self.group.twincodeOutboundId];
     
     [self updateGroup];
+    [self checkSpacePermission];
 }
 
 - (void)onGetTwincode:(TLTwincodeOutbound *)twincodeOutbound {
@@ -306,6 +323,16 @@ static int MAX_GROUP_MEMBER = 5;
     } else {
         [self.showGroupService getGroupWithGroupId:self.group.uuid];
     }
+}
+
+- (void)onGetCurrentSpace:(nonnull TLSpace *)space {
+    DDLogVerbose(@"%@ onGetCurrentSpace: %@", LOG_TAG, space);
+    
+}
+
+- (void)onSetCurrentSpace:(nonnull TLSpace *)space {
+    DDLogVerbose(@"%@ onSetCurrentSpace: %@", LOG_TAG, space);
+    
 }
 
 - (void)onErrorGroupNotFound {
@@ -475,7 +502,10 @@ static int MAX_GROUP_MEMBER = 5;
 - (void)didTapConfirm:(nonnull AbstractConfirmView *)abstractConfirmView {
     DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractConfirmView);
     
-    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:TwinmeLocalizedString(@"twinme_plus_link", nil)] options:@{} completionHandler:nil];
+    InAppSubscriptionViewController *inAppSubscriptionViewController = [[UIStoryboard storyboardWithName:@"iPhone" bundle:nil] instantiateViewControllerWithIdentifier:@"InAppSubscriptionViewController"];
+    TwinmeNavigationController *navigationController = [[TwinmeNavigationController alloc]initWithRootViewController:inAppSubscriptionViewController];
+    [self.navigationController presentViewController:navigationController animated:YES completion:nil];
+    self.startModal = YES;
     [abstractConfirmView closeConfirmView];
 }
 
@@ -577,7 +607,7 @@ static int MAX_GROUP_MEMBER = 5;
     [self.membersView setBorder:Design.SEPARATOR_COLOR_GREY borderWidth:Design.SEPARATOR_HEIGHT width:screenWidth  height:self.membersViewHeightConstraint.constant left:false right:false top:true bottom:true];
     self.membersView.userInteractionEnabled = true;
     self.membersView.backgroundColor = Design.WHITE_COLOR;
-    
+
     UITapGestureRecognizer *membersViewGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleMembersTapGesture:)];
     [self.membersView addGestureRecognizer:membersViewGestureRecognizer];
     self.membersLabelTopConstraint.constant *= Design.HEIGHT_RATIO;
@@ -614,6 +644,57 @@ static int MAX_GROUP_MEMBER = 5;
     self.membersCollectionView.backgroundColor = Design.WHITE_COLOR;
     [self.membersCollectionView registerNib:[UINib nibWithNibName:@"ShowMemberCell" bundle:nil] forCellWithReuseIdentifier:MEMBER_CELL_IDENTIFIER];
     
+    self.spaceViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    
+    self.spaceView.backgroundColor = Design.BACKGROUND_COLOR_WHITE_OPACITY11;
+    [self.spaceView setBorder:Design.SEPARATOR_COLOR_GREY borderWidth:Design.SEPARATOR_HEIGHT width:screenWidth height:self.spaceViewHeightConstraint.constant left:false right:false top:true bottom:true];
+    
+    UITapGestureRecognizer *spaceViewGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSpaceTapGesture:)];
+    [self.spaceView addGestureRecognizer:spaceViewGestureRecognizer];
+    
+    self.spaceImageViewLeadingConstraint.constant *= Design.WIDTH_RATIO;
+    self.spaceImageViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    
+    self.spaceImageView.tintColor = Design.UNSELECTED_TAB_COLOR;
+    
+    NSString *nameSpace = @"";
+    NSString *nameProfile = @"";
+    if (self.group.space.settings.name) {
+        nameSpace = self.group.space.settings.name;
+    }
+    if (self.group.space.profile.name) {
+        nameProfile = self.group.space.profile.name;
+    }
+    
+    self.spaceLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
+    self.spaceLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
+    
+    NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc]initWithString:@""];
+    [attributedString appendAttributedString:[[NSMutableAttributedString alloc]initWithString:nameSpace attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_REGULAR34, NSFontAttributeName, Design.FONT_COLOR_DEFAULT, NSForegroundColorAttributeName, nil]]];
+    [attributedString appendAttributedString:[[NSMutableAttributedString alloc]initWithString:@"\n"]];
+    [attributedString appendAttributedString:[[NSMutableAttributedString alloc]initWithString:nameProfile attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_REGULAR32, NSFontAttributeName, Design.FONT_COLOR_PROFILE_GREY, NSForegroundColorAttributeName, nil]]];
+    self.spaceLabel.attributedText = attributedString;
+    
+    self.spaceAvatarLabel.font = Design.FONT_BOLD44;
+    self.spaceAvatarLabel.textColor = [UIColor whiteColor];
+    self.spaceAvatarLabel.hidden = YES;
+    
+    self.spaceAvatarViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    self.spaceAvatarViewTrailingConstraint.constant *= Design.WIDTH_RATIO;
+    
+    self.spaceAvatarView.clipsToBounds = YES;
+    self.spaceAvatarView.layer.cornerRadius = Design.SPACE_RADIUS_RATIO * self.spaceAvatarViewHeightConstraint.constant;
+    
+    if (self.group.space.avatarId) {
+        [self.showGroupService getImageWithSpace:self.group.space withBlock:^(UIImage *image) {
+            self.spaceAvatarView.image = image;
+        }];
+    } else {
+        [self.showGroupService getImageWithProfile:self.group.space.profile withBlock:^(UIImage *image) {
+            self.spaceAvatarView.image = image;
+        }];
+    }
+
     self.configurationTitleLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
     self.configurationTitleLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
     self.configurationTitleLabelTopConstraint.constant *= Design.HEIGHT_RATIO;
@@ -825,6 +906,27 @@ static int MAX_GROUP_MEMBER = 5;
     }
 }
 
+- (void)handleSpaceTapGesture:(UITapGestureRecognizer *)sender {
+    DDLogVerbose(@"%@ handleSpaceTapGesture: %@", LOG_TAG, sender);
+    
+    if (sender.state == UIGestureRecognizerStateEnded) {
+        if (![self.group.space hasPermission:TLSpacePermissionTypeMoveGroup]) {
+            AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
+            alertMessageView.alertMessageViewDelegate = self;
+            [alertMessageView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:TwinmeLocalizedString(@"spaces_view_controller_permission_not_allowed", nil)];
+            [self.tabBarController.view addSubview:alertMessageView];
+            [alertMessageView showAlertView];
+        } else {
+            SpacesViewController *spacesViewController = [[UIStoryboard storyboardWithName:@"Space" bundle:nil] instantiateViewControllerWithIdentifier:@"SpacesViewController"];
+            [spacesViewController initWithGroup:self.group];
+            spacesViewController.pickerMode = YES;
+            TwinmeNavigationController *navigationController = [[TwinmeNavigationController alloc] initWithRootViewController:spacesViewController];
+            [self.navigationController presentViewController:navigationController animated:YES completion:nil];
+            self.startModal = YES;
+        }
+    }
+}
+
 - (void)handleChatTapGesture:(UITapGestureRecognizer *)sender {
     DDLogVerbose(@"%@ handleChatTapGesture: %@", LOG_TAG, sender);
     
@@ -840,7 +942,108 @@ static int MAX_GROUP_MEMBER = 5;
     DDLogVerbose(@"%@ handleVideoTapGesture: %@", LOG_TAG, sender);
     
     if (self.group && sender.state == UIGestureRecognizerStateEnded && !self.twinmeApplication.inCall) {
-        [self showPremiumFeatureAlertView];
+        ApplicationDelegate *delegate = (ApplicationDelegate *)[[UIApplication sharedApplication] delegate];
+        if ([delegate.twinmeApplication isSubscribedWithFeature:TLTwinmeApplicationFeatureGroupCall]) {
+            if (self.group.capabilities.hasVideo && self.uiMembers.count <= MAX_CALL_GROUP_PARTICIPANTS && self.uiMembers.count > 1 && ![self hasSchedule]) {
+                [self startVideoCallWithPermissionCheck:NO];
+            } else if (!self.group.capabilities.hasVideo) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [[UIApplication sharedApplication].keyWindow makeToast:TwinmeLocalizedString(@"application_not_authorized_operation_by_your_contact",nil)];
+                });
+            } else if (self.uiMembers.count > MAX_CALL_GROUP_PARTICIPANTS) {
+                AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
+                alertMessageView.alertMessageViewDelegate = self;
+                [alertMessageView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:[NSString stringWithFormat:TwinmeLocalizedString(@"call_view_controller_max_participant_message", nil), MAX_CALL_GROUP_PARTICIPANTS]];
+                [self.tabBarController.view addSubview:alertMessageView];
+                [alertMessageView showAlertView];
+            } else if ([self hasSchedule]) {
+                [self showSchedule];
+            }
+        } else {
+            [self showPremiumFeatureAlertView];
+        }
+    }
+}
+
+- (void)startVideoCallWithPermissionCheck:(BOOL)videoBell {
+    DDLogVerbose(@"%@ startVideoCallWithPermissionCheck: %d", LOG_TAG, videoBell);
+    
+    AVAuthorizationStatus cameraAuthorizationStatus = [DeviceAuthorization deviceCameraAuthorizationStatus];
+    switch (cameraAuthorizationStatus) {
+        case AVAuthorizationStatusNotDetermined: {
+            [AVCaptureDevice requestAccessForMediaType:AVMediaTypeVideo completionHandler:^(BOOL granted) {
+                if (granted) {
+                    AVAudioSessionRecordPermission audioSessionRecordPermission = [DeviceAuthorization deviceMicrophonePermissionStatus];
+                    switch (audioSessionRecordPermission) {
+                        case AVAudioSessionRecordPermissionUndetermined: {
+                            [[AVAudioSession sharedInstance] requestRecordPermission:^(BOOL granted) {
+                                if (granted) {
+                                    dispatch_async(dispatch_get_main_queue(), ^(void) {
+                                        [self startVideoCallViewController:videoBell];
+                                    });
+                                }
+                            }];
+                            break;
+                        }
+                            
+                        case AVAudioSessionRecordPermissionDenied:
+                            [DeviceAuthorization showMicrophoneCameraSettingsAlertInController:self];
+                            break;
+                            
+                        case AVAudioSessionRecordPermissionGranted: {
+                            dispatch_async(dispatch_get_main_queue(), ^(void) {
+                                [self startVideoCallViewController:videoBell];
+                            });
+                            break;
+                        }
+                    }
+                }
+            }];
+            break;
+        }
+            
+        case AVAuthorizationStatusRestricted:
+        case AVAuthorizationStatusDenied:
+            [DeviceAuthorization showMicrophoneCameraSettingsAlertInController:self];
+            break;
+            
+        case AVAuthorizationStatusAuthorized: {
+            AVAudioSessionRecordPermission audioSessionRecordPermission = [DeviceAuthorization deviceMicrophonePermissionStatus];
+            switch (audioSessionRecordPermission) {
+                case AVAudioSessionRecordPermissionUndetermined: {
+                    [[AVAudioSession sharedInstance] requestRecordPermission:^(BOOL granted) {
+                        if (granted) {
+                            dispatch_async(dispatch_get_main_queue(), ^(void) {
+                                [self startVideoCallViewController:videoBell];
+                            });
+                        }
+                    }];
+                    break;
+                }
+                    
+                case AVAudioSessionRecordPermissionDenied:
+                    [DeviceAuthorization showMicrophoneCameraSettingsAlertInController:self];
+                    break;
+                    
+                case AVAudioSessionRecordPermissionGranted: {
+                    dispatch_async(dispatch_get_main_queue(), ^(void) {
+                        [self startVideoCallViewController:videoBell];
+                    });
+                    break;
+                }
+            }
+            break;
+        }
+    }
+}
+
+- (void)startVideoCallViewController:(BOOL)videoBell {
+    DDLogVerbose(@"%@ startVideoCallViewController: %d", LOG_TAG, videoBell);
+    
+    if (self.group) {
+        CallViewController *callViewController = (CallViewController *)[[UIStoryboard storyboardWithName:@"Call" bundle:nil] instantiateViewControllerWithIdentifier:@"CallViewController"];
+        [callViewController startCallWithOriginator:self.group videoBell:videoBell isVideoCall:YES isCertifyCall:NO];
+        [self.navigationController pushViewController:callViewController animated:YES];
     }
 }
 
@@ -848,7 +1051,59 @@ static int MAX_GROUP_MEMBER = 5;
     DDLogVerbose(@"%@ handleAudioTapGesture: %@", LOG_TAG, sender);
     
     if (self.group && sender.state == UIGestureRecognizerStateEnded && !self.twinmeApplication.inCall) {
-        [self showPremiumFeatureAlertView];
+        ApplicationDelegate *delegate = (ApplicationDelegate *)[[UIApplication sharedApplication] delegate];
+        if ([delegate.twinmeApplication isSubscribedWithFeature:TLTwinmeApplicationFeatureGroupCall]) {
+            if (self.group.capabilities.hasAudio && self.uiMembers.count <= MAX_CALL_GROUP_PARTICIPANTS && self.uiMembers.count > 1 && ![self hasSchedule]) {
+                AVAudioSessionRecordPermission audioSessionRecordPermission = [DeviceAuthorization deviceMicrophonePermissionStatus];
+                switch (audioSessionRecordPermission) {
+                    case AVAudioSessionRecordPermissionUndetermined: {
+                        [[AVAudioSession sharedInstance] requestRecordPermission:^(BOOL granted) {
+                            if (granted) {
+                                dispatch_async(dispatch_get_main_queue(), ^(void) {
+                                    [self startAudioCallViewController];
+                                });
+                            }
+                        }];
+                        break;
+                    }
+                        
+                    case AVAudioSessionRecordPermissionDenied:
+                        [DeviceAuthorization showMicrophoneSettingsAlertInController:self];
+                        break;
+                        
+                    case AVAudioSessionRecordPermissionGranted: {
+                        dispatch_async(dispatch_get_main_queue(), ^(void) {
+                            [self startAudioCallViewController];
+                        });
+                        break;
+                    }
+                }
+            } else if (!self.group.capabilities.hasAudio) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [[UIApplication sharedApplication].keyWindow makeToast:TwinmeLocalizedString(@"application_not_authorized_operation_by_your_contact",nil)];
+                });
+            } else if (self.uiMembers.count > MAX_CALL_GROUP_PARTICIPANTS) {
+                AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
+                alertMessageView.alertMessageViewDelegate = self;
+                [alertMessageView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:[NSString stringWithFormat:TwinmeLocalizedString(@"call_view_controller_max_participant_message", nil), MAX_CALL_GROUP_PARTICIPANTS]];
+                [self.tabBarController.view addSubview:alertMessageView];
+                [alertMessageView showAlertView];
+            } else if ([self hasSchedule]) {
+                [self showSchedule];
+            }
+        } else {
+            [self showPremiumFeatureAlertView];
+        }
+    }
+}
+
+- (void)startAudioCallViewController {
+    DDLogVerbose(@"%@ startAudioCallViewController", LOG_TAG);
+    
+    if (self.group) {
+        CallViewController *callViewController = (CallViewController *)[[UIStoryboard storyboardWithName:@"Call" bundle:nil] instantiateViewControllerWithIdentifier:@"CallViewController"];
+        [callViewController startCallWithOriginator:self.group videoBell:NO isVideoCall:NO isCertifyCall:NO];
+        [self.navigationController pushViewController:callViewController animated:YES];
     }
 }
 
@@ -857,7 +1112,7 @@ static int MAX_GROUP_MEMBER = 5;
     
     PremiumFeatureConfirmView *premiumFeatureConfirmView = [[PremiumFeatureConfirmView alloc] init];
     premiumFeatureConfirmView.confirmViewDelegate = self;
-    [premiumFeatureConfirmView initWithPremiumFeature:[[UIPremiumFeature alloc]initWithFeatureType:FeatureTypeGroupCall] parentViewController:self.navigationController];
+    [premiumFeatureConfirmView initWithPremiumFeature:[[UIPremiumFeature alloc]initWithFeatureType:FeatureTypeGroupCall spaceSettings:[self currentSpaceSettings]] parentViewController:self.navigationController];
     [self.navigationController.view addSubview:premiumFeatureConfirmView];
     [premiumFeatureConfirmView showConfirmView];
 }
@@ -1018,6 +1273,37 @@ static int MAX_GROUP_MEMBER = 5;
         self.inviteView.alpha = 0.5f;
     }
     
+    if (self.group.space.avatarId) {
+        [self.showGroupService getImageWithSpace:self.group.space withBlock:^(UIImage *image) {
+            self.spaceAvatarView.image = image;
+            self.spaceAvatarLabel.hidden = YES;
+        }];
+    } else {
+        self.spaceAvatarView.image = nil;
+        self.spaceAvatarLabel.hidden = NO;
+        if (self.group.space.settings.style) {
+            self.spaceAvatarView.backgroundColor = [UIColor colorWithHexString:self.group.space.settings.style alpha:1.0];
+        } else {
+            self.spaceAvatarView.backgroundColor = Design.MAIN_COLOR;
+        }
+        self.spaceAvatarLabel.text = [NSString firstCharacter:self.group.space.settings.name];
+    }
+    
+    NSString *nameSpace = @"";
+    NSString *nameProfile = @"";
+    if (self.group.space.settings.name) {
+        nameSpace = self.group.space.settings.name;
+    }
+    if (self.group.space.profile.name) {
+        nameProfile = self.group.space.profile.name;
+    }
+    
+    NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc]initWithString:@""];
+    [attributedString appendAttributedString:[[NSMutableAttributedString alloc]initWithString:nameSpace attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_MEDIUM34, NSFontAttributeName, Design.FONT_COLOR_DEFAULT, NSForegroundColorAttributeName, nil]]];
+    [attributedString appendAttributedString:[[NSMutableAttributedString alloc]initWithString:@"\n"]];
+    [attributedString appendAttributedString:[[NSMutableAttributedString alloc]initWithString:nameProfile attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_MEDIUM32, NSFontAttributeName, Design.FONT_COLOR_PROFILE_GREY, NSForegroundColorAttributeName, nil]]];
+    self.spaceLabel.attributedText = attributedString;
+    
     if ([self.group isOwner]) {
         self.configurationTitleLabel.hidden = NO;
         self.permissionsView.hidden = NO;
@@ -1057,6 +1343,7 @@ static int MAX_GROUP_MEMBER = 5;
     self.videoLabel.font = Design.FONT_REGULAR28;
     self.audioLabel.font = Design.FONT_REGULAR28;
     self.fallbackLabel.font = Design.FONT_MEDIUM_ITALIC36;
+    self.nameLabel.font = Design.FONT_BOLD44;
     self.membersLabel.font = Design.FONT_BOLD26;
     self.inviteLabel.font = Design.FONT_BOLD28;
     self.configurationTitleLabel.font = Design.FONT_BOLD26;
@@ -1065,6 +1352,22 @@ static int MAX_GROUP_MEMBER = 5;
     self.conversationsTitleLabel.font = Design.FONT_BOLD26;
     self.exportLabel.font = Design.FONT_REGULAR34;
     self.cleanLabel.font = Design.FONT_REGULAR34;
+    self.spaceAvatarLabel.font = Design.FONT_BOLD44;
+    
+    NSString *nameSpace = @"";
+    NSString *nameProfile = @"";
+    if (self.group.space.settings.name) {
+        nameSpace = self.group.space.settings.name;
+    }
+    if (self.group.space.profile.name) {
+        nameProfile = self.group.space.profile.name;
+    }
+    
+    NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc]initWithString:@""];
+    [attributedString appendAttributedString:[[NSMutableAttributedString alloc]initWithString:nameSpace attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_MEDIUM34, NSFontAttributeName, Design.FONT_COLOR_DEFAULT, NSForegroundColorAttributeName, nil]]];
+    [attributedString appendAttributedString:[[NSMutableAttributedString alloc]initWithString:@"\n"]];
+    [attributedString appendAttributedString:[[NSMutableAttributedString alloc]initWithString:nameProfile attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_MEDIUM32, NSFontAttributeName, Design.FONT_COLOR_PROFILE_GREY, NSForegroundColorAttributeName, nil]]];
+    self.spaceLabel.attributedText = attributedString;
 }
 
 - (void)updateColor {
@@ -1086,6 +1389,16 @@ static int MAX_GROUP_MEMBER = 5;
     self.filesLabel.textColor = Design.FONT_COLOR_DEFAULT;
     self.exportLabel.textColor = Design.FONT_COLOR_DEFAULT;
     self.cleanLabel.textColor = Design.FONT_COLOR_DEFAULT;
+}
+
+- (void)checkSpacePermission {
+    DDLogVerbose(@"%@ checkSpacePermission", LOG_TAG);
+    
+    if (![self.group.space hasPermission:TLSpacePermissionTypeMoveGroup]) {
+        self.spaceLabel.alpha = .5f;
+    } else {
+        self.spaceLabel.alpha = 1.f;
+    }
 }
 
 - (BOOL)hasSchedule {

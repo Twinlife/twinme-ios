@@ -24,6 +24,8 @@ typedef enum {
 
 @property (nonatomic) DeleteConfirmType deleteConfirmType;
 
+- (void)hideAvatar;
+
 - (void)setConfirmTitle:(NSString *)confirmTitle;
 
 @end

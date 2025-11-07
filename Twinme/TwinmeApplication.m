@@ -29,6 +29,7 @@
 #import "LastVersion.h"
 #import "LastVersionManager.h"
 #import "CoachMarkManager.h"
+#import "SpaceSetting.h"
 #import <Utils/NSString+Utils.h>
 
 #if 0
@@ -47,9 +48,12 @@ static const int ddLogLevel = DDLogLevelWarning;
 #define VISUALIZATION_LINK @"VisualizationLink"
 #define DISPLAY_MODE @"DefaultDisplayMode"
 #define HAPTIC_FEEDBACK_MODE @"DefaultHapticFeedbackMode"
-#define FIRST_SHOW_UPGRADE_SCREEN @"FirstShowUpgradeScreen_2023"
-#define LAST_SHOW_UPGRADE_SCREEN @"LastShowUpgradeScreen_2023"
+#define FIRST_SHOW_UPGRADE_SCREEN @"FirstShowUpgradeScreen"
+#define LAST_SHOW_UPGRADE_SCREEN @"LastShowUpgradeScreen"
 #define CAN_SHOW_UPGRADE_SCREEN @"CanShowUpgradeScreen"
+#define SCREEN_LOCK @"ScreenLock"
+#define TIMEOUT_SCREEN_LOCK @"TimeoutScreenLock"
+#define HIDE_LAST_SCREEN @"HideLastScreen"
 #define LAST_SHOW_ENABLE_NOTIFICATION_SCREEN @"LastShowEnableNotificationScreen"
 #define SHOW_ONBOARDING_CERTIFIED_RELATION @"ShowOnboardingCertifiedRelation"
 #define SHOW_ONBOARDING_EXTERNAL_CALL @"ShowOnboardingExternalCall"
@@ -64,6 +68,9 @@ static const int ddLogLevel = DDLogLevelWarning;
 #define SHOW_ONBOARDING_PROXY @"ShowOnboardingProxy"
 #define SHOW_WARNING_EDIT_MESSAGE @"ShowWarningEditMessage"
 #define DEFAULT_TAB @"DefaultTab"
+#define ALLOW_EPHEMERAL_MESSAGE @"AllowEphemeralMessage"
+#define TIMEOUT_EPHEMERAL_MESSAGE @"TimeoutEphemeralMessage"
+#define HIDE_RECENT_CALLS @"HideRecentCalls"
 #define IS_VIDEO_IN_FIT_MODE @"IsVideoInFitMode"
 #define CALL_QUALITY_COUNT @"CallQualityCount"
 #define CALL_QUALITY_LAST_DATE @"CallQualityLastDate"
@@ -73,12 +80,18 @@ static const int ddLogLevel = DDLogLevelWarning;
 #define DISPLAY_CALLS_MODE @"DisplayCallsMode"
 #define PROFILE_UPDATE_MODE @"ProfileUpdateMode"
 #define SHOW_GROUP_CALL_ANIMATION @"DefaultShowGroupCallAnimation"
+#define SHOW_SPACE_ONBOARDING @"ShowSpaceOnboarding"
+#define INVITATION_SUBSCRIPTION_IMAGE @"InvitationSubscriptionImage"
+#define INVITATION_SUBSCRIPTION_TWINCODE @"InvitationSubscriptionTwincode"
+#define SHOW_CLICK_TO_CALL_DESCRIPTION_COUNT @"ShowClickToCallDescriptionCount"
 
 #define DEFAULT_COLOR @"#00AEFF"
 
 static const int64_t CALL_QUALITY_MIN_DURATION = 5 * 60;
 static const int64_t CALL_QUALITY_ASK_FREQUENCY = 10;
 static const int64_t CALL_QUALITY_INTERVAL_DATE = 10 * 60 * 60 * 24;
+
+static const int64_t SHOW_CLICK_TO_CALL_DESCRIPTION_MAX = 5;
 
 static TLBooleanConfigIdentifier *showWelcomeConfig;
 
@@ -128,6 +141,19 @@ static TLBooleanConfigIdentifier *showOnboardingProxy;
 static TLBooleanConfigIdentifier *showWarningEditMessage;
 static TLFloatConfigIdentifier *keyboardHeightConfig;
 
+// Skred and Twinme+ settings
+static TLBooleanSharedConfigIdentifier *screenLockConfig;
+static TLIntegerConfigIdentifier *timeoutScreenLockConfig;
+static TLBooleanConfigIdentifier *hideLastScreenConfig;
+static TLBooleanConfigIdentifier *allowEphemeralMessageConfig;
+static TLIntegerConfigIdentifier *timeoutEphemeralMessageConfig;
+static TLBooleanConfigIdentifier *hideRecentCallsConfig;
+static TLBooleanConfigIdentifier *spaceOnboardingConfig;
+static TLIntegerConfigIdentifier *showClickToCallDescriptionCountConfig;
+
+// Skred specific
+static TLUUIDConfigIdentifier *invitationSubscriptionTwincodeConfig;
+static TLStringConfigIdentifier *invitationSubscriptionImageConfig;
 
 //
 // Interface: TwinmeApplication ()
@@ -137,6 +163,7 @@ static TLFloatConfigIdentifier *keyboardHeightConfig;
 
 @property (nonatomic, nullable) CallService *callService;
 @property BOOL showConnectedMessage;
+@property NSDate *resignActiveDate;
 
 @end
 
@@ -161,6 +188,7 @@ static TLFloatConfigIdentifier *keyboardHeightConfig;
         [_lastVersionManager getLastVersion];
         
         _coachMarkManager = [[CoachMarkManager alloc] init];
+
         _showConnectedMessage = YES;
         
         [NotificationSettings initializeSettings];
@@ -186,7 +214,7 @@ static TLFloatConfigIdentifier *keyboardHeightConfig;
 
         displayCallsModeConfig = [TLIntegerConfigIdentifier defineWithName:DISPLAY_CALLS_MODE uuid:@"FA50C4AC-C196-4F3F-BD68-3DE18D27F44E" defaultValue:TLDisplayCallsModeMissed];
 
-        profileUpdateModeConfig = [TLIntegerConfigIdentifier defineWithName:PROFILE_UPDATE_MODE uuid:@"959957DA-B8EE-4506-8A5E-A5006023E13D" defaultValue:TLProfileUpdateModeNone];
+        profileUpdateModeConfig = [TLIntegerConfigIdentifier defineWithName:PROFILE_UPDATE_MODE uuid:@"959957DA-B8EE-4506-8A5E-A5006023E13D" defaultValue:TLProfileUpdateModeDefault];
 
         videoCallInFitModeConfig = [TLBooleanConfigIdentifier defineWithName:IS_VIDEO_IN_FIT_MODE uuid:@"D36D6D8A-2DFF-11ED-A261-0242AC120002" defaultValue:NO];
         callQualityCountConfig = [TLIntegerConfigIdentifier defineWithName:CALL_QUALITY_COUNT uuid:@"DDD83ED6-3335-11ED-A261-0242AC120002" defaultValue:0];
@@ -202,6 +230,9 @@ static TLFloatConfigIdentifier *keyboardHeightConfig;
         
         lastShowUpgradeScreenConfig = [TLIntegerConfigIdentifier defineWithName:LAST_SHOW_UPGRADE_SCREEN defaultValue:0];
         
+        // Skred and twinme+
+        spaceOnboardingConfig = [TLBooleanConfigIdentifier defineWithName:SHOW_SPACE_ONBOARDING defaultValue:YES];
+
         canShowUpgradeScreenConfig = [TLBooleanConfigIdentifier defineWithName:CAN_SHOW_UPGRADE_SCREEN defaultValue:NO];
 
         lastShowEnableNotificationScreenConfig = [TLIntegerConfigIdentifier defineWithName:LAST_SHOW_ENABLE_NOTIFICATION_SCREEN defaultValue:0];
@@ -218,6 +249,26 @@ static TLFloatConfigIdentifier *keyboardHeightConfig;
         showOnboardingTransferCall = [TLBooleanConfigIdentifier defineWithName:SHOW_ONBOARDING_TRANSFER_CALL defaultValue:YES];
         showOnboardingProxy = [TLBooleanConfigIdentifier defineWithName:SHOW_ONBOARDING_PROXY defaultValue:YES];
         showWarningEditMessage = [TLBooleanConfigIdentifier defineWithName:SHOW_WARNING_EDIT_MESSAGE defaultValue:YES];
+
+        // Twinme+ and Skred
+        TLBooleanConfigIdentifier *oldConfig = [TLBooleanConfigIdentifier defineWithName:SCREEN_LOCK uuid:@"D3372EA5-1CB2-4365-92E5-5780B1F982FD" defaultValue:NO];
+        screenLockConfig = [TLBooleanSharedConfigIdentifier defineWithName:SCREEN_LOCK uuid:@"D3372EA5-1CB2-4365-92E5-5780B1F982FD" defaultValue:NO];
+        if (oldConfig.boolValue) {
+            screenLockConfig.boolValue = oldConfig.boolValue;
+            [oldConfig remove];
+        }
+        
+        timeoutScreenLockConfig = [TLIntegerConfigIdentifier defineWithName:TIMEOUT_SCREEN_LOCK uuid:@"24223BA2-822B-4867-B826-AE5430D88A4A" defaultValue:0];
+        hideLastScreenConfig = [TLBooleanConfigIdentifier defineWithName:HIDE_LAST_SCREEN uuid:@"579627C5-87B5-403B-A58D-61977DFDD53A" defaultValue:NO];
+        allowEphemeralMessageConfig = [TLBooleanConfigIdentifier defineWithName:ALLOW_EPHEMERAL_MESSAGE uuid:@"7837F336-8422-11EC-A8A3-0242AC120002" defaultValue:NO];
+        timeoutEphemeralMessageConfig = [TLIntegerConfigIdentifier defineWithName:TIMEOUT_EPHEMERAL_MESSAGE uuid:@"585BA89F-86F3-48e0-A07C-C924C50f7C6D" defaultValue:DEFAULT_TIMEOUT_MESSAGE];
+        hideRecentCallsConfig = [TLBooleanConfigIdentifier defineWithName:HIDE_RECENT_CALLS uuid:@"D983A4D5-E6E6-43D6-ACD4-1754A4E5AA91" defaultValue:NO];
+
+        showClickToCallDescriptionCountConfig = [TLIntegerConfigIdentifier defineWithName:SHOW_CLICK_TO_CALL_DESCRIPTION_COUNT uuid:@"70D0949E-A10f-4156-8D87-EFF914C65962" defaultValue:0];
+
+        // Skred specific
+        invitationSubscriptionTwincodeConfig = [TLUUIDConfigIdentifier defineWithName:INVITATION_SUBSCRIPTION_TWINCODE uuid:@"22CA1D8D-FE44-4D94-B352-3977935FD44B"];
+        invitationSubscriptionImageConfig = [TLStringConfigIdentifier defineWithName:INVITATION_SUBSCRIPTION_IMAGE uuid:@"3FAA6089-253C-4541-A9C7-3EA7D245F926"];
     }
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(contentSizeCategoryDidChangeNotification:) name:UIContentSizeCategoryDidChangeNotification object:nil];
@@ -396,28 +447,30 @@ static TLFloatConfigIdentifier *keyboardHeightConfig;
     displayModeConfig.intValue = displayMode;
 }
 
-- (BOOL)darkModeEnable {
+- (BOOL)darkModeEnable:(TLSpaceSettings *)spaceSettings {
+    
+    DisplayMode displayMode = [[spaceSettings getStringWithName:PROPERTY_DISPLAY_MODE defaultValue:[NSString stringWithFormat:@"%d", DisplayModeSystem]]intValue];
     
     BOOL darkMode = NO;
-    
-    switch ([self displayMode]) {
-        case DisplayModeSystem:
-            if (@available(iOS 13.0, *)) {
-                if ([UIScreen mainScreen].traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark){
-                    darkMode = YES;
-                }
-            }
-            break;
-            
-        case DisplayModeDark:
-            darkMode = YES;
-            break;
-        default:
-            break;
+    switch (displayMode) {
+         case DisplayModeSystem:
+             if (@available(iOS 13.0, *)) {
+                 if ([UIScreen mainScreen].traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark){
+                     darkMode = YES;
+                 }
+             }
+             break;
+             
+         case DisplayModeDark:
+             darkMode = YES;
+             break;
+         default:
+             break;
     }
     
     return darkMode;
 }
+
 
 - (FontSize)fontSize {
     
@@ -586,6 +639,10 @@ static TLFloatConfigIdentifier *keyboardHeightConfig;
     _showConnectedMessage = enable;
 }
 
+//
+// Skred plus upgrade
+//
+
 - (BOOL)canShowUpgradeScreenAtStart {
     
     return canShowUpgradeScreenConfig.boolValue;
@@ -608,14 +665,14 @@ static TLFloatConfigIdentifier *keyboardHeightConfig;
 
 - (BOOL)showUpgradeScreen {
     
-    if (!canShowUpgradeScreenConfig.boolValue || [self inCall]) {
+    if ([self isSubscribedWithFeature:TLTwinmeApplicationFeatureGroupCall] || [self inCall] || !canShowUpgradeScreenConfig.boolValue) {
         return NO;
     }
-    
+
     int64_t oneDay = 60 * 60 * 24;
     int64_t threeDay = 3 * oneDay;
     int64_t oneWeek = 7 * oneDay;
-    int64_t twoWeek = 2 * oneWeek;
+    int64_t twoWeek = 14 * oneDay;
     
     NSTimeInterval timeInterval = [[NSDate date] timeIntervalSince1970];
     
@@ -648,6 +705,101 @@ static TLFloatConfigIdentifier *keyboardHeightConfig;
     }
     
     return showScreen;
+}
+
+//
+// Privacy
+//
+
+- (BOOL)isScreenLock {
+    DDLogVerbose(@"%@ isScreenLock", LOG_TAG);
+
+    return screenLockConfig.boolValue;
+}
+
+- (void)setScreenLockWithState:(BOOL)state {
+    
+    screenLockConfig.boolValue = state;
+}
+
+- (int)getTimeoutScreenLock {
+    
+    return timeoutScreenLockConfig.intValue;
+}
+
+- (void)setTimeoutScreenLockWithTime:(int)time {
+    
+    timeoutScreenLockConfig.intValue = time;
+}
+
+- (BOOL)isLastScreenHidden {
+    DDLogVerbose(@"%@ isLastScreenHidden", LOG_TAG);
+
+    return hideLastScreenConfig.boolValue;
+}
+
+- (void)setHideLastScreenWithState:(BOOL)state {
+    
+    hideLastScreenConfig.boolValue = state;
+}
+
+- (void)setResignActiveDateWithDate:(NSDate *)date {
+    
+    self.resignActiveDate = date;
+}
+
+- (BOOL)showLockScreen {
+    
+    if (!screenLockConfig.boolValue) {
+        return NO;
+    }
+    
+    if (!self.resignActiveDate) {
+        return YES;
+    }
+    
+    NSDate *lockDate = [self.resignActiveDate dateByAddingTimeInterval:timeoutScreenLockConfig.intValue];
+    
+    if ([lockDate compare:[NSDate date]] == NSOrderedAscending) {
+        return YES;
+    }
+    
+    return NO;
+}
+
+//
+// Ephemeral message
+//
+
+- (BOOL)allowEphemeralMessage {
+    
+    return allowEphemeralMessageConfig.boolValue;
+}
+
+- (void)setAllowEphemeralMessageWithState:(BOOL)state {
+    
+    allowEphemeralMessageConfig.boolValue = state;
+}
+
+- (int)getTimeoutEphemeralMessage {
+
+    return timeoutEphemeralMessageConfig.intValue;
+}
+
+- (void)setTimeoutEphemeralMessageWithTime:(int)time {
+    
+    timeoutEphemeralMessageConfig.intValue = time;
+}
+
+- (BOOL)isRecentCallsHidden {
+    DDLogVerbose(@"%@ isRecentCallsHidden", LOG_TAG);
+
+    return hideRecentCallsConfig.boolValue;
+}
+
+- (void)setHideRecentCallsWithState:(BOOL)state {
+    
+    hideRecentCallsConfig.boolValue = state;
 }
 
 - (BOOL)startWarningEditMessage {
@@ -789,6 +941,30 @@ static TLFloatConfigIdentifier *keyboardHeightConfig;
 }
 
 //
+// Invitation subscription
+//
+
+- (NSString *)getInvitationSubscriptionImage {
+    
+    return invitationSubscriptionImageConfig.stringValue;
+}
+
+- (void)setInvitationSubscriptionImageWithImage:(NSString *)image {
+    
+    invitationSubscriptionImageConfig.stringValue = image;
+}
+
+- (NSUUID *)getInvitationSubscriptionTwincode {
+    
+    return invitationSubscriptionTwincodeConfig.uuidValue;
+}
+
+- (void)setInvitationSubscriptionTwincodeWithTwincode:(NSUUID *)twincode {
+    
+    invitationSubscriptionTwincodeConfig.uuidValue = twincode;
+}
+
+//
 // Enable Notification
 //
 
@@ -849,6 +1025,35 @@ static TLFloatConfigIdentifier *keyboardHeightConfig;
 - (void)hideGroupCallAnimation {
 
     showGroupCallAnimationConfig.boolValue = NO;
+}
+
+//
+// Space onboarding
+//
+
+- (BOOL)showSpaceOnboarding {
+    
+    return spaceOnboardingConfig.boolValue;
+}
+
+- (void)hideSpaceOnboarding {
+    
+    spaceOnboardingConfig.boolValue = NO;
+}
+
+//
+// Click to call description
+//
+
+- (BOOL)showClickToCallDescription {
+    
+    int value = showClickToCallDescriptionCountConfig.intValue;
+    if (value < SHOW_CLICK_TO_CALL_DESCRIPTION_MAX) {
+        showClickToCallDescriptionCountConfig.intValue = value + 1;
+        return YES;
+    }
+    
+    return NO;
 }
 
 #pragma mark - Private methods

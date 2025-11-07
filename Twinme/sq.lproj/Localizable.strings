@@ -1,0 +1,570 @@
+"about_url" = "https://skred.mobi/cgu";
+"help_url" = "https://skred.mobi/licenses";
+
+    /* Application */
+"application_accept" =  "TBD";
+"application_account_deleted" =  "TBD";
+"application_add_contact_no_profile" =  "TBD";
+"application_appearance" =  "TBD";
+"application_authorization_camera" =  "TBD";
+"application_authorization_go_settings" =  "TBD";
+"application_authorization_location" =  "TBD";
+"application_authorization_media" =  "TBD";
+"application_authorization_microphone" =  "TBD";
+"application_authorization_microphone_camera" =  "TBD";
+"application_authorization_photos" =  "TBD";
+"application_authorization_title" =  "TBD";
+"application_back" =  "TBD";
+"application_camera" =  "TBD";
+"application_cancel" =  "TBD";
+"application_color" =  "TBD";
+"application_configuration" =  "TBD";
+"application_confirm" =  "TBD";
+"application_connected" =  "TBD";
+"application_contact_not_found" =  "TBD";
+"application_create_group_no_profile" =  "TBD";
+"application_database_error" =  "TBD";
+"application_decline" =  "TBD";
+"application_default" =  "TBD";
+"application_delete" =  "TBD";
+"application_delete_message" =  "TBD";
+"application_description" =  "TBD";
+"application_edit" =  "TBD";
+"application_error" =  "TBD";
+"application_error_no_storage_space" =  "TBD";
+"application_group_limit_reached %@" =  "TBD";
+"application_group_not_found" =  "TBD";
+"application_later" =  "TBD";
+"application_location" =  "TBD";
+"application_name" =  "TBD";
+"application_name_hint" =  "TBD";
+"application_network_status_connected_no_internet" =  "TBD";
+"application_network_status_no_internet" =  "TBD";
+"application_no" =  "TBD";
+"application_not_authorized_operation" =  "TBD";
+"application_not_authorized_operation_by_your_contact" =  "TBD";
+"application_not_connected" =  "TBD";
+"application_notifications" =  "TBD";
+"application_now" =  "TBD";
+"application_off" =  "TBD";
+"application_ok" =  "TBD";
+"application_on" =  "TBD";
+"application_operation_failure" =  "TBD";
+"application_permission_scan_code" =  "TBD";
+"application_photo_gallery" =  "TBD";
+"application_profile" =  "TBD";
+"application_profile_avatar_not_defined" =  "TBD";
+"application_profile_name_not_defined" =  "TBD";
+"application_remove" =  "TBD";
+"application_save" =  "TBD";
+"application_search_hint" =  "TBD";
+"application_timeout" =  "TBD";
+"application_timeout_day" =  "TBD";
+"application_timeout_hour" =  "TBD";
+"application_timeout_hours %@" =  "TBD";
+"application_timeout_minute" =  "TBD";
+"application_timeout_minutes %@" =  "TBD";
+"application_timeout_month" =  "TBD";
+"application_timeout_seconds %@" =  "TBD";
+"application_timeout_week" =  "TBD";
+"application_size_unit" =  "TBD";
+"application_theme" =  "TBD";
+"application_transient_callkit" =  "TBD";
+"application_unknown_name" =  "TBD";
+"application_upgrade" =  "TBD";
+"application_wrong_configuration" =  "TBD";
+"application_yes" =  "TBD";
+
+    /* AcceptGroupInvitationViewController */
+"accept_group_invitation_view_controller_deleted" =  "TBD";
+"accept_group_invitation_view_controller_message %@" =  "TBD";
+
+    /* AcceptInvitationViewController */
+"accept_invitation_view_controller_incorrect_contact_information" =  "TBD";
+"accept_invitation_view_controller_local_twincode" =  "TBD";
+"accept_invitation_view_controller_message %@" =  "TBD";
+
+    /* AccountViewController */
+"account_view_controller_delete_account" =  "TBD";
+"account_view_controller_delete_account_confirmation" =  "TBD";
+"account_view_controller_message_first_part" =  "TBD";
+"account_view_controller_message_second_part" =  "TBD";
+"account_view_controller_migration_title" =  "TBD";
+"account_view_controller_title" =  "TBD";
+
+    /* AddContactViewController */
+"add_contact_view_controller_description" =  "TBD";
+"add_contact_view_controller_gallery_title" =  "TBD";
+"add_contact_view_controller_ignore" =  "TBD";
+"add_contact_view_controller_in_person_subtitle" =  "TBD";
+"add_contact_view_controller_in_person_title" =  "TBD";
+"add_contact_view_controller_invite" =  "TBD";
+"add_contact_view_controller_invite_message %@ %@ %@" =  "TBD";
+"add_contact_view_controller_message" =  "TBD";
+"add_contact_view_controller_onboarding_message" =  "TBD";
+"add_contact_view_controller_scan_code" =  "TBD";
+"add_contact_view_controller_scan_title" =  "TBD";
+"add_contact_view_controller_social_subtitle" =  "TBD";
+"add_contact_view_controller_social_title" =  "TBD";
+"add_contact_view_controller_title" =  "TBD";
+
+   /* AddGroupMemberViewController */
+"add_group_member_view_controller_add" =  "TBD";
+"add_group_member_view_controller_title" =  "TBD";
+
+    /* AdminRoomViewController */
+"admin_room_view_controller_welcome_message" =  "TBD";
+
+    /* AudioCallViewController */
+"audio_call_view_controller_calling" =  "TBD";
+"audio_call_view_controller_cannot_call" =  "TBD";
+"audio_call_view_controller_connecting" =  "TBD";
+"audio_call_view_controller_hangup" =  "TBD";
+"audio_call_view_controller_terminate" =  "TBD";
+"audio_call_view_controller_terminate_busy %@" =  "TBD";
+"audio_call_view_controller_terminate_cancel %@" =  "TBD";
+"audio_call_view_controller_terminate_connectivity_error" =  "TBD";
+"audio_call_view_controller_terminate_decline %@" =  "TBD";
+"audio_call_view_controller_terminate_gone %@" =  "TBD";
+"audio_call_view_controller_terminate_revoked %@" =  "TBD";
+"audio_call_view_controller_terminate_success %@" =  "TBD";
+"audio_call_view_controller_terminate_timeout %@" =  "TBD";
+
+    /* CallViewController */
+"call_view_controller_quality_message" =  "TBD";
+"call_view_controller_quality_title" =  "TBD";
+
+    /* CaptureViewController */
+"capture_view_controller_incorrect_qrcode" =  "TBD";
+"capture_view_controller_message" =  "TBD";
+"capture_view_controller_no_camera" =  "TBD";
+"capture_view_controller_qrcode_saved" =  "TBD";
+
+    /* ContactCapabilitiesViewController */
+"contact_capabilities_view_controller_allow_incoming_calls" =  "TBD";
+
+    /* ContactPickerViewController */
+"contact_picker_view_controller_address_book_access_denied_message" =  "TBD";
+"contact_picker_view_controller_address_book_access_denied_title" =  "TBD";
+"contact_picker_view_controller_settings" =  "TBD";
+"contact_picker_view_controller_subtitle" =  "TBD";
+"contact_picker_view_controller_title" =  "TBD";
+
+    /* ContactsViewController */
+"contacts_view_controller_invite_contact_title" =  "TBD";
+"contacts_view_controller_title" =  "TBD";
+
+    /* ConversationViewController */
+"conversation_view_controller_audio_call" =  "TBD";
+"conversation_view_controller_audio_message" =  "TBD";
+"conversation_view_controller_call_missed" =  "TBD";
+"conversation_view_controller_cannot_send" =  "TBD";
+"conversation_view_controller_delete_message" =  "TBD";
+"conversation_view_controller_empty_message" =  "TBD";
+"conversation_view_controller_feature_not_supported_by_os" =  "TBD";
+"conversation_view_controller_feature_not_supported_by_peer" =  "TBD";
+"conversation_view_controller_file_type_not_supported" =  "TBD";
+"conversation_view_controller_group_member_information %@" =  "TBD";
+"conversation_view_controller_group_not_allowed_post_message" =  "TBD";
+"conversation_view_controller_group_one_member" =  "TBD";
+"conversation_view_controller_info" =  "TBD";
+"conversation_view_controller_invitation_accepted" =  "TBD";
+"conversation_view_controller_invitation_failed" =  "TBD";
+"conversation_view_controller_invitation_joined" =  "TBD";
+"conversation_view_controller_invitation_pending" =  "TBD";
+"conversation_view_controller_invitation_refused" =  "TBD";
+"conversation_view_controller_invitation_title" =  "TBD";
+"conversation_view_controller_menu_item_view_copy_message" =  "TBD";
+"conversation_view_controller_menu_item_view_copy_title" =  "TBD";
+"conversation_view_controller_menu_item_view_delete_title" =  "TBD";
+"conversation_view_controller_menu_item_view_forward_title" =  "TBD";
+"conversation_view_controller_menu_item_view_info_title" =  "TBD";
+"conversation_view_controller_menu_item_view_operation_not_allowed" =  "TBD";
+"conversation_view_controller_menu_item_view_reply_title" =  "TBD";
+"conversation_view_controller_menu_item_view_save_message" =  "TBD";
+"conversation_view_controller_menu_item_view_save_title" =  "TBD";
+"conversation_view_controller_menu_item_view_share_title" =  "TBD";
+"conversation_view_controller_message" =  "TBD";
+"conversation_view_controller_record_confirm_send_record" =  "TBD";
+"conversation_view_controller_record_start_record" =  "TBD";
+"conversation_view_controller_record_title" =  "TBD";
+"conversation_view_controller_reduce_menu_lower" =  "TBD";
+"conversation_view_controller_reduce_menu_minimal" =  "TBD";
+"conversation_view_controller_reduce_menu_original" =  "TBD";
+"conversation_view_controller_reject_stream" =  "TBD";
+"conversation_view_controller_reset_conversation" =  "TBD";
+"conversation_view_controller_reset_conversation_by_peer" =  "TBD";
+"conversation_view_controller_send_large_file_message" =  "TBD";
+"conversation_view_controller_reply_to" =  "TBD";
+"conversation_view_controller_send_menu_allow_copy" =  "TBD";
+"conversation_view_controller_video_call" =  "TBD";
+
+    /* ConversationsViewController */
+"conversations_view_controller_no_conversation_message" =  "TBD";
+"conversations_view_controller_title" =  "TBD";
+"conversations_view_controller_you" =  "TBD";
+
+    /* CreateGroupViewController */
+"create_group_view_controller_add_member" =  "TBD";
+"create_group_view_controller_create" =  "TBD";
+"create_group_view_controller_member_allow_invitation_message" =  "TBD";
+"create_group_view_controller_member_allow_invitation_title" =  "TBD";
+"create_group_view_controller_member_allow_invite_member_as_contact_message" =  "TBD";
+"create_group_view_controller_member_allow_invite_member_as_contact_title" =  "TBD";
+"create_group_view_controller_member_allow_post_message" =  "TBD";
+"create_group_view_controller_member_allow_post_title" =  "TBD";
+"create_group_view_controller_member_list %@" =  "TBD";
+"create_group_view_controller_name_hint" =  "TBD";
+"create_group_view_controller_title" =  "TBD";
+
+    /* CreateProfileViewController */
+"create_profile_view_controller_incomplete_profile_message" =  "TBD";
+"create_profile_view_controller_onboarding_message" =  "TBD";
+"create_profile_view_controller_title" =  "TBD";
+"create_profile_view_controller_welcome1" =  "TBD";
+"create_profile_view_controller_welcome2 %@" =  "TBD";
+"create_profile_view_controller_welcome_subtitle" =  "TBD";
+
+    /* DeletedAccountViewController */
+"deleted_account_view_controller_message" =  "TBD";
+
+    /* EditContactViewController */
+"edit_contact_view_controller_message" =  "TBD";
+
+    /* FatalErrorViewController */
+"fatal_error_view_controller_error_message %@" =  "TBD";
+
+    /* FeedbackViewController */
+"feedback_view_controller_email" =  "TBD";
+"feedback_view_controller_gdpr_notice" =  "TBD";
+"feedback_view_controller_message" =  "TBD";
+"feedback_view_controller_send" =  "TBD";
+"feedback_view_controller_subject" =  "TBD";
+"feedback_view_controller_subject_placeholder" =  "TBD";
+"feedback_view_controller_title" =  "TBD";
+
+    /* FullScreenQRCodeViewController */
+"fullscreen_qrcode_view_controller_generate_code_message" =  "TBD";
+"fullscreen_qrcode_view_controller_generate_code_title" =  "TBD";
+"fullscreen_qrcode_view_controller_save_message" =  "TBD";
+"fullscreen_qrcode_view_controller_save_title" =  "TBD";
+
+    /* GroupMemberViewController */
+"group_member_view_controller_admin_not_authorize" =  "TBD";
+"group_member_view_controller_invitation_message %@" =  "TBD";
+"group_member_view_controller_invitation_title" =  "TBD";
+"group_member_view_controller_invite_personnal_relation" =  "TBD";
+"group_member_view_controller_remove_message" =  "TBD";
+"group_member_view_controller_section_administrator" =  "TBD";
+"group_member_view_controller_section_invitation" =  "TBD";
+"group_member_view_controller_section_member" =  "TBD";
+"group_member_view_controller_title" =  "TBD";
+
+    /* HistoryViewController */
+"history_view_controller_all_call_segmented_control" =  "TBD";
+"history_view_controller_call_again_message %@" =  "TBD";
+"history_view_controller_call_again_title" =  "TBD";
+"history_view_controller_incoming_call" =  "TBD";
+"history_view_controller_missed_call" =  "TBD";
+"history_view_controller_missed_call_segmented_control" =  "TBD";
+"history_view_controller_no_call_message" =  "TBD";
+"history_view_controller_outgoing_call" =  "TBD";
+"history_view_controller_reset" =  "TBD";
+"history_view_controller_reset_title" =  "TBD";
+"history_view_controller_title" =  "TBD";
+
+    /* ImportDateCardViewController */
+"import_date_card_view_controller_contact_message %@" =  "TBD";
+"import_date_card_view_controller_identity_message %@" =  "TBD";
+"import_date_card_view_controller_incorrect_contact_information" =  "TBD";
+"import_date_card_view_controller_title" =  "TBD";
+
+    /* ImportPrivilegeCardViewController */
+"import_privilege_card_view_controller_contact_message" =  "TBD";
+"import_privilege_card_view_controller_identity_message %@" =  "TBD";
+"import_privilege_card_view_controller_incorrect_contact_information" =  "TBD";
+"import_privilege_card_view_controller_profile_message" =  "TBD";
+"import_privilege_card_view_controller_title" =  "TBD";
+
+    /* InfoItemViewController */
+"info_item_view_controller_call_terminated_reason_busy %@" =  "TBD";
+"info_item_view_controller_call_terminated_reason_cancel %@" =  "TBD";
+"info_item_view_controller_call_terminated_reason_decline %@" =  "TBD";
+"info_item_view_controller_call_terminated_reason_gone %@" =  "TBD";
+"info_item_view_controller_call_terminated_reason_not_authorized" =  "TBD";
+"info_item_view_controller_call_terminated_reason_revoked %@" =  "TBD";
+"info_item_view_controller_call_terminated_reason_timeout %@" =  "TBD";
+"info_item_view_controller_deleted" =  "TBD";
+"info_item_view_controller_may_be_copied" =  "TBD";
+"info_item_view_controller_may_not_be_copied" =  "TBD";
+"info_item_view_controller_received" =  "TBD";
+"info_item_view_controller_seen" =  "TBD";
+"info_item_view_controller_sent" =  "TBD";
+
+    /* InvitationRoomViewController */
+"invitation_room_view_controller_message" =  "TBD";
+
+    /* LastCallsViewController */
+"last_calls_view_controller_audio" =  "TBD";
+"last_calls_view_controller_video" =  "TBD";
+
+    /* LocalAccountMigrationViewController */
+"local_account_migration_view_controller_message" =  "TBD";
+
+    /* LockScreenViewController */
+"lock_screen_view_controller_local_authentication" =  "TBD";
+"lock_screen_view_controller_passcode_not_set" =  "TBD";
+"lock_screen_view_controller_unlock" =  "TBD";
+
+    /* MainViewController */
+"main_view_controller_add_contact" =  "TBD";
+"main_view_controller_add_group" =  "TBD";
+"main_view_controller_reset_conversation" =  "TBD";
+"main_view_controller_reset_conversation_message" =  "TBD";
+"main_view_controller_reset_conversation_title" =  "TBD";
+"main_view_controller_reset_group_conversation_admin_message" =  "TBD";
+"main_view_controller_reset_group_conversation_message" =  "TBD";
+"main_view_controller_skredboard_access_title" =  "TBD";
+"main_view_controller_skredboard_create_title" =  "TBD";
+"main_view_controller_skredboard_delete_title" =  "TBD";
+"main_view_controller_skredboard_message" =  "TBD";
+
+    /* NotificationCenter */
+"notification_center_audio_call_to %@" =  "TBD";
+"notification_center_audio_message" =  "TBD";
+"notification_center_audio_message_received" =  "TBD";
+"notification_center_cancel" =  "TBD";
+"notification_center_deleted_contact" =  "TBD";
+"notification_center_file_message" =  "TBD";
+"notification_center_file_message_received" =  "TBD";
+"notification_center_geolocation_message" =  "TBD";
+"notification_center_geolocation_message_received" =  "TBD";
+"notification_center_group_invitation" =  "TBD";
+"notification_center_group_invitation_received" =  "TBD";
+"notification_center_join_group" =  "TBD";
+"notification_center_message_deleted" =  "TBD";
+"notification_center_message_read" =  "TBD";
+"notification_center_message_received" =  "TBD";
+"notification_center_message_reset_conversation" =  "TBD";
+"notification_center_message_synchronize" =  "TBD";
+"notification_center_missed_audio_call_to %@" =  "TBD";
+"notification_center_missed_video_call_to %@" =  "TBD";
+"notification_center_new_contact" =  "TBD";
+"notification_center_notification_pending_message" =  "TBD";
+"notification_center_photo_message" =  "TBD";
+"notification_center_photo_message_received" =  "TBD";
+"notification_center_updated_contact_avatar" =  "TBD";
+"notification_center_updated_contact_name" =  "TBD";
+"notification_center_video_call_to %@" =  "TBD";
+"notification_center_video_message" =  "TBD";
+"notification_center_video_message_received" =  "TBD";
+
+    /* NotificationViewController */
+"notification_view_controller_item_audio_call" =  "TBD";
+"notification_view_controller_item_audio_message" =  "TBD";
+"notification_view_controller_item_deleted_contact" =  "TBD";
+"notification_view_controller_item_file_message" =  "TBD";
+"notification_view_controller_item_geolocation_message" =  "TBD";
+"notification_view_controller_item_group_invitation" =  "TBD";
+"notification_view_controller_item_image_message" =  "TBD";
+"notification_view_controller_item_join_group" =  "TBD";
+"notification_view_controller_item_new_contact" =  "TBD";
+"notification_view_controller_item_reset_conversation" =  "TBD";
+"notification_view_controller_item_text_message" =  "TBD";
+"notification_view_controller_item_updated_contact_avatar" =  "TBD";
+"notification_view_controller_item_updated_contact_name" =  "TBD";
+"notification_view_controller_item_video_call" =  "TBD";
+"notification_view_controller_item_video_message" =  "TBD";
+"notification_view_controller_no_notification_message" =  "TBD";
+"notification_view_controller_reset" =  "TBD";
+"notification_view_controller_reset_title" =  "TBD";
+
+    /* PersonalizationViewController */
+"personalization_view_controller_font" =  "TBD";
+"personalization_view_controller_font_extra_large" =  "TBD";
+"personalization_view_controller_font_large" =  "TBD";
+"personalization_view_controller_font_small" =  "TBD";
+"personalization_view_controller_haptic_feedback" =  "TBD";
+"personalization_view_controller_menu_choose_color" =  "TBD";
+"personalization_view_controller_menu_enter_color" =  "TBD";
+"personalization_view_controller_mode" =  "TBD";
+"personalization_view_controller_mode_dark" =  "TBD";
+"personalization_view_controller_mode_light" =  "TBD";
+"personalization_view_controller_start_tab_information" =  "TBD";
+"personalization_view_controller_start_tab_title" =  "TBD";
+"personalization_view_controller_system" =  "TBD";
+"personalization_view_controller_title" =  "TBD";
+
+/* PrivacyViewController */
+"privacy_view_controller_display_recent_call" =  "TBD";
+"privacy_view_controller_hide_last_screen_message" =  "TBD";
+"privacy_view_controller_hide_last_screen_title" =  "TBD";
+"privacy_view_controller_lock_screen_message" =  "TBD";
+"privacy_view_controller_lock_screen_timeout" =  "TBD";
+"privacy_view_controller_lock_screen_timeout_instant" =  "TBD";
+"privacy_view_controller_lock_screen_title" =  "TBD";
+"privacy_view_controller_title" =  "TBD";
+
+    /* ProfilesViewController */
+"profiles_view_controller_add_profile" =  "TBD";
+
+    /* RoomMembersViewController */
+"room_members_view_controller_change_admin_title" =  "TBD";
+"room_members_view_controller_delete_message" =  "TBD";
+"room_members_view_controller_moderators_title" =  "TBD";
+"room_members_view_controller_only_admin_message" =  "TBD";
+"room_members_view_controller_owner_title" =  "TBD";
+"room_members_view_controller_participants_title" =  "TBD";
+"room_members_view_controller_remove_admin_title" =  "TBD";
+
+    /* ScanViewController */
+"scan_view_controller_paste_code" =  "TBD";
+
+    /* SelectNotificationSoundViewController */
+"select_notification_sound_view_controller_title" =  "TBD";
+
+    /* SettingsRoomViewController */
+"settings_room_view_controller_allow_invite_as_personal_contact" =  "TBD";
+"settings_room_view_controller_allow_invite_contact" =  "TBD";
+"settings_room_view_controller_allow_invite_as_personal_contact" =  "TBD";
+"settings_room_view_controller_conference_notifications_inform" =  "TBD";
+"settings_room_view_controller_conference_notifications_noisy" =  "TBD";
+"settings_room_view_controller_conference_notifications_quiet" =  "TBD";
+"settings_room_view_controller_display_members" =  "TBD";
+"settings_room_view_controller_room_type_channel" =  "TBD";
+"settings_room_view_controller_room_type_channel_information" =  "TBD";
+"settings_room_view_controller_room_type_feedback" =  "TBD";
+"settings_room_view_controller_room_type_feedback_information" =  "TBD";
+"settings_room_view_controller_room_type_forum" =  "TBD";
+"settings_room_view_controller_room_type_forum_information" =  "TBD";
+
+    /* SettingsSpaceViewController */
+"settings_space_view_controller_allow_notifications" =  "TBD";
+"settings_space_view_controller_default_value_message" =  "TBD";
+"settings_space_view_controller_reset_application_value" =  "TBD";
+
+    /* SettingsViewController */
+"settings_view_controller_allow_copy_category_title" =  "TBD";
+"settings_view_controller_allow_copy_file_title" =  "TBD";
+"settings_view_controller_allow_copy_text_title" =  "TBD";
+"settings_view_controller_audio_call_category_title" =  "TBD";
+"settings_view_controller_audio_call_notification_ringtone_title" =  "TBD";
+"settings_view_controller_audio_call_notification_title" =  "TBD";
+"settings_view_controller_audio_call_vibration_title" =  "TBD";
+"settings_view_controller_authorization_title" =  "TBD";
+"settings_view_controller_chat_category_title" =  "TBD";
+"settings_view_controller_chat_ringtone_title" =  "TBD";
+"settings_view_controller_chat_title" =  "TBD";
+"settings_view_controller_chat_vibration_title" =  "TBD";
+"settings_view_controller_content_information" =  "TBD";
+"settings_view_controller_content_title" =  "TBD";
+"settings_view_controller_default_value_message" =  "TBD";
+"settings_view_controller_display_notification_content_title" =  "TBD";
+"settings_view_controller_display_notification_sender_title" =  "TBD";
+"settings_view_controller_ephemeral_message" =  "TBD";
+"settings_view_controller_ephemeral_section_title" =  "TBD";
+"settings_view_controller_ephemeral_title" =  "TBD";
+"settings_view_controller_message_properties_title" =  "TBD";
+"settings_view_controller_permissions_title" =  "TBD";
+"settings_view_controller_reset_default_value" =  "TBD";
+"settings_view_controller_sound_enabled_subtitle" =  "TBD";
+"settings_view_controller_sound_enabled_title" =  "TBD";
+"settings_view_controller_system_notifications_title" =  "TBD";
+"settings_view_controller_title" =  "TBD";
+"settings_view_controller_video_call_category_title" =  "TBD";
+"settings_view_controller_video_call_notification_ringtone_title" =  "TBD";
+"settings_view_controller_video_call_notification_title" =  "TBD";
+"settings_view_controller_video_call_vibration_title" =  "TBD";
+"settings_view_controller_welcome_screen_category_title" =  "TBD";
+"settings_view_controller_welcome_screen_summary" =  "TBD";
+
+    /* ShareViewController */
+"share_view_controller_contact_list_title" =  "TBD";
+"share_view_controller_group_list_title" =  "TBD";
+"share_view_controller_title" =  "TBD";
+
+    /* ShowContactViewController */
+"show_contact_view_controller_audio" =  "TBD";
+"show_contact_view_controller_chat" =  "TBD";
+"show_contact_view_controller_history_title" =  "TBD";
+"show_contact_view_controller_identity_title" =  "TBD";
+"show_contact_view_controller_last_calls" =  "TBD";
+"show_contact_view_controller_title" =  "TBD";
+"show_contact_view_controller_video" =  "TBD";
+
+    /* ShowGroupViewController */
+"show_group_view_controller_add_member" =  "TBD";
+"show_group_view_controller_invitation_list %@" =  "TBD";
+"show_group_view_controller_leave" =  "TBD";
+"show_group_view_controller_leave_message" =  "TBD";
+"show_group_view_controller_member_list %@" =  "TBD";
+"show_group_view_controller_title" =  "TBD";
+
+    /* ShowProfileViewController */
+"show_profile_view_controller_message" =  "TBD";
+"show_profile_view_controller_twincode_title" =  "TBD";
+
+    /* ShowRoomViewController */
+"show_room_view_controller_admin_title" =  "TBD";
+"show_room_view_controller_invite_participants" =  "TBD";
+"show_room_view_controller_room_title" =  "TBD";
+
+    /* SideMenuViewController */
+"side_menu_view_controller_about" =  "TBD";
+"side_menu_view_controller_application_settings" =  "TBD";
+"side_menu_view_controller_help" =  "TBD";
+"side_menu_view_controller_sign_out" =  "TBD";
+"side_menu_view_controller_support" =  "TBD";
+
+    /* SpaceAppearanceViewController */
+"space_appearance_view_controller_background_image_title" =  "TBD";
+"space_appareance_view_controller_background_text_title" =  "TBD";
+"space_appearance_view_controller_background_title" =  "TBD";
+"space_appearance_view_controller_container_background_message" =  "TBD";
+"space_appearance_view_controller_container_background_peer_message" =  "TBD";
+"space_appearance_view_controller_container_border_message" =  "TBD";
+"space_appearance_view_controller_container_border_peer_message" =  "TBD";
+"space_appearance_view_controller_container_text_message" =  "TBD";
+"space_appearance_view_controller_container_text_peer_message" =  "TBD";
+"space_appearance_view_controller_container_title" =  "TBD";
+"space_appareance_view_controller_default_value" =  "TBD";
+"space_appearance_view_controller_general_title" =  "TBD";
+"space_appearance_view_controller_menu_choose_color" =  "TBD";
+"space_appearance_view_controller_menu_enter_color" =  "TBD";
+"space_appearance_view_controller_opacity" =  "TBD";
+"space_appearance_view_controller_preview_message" =  "TBD";
+"space_appearance_view_controller_preview_peer_message" =  "TBD";
+"space_appearance_view_controller_preview_title" =  "TBD";
+"space_appearance_view_controller_theme" =  "TBD";
+
+    /* TwincodeViewController */
+"twincode_view_controller_message" =  "TBD";
+
+    /* UpdateAppViewController */
+"update_app_view_controller_update_available" =  "TBD";
+"update_app_view_controller_update_title" =  "TBD";
+
+    /* VideoCallViewController */
+"video_call_view_controller_calling" =  "TBD";
+"video_call_view_controller_cannot_call" =  "TBD";
+"video_call_view_controller_connecting" =  "TBD";
+"video_call_view_controller_terminate" =  "TBD";
+"video_call_view_controller_terminate_busy %@" =  "TBD";
+"video_call_view_controller_terminate_cancel %@" =  "TBD";
+"video_call_view_controller_terminate_connectivity_error" =  "TBD";
+"video_call_view_controller_terminate_decline %@" =  "TBD";
+"video_call_view_controller_terminate_gone %@" =  "TBD";
+"video_call_view_controller_terminate_revoked %@" =  "TBD";
+"video_call_view_controller_terminate_success %@" =  "TBD";
+"video_call_view_controller_terminate_timeout %@" =  "TBD";
+
+    /* WelcomeViewController */
+"welcome_view_controller_accept %@" =  "TBD";
+"welcome_view_controller_enter" =  "TBD";
+"welcome_view_controller_message" =  "TBD";
+"welcome_view_controller_pass" =  "TBD";
+"welcome_view_controller_privacy_policy" =  "TBD";
+"welcome_view_controller_privacy_policy_url" =  "TBD";
+"welcome_view_controller_terms_of_use" =  "TBD";
+"welcome_view_controller_terms_of_use_url" =  "TBD";
+"welcome_view_controller_title" =  "TBD";

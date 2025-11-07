@@ -329,7 +329,7 @@ typedef enum {
                     break;
             }
             
-            [cell bindWithTitle:title checked:checked];
+            [cell bindWithTitle:title checked:checked defaultColor:Design.MAIN_COLOR];
             
             return cell;
         } else {
@@ -476,11 +476,6 @@ typedef enum {
     [self.tableView reloadData];
     
     [self setUpdated];
-}
-
-- (void)switchLongPress:(SwitchView *)switchView {
-    DDLogVerbose(@"%@ switchLongPress: %@", LOG_TAG, switchView);
-    
 }
 
 #pragma mark - Private methods

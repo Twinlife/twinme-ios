@@ -19,6 +19,7 @@
 #import <Twinme/TLCallReceiver.h>
 #import <Twinme/TLContact.h>
 #import <Twinme/TLGroup.h>
+#import <Twinme/TLSpace.h>
 #import <Twinme/UIImage+Resize.h>
 
 #import <Utils/NSString+Utils.h>
@@ -29,9 +30,10 @@
 #import <TwinmeCommon/Design.h>
 #import <TwinmeCommon/EditIdentityService.h>
 
+#import "AlertMessageView.h"
 #import "MenuPhotoView.h"
-
 #import "DeviceAuthorization.h"
+#import "MenuPhotoView.h"
 #import "ApplicationAssertion.h"
 
 #if 0
@@ -77,9 +79,6 @@ static const int ddLogLevel = DDLogLevelWarning;
 @property (weak, nonatomic) IBOutlet UIView *saveProfileView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *saveProfileLabelWidthConstraint;
 @property (weak, nonatomic) IBOutlet UILabel *saveProfileLabel;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *removeViewHeightConstraint;
-@property (weak, nonatomic) IBOutlet UIView *removeView;
-@property (weak, nonatomic) IBOutlet UILabel *removeLabel;
 
 @property (nonatomic) BOOL keyboardHidden;
 @property (nonatomic) BOOL updated;
@@ -119,6 +118,7 @@ static const int ddLogLevel = DDLogLevelWarning;
     }
     return self;
 }
+
 
 - (void)viewDidLoad {
     DDLogVerbose(@"%@ viewDidLoad", LOG_TAG);
@@ -211,7 +211,7 @@ static const int ddLogLevel = DDLogLevelWarning;
 
 #pragma mark - UITextViewDelegate
 
--(void)textViewDidBeginEditing:(UITextView *)textView {
+- (void)textViewDidBeginEditing:(UITextView *)textView {
     DDLogVerbose(@"%@ textViewDidBeginEditing: %@", LOG_TAG, textView);
     
     if ([textView.text isEqualToString:TwinmeLocalizedString(@"side_menu_view_controller_about", nil)]) {
@@ -276,6 +276,11 @@ static const int ddLogLevel = DDLogLevelWarning;
 - (void)onSetCurrentSpace:(nonnull TLSpace *)space {
     DDLogVerbose(@"%@ onSetCurrentSpace: %@", LOG_TAG, space);
     
+    if (space.profile) {
+        self.profile = space.profile;
+        [self setLeftBarButtonItem:self.editIdentityService profile:space.profile];
+        [self updateProfile];
+    }
 }
 
 - (void)onUpdateProfile:(TLProfile *)profile {
@@ -333,7 +338,7 @@ static const int ddLogLevel = DDLogLevelWarning;
     self.avatarView.image = avatar;
 }
 
-- (void)onCreateProfile:(nonnull TLProfile *)profile { 
+- (void)onCreateProfile:(nonnull TLProfile *)profile {
     DDLogVerbose(@"%@ onCreateProfile: %@", LOG_TAG, profile);
 
 }
@@ -366,6 +371,20 @@ static const int ddLogLevel = DDLogLevelWarning;
     DDLogVerbose(@"%@ cancelMenu", LOG_TAG);
     
     [menuPhotoView removeFromSuperview];
+}
+
+#pragma mark - AlertMessageViewDelegate
+
+- (void)didCloseAlertMessage:(nonnull AlertMessageView *)alertMessageView {
+    DDLogVerbose(@"%@ didCloseAlertMessage: %@", LOG_TAG, alertMessageView);
+    
+    [alertMessageView closeAlertView];
+}
+
+- (void)didFinishCloseAlertMessageAnimation:(nonnull AlertMessageView *)alertMessageView {
+    DDLogVerbose(@"%@ didFinishCloseAlertMessageAnimation: %@", LOG_TAG, alertMessageView);
+    
+    [alertMessageView removeFromSuperview];
 }
 
 #pragma mark - Private methods
@@ -759,8 +778,6 @@ static const int ddLogLevel = DDLogLevelWarning;
     self.nameTextField.font = Design.FONT_REGULAR28;
     self.descriptionTextView.font = Design.FONT_REGULAR28;
     self.saveProfileLabel.font = Design.FONT_BOLD36;
-    self.removeLabel.font = Design.FONT_REGULAR34;
-    self.counterDescriptionLabel.font = Design.FONT_REGULAR28;
     self.counterNameLabel.font = Design.FONT_REGULAR26;
     self.counterDescriptionLabel.font = Design.FONT_REGULAR26;
 }

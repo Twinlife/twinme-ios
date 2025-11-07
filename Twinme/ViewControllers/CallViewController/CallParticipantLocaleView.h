@@ -21,6 +21,7 @@
 @property (nonatomic) BOOL isAudioMute;
 @property (nonatomic) BOOL isVideoMute;
 @property (nonatomic) BOOL isFrontCamera;
+@property (nonatomic) BOOL isLocationShared;
 @property (nonatomic) RTC_OBJC_TYPE(RTCVideoTrack) *localVideoTrack;
 
 - (void)enableFrontCamera:(BOOL)frontCamera;

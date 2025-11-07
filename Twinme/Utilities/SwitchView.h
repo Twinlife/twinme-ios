@@ -12,6 +12,8 @@
 
 @optional - (void)switchViewDidTap:(SwitchView *)switchView;
 
+@optional - (void)switchViewNeedsConfirm:(SwitchView *)switchView;
+
 @end
 
 //
@@ -23,10 +25,13 @@
 @property(nonatomic, weak) id<SwitchViewDelegate> switchViewDelegate;
 @property(nonatomic) BOOL isOn;
 @property(nonatomic) BOOL isEnabled;
+@property(nonatomic) BOOL needsConfirm;
 
 - (void)setOn:(BOOL)on;
 
 - (void)setEnabled:(BOOL)enabled;
+
+- (void)setConfirm:(BOOL)confirm;
 
 - (void)resetSwitch;
 

@@ -12,6 +12,8 @@
 
 @interface SelectValueCell : UITableViewCell
 
+@property (nonatomic) BOOL forceDarkMode;
+
 - (void)bindWithTitle:(NSString *)title subTitle:(NSString *)subtitle checked:(BOOL)checked hideBorder:(BOOL)hideBorder hideSeparator:(BOOL)hideSeparator;
 
 @end

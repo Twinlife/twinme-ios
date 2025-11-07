@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
+        <capability name="Map view configurations" minToolsVersion="14.0"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="CallMapView">
+            <connections>
+                <outlet property="closeImageView" destination="6Xa-rA-Wp4" id="AZb-SS-Hwj"/>
+                <outlet property="closeImageViewHeightConstraint" destination="Rqb-cb-aWo" id="VQF-lH-lgx"/>
+                <outlet property="closeView" destination="fcs-Ac-fdh" id="y7G-eI-jw7"/>
+                <outlet property="closeViewHeightConstraint" destination="G7p-j9-YPg" id="buO-Vd-OPO"/>
+                <outlet property="closeViewWidthConstraint" destination="RdB-UT-125" id="l4c-tt-oXT"/>
+                <outlet property="containerView" destination="q8J-Z7-eAg" id="Mia-BX-Jt4"/>
+                <outlet property="containerViewLeadingConstraint" destination="WNg-JV-Xph" id="doG-9C-ElV"/>
+                <outlet property="containerViewTrailingConstraint" destination="HSD-4b-SPL" id="60c-47-qJG"/>
+                <outlet property="fullScreenImageView" destination="yMr-H9-4yx" id="VTK-Ya-YFp"/>
+                <outlet property="fullScreenImageViewHeightConstraint" destination="eaX-Vy-hJj" id="hEV-XB-OU0"/>
+                <outlet property="fullScreenView" destination="rTe-RY-cRq" id="cGB-Ea-VWU"/>
+                <outlet property="fullScreenViewBottomConstraint" destination="SY8-Wu-F9O" id="IN2-jX-Id2"/>
+                <outlet property="fullScreenViewHeightConstraint" destination="crI-bt-leP" id="fun-gP-nCc"/>
+                <outlet property="fullScreenViewTrailingConstraint" destination="u3b-Tc-qMS" id="YjL-aE-QGj"/>
+                <outlet property="mapTypeImageView" destination="Ksn-i6-0W4" id="x7c-2R-Wqc"/>
+                <outlet property="mapTypeView" destination="h1e-ub-6m2" id="GFr-ZQ-1e7"/>
+                <outlet property="mapTypeViewBottomConstraint" destination="38w-7q-mHu" id="OuN-db-e85"/>
+                <outlet property="mapTypeViewHeightConstraint" destination="O4F-57-gzN" id="wlG-jL-jMF"/>
+                <outlet property="mapTypeViewTrailingConstraint" destination="jFN-QK-CG9" id="5E4-Ow-o0g"/>
+                <outlet property="mapView" destination="2yd-S8-js7" id="X2v-VF-7sV"/>
+                <outlet property="resetImageView" destination="Q4V-75-e1Y" id="5mB-70-pdA"/>
+                <outlet property="resetImageViewHeightConstraint" destination="8UW-Ux-Kmv" id="Tm6-lz-3OC"/>
+                <outlet property="resetView" destination="Wly-YU-lvR" id="c9J-Yo-dxn"/>
+                <outlet property="resetViewBottomConstraint" destination="j2s-E5-7Yv" id="fRS-Vg-4zy"/>
+                <outlet property="resetViewHeightConstraint" destination="P7K-E7-e3P" id="RCa-bQ-84p"/>
+                <outlet property="resetViewTrailingConstraint" destination="0BJ-tO-zXA" id="fn9-b8-LkF"/>
+                <outlet property="shareLocationImageView" destination="Arx-I5-ean" id="mFH-Tg-K9K"/>
+                <outlet property="shareLocationImageViewHeightConstraint" destination="Sd9-SZ-5RP" id="cec-Nj-R4y"/>
+                <outlet property="shareLocationView" destination="3lp-xF-aYY" id="7fe-bc-hIj"/>
+                <outlet property="shareLocationViewBottomConstraint" destination="RB9-rk-qg3" id="wMr-AS-uwV"/>
+                <outlet property="shareLocationViewHeightConstraint" destination="iLk-m9-aAe" id="net-1y-uVF"/>
+                <outlet property="shareLocationViewTrailingConstraint" destination="WXE-wg-hnu" id="7hZ-Fs-rEA"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="iN0-l3-epB">
+            <rect key="frame" x="0.0" y="0.0" width="750" height="600"/>
+            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+            <subviews>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="q8J-Z7-eAg">
+                    <rect key="frame" x="24" y="0.0" width="702" height="600"/>
+                    <subviews>
+                        <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="2yd-S8-js7" customClass="MapView">
+                            <rect key="frame" x="0.0" y="0.0" width="702" height="600"/>
+                            <standardMapConfiguration key="preferredConfiguration"/>
+                        </mapView>
+                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Wly-YU-lvR" userLabel="Reset View">
+                            <rect key="frame" x="592" y="120" width="90" height="90"/>
+                            <subviews>
+                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ResetMapZoomIcon" translatesAutoresizingMaskIntoConstraints="NO" id="Q4V-75-e1Y">
+                                    <rect key="frame" x="25" y="25" width="40" height="40"/>
+                                    <constraints>
+                                        <constraint firstAttribute="width" secondItem="Q4V-75-e1Y" secondAttribute="height" multiplier="1:1" id="3GQ-H3-NKZ"/>
+                                        <constraint firstAttribute="height" constant="40" id="8UW-Ux-Kmv"/>
+                                    </constraints>
+                                </imageView>
+                            </subviews>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="90" id="P7K-E7-e3P"/>
+                                <constraint firstItem="Q4V-75-e1Y" firstAttribute="centerY" secondItem="Wly-YU-lvR" secondAttribute="centerY" id="aOM-AY-ybX"/>
+                                <constraint firstAttribute="width" secondItem="Wly-YU-lvR" secondAttribute="height" multiplier="1:1" id="fWe-bG-Haz"/>
+                                <constraint firstItem="Q4V-75-e1Y" firstAttribute="centerX" secondItem="Wly-YU-lvR" secondAttribute="centerX" id="pLq-xb-yvn"/>
+                            </constraints>
+                        </view>
+                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="rTe-RY-cRq" userLabel="Fullscreen View">
+                            <rect key="frame" x="592" y="230" width="90" height="90"/>
+                            <subviews>
+                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="FullScreenIcon" translatesAutoresizingMaskIntoConstraints="NO" id="yMr-H9-4yx">
+                                    <rect key="frame" x="25" y="25" width="40" height="40"/>
+                                    <constraints>
+                                        <constraint firstAttribute="width" secondItem="yMr-H9-4yx" secondAttribute="height" multiplier="1:1" id="ENH-03-8GC"/>
+                                        <constraint firstAttribute="height" constant="40" id="eaX-Vy-hJj"/>
+                                    </constraints>
+                                </imageView>
+                            </subviews>
+                            <constraints>
+                                <constraint firstAttribute="width" secondItem="rTe-RY-cRq" secondAttribute="height" multiplier="1:1" id="VLi-mk-LZL"/>
+                                <constraint firstAttribute="height" constant="90" id="crI-bt-leP"/>
+                                <constraint firstItem="yMr-H9-4yx" firstAttribute="centerX" secondItem="rTe-RY-cRq" secondAttribute="centerX" id="gRW-Iz-Sqc"/>
+                                <constraint firstItem="yMr-H9-4yx" firstAttribute="centerY" secondItem="rTe-RY-cRq" secondAttribute="centerY" id="hyn-8s-01a"/>
+                            </constraints>
+                        </view>
+                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="3lp-xF-aYY" userLabel="Share View">
+                            <rect key="frame" x="592" y="340" width="90" height="90"/>
+                            <subviews>
+                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="CallLocationIcon" translatesAutoresizingMaskIntoConstraints="NO" id="Arx-I5-ean">
+                                    <rect key="frame" x="25" y="25" width="40" height="40"/>
+                                    <constraints>
+                                        <constraint firstAttribute="height" constant="40" id="Sd9-SZ-5RP"/>
+                                        <constraint firstAttribute="width" secondItem="Arx-I5-ean" secondAttribute="height" multiplier="1:1" id="mgQ-HD-aUm"/>
+                                    </constraints>
+                                </imageView>
+                            </subviews>
+                            <constraints>
+                                <constraint firstAttribute="width" secondItem="3lp-xF-aYY" secondAttribute="height" multiplier="1:1" id="0kt-QA-IBY"/>
+                                <constraint firstItem="Arx-I5-ean" firstAttribute="centerX" secondItem="3lp-xF-aYY" secondAttribute="centerX" id="W56-hm-fJn"/>
+                                <constraint firstItem="Arx-I5-ean" firstAttribute="centerY" secondItem="3lp-xF-aYY" secondAttribute="centerY" id="dH8-F2-wXG"/>
+                                <constraint firstAttribute="height" constant="90" id="iLk-m9-aAe"/>
+                            </constraints>
+                        </view>
+                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="h1e-ub-6m2" userLabel="Map Type View">
+                            <rect key="frame" x="592" y="450" width="90" height="90"/>
+                            <subviews>
+                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="MapIcon" translatesAutoresizingMaskIntoConstraints="NO" id="Ksn-i6-0W4">
+                                    <rect key="frame" x="0.0" y="0.0" width="90" height="90"/>
+                                    <constraints>
+                                        <constraint firstAttribute="width" secondItem="Ksn-i6-0W4" secondAttribute="height" multiplier="1:1" id="ueJ-nG-I3E"/>
+                                    </constraints>
+                                </imageView>
+                            </subviews>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="90" id="O4F-57-gzN"/>
+                                <constraint firstItem="Ksn-i6-0W4" firstAttribute="height" secondItem="h1e-ub-6m2" secondAttribute="height" id="ZbQ-ux-BkW"/>
+                                <constraint firstItem="Ksn-i6-0W4" firstAttribute="centerY" secondItem="h1e-ub-6m2" secondAttribute="centerY" id="d4l-Xb-wXU"/>
+                                <constraint firstItem="Ksn-i6-0W4" firstAttribute="width" secondItem="h1e-ub-6m2" secondAttribute="width" id="uuG-Sf-ZWn"/>
+                                <constraint firstItem="Ksn-i6-0W4" firstAttribute="centerX" secondItem="h1e-ub-6m2" secondAttribute="centerX" id="wbP-EK-nQt"/>
+                            </constraints>
+                        </view>
+                        <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Close" translatesAutoresizingMaskIntoConstraints="NO" id="6Xa-rA-Wp4">
+                            <rect key="frame" x="626" y="24" width="52" height="52"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="52" id="Rqb-cb-aWo"/>
+                                <constraint firstAttribute="width" secondItem="6Xa-rA-Wp4" secondAttribute="height" multiplier="1:1" id="X38-nG-YUp"/>
+                            </constraints>
+                        </imageView>
+                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="fcs-Ac-fdh" userLabel="CloseView">
+                            <rect key="frame" x="602" y="0.0" width="100" height="100"/>
+                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="100" id="G7p-j9-YPg"/>
+                                <constraint firstAttribute="width" constant="100" id="RdB-UT-125"/>
+                            </constraints>
+                        </view>
+                    </subviews>
+                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <constraints>
+                        <constraint firstAttribute="trailing" secondItem="Wly-YU-lvR" secondAttribute="trailing" constant="20" id="0BJ-tO-zXA"/>
+                        <constraint firstAttribute="bottom" secondItem="h1e-ub-6m2" secondAttribute="bottom" constant="60" id="38w-7q-mHu"/>
+                        <constraint firstItem="2yd-S8-js7" firstAttribute="top" secondItem="q8J-Z7-eAg" secondAttribute="top" id="4eE-RY-vZb"/>
+                        <constraint firstAttribute="bottom" secondItem="2yd-S8-js7" secondAttribute="bottom" id="6ft-yE-18m"/>
+                        <constraint firstItem="h1e-ub-6m2" firstAttribute="width" secondItem="h1e-ub-6m2" secondAttribute="height" multiplier="1:1" id="E34-Fd-V4P"/>
+                        <constraint firstItem="6Xa-rA-Wp4" firstAttribute="centerX" secondItem="fcs-Ac-fdh" secondAttribute="centerX" id="PWg-yC-rWt"/>
+                        <constraint firstItem="h1e-ub-6m2" firstAttribute="top" secondItem="3lp-xF-aYY" secondAttribute="bottom" constant="20" id="RB9-rk-qg3"/>
+                        <constraint firstItem="3lp-xF-aYY" firstAttribute="top" secondItem="rTe-RY-cRq" secondAttribute="bottom" constant="20" id="SY8-Wu-F9O"/>
+                        <constraint firstAttribute="trailing" secondItem="3lp-xF-aYY" secondAttribute="trailing" constant="20" id="WXE-wg-hnu"/>
+                        <constraint firstItem="2yd-S8-js7" firstAttribute="leading" secondItem="q8J-Z7-eAg" secondAttribute="leading" id="ZD6-jA-yLW"/>
+                        <constraint firstAttribute="trailing" secondItem="2yd-S8-js7" secondAttribute="trailing" id="aBZ-wk-qQa"/>
+                        <constraint firstItem="6Xa-rA-Wp4" firstAttribute="centerY" secondItem="fcs-Ac-fdh" secondAttribute="centerY" id="gf3-2N-HFk"/>
+                        <constraint firstItem="rTe-RY-cRq" firstAttribute="top" secondItem="Wly-YU-lvR" secondAttribute="bottom" constant="20" id="j2s-E5-7Yv"/>
+                        <constraint firstAttribute="trailing" secondItem="h1e-ub-6m2" secondAttribute="trailing" constant="20" id="jFN-QK-CG9"/>
+                        <constraint firstItem="fcs-Ac-fdh" firstAttribute="top" secondItem="q8J-Z7-eAg" secondAttribute="top" id="pWy-S4-ciV"/>
+                        <constraint firstAttribute="trailing" secondItem="rTe-RY-cRq" secondAttribute="trailing" constant="20" id="u3b-Tc-qMS"/>
+                        <constraint firstAttribute="trailing" secondItem="fcs-Ac-fdh" secondAttribute="trailing" id="xSR-vZ-hcB"/>
+                    </constraints>
+                </view>
+            </subviews>
+            <viewLayoutGuide key="safeArea" id="vUN-kp-3ea"/>
+            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+            <constraints>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="q8J-Z7-eAg" secondAttribute="trailing" constant="24" id="HSD-4b-SPL"/>
+                <constraint firstItem="q8J-Z7-eAg" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="TU3-a7-yXe"/>
+                <constraint firstItem="q8J-Z7-eAg" firstAttribute="bottom" secondItem="iN0-l3-epB" secondAttribute="bottom" id="Tep-OQ-eEf"/>
+                <constraint firstItem="q8J-Z7-eAg" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" constant="24" id="WNg-JV-Xph"/>
+            </constraints>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <point key="canvasLocation" x="104" y="21"/>
+        </view>
+    </objects>
+    <resources>
+        <image name="CallLocationIcon" width="24" height="24"/>
+        <image name="Close" width="26" height="26"/>
+        <image name="FullScreenIcon" width="24" height="24"/>
+        <image name="MapIcon" width="43" height="43"/>
+        <image name="ResetMapZoomIcon" width="24" height="24"/>
+    </resources>
+</document>

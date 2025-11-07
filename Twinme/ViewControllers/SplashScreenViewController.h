@@ -12,8 +12,6 @@
 // Protocol: SplashScreenDelegate
 //
 
-@class SettingsSpaceViewController;
-
 @protocol SplashScreenDelegate <NSObject>
 
 - (void)animationDidFinish:(BOOL)isMigration;

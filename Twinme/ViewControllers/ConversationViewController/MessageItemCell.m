@@ -27,16 +27,23 @@
 
 #import <TwinmeCommon/AsyncImageLoader.h>
 #import <TwinmeCommon/AsyncVideoLoader.h>
+#import "CustomAppearance.h"
 #import <TwinmeCommon/Design.h>
 #import "DecoratedLabel.h"
-#import "UIView+Toast.h"
 #import "EphemeralView.h"
+#import "UIView+Toast.h"
+#import "UIColor+Hex.h"
+
+#import <TwinmeCommon/Design.h>
+
 
 #if 0
 static const int ddLogLevel = DDLogLevelVerbose;
 #else
 static const int ddLogLevel = DDLogLevelWarning;
 #endif
+
+static UIColor *DESIGN_LINK_COLOR;
 
 static const int MAX_EMOJI = 5;
 
@@ -76,6 +83,10 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
 @property (weak, nonatomic) IBOutlet UIImageView *replyImageView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *replyToImageContentViewTopConstraint;
 @property (weak, nonatomic) IBOutlet UIView *replyToImageContentView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *ephemeralViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *ephemeralViewBottomConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *ephemeralViewLeadingConstraint;
+@property (weak, nonatomic) IBOutlet EphemeralView *ephemeralView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *replyActionImageViewHeightConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *replyActionImageViewLeadingConstraint;
 @property (weak, nonatomic) IBOutlet UIImageView *replyActionImageView;
@@ -95,6 +106,10 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
 
 @property (weak, nonatomic) UIFont *messageFont;
 
+@property (nonatomic) NSTimer *updateEphemeralTimer;
+
+@property (nonatomic) CustomAppearance *customAppearance;
+
 @end
 
 //
@@ -105,6 +120,11 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
 #define LOG_TAG @"MessageItemCell"
 
 @implementation MessageItemCell
+
++ (void)initialize {
+
+    DESIGN_LINK_COLOR = [UIColor colorWithRed:0./255. green:0./255. blue:0./255. alpha:1.0];
+}
 
 - (void)awakeFromNib {
     DDLogVerbose(@"%@ awakeFromNib", LOG_TAG);
@@ -131,12 +151,13 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
     [self.contentLabel setDecorShadowColor:[UIColor clearColor]];
     [self.contentLabel setDecorColor:Design.MAIN_COLOR];
     [self.contentLabel setBorderColor:[UIColor clearColor]];
-    [self.contentLabel setBorderWidth:0];
+    [self.contentLabel setBorderWidth:Design.ITEM_BORDER_WIDTH];
     self.contentLabel.longPressGestureRecognizer.cancelsTouchesInView = NO;
     
     NSMutableDictionary *mutableLinkAttributes = [NSMutableDictionary dictionary];
     [mutableLinkAttributes setObject:[NSNumber numberWithBool:YES] forKey:(NSString *)kCTUnderlineStyleAttributeName];
-    [mutableLinkAttributes setObject:(__bridge id)[[UIColor whiteColor] CGColor] forKey:(NSString *)kCTForegroundColorAttributeName];
+    [mutableLinkAttributes setObject:(__bridge id)[DESIGN_LINK_COLOR CGColor] forKey:(NSString *)kCTForegroundColorAttributeName];
+    [mutableLinkAttributes setObject:[UIFont systemFontOfSize:self.messageFont.pointSize weight:UIFontWeightSemibold] forKey:NSFontAttributeName];
     self.contentLabel.linkAttributes = [NSDictionary dictionaryWithDictionary:mutableLinkAttributes];
     
     UILongPressGestureRecognizer *longPressGesture = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(onLongPressInsideContent:)];
@@ -202,6 +223,10 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
     
     self.replyImageView.clipsToBounds = YES;
     self.replyImageView.layer.cornerRadius = 6.0;
+    
+    self.ephemeralViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    self.ephemeralViewBottomConstraint.constant = heightPadding;
+    self.ephemeralViewLeadingConstraint.constant *= Design.WIDTH_RATIO;
     
     self.replyActionImageViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     self.replyActionImageViewLeadingConstraint.constant *= Design.WIDTH_RATIO;
@@ -278,9 +303,11 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
     
     [super bindWithItem:item conversationViewController:conversationViewController];
     
+    self.customAppearance = [conversationViewController getCustomAppearance];
     self.messageFont = [conversationViewController getMessageFont];
-    [self.contentLabel setDecorColor:Design.MAIN_COLOR];
-    [self.contentLabel setBorderColor:[UIColor clearColor]];
+    [self.contentLabel setDecorColor:[self.customAppearance getMessageBackgroundColor]];
+    [self.contentLabel setTextColor:[self.customAppearance getMessageTextColor]];
+    [self.contentLabel setBorderColor:[self.customAppearance getMessageBorderColor]];
     
     MessageItem *messageItem = (MessageItem *)item;
     CGFloat topMargin = [conversationViewController getTopMarginWithMask:messageItem.corners & ITEM_TOP_RIGHT item:item];
@@ -303,6 +330,12 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
         CGFloat heightPadding = Design.TEXT_HEIGHT_PADDING;
         CGFloat widthPadding = Design.TEXT_WIDTH_PADDING;
         [self.contentLabel setPaddingWithTop:heightPadding left:widthPadding bottom:heightPadding right:widthPadding];
+        
+        NSMutableDictionary *mutableLinkAttributes = [NSMutableDictionary dictionary];
+        [mutableLinkAttributes setObject:[NSNumber numberWithBool:YES] forKey:(NSString *)kCTUnderlineStyleAttributeName];
+        [mutableLinkAttributes setObject:(__bridge id)[DESIGN_LINK_COLOR CGColor] forKey:(NSString *)kCTForegroundColorAttributeName];
+        [mutableLinkAttributes setObject:[UIFont systemFontOfSize:self.messageFont.pointSize weight:UIFontWeightSemibold] forKey:NSFontAttributeName];
+        self.contentLabel.linkAttributes = [NSDictionary dictionaryWithDictionary:mutableLinkAttributes];
         
         @try {
             NSAttributedString *attributedString = [NSString formatText:messageItem.content fontSize:self.messageFont.pointSize fontColor:[UIColor whiteColor] fontSearch:nil];
@@ -365,6 +398,15 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
                 break;
             }
                 
+            case TLDescriptorTypeGeolocationDescriptor: {
+                self.replyView.hidden = NO;
+                self.replyToImageContentView.hidden = YES;
+                self.replyViewTopConstraint.constant = topMargin;
+                [self.replyLabel setPaddingWithTop:heightPadding left:widthPadding bottom:heightPadding right:widthPadding];
+                self.replyLabel.text = TwinmeLocalizedString(@"application_location", nil);
+                break;
+            }
+                
             case TLDescriptorTypeNamedFileDescriptor: {
                 self.replyView.hidden = NO;
                 self.replyToImageContentView.hidden = YES;
@@ -383,16 +425,16 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
                 self.replyImageViewHeightConstraint.constant = Design.REPLY_IMAGE_MAX_HEIGHT;
                 self.replyImageViewTopConstraint.constant = Design.REPLY_VIEW_IMAGE_TOP;
                 self.replyImageViewBottomConstraint.constant = Design.REPLY_VIEW_IMAGE_TOP;
-
+                
                 if (!self.replyImageLoader) {
                     TLImageDescriptor *imageDescriptor = (TLImageDescriptor *)messageItem.replyToDescriptor;
-                                        
+                    
                     self.replyImageLoader = [[AsyncImageLoader alloc] initWithItem:item imageDescriptor:imageDescriptor size:CGSizeMake(Design.REPLY_IMAGE_MAX_WIDTH, Design.REPLY_IMAGE_MAX_HEIGHT)];
                     if (!self.replyImageLoader.image) {
                         [asyncManager addItemWithAsyncLoader:self.replyImageLoader];
                     }
                 }
-
+                
                 self.replyImageView.image = self.replyImageLoader.image;
                 
                 break;
@@ -406,7 +448,7 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
                 self.replyImageViewHeightConstraint.constant = Design.REPLY_IMAGE_MAX_HEIGHT;
                 self.replyImageViewTopConstraint.constant = Design.REPLY_VIEW_IMAGE_TOP;
                 self.replyImageViewBottomConstraint.constant = Design.REPLY_VIEW_IMAGE_TOP;
-
+                
                 if (!self.replyVideoLoader) {
                     TLVideoDescriptor *videoDescriptor = (TLVideoDescriptor *)messageItem.replyToDescriptor;
                     
@@ -415,7 +457,7 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
                         [asyncManager addItemWithAsyncLoader:self.replyVideoLoader];
                     }
                 }
-
+                
                 self.replyImageView.image = self.replyVideoLoader.image;
                 
                 break;
@@ -431,9 +473,48 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
         self.replyToImageContentViewTopConstraint.constant = 0;
     }
     
-    self.stateImageView.backgroundColor = [UIColor clearColor];
+    if (self.item.isEphemeralItem) {
+        self.ephemeralView.hidden = NO;
+        
+        if (self.updateEphemeralTimer) {
+            [self.updateEphemeralTimer invalidate];
+            self.updateEphemeralTimer = nil;
+        }
+        
+        [self updateEphemeralView];
+        self.updateEphemeralTimer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(updateEphemeralView) userInfo:nil repeats:YES];
+        
+        CGFloat heightPadding = Design.TEXT_HEIGHT_PADDING;
+        CGFloat leftPadding = Design.TEXT_WIDTH_PADDING + self.ephemeralViewHeightConstraint.constant;
+        CGFloat rightPadding = Design.TEXT_WIDTH_PADDING;
+        
+        if ([[UIApplication sharedApplication] userInterfaceLayoutDirection] == UIUserInterfaceLayoutDirectionRightToLeft) {
+            leftPadding = Design.TEXT_WIDTH_PADDING;
+            rightPadding = widthPadding + self.ephemeralViewHeightConstraint.constant;
+        }
+        
+        if (countEmoji == 0 || (countEmoji != 0 && messageItem.replyToDescriptor)) {
+            [self.contentLabel setPaddingWithTop:heightPadding left:leftPadding bottom:heightPadding right:rightPadding];
+        } else {
+            [self.contentLabel setPaddingWithTop:0 left:leftPadding bottom:0 right:0];
+        }
+        
+    } else {
+        self.ephemeralView.hidden = YES;
+        
+        if (countEmoji == 0 || (countEmoji != 0 && messageItem.replyToDescriptor)) {
+            CGFloat heightPadding = Design.TEXT_HEIGHT_PADDING;
+            CGFloat widthPadding = Design.TEXT_WIDTH_PADDING;
+            [self.contentLabel setPaddingWithTop:heightPadding left:widthPadding bottom:heightPadding right:widthPadding];
+        } else {
+            [self.contentLabel setPaddingWithTop:0 left:0 bottom:0 right:0];
+        }
+    }
     
     int corners = messageItem.corners;
+    
+    self.stateImageView.backgroundColor = [UIColor clearColor];
+    self.stateImageView.tintColor = [UIColor clearColor];
     
     switch (messageItem.state) {
         case ItemStateDefault:
@@ -462,11 +543,10 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
             self.stateImageView.hidden = NO;
             [self.stateImageView.layer removeAllAnimations];
             self.stateImageView.image = [conversationViewController getContactAvatarWithUUID:[messageItem peerTwincodeOutboundId]];
-            
             if ([self.stateImageView.image isEqual:[TLTwinmeAttributes DEFAULT_GROUP_AVATAR]]) {
-                self.stateImageView.backgroundColor = Design.GREY_ITEM;
+                self.stateImageView.backgroundColor = [UIColor colorWithHexString:Design.DEFAULT_COLOR alpha:1.0];
+                self.stateImageView.tintColor = [UIColor whiteColor];
             }
-            
             break;
             
         case ItemStateNotSent:
@@ -519,6 +599,7 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
             [self.contentView bringSubviewToFront:self.replyView];
             [self.contentView bringSubviewToFront:self.replyToImageContentView];
             [self.contentView bringSubviewToFront:self.contentLabel];
+            [self.contentView bringSubviewToFront:self.ephemeralView];
             [self.contentView bringSubviewToFront:self.annotationCollectionView];
         }
     } else {
@@ -532,6 +613,23 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
     [self updateFont];
     [self updateColor];
     [self setNeedsDisplay];
+}
+
+- (void)updateEphemeralView {
+    
+    if (self.item.state == ItemStateRead) {
+        CGFloat timeSinceRead = ([[NSDate date] timeIntervalSince1970] * 1000) - self.item.readTimestamp;
+        CGFloat percent = 1.0 - (timeSinceRead / self.item.expireTimeout);
+        if (percent < 0) {
+            percent = 0.0;
+        } else if (percent > 1) {
+            percent = 1.0;
+        }
+    
+        [self.ephemeralView updateWithPercent:percent color:[self.customAppearance getMessageTextColor] size:self.ephemeralViewHeightConstraint.constant];
+    } else {
+        [self.ephemeralView updateWithPercent:1.0 color:[self.customAppearance getMessageTextColor] size:self.ephemeralViewHeightConstraint.constant];
+    }
 }
 
 - (void)startDeleteAnimation {
@@ -589,6 +687,11 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
     DDLogVerbose(@"%@ deleteEphemeralItem", LOG_TAG);
     
     if ([self.deleteActionDelegate respondsToSelector:@selector(deleteItem:)]) {
+        
+        if (self.updateEphemeralTimer) {
+            [self.updateEphemeralTimer invalidate];
+            self.updateEphemeralTimer = nil;
+        }
         
         [self.deleteActionDelegate deleteItem:self.item];
     }

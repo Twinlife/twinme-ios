@@ -22,10 +22,14 @@
 #import "ConversationViewController.h"
 #import "PeerInvitationItem.h"
 
+#import "CustomAppearance.h"
+
 #import <TwinmeCommon/ApplicationDelegate.h>
 #import <TwinmeCommon/Design.h>
 #import <TwinmeCommon/TwinmeApplication.h>
+
 #import "UIView+GradientBackgroundColor.h"
+#import "UIColor+Hex.h"
 
 #if 0
 static const int ddLogLevel = DDLogLevelVerbose;
@@ -74,6 +78,8 @@ static const int ddLogLevel = DDLogLevelWarning;
 
 @property (nonatomic) TLGroup *group;
 @property (nonatomic, nullable) TLGetTwincodeAction *twincodeAction;
+
+@property (nonatomic) CustomAppearance *customAppearance;
 
 @end
 
@@ -193,9 +199,11 @@ static const int ddLogLevel = DDLogLevelWarning;
     }
     
     if ([self.groupImageView.image isEqual:[TLTwinmeAttributes DEFAULT_GROUP_AVATAR]]) {
-        self.groupImageView.backgroundColor = Design.GREY_ITEM;
+        self.groupImageView.backgroundColor = [UIColor colorWithHexString:Design.DEFAULT_COLOR alpha:1.0];
+        self.groupImageView.tintColor = [UIColor whiteColor];
     } else {
         self.groupImageView.backgroundColor = [UIColor clearColor];
+        self.groupImageView.tintColor = [UIColor clearColor];
     }
     
     self.groupImageView.image = avatar;
@@ -207,6 +215,11 @@ static const int ddLogLevel = DDLogLevelWarning;
     DDLogVerbose(@"%@ bindWithItem: %@ conversationViewController: %@", LOG_TAG, item, conversationViewController);
 
     [super bindWithItem:item conversationViewController:conversationViewController];
+    
+    self.customAppearance = [conversationViewController getCustomAppearance];
+    
+    self.invitationLabel.textColor = [self.customAppearance getPeerMessageTextColor];
+    [self.contentInvitationView setBackgroundColor:[self.customAppearance getPeerMessageBackgroundColor]];
     
     PeerInvitationItem* peerInvitationItem = (PeerInvitationItem *)item;
     self.invitationDescriptor = peerInvitationItem.invitationDescriptor;
@@ -274,6 +287,14 @@ static const int ddLogLevel = DDLogLevelWarning;
     if (peerInvitationItem.visibleAvatar) {
         self.avatarView.hidden = NO;
         self.avatarView.image = [conversationViewController getContactAvatarWithUUID:item.peerTwincodeOutboundId];
+        
+        if ([self.avatarView.image isEqual:[TLTwinmeAttributes DEFAULT_GROUP_AVATAR]]) {
+            self.avatarView.backgroundColor = [UIColor colorWithHexString:Design.DEFAULT_COLOR alpha:1.0];
+            self.avatarView.tintColor = [UIColor whiteColor];
+        } else {
+            self.avatarView.backgroundColor = [UIColor clearColor];
+            self.avatarView.tintColor = [UIColor clearColor];
+        }
     } else {
         self.avatarView.hidden = YES;
         self.avatarView.image = nil;
@@ -376,7 +397,7 @@ static const int ddLogLevel = DDLogLevelWarning;
     self.borderLayer = [CAShapeLayer layer];
     self.borderLayer.path = mask.path;
     self.borderLayer.fillColor = [UIColor clearColor].CGColor;
-    self.borderLayer.strokeColor = [UIColor clearColor].CGColor;
+    self.borderLayer.strokeColor = [self.customAppearance getPeerMessageBorderColor].CGColor;
     self.borderLayer.lineWidth = Design.ITEM_BORDER_WIDTH;
     self.borderLayer.frame = self.contentInvitationView.bounds;
     [self.contentInvitationView.layer addSublayer:self.borderLayer];
@@ -385,7 +406,6 @@ static const int ddLogLevel = DDLogLevelWarning;
 - (void)updateColor {
     DDLogVerbose(@"%@ updateColor", LOG_TAG);
     
-    self.invitationLabel.textColor = Design.FONT_COLOR_DEFAULT;
     self.overlayView.backgroundColor = Design.BACKGROUND_COLOR_WHITE_OPACITY85;
 }
 

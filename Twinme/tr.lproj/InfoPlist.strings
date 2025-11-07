@@ -1,5 +1,9 @@
-NSAppleMusicUsageDescription = "müzik çalmak";
+NSAppleMusicUsageDescription = "Apple müziğe bağlanmak";
 NSCameraUsageDescription = "fotoğraf çekmek ve görüntülü arama yapmak";
+NSContactsUsageDescription = "Size katılmaları için birilerini davet edebilmek adına kişi listenize erişmeliyiz.";
+NSFaceIDUsageDescription = "uygulamaya erişimin kimliğini doğrulamak ve kilidini açmak için";
+NSLocationAlwaysAndWhenInUseUsage = "Bir çağrı sırasında konumunuzu gerçek zamanlı olarak paylaşmak için";
+NSLocationWhenInUseUsageDescription = "bir görüşmede konumunuzu paylaşmak için";
 NSMicrophoneUsageDescription = "sesli ve görüntülü arama yapmak";
 NSPhotoLibraryUsageDescription = "profil resimleri ve sohbetlerde göndermek";
 NSPhotoLibraryAddUsageDescription = "Konuşmalarda paylaşılan fotoğraf ve videoları, davet QR kodlarını cihazın fotoğraf albümüne kaydetmek.";

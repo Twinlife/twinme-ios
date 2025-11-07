@@ -31,6 +31,8 @@
 #import "DecoratedLabel.h"
 #import "UIView+Toast.h"
 #import "EphemeralView.h"
+#import "CustomAppearance.h"
+#import "UIColor+Hex.h"
 
 #import <TwinmeCommon/AsyncLinkLoader.h>
 
@@ -78,6 +80,10 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *stateImageViewBottomConstraint;
 @property (weak, nonatomic) IBOutlet UIImageView *stateImageView;
 @property (weak, nonatomic) IBOutlet UIView *overlayView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *ephemeralViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *ephemeralViewBottomConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *ephemeralViewLeadingConstraint;
+@property (weak, nonatomic) IBOutlet EphemeralView *ephemeralView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *replyViewTopConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *replyViewBottomConstraint;
 @property (weak, nonatomic) IBOutlet UIView *replyView;
@@ -112,10 +118,14 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
 @property (nonatomic) CGFloat bottomRightRadius;
 @property (nonatomic) CGFloat bottomLeftRadius;
 @property (nonatomic) BOOL isDeleteAnimationStarted;
+@property (nonatomic) NSTimer *updateEphemeralTimer;
+
 @property (nonatomic) AsyncLinkLoader *linkLoader;
 
 @property (weak, nonatomic) UIFont *messageFont;
 @property (nonatomic) NSURL *url;
+
+@property (nonatomic) CustomAppearance *customAppearance;
 
 @end
 
@@ -137,6 +147,10 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
     self.selectionStyle = UITableViewCellSelectionStyleNone;
     
     self.messageFont = Design.FONT_REGULAR32;
+    
+    UITapGestureRecognizer *tapContentGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onTouchUpInsideContentView:)];
+    tapContentGesture.cancelsTouchesInView = NO;
+    [self.contentView addGestureRecognizer:tapContentGesture];
     
     self.linkViewTopConstraint.constant *= Design.HEIGHT_RATIO;
     self.linkViewBottomConstraint.constant *= Design.HEIGHT_RATIO;
@@ -175,10 +189,6 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
     self.titleLinkLabel.font = Design.FONT_MEDIUM32;
     self.titleLinkLabel.textColor = Design.FONT_COLOR_DEFAULT;
     
-    UITapGestureRecognizer *tapContentGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onTouchUpInsideContentView:)];
-    tapContentGesture.cancelsTouchesInView = NO;
-    [self.contentView addGestureRecognizer:tapContentGesture];
-    
     self.contentLabel.font = self.messageFont;
     self.contentLabel.numberOfLines = 0;
     self.contentLabel.translatesAutoresizingMaskIntoConstraints = NO;
@@ -210,6 +220,10 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
     
     [self.contentDeleteView setBackgroundColor:Design.DELETE_COLOR_RED];
     self.contentDeleteView.hidden = YES;
+    
+    self.ephemeralViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    self.ephemeralViewBottomConstraint.constant = heightPadding;
+    self.ephemeralViewLeadingConstraint.constant *= Design.WIDTH_RATIO;
     
     self.replyViewTopConstraint.constant *= Design.HEIGHT_RATIO;
     self.replyViewBottomConstraint.constant *= Design.HEIGHT_RATIO;
@@ -353,7 +367,13 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
     
     [super bindWithItem:item conversationViewController:conversationViewController];
     
+    self.customAppearance = [conversationViewController getCustomAppearance];
     self.messageFont = [conversationViewController getMessageFont];
+    [self.titleLinkView setBackgroundColor:Design.POPUP_BACKGROUND_COLOR];
+    [self.titleLinkLabel setTextColor:Design.FONT_COLOR_DEFAULT];
+    [self.contentLabel setDecorColor:[self.customAppearance getMessageBackgroundColor]];
+    [self.contentLabel setTextColor:[self.customAppearance getMessageTextColor]];
+    [self.contentLabel setBorderColor:[self.customAppearance getMessageBorderColor]];
     
     LinkItem *linkItem = (LinkItem *)item;
     CGFloat topMargin = [conversationViewController getTopMarginWithMask:linkItem.corners & ITEM_TOP_RIGHT item:item];
@@ -371,12 +391,20 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
     }
     
     self.contentLabel.font = self.messageFont;
+    
+    NSMutableDictionary *mutableLinkAttributes = [NSMutableDictionary dictionary];
+    [mutableLinkAttributes setObject:[NSNumber numberWithBool:YES] forKey:(NSString *)kCTUnderlineStyleAttributeName];
+    [mutableLinkAttributes setObject:(__bridge id)[[UIColor blackColor] CGColor] forKey:(NSString *)kCTForegroundColorAttributeName];
+    [mutableLinkAttributes setObject:[UIFont systemFontOfSize:self.messageFont.pointSize weight:UIFontWeightSemibold] forKey:NSFontAttributeName];
+    self.contentLabel.linkAttributes = [NSDictionary dictionaryWithDictionary:mutableLinkAttributes];
+    
     @try {
-        NSAttributedString *attributedString = [NSString formatText:linkItem.content fontSize:self.messageFont.pointSize fontColor:[UIColor whiteColor] fontSearch:nil];
+        NSAttributedString *attributedString = [NSString formatText:linkItem.content fontSize:self.messageFont.pointSize fontColor:[self.customAppearance getMessageTextColor] fontSearch:nil];
         self.contentLabel.text = attributedString;
     } @catch (NSException *exception) {
         self.contentLabel.text = linkItem.content;
     }
+
     self.contentDeleteView.hidden = YES;
     
     // Use an async loader to get url metadata
@@ -530,9 +558,34 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
         self.replyToImageContentViewTopConstraint.constant = 0;
     }
     
-    self.stateImageView.backgroundColor = [UIColor clearColor];
+    if (self.item.isEphemeralItem) {
+        self.ephemeralView.hidden = NO;
+        
+        if (self.updateEphemeralTimer) {
+            [self.updateEphemeralTimer invalidate];
+            self.updateEphemeralTimer = nil;
+        }
+        
+        [self updateEphemeralView];
+        self.updateEphemeralTimer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(updateEphemeralView) userInfo:nil repeats:YES];
+        
+        CGFloat heightPadding = Design.TEXT_HEIGHT_PADDING;
+        CGFloat widthPadding = Design.TEXT_WIDTH_PADDING;
+        [self.contentLabel setPaddingWithTop:heightPadding left:widthPadding + self.ephemeralViewHeightConstraint.constant bottom:heightPadding right:widthPadding];
+        
+    } else {
+        self.ephemeralView.hidden = YES;
+        
+        CGFloat heightPadding = Design.TEXT_HEIGHT_PADDING;
+        CGFloat widthPadding = Design.TEXT_WIDTH_PADDING;
+        [self.contentLabel setPaddingWithTop:heightPadding left:widthPadding bottom:heightPadding right:widthPadding];
+    }
+    
     
     int corners = linkItem.corners;
+    
+    self.stateImageView.backgroundColor = [UIColor clearColor];
+    self.stateImageView.tintColor = [UIColor clearColor];
     
     switch (linkItem.state) {
         case ItemStateDefault:
@@ -561,11 +614,10 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
             self.stateImageView.hidden = NO;
             [self.stateImageView.layer removeAllAnimations];
             self.stateImageView.image = [conversationViewController getContactAvatarWithUUID:[linkItem peerTwincodeOutboundId]];
-            
             if ([self.stateImageView.image isEqual:[TLTwinmeAttributes DEFAULT_GROUP_AVATAR]]) {
-                self.stateImageView.backgroundColor = Design.GREY_ITEM;
+                self.stateImageView.backgroundColor = [UIColor colorWithHexString:Design.DEFAULT_COLOR alpha:1.0];
+                self.stateImageView.tintColor = [UIColor whiteColor];
             }
-            
             break;
             
         case ItemStateNotSent:
@@ -634,6 +686,23 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
     [self setNeedsDisplay];
 }
 
+- (void)updateEphemeralView {
+    
+    if (self.item.state == ItemStateRead) {
+        CGFloat timeSinceRead = ([[NSDate date] timeIntervalSince1970] * 1000) - self.item.readTimestamp;
+        CGFloat percent = 1.0 - (timeSinceRead / self.item.expireTimeout);
+        if (percent < 0) {
+            percent = 0.0;
+        } else if (percent > 1) {
+            percent = 1.0;
+        }
+    
+        [self.ephemeralView updateWithPercent:percent color:[self.customAppearance getMessageTextColor] size:self.ephemeralViewHeightConstraint.constant];
+    } else {
+        [self.ephemeralView updateWithPercent:1.0 color:[self.customAppearance getMessageTextColor] size:self.ephemeralViewHeightConstraint.constant];
+    }
+}
+
 - (void)startDeleteAnimation {
     DDLogVerbose(@"%@ startDeleteAnimation", LOG_TAG);
     
@@ -687,6 +756,11 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
     DDLogVerbose(@"%@ deleteEphemeralItem", LOG_TAG);
     
     if ([self.deleteActionDelegate respondsToSelector:@selector(deleteItem:)]) {
+        
+        if (self.updateEphemeralTimer) {
+            [self.updateEphemeralTimer invalidate];
+            self.updateEphemeralTimer = nil;
+        }
         
         [self.deleteActionDelegate deleteItem:self.item];
     }
@@ -901,14 +975,12 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
 - (void)updateFont {
     DDLogVerbose(@"%@ updateFont", LOG_TAG);
     
-    self.contentLabel.font = self.messageFont;
     self.replyLabel.font = self.messageFont;
 }
 
 - (void)updateColor {
     DDLogVerbose(@"%@ updateColor", LOG_TAG);
     
-    [self.contentLabel setDecorColor:Design.MAIN_COLOR];
     self.overlayView.backgroundColor = Design.BACKGROUND_COLOR_WHITE_OPACITY85;
 }
 

@@ -8,6 +8,7 @@
 
 #import <CocoaLumberjack.h>
 
+#import <Twinme/TLSpace.h>
 #import <Utils/NSString+Utils.h>
 
 #import "WelcomeHelpViewController.h"
@@ -231,9 +232,10 @@ static NSString *WELCOME_CELL_IDENTIFIER = @"WelcomeCellIdentifier";
     DDLogVerbose(@"%@ initWelcome", LOG_TAG);
     
     self.uiWelcome = [[NSMutableArray alloc]init];
-    [self.uiWelcome addObject:[[UIWelcome alloc]initWithWelcomePart:WelcomePartOne]];
-    [self.uiWelcome addObject:[[UIWelcome alloc]initWithWelcomePart:WelcomePartTwo]];
-    [self.uiWelcome addObject:[[UIWelcome alloc]initWithWelcomePart:WelcomePartThree]];
+    [self.uiWelcome addObject:[[UIWelcome alloc]initWithWelcomePart:WelcomePartOne spaceSettings:self.currentSpace.settings
+                              ]];
+    [self.uiWelcome addObject:[[UIWelcome alloc]initWithWelcomePart:WelcomePartTwo spaceSettings:self.currentSpace.settings]];
+    [self.uiWelcome addObject:[[UIWelcome alloc]initWithWelcomePart:WelcomePartThree spaceSettings:self.currentSpace.settings]];
     
     self.welcomePageControl.numberOfPages = self.uiWelcome.count;
         

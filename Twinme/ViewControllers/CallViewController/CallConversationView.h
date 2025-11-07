@@ -44,4 +44,6 @@
 
 - (BOOL)hasDescriptors;
 
+- (void)dismissKeyboard;
+
 @end

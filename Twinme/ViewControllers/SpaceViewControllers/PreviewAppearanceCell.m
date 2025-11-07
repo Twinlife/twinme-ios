@@ -16,6 +16,7 @@
 
 #import <TwinmeCommon/Design.h>
 #import "DecoratedLabel.h"
+#import "CustomAppearance.h"
 
 #if 0
 static const int ddLogLevel = DDLogLevelVerbose;
@@ -123,6 +124,7 @@ static UIColor *DESIGN_SHADOW_COLOR;
     [self.contentLabel setDecorShadowColor:[UIColor clearColor]];
     [self.contentLabel setDecorColor:Design.MAIN_COLOR];
     [self.contentLabel setBorderColor:[UIColor clearColor]];
+    [self.contentLabel setBorderWidth:Design.ITEM_BORDER_WIDTH];
     [self.contentLabel setCornerRadiusWithTopLeft:largeRadius topRight:largeRadius bottomRight:smallRadius bottomLeft:largeRadius];
     self.contentLabel.text = TwinmeLocalizedString(@"space_appearance_view_controller_preview_message", nil);
     
@@ -136,7 +138,8 @@ static UIColor *DESIGN_SHADOW_COLOR;
     [self.peerContentLabel setPaddingWithTop:heightPadding left:widthPadding bottom:heightPadding right:widthPadding];
     [self.peerContentLabel setDecorShadowColor:DESIGN_SHADOW_COLOR];
     [self.peerContentLabel setDecorColor:Design.GREY_ITEM];
-    [self.peerContentLabel setBorderColor:[UIColor clearColor]];
+    [self.peerContentLabel setBorderColor:Design.ITEM_BORDER_COLOR];
+    [self.peerContentLabel setBorderWidth:Design.ITEM_BORDER_WIDTH];
     [self.peerContentLabel setCornerRadiusWithTopLeft:largeRadius topRight:largeRadius bottomRight:largeRadius bottomLeft:largeRadius];
     self.peerContentLabel.text = TwinmeLocalizedString(@"space_appearance_view_controller_preview_peer_message", nil);
     
@@ -148,23 +151,32 @@ static UIColor *DESIGN_SHADOW_COLOR;
     self.stateImageView.image = [UIImage imageNamed:@"ItemStateReceived"];
 }
 
-- (void)bind {
-    DDLogVerbose(@"%@ bind", LOG_TAG);
+- (void)bindWithAppearance:(CustomAppearance *)customAppearance conversationBackgroundImage:(UIImage *)backgroundImage {
+    DDLogVerbose(@"%@ bindWithAppearance: %@", LOG_TAG, customAppearance);
     
-    self.contentView.backgroundColor = Design.CONVERSATION_BACKGROUND_COLOR;
+    if (backgroundImage) {
+        self.backgroundImageView.image = backgroundImage;
+        self.backgroundImageView.hidden = NO;
+        self.contentView.backgroundColor = Design.WHITE_COLOR;
+    } else {
+        self.backgroundImageView.hidden = YES;
+        self.contentView.backgroundColor = [customAppearance getConversationBackgroundColor];
+    }
     
-    [self.timeLabel setTextColor:Design.TIME_COLOR];
+    [self.timeLabel setTextColor:[customAppearance getConversationBackgroundText]];
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
     [dateFormatter setDateFormat:@"HH:mm"];
     self.timeLabel.enabledTextCheckingTypes = 0;
     self.timeLabel.text = [dateFormatter stringFromDate:[NSDate date]];
     
-    self.contentLabel.textColor = [UIColor whiteColor];
-    [self.contentLabel setDecorColor:Design.MAIN_COLOR];
+    self.contentLabel.textColor = [customAppearance getMessageTextColor];
+    [self.contentLabel setDecorColor:[customAppearance getMessageBackgroundColor]];
+    [self.contentLabel setBorderColor:[customAppearance getMessageBorderColor]];
     self.contentLabel.text = TwinmeLocalizedString(@"space_appearance_view_controller_preview_message", nil);
     
-    self.peerContentLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    [self.peerContentLabel setDecorColor:Design.GREY_ITEM];
+    self.peerContentLabel.textColor = [customAppearance getPeerMessageTextColor];
+    [self.peerContentLabel setDecorColor:[customAppearance getPeerMessageBackgroundColor]];
+    [self.peerContentLabel setBorderColor:[customAppearance getPeerMessageBorderColor]];
     self.peerContentLabel.text = TwinmeLocalizedString(@"space_appearance_view_controller_preview_peer_message", nil);
     
     [self.peerContentLabel setNeedsDisplay];

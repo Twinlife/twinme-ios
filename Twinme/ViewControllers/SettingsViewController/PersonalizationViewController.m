@@ -8,28 +8,36 @@
 
 #import <CocoaLumberjack.h>
 
+#import <Twinme/TLSpace.h>
+
 #import <Utils/NSString+Utils.h>
 
 #import "PersonalizationViewController.h"
-#import <TwinmeCommon/TwinmeNavigationController.h>
 #import "PersonalizationCell.h"
-#import "ColorsCell.h"
-#import "DefaultTabCell.h"
-#import "SettingsInformationCell.h"
-#import "SettingsSectionHeaderCell.h"
 #import "SettingsItemCell.h"
+#import "DefaultTabCell.h"
+#import "SettingsSectionHeaderCell.h"
+#import "SettingsInformationCell.h"
+#import "MessageSettingsViewController.h"
+#import "ConversationAppearanceViewController.h"
 #import "DisplayModeCell.h"
 #import "AppearanceColorCell.h"
 #import "TwinmeSettingsItemCell.h"
+
+#import <TwinmeCommon/SpaceSettingsService.h>
+#import "SpaceSetting.h"
 #import "MessageSettingsViewController.h"
 #import "ConversationSettingsViewController.h"
 #import "MenuSelectColorView.h"
 
-#import <TwinmeCommon/Design.h>
+#import "SpaceSetting.h"
 #import "SwitchView.h"
+#import "MenuSelectColorView.h"
+#import "UIColor+Hex.h"
+
+#import <TwinmeCommon/Design.h>
 #import <TwinmeCommon/MainViewController.h>
-#import "UIPremiumFeature.h"
-#import "PremiumFeatureConfirmView.h"
+#import <TwinmeCommon/TwinmeNavigationController.h>
 
 #if 0
 static const int ddLogLevel = DDLogLevelVerbose;
@@ -39,21 +47,21 @@ static const int ddLogLevel = DDLogLevelWarning;
 
 static CGFloat DESIGN_DISPLAY_CELL_HEIGHT = 540;
 
-static const int PERSONALIZATION_SECTION_COUNT = 5;
+static const int PERSONALIZATION_SECTION_COUNT = 6;
 
-static const int DEFAULT_TAB_SECTION = 0;
-static const int MODE_SECTION = 1;
-static const int COLOR_SECTION = 2;
-static const int FONT_SECTION = 3;
-static const int HAPTIC_FEEDBACK_SECTION = 4;
+static const int INFO_SECTION = 0;
+static const int DEFAULT_TAB_SECTION = 1;
+static const int MODE_SECTION = 2;
+static const int APPEARANCE_SECTION = 3;
+static const int FONT_SECTION = 4;
+static const int HAPTIC_FEEDBACK_SECTION = 5;
 
-static NSString *SETTINGS_CELL_IDENTIFIER = @"SettingsCellIdentifier";
 static NSString *PERSONALIZATION_CELL_IDENTIFIER = @"PersonalizationCellIdentifier";
-static NSString *COLORS_CELL_IDENTIFIER = @"ColorsCellIdentifier";
-static NSString *HEADER_SETTINGS_CELL_IDENTIFIER = @"HeaderSettingsCellIdentifier";
 static NSString *SETTINGS_INFORMATION_CELL_IDENTIFIER = @"SettingsInformationCellIdentifier";
 static NSString *DEFAULT_TAB_CELL_IDENTIFIER = @"DefaultTabCellIdentifier";
+static NSString *HEADER_SETTINGS_CELL_IDENTIFIER = @"HeaderSettingsCellIdentifier";
 static NSString *DISPLAY_MODE_CELL_IDENTIFIER = @"DisplayModeCellIdentifier";
+static NSString *SETTINGS_CELL_IDENTIFIER = @"SettingsCellIdentifier";
 static NSString *APPEARANCE_COLOR_CELL_IDENTIFIER = @"AppearanceColorCellIdentifier";
 static NSString *TWINME_SETTINGS_CELL_IDENTIFIER = @"TwinmeSettingsCellIdentifier";
 
@@ -61,16 +69,19 @@ static NSString *TWINME_SETTINGS_CELL_IDENTIFIER = @"TwinmeSettingsCellIdentifie
 // Interface: PersonalizationViewController ()
 //
 
-@interface PersonalizationViewController () <PersonalizationDelegate, SettingsActionDelegate, DisplayModeDelegate, MenuSelectColorDelegate, ConfirmViewDelegate>
+@interface PersonalizationViewController () <PersonalizationDelegate, SettingsActionDelegate, DisplayModeDelegate, MenuSelectColorDelegate, SpaceSettingsServiceDelegate>
 
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
-
-@property (nonatomic) DisplayMode displayMode;
-@property (nonatomic) FontSize fontSize;
 
 @property (nonatomic) MenuSelectColorView *menuSelectColorView;
 
 @property (nonatomic) BOOL keyboardHidden;
+
+@property (nonatomic) SpaceSettingsService *spaceSettingsService;
+@property (nonatomic) TLSpaceSettings *defaultSpaceSettings;
+
+@property (nonatomic) DisplayMode displayMode;
+@property (nonatomic) FontSize fontSize;
 
 @end
 
@@ -98,6 +109,9 @@ static NSString *TWINME_SETTINGS_CELL_IDENTIFIER = @"TwinmeSettingsCellIdentifie
     DDLogVerbose(@"%@ viewDidLoad", LOG_TAG);
     
     [super viewDidLoad];
+    
+    self.spaceSettingsService = [[SpaceSettingsService alloc]initWithTwinmeContext:self.twinmeContext delegate:self];
+    self.defaultSpaceSettings = [self.twinmeContext defaultSpaceSettings];
     
     [self initViews];
 }
@@ -152,6 +166,16 @@ static NSString *TWINME_SETTINGS_CELL_IDENTIFIER = @"TwinmeSettingsCellIdentifie
     }
 }
 
+#pragma mark - SpaceSettingsServiceDelegate
+
+- (void)onUpdateSpaceDefaultSettings:(TLSpaceSettings *)spaceSettings {
+    DDLogVerbose(@"%@ onUpdateSpaceDefaultSettings: %@", LOG_TAG, spaceSettings);
+    
+    self.defaultSpaceSettings = spaceSettings;
+    [self updateColor];
+    [self.tableView reloadData];
+}
+
 
 #pragma mark - UITableViewDataSource
 
@@ -169,13 +193,15 @@ static NSString *TWINME_SETTINGS_CELL_IDENTIFIER = @"TwinmeSettingsCellIdentifie
     } else if (indexPath.section == MODE_SECTION && indexPath.row == 1) {
         return DESIGN_DISPLAY_CELL_HEIGHT * Design.HEIGHT_RATIO;
     }
-    
     return Design.SETTING_CELL_HEIGHT;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
     DDLogVerbose(@"%@ tableView: %@ heightForHeaderInSection: %ld", LOG_TAG, tableView, (long)section);
     
+    if (section == INFO_SECTION) {
+        return CGFLOAT_MIN;
+    }
     return Design.SETTING_SECTION_HEIGHT;
 }
 
@@ -196,10 +222,6 @@ static NSString *TWINME_SETTINGS_CELL_IDENTIFIER = @"TwinmeSettingsCellIdentifie
     NSString *sectionName = @"";
     BOOL hideSeparator = NO;
     switch (section) {
-        case COLOR_SECTION:
-            sectionName = TwinmeLocalizedString(@"application_color", nil);
-            break;
-            
         case DEFAULT_TAB_SECTION:
             sectionName = TwinmeLocalizedString(@"personalization_view_controller_start_tab_title", nil);
             hideSeparator = YES;
@@ -207,6 +229,10 @@ static NSString *TWINME_SETTINGS_CELL_IDENTIFIER = @"TwinmeSettingsCellIdentifie
             
         case MODE_SECTION:
             sectionName = TwinmeLocalizedString(@"personalization_view_controller_mode", nil);
+            break;
+            
+        case APPEARANCE_SECTION:
+            sectionName = TwinmeLocalizedString(@"application_appearance", nil);
             break;
             
         case HAPTIC_FEEDBACK_SECTION:
@@ -233,9 +259,13 @@ static NSString *TWINME_SETTINGS_CELL_IDENTIFIER = @"TwinmeSettingsCellIdentifie
     
     NSInteger numberOfRowsInSection;
     switch (section) {
-        case COLOR_SECTION:
+        case INFO_SECTION:
+            numberOfRowsInSection = 1;
+            break;
+            
         case DEFAULT_TAB_SECTION:
         case MODE_SECTION:
+        case APPEARANCE_SECTION:
             numberOfRowsInSection = 2;
             break;
             
@@ -262,22 +292,29 @@ static NSString *TWINME_SETTINGS_CELL_IDENTIFIER = @"TwinmeSettingsCellIdentifie
         if (!cell) {
             cell = [[SettingsInformationCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:SETTINGS_INFORMATION_CELL_IDENTIFIER];
         }
+        
         NSString *text = @"";
-        if (indexPath.section == DEFAULT_TAB_SECTION) {
+        if (indexPath.section == INFO_SECTION) {
+            text = TwinmeLocalizedString(@"settings_view_controller_default_value_message", nil);
+        } else if (indexPath.section == DEFAULT_TAB_SECTION) {
             text = TwinmeLocalizedString(@"personalization_view_controller_start_tab_information", nil);
         } else {
             text = TwinmeLocalizedString(@"personalization_view_controller_haptic_feedback_message", nil);
         }
         [cell bindWithText:text];
+        
         return cell;
-    }
-    if (indexPath.section == DEFAULT_TAB_SECTION) {
+    } else if (indexPath.section == DEFAULT_TAB_SECTION) {
         DefaultTabCell *cell = [tableView dequeueReusableCellWithIdentifier:DEFAULT_TAB_CELL_IDENTIFIER];
         if (!cell) {
             cell = [[DefaultTabCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:DEFAULT_TAB_CELL_IDENTIFIER];
         }
         
-        [cell bind];
+        UIColor *color = Design.MAIN_COLOR;
+        if (self.defaultSpaceSettings.style) {
+            color = [UIColor colorWithHexString:self.defaultSpaceSettings.style alpha:1.0];
+        }
+        [cell bind:color];
         return cell;
     } else if (indexPath.section == FONT_SECTION) {
         PersonalizationCell *cell = [tableView dequeueReusableCellWithIdentifier:PERSONALIZATION_CELL_IDENTIFIER];
@@ -301,29 +338,13 @@ static NSString *TWINME_SETTINGS_CELL_IDENTIFIER = @"TwinmeSettingsCellIdentifie
             title = TwinmeLocalizedString(@"personalization_view_controller_font_extra_large", nil);
         }
         
-        [cell bindWithTitle:title checked:checked];
+        UIColor *color = Design.MAIN_COLOR;
+        if (self.defaultSpaceSettings.style) {
+            color = [UIColor colorWithHexString:self.defaultSpaceSettings.style alpha:1.0];
+        }
+        [cell bindWithTitle:title checked:checked defaultColor:color];
         
         return cell;
-    } else if (indexPath.section == COLOR_SECTION) {
-        if (indexPath.row == 0) {
-            AppearanceColorCell *cell = [tableView dequeueReusableCellWithIdentifier:APPEARANCE_COLOR_CELL_IDENTIFIER];
-            if (!cell) {
-                cell = [[AppearanceColorCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:APPEARANCE_COLOR_CELL_IDENTIFIER];
-            }
-            
-            [cell bindWithColor:Design.MAIN_COLOR nameColor:TwinmeLocalizedString(@"application_theme", nil) image:nil];
-            
-            return cell;
-        } else {
-            TwinmeSettingsItemCell *cell = [tableView dequeueReusableCellWithIdentifier:TWINME_SETTINGS_CELL_IDENTIFIER];
-            if (!cell) {
-                cell = [[TwinmeSettingsItemCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:TWINME_SETTINGS_CELL_IDENTIFIER];
-            }
-            
-            [cell bindWithTitle:TwinmeLocalizedString(@"conversations_view_controller_title", nil) hiddenAccessory:NO disableSetting:NO color:Design.FONT_COLOR_DEFAULT];
-            
-            return cell;
-        }
     } else if (indexPath.section == MODE_SECTION) {
         
         if (indexPath.row == 1) {
@@ -334,7 +355,14 @@ static NSString *TWINME_SETTINGS_CELL_IDENTIFIER = @"TwinmeSettingsCellIdentifie
             
             cell.delegate = self;
             
-            [cell bind:self.twinmeApplication.displayMode];
+            DisplayMode displayMode = [[self.defaultSpaceSettings getStringWithName:PROPERTY_DISPLAY_MODE defaultValue:[NSString stringWithFormat:@"%d",DisplayModeSystem]] intValue];
+            
+            UIColor *color = Design.MAIN_COLOR;
+            if (self.defaultSpaceSettings.style) {
+                color = [UIColor colorWithHexString:self.defaultSpaceSettings.style alpha:1.0];
+            }
+            
+            [cell bind:displayMode defaultColor:color];
             
             return cell;
         } else {
@@ -345,7 +373,33 @@ static NSString *TWINME_SETTINGS_CELL_IDENTIFIER = @"TwinmeSettingsCellIdentifie
             
             cell.settingsActionDelegate = self;
             
-            [cell bindWithTitle:TwinmeLocalizedString(@"personalization_view_controller_system", nil) icon:nil stateSwitch:self.twinmeApplication.displayMode == DisplayModeSystem tagSwitch:0 hiddenSwitch:NO disableSwitch:NO backgroundColor:Design.WHITE_COLOR hiddenSeparator:NO];
+            DisplayMode displayMode = [[self.defaultSpaceSettings getStringWithName:PROPERTY_DISPLAY_MODE defaultValue:[NSString stringWithFormat:@"%d",DisplayModeSystem]] intValue];
+            
+            [cell bindWithTitle:TwinmeLocalizedString(@"personalization_view_controller_system", nil) icon:nil stateSwitch:displayMode == DisplayModeSystem tagSwitch:0 hiddenSwitch:NO disableSwitch:NO backgroundColor:Design.WHITE_COLOR hiddenSeparator:NO];
+            
+            return cell;
+        }
+    } else if (indexPath.section == APPEARANCE_SECTION) {
+        if (indexPath.row == 0) {
+            AppearanceColorCell *cell = [tableView dequeueReusableCellWithIdentifier:APPEARANCE_COLOR_CELL_IDENTIFIER];
+            if (!cell) {
+                cell = [[AppearanceColorCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:APPEARANCE_COLOR_CELL_IDENTIFIER];
+            }
+            UIColor *color = Design.MAIN_COLOR;
+            if (self.defaultSpaceSettings.style) {
+                color = [UIColor colorWithHexString:self.defaultSpaceSettings.style alpha:1.0];
+            }
+            [cell bindWithColor:color nameColor:TwinmeLocalizedString(@"application_theme", nil) image:nil];
+            
+            return cell;
+        } else {
+            TwinmeSettingsItemCell *cell = [tableView dequeueReusableCellWithIdentifier:TWINME_SETTINGS_CELL_IDENTIFIER];
+            if (!cell) {
+                cell = [[TwinmeSettingsItemCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:TWINME_SETTINGS_CELL_IDENTIFIER];
+            }
+            
+            [cell bindWithTitle:TwinmeLocalizedString(@"conversations_view_controller_title", nil) hiddenAccessory:NO disableSetting:NO color:Design.FONT_COLOR_DEFAULT];
+            
             return cell;
         }
     } else {
@@ -367,7 +421,11 @@ static NSString *TWINME_SETTINGS_CELL_IDENTIFIER = @"TwinmeSettingsCellIdentifie
             title = TwinmeLocalizedString(@"application_off", nil);
         }
         
-        [cell bindWithTitle:title checked:checked];
+        UIColor *color = Design.MAIN_COLOR;
+        if (self.defaultSpaceSettings.style) {
+            color = [UIColor colorWithHexString:self.defaultSpaceSettings.style alpha:1.0];
+        }
+        [cell bindWithTitle:title checked:checked defaultColor:color];
         
         return cell;
     }
@@ -386,7 +444,7 @@ static NSString *TWINME_SETTINGS_CELL_IDENTIFIER = @"TwinmeSettingsCellIdentifie
         [self.twinmeApplication setFontSizeWithSize:(int)indexPath.row];
         [Design setupFont];
         [self.tableView reloadData];
-    } else if (indexPath.section == COLOR_SECTION) {
+    } else if (indexPath.section == APPEARANCE_SECTION) {
         if (indexPath.row == 0) {
             [self openMenuColor:TwinmeLocalizedString(@"application_theme", nil)];
         } else {
@@ -394,42 +452,6 @@ static NSString *TWINME_SETTINGS_CELL_IDENTIFIER = @"TwinmeSettingsCellIdentifie
             [self.navigationController pushViewController:conversationSettingsViewController animated:YES];
         }
     }
-}
-
-#pragma mark - SettingsActionDelegate
-
-- (void)switchChangeValue:(SwitchView *)updatedSwitch {
-    DDLogVerbose(@"%@ switchChangeValue: %@", LOG_TAG, updatedSwitch);
-    
-    if (updatedSwitch.isOn) {
-        [self.twinmeApplication setDisplayModeWithMode:DisplayModeSystem];
-    } else {
-        if (@available(iOS 13.0, *)) {
-            if ([UIScreen mainScreen].traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark){
-                [self.twinmeApplication setDisplayModeWithMode:DisplayModeDark];
-            } else {
-                [self.twinmeApplication setDisplayModeWithMode:DisplayModeLight];
-            }
-        }
-        else {
-            [self.twinmeApplication setDisplayModeWithMode:DisplayModeLight];
-        }
-    }
-    
-    [Design setupColors];
-    [self updateColor];
-    [self.tableView reloadData];
-}
-
-#pragma mark - DisplayModeDelegate
-
-- (void)didSelectMode:(DisplayMode)displayMode {
-    DDLogVerbose(@"%@ didSelectMode: %u", LOG_TAG, displayMode);
-    
-    [self.twinmeApplication setDisplayModeWithMode:displayMode];
-    [Design setupColors];
-    [self updateColor];
-    [self.tableView reloadData];
 }
 
 #pragma mark - PersonalizationDelegate
@@ -443,25 +465,58 @@ static NSString *TWINME_SETTINGS_CELL_IDENTIFIER = @"TwinmeSettingsCellIdentifie
     ApplicationDelegate *delegate = (ApplicationDelegate *)[[UIApplication sharedApplication] delegate];
     MainViewController *mainViewController = delegate.mainViewController;
     [mainViewController updateColor];
-    [mainViewController refreshTab];
     
     self.view.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
     self.tableView.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
+}
+
+#pragma mark - SettingsActionDelegate
+
+- (void)switchChangeValue:(SwitchView *)updatedSwitch {
+    DDLogVerbose(@"%@ switchChangeValue: %@", LOG_TAG, updatedSwitch);
+        
+    DisplayMode displayMode;
+    if (updatedSwitch.isOn) {
+        displayMode = DisplayModeSystem;
+    } else {
+        if (@available(iOS 13.0, *)) {
+            if ([UIScreen mainScreen].traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark){
+                displayMode = DisplayModeDark;
+            } else {
+                displayMode = DisplayModeLight;
+            }
+        }
+        else {
+            displayMode = DisplayModeLight;
+        }
+    }
     
+    if (!self.currentSpace || [self.currentSpace.settings getBooleanWithName:PROPERTY_DEFAULT_APPEARANCE_SETTINGS defaultValue:YES]) {
+        [Design setupColors:displayMode];
+    }
+    
+    [self.defaultSpaceSettings setStringWithName:PROPERTY_DISPLAY_MODE value:[NSString stringWithFormat:@"%d", displayMode]];
+    
+    [self updateColor];
+    [self saveDefaultSpaceSettings];
     [self.tableView reloadData];
 }
 
-#pragma mark - MenuSelectColorDelegate
+#pragma mark - DisplayModeDelegate
 
-- (void)enterColor:(MenuSelectColorView *)menuSelectColorView {
-    DDLogVerbose(@"%@ enterColor", LOG_TAG);
-        
-    PremiumFeatureConfirmView *premiumFeatureConfirmView = [[PremiumFeatureConfirmView alloc] init];
-    premiumFeatureConfirmView.confirmViewDelegate = self;
-    [premiumFeatureConfirmView initWithPremiumFeature:[[UIPremiumFeature alloc]initWithFeatureType:FeatureTypeSpaces] parentViewController:self.navigationController];
-    [self.tabBarController.view addSubview:premiumFeatureConfirmView];
-    [premiumFeatureConfirmView showConfirmView];
+- (void)didSelectMode:(DisplayMode)displayMode {
+    DDLogVerbose(@"%@ didSelectMode: %u", LOG_TAG, displayMode);
+    
+    [self.defaultSpaceSettings setStringWithName:PROPERTY_DISPLAY_MODE value:[NSString stringWithFormat:@"%d", displayMode]];
+
+    if (!self.currentSpace || [self.currentSpace.settings getBooleanWithName:PROPERTY_DEFAULT_APPEARANCE_SETTINGS defaultValue:YES]) {
+        [Design setupColors:displayMode];
+    }
+    
+    [self saveDefaultSpaceSettings];
 }
+
+#pragma mark - MenuSelectColorDelegate
 
 - (void)cancelMenuSelectColor:(MenuSelectColorView *)menuSelectColorView {
     DDLogVerbose(@"%@ cancelMenuSelectColor", LOG_TAG);
@@ -476,46 +531,31 @@ static NSString *TWINME_SETTINGS_CELL_IDENTIFIER = @"TwinmeSettingsCellIdentifie
     [menuSelectColorView removeFromSuperview];
     self.menuSelectColorView = nil;
     
-    [Design setMainColor:color];
+    [self.defaultSpaceSettings setStyle:color];
+    
+    if (!self.currentSpace || [self.currentSpace.settings getBooleanWithName:PROPERTY_DEFAULT_APPEARANCE_SETTINGS defaultValue:YES]) {
+        if (![Design.MAIN_STYLE isEqualToString:self.defaultSpaceSettings.style]) {
+            [Design setMainColor:self.defaultSpaceSettings.style];
+        }
+    }
+    
+    TLSpaceSettings *spaceSettings = self.currentSpace.settings;
+    if ([self.currentSpace.settings getBooleanWithName:PROPERTY_DEFAULT_APPEARANCE_SETTINGS defaultValue:YES]) {
+        spaceSettings = self.defaultSpaceSettings;
+    }
+    
+    DisplayMode displayMode = [[spaceSettings getStringWithName:PROPERTY_DISPLAY_MODE defaultValue:[NSString stringWithFormat:@"%d",DisplayModeSystem]] intValue];
+    [Design setupColors:displayMode];
+    
     [self updateColor];
+    [self saveDefaultSpaceSettings];
+    [self.tableView reloadData];
 }
 
 - (void)resetColor:(MenuSelectColorView *)menuSelectColorView {
     DDLogVerbose(@"%@ resetColor", LOG_TAG);
     
-    [menuSelectColorView removeFromSuperview];
-    self.menuSelectColorView = nil;
-    
-    [Design setMainColor:Design.DEFAULT_COLOR];
-    [self updateColor];
-}
-
-#pragma mark - ConfirmViewDelegate
-
-- (void)didTapConfirm:(nonnull AbstractConfirmView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractConfirmView);
-    
-    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:TwinmeLocalizedString(@"twinme_plus_link", nil)] options:@{} completionHandler:nil];
-
-    [abstractConfirmView closeConfirmView];
-}
-
-- (void)didTapCancel:(nonnull AbstractConfirmView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didTapCancel: %@", LOG_TAG, abstractConfirmView);
-    
-    [abstractConfirmView closeConfirmView];
-}
-
-- (void)didClose:(nonnull AbstractConfirmView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didClose: %@", LOG_TAG, abstractConfirmView);
-    
-    [abstractConfirmView closeConfirmView];
-}
-
-- (void)didFinishCloseAnimation:(nonnull AbstractConfirmView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didFinishCloseAnimation: %@", LOG_TAG, abstractConfirmView);
-    
-    [abstractConfirmView removeFromSuperview];
+    [self selectColor:menuSelectColorView color:Design.DEFAULT_COLOR];
 }
 
 #pragma mark - Private methods
@@ -526,11 +566,10 @@ static NSString *TWINME_SETTINGS_CELL_IDENTIFIER = @"TwinmeSettingsCellIdentifie
     self.view.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
     
     [self setNavigationTitle:TwinmeLocalizedString(@"application_appearance", nil)];
-    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     self.tableView.rowHeight = UITableViewAutomaticDimension;
     self.tableView.estimatedRowHeight = Design.SETTING_CELL_HEIGHT;
+    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     [self.tableView registerNib:[UINib nibWithNibName:@"PersonalizationCell" bundle:nil] forCellReuseIdentifier:PERSONALIZATION_CELL_IDENTIFIER];
-    [self.tableView registerNib:[UINib nibWithNibName:@"ColorsCell" bundle:nil] forCellReuseIdentifier:COLORS_CELL_IDENTIFIER];
     [self.tableView registerNib:[UINib nibWithNibName:@"SettingsSectionHeaderCell" bundle:nil] forCellReuseIdentifier:HEADER_SETTINGS_CELL_IDENTIFIER];
     [self.tableView registerNib:[UINib nibWithNibName:@"DefaultTabCell" bundle:nil] forCellReuseIdentifier:DEFAULT_TAB_CELL_IDENTIFIER];
     [self.tableView registerNib:[UINib nibWithNibName:@"SettingsInformationCell" bundle:nil] forCellReuseIdentifier:SETTINGS_INFORMATION_CELL_IDENTIFIER];
@@ -541,6 +580,18 @@ static NSString *TWINME_SETTINGS_CELL_IDENTIFIER = @"TwinmeSettingsCellIdentifie
     self.tableView.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
 }
 
+- (void)finish {
+    DDLogVerbose(@"%@ finish", LOG_TAG);
+    
+    [self.spaceSettingsService dispose];
+}
+
+- (void)saveDefaultSpaceSettings {
+    DDLogVerbose(@"%@ saveDefaultSpaceSettings", LOG_TAG);
+    
+    [self.spaceSettingsService updateDefaultSpaceSettings:self.defaultSpaceSettings];
+}
+
 - (void)openMenuColor:(NSString *)color {
     DDLogVerbose(@"%@ openMenuColor: %@", LOG_TAG, color);
         
@@ -548,17 +599,14 @@ static NSString *TWINME_SETTINGS_CELL_IDENTIFIER = @"TwinmeSettingsCellIdentifie
         self.menuSelectColorView = [[MenuSelectColorView alloc]init];
         self.menuSelectColorView.menuSelectColorDelegate = self;
         [self.tabBarController.view addSubview:self.menuSelectColorView];
-        [self.menuSelectColorView openMenu:Design.MAIN_COLOR title:color defaultColor:Design.DEFAULT_COLOR];
+        
+        UIColor *mainColor = Design.MAIN_COLOR;
+        if (self.defaultSpaceSettings.style) {
+            mainColor = [UIColor colorWithHexString:self.defaultSpaceSettings.style alpha:1.0];
+        }
+        
+        [self.menuSelectColorView openMenu:mainColor title:color defaultColor:Design.DEFAULT_COLOR];
     }
-}
-
-- (BOOL)isInformationPath:(NSIndexPath *)indexPath {
-    
-    if ((indexPath.section == HAPTIC_FEEDBACK_SECTION || indexPath.section == DEFAULT_TAB_SECTION) && indexPath.row == 0) {
-        return YES;
-    }
-    
-    return NO;
 }
 
 - (void)closeMenu {
@@ -571,6 +619,15 @@ static NSString *TWINME_SETTINGS_CELL_IDENTIFIER = @"TwinmeSettingsCellIdentifie
     DDLogVerbose(@"%@ updateFont", LOG_TAG);
     
     [self.tableView reloadData];
+}
+
+- (BOOL)isInformationPath:(NSIndexPath *)indexPath {
+    
+    if (indexPath.section == INFO_SECTION || ((indexPath.section == HAPTIC_FEEDBACK_SECTION || indexPath.section == DEFAULT_TAB_SECTION) && indexPath.row == 0)) {
+        return YES;
+    }
+    
+    return NO;
 }
 
 @end

@@ -8,8 +8,11 @@
 
 #import <CocoaLumberjack.h>
 
+#import <Twinme/TLTwinmeAttributes.h>
+
 #import "AddGroupMemberCell.h"
 
+#import "UIColor+Hex.h"
 #import <TwinmeCommon/Design.h>
 
 #if 0
@@ -108,8 +111,16 @@ static const int ddLogLevel = DDLogLevelWarning;
 
 - (void)bindWithName:(NSString *)name avatar:(UIImage *)avatar isCertified:(BOOL)isCertified hideSeparator:(BOOL)hideSeparator {
     
+    if ([avatar isEqual:[TLTwinmeAttributes DEFAULT_GROUP_AVATAR]]) {
+        self.avatarView.backgroundColor = [UIColor colorWithHexString:Design.DEFAULT_COLOR alpha:1.0];
+        self.avatarView.tintColor = [UIColor whiteColor];
+    } else {
+        self.avatarView.backgroundColor = [UIColor clearColor];
+        self.avatarView.tintColor = [UIColor clearColor];
+    }
     self.avatarView.hidden = NO;
     self.avatarView.image = avatar;
+    
     self.nameLabel.text = name;
     self.separatorView.hidden = hideSeparator;
     

@@ -238,6 +238,14 @@ static UIColor *DESIGN_ITEM_COLOR;
             break;
         }
             
+        case ItemTypeLocation:
+        case ItemTypePeerLocation: {
+            self.itemLabel.text = TwinmeLocalizedString(@"application_location", nil);
+            self.itemLabel.hidden = NO;
+            self.itemImageView.hidden = YES;
+            break;
+        }
+            
         case ItemTypeFile: {
             FileItem *fileItem = (FileItem *)item;
             self.itemLabel.text = fileItem.namedFileDescriptor.name;

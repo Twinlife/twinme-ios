@@ -17,11 +17,15 @@ typedef enum {
 // Interface: UIWelcome
 //
 
+@class TLSpaceSettings;
+
 @interface UIWelcome : NSObject
 
 @property (nonatomic) WelcomePart welcomePart;
 
-- (nonnull instancetype)initWithWelcomePart:(WelcomePart)welcomePart;
+@property (nonatomic, nullable) TLSpaceSettings *spaceSettings;
+
+- (nonnull instancetype)initWithWelcomePart:(WelcomePart)welcomePart spaceSettings:(nullable TLSpaceSettings *)spaceSettings;
 
 - (nullable UIImage *)getImage;
 

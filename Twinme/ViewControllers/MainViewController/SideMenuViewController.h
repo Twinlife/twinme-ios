@@ -8,7 +8,7 @@
 
 #import <TwinmeCommon/AbstractTwinmeViewController.h>
 
-@class UIProfile;
+@class UISpace;
 
 //
 // Protocol: DefaultProfileDelegate
@@ -23,14 +23,28 @@
 @end
 
 //
+// Protocol: SideSpaceDelegate
+//
+
+@protocol SideSpaceDelegate <NSObject>
+
+- (void)showSpace:(UISpace *)uiSpace;
+
+- (void)setCurrentSpace:(UISpace *)uiSpace;
+
+@end
+
+//
 // Interface: SideMenuViewController
 //
 
 @interface SideMenuViewController : AbstractTwinmeViewController
 
-- (void)setUIProfiles:(NSArray *)uiProfiles;
+- (void)resetContentOffset;
 
-- (void)setProfile:(UIProfile *)profile;
+- (void)setUISpaces:(NSArray *)uiSpaces;
+
+- (void)setSpace:(UISpace *)space;
 
 - (void)setTransferCall:(TLCallReceiver *)callReceiver;
 

@@ -95,6 +95,7 @@ static const int CONTACTS_VIEW_SECTION = 1;
         _uiContacts = [[NSMutableArray alloc] init];
         _uiGroups = [[NSMutableArray alloc] init];
         _needRefresh = NO;
+        _refreshTableScheduled = NO;
         _keyboardHidden = YES;
         
         _contactsService = [[ContactsService alloc] initWithTwinmeContext:self.twinmeContext delegate:self];
@@ -187,12 +188,14 @@ static const int CONTACTS_VIEW_SECTION = 1;
     
     [self.uiContacts removeAllObjects];
     
+    self.refreshTableScheduled = YES;
     for (TLContact *contact in contacts) {
         if ([contact hasPeer]) {
             [self updateUIContact:contact avatar:nil];
         }
     }
     
+    self.refreshTableScheduled = NO;
     [self.contactsTableView reloadData];
 }
 

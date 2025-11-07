@@ -8,11 +8,14 @@
 
 #import <CocoaLumberjack.h>
 
+#import <Twinme/TLSpace.h>
+
 #import <Utils/NSString+Utils.h>
 
 #import "OnboardingProfileViewController.h"
 
 #import <TwinmeCommon/Design.h>
+#import "SpaceSetting.h"
 
 #if 0
 static const int ddLogLevel = DDLogLevelVerbose;
@@ -64,6 +67,12 @@ static CGFloat DESIGN_TITLE_TOP_MARGIN = 144;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *closeViewTopConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *closeViewTrailingConstraint;
 @property (weak, nonatomic) IBOutlet UIView *closeView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *doNotShowLabelLeadingConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *doNotShowLabelTrailingConstraint;
+@property (weak, nonatomic) IBOutlet UILabel *doNotShowLabel;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *doNotShowViewWidthConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *doNotShowViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet UIView *doNotShowView;
 
 @property (nonatomic) UIView *overlayView;
 
@@ -171,6 +180,7 @@ static CGFloat DESIGN_TITLE_TOP_MARGIN = 144;
         self.closeViewTopConstraint.constant *= Design.HEIGHT_RATIO;
         
         self.createProfileViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+        self.doNotShowView.hidden = NO;
     } else {
         self.view.backgroundColor = Design.WHITE_COLOR;
         self.containerTopConstraint.constant = 0;
@@ -183,6 +193,7 @@ static CGFloat DESIGN_TITLE_TOP_MARGIN = 144;
         self.closeViewTopConstraint.constant = DESIGN_CLOSE_TOP_MARGIN * Design.HEIGHT_RATIO;
         
         self.createProfileViewHeightConstraint.constant = 0;
+        self.doNotShowView.hidden = YES;
     }
     
     self.titleLabelWidthConstraint.constant *= Design.WIDTH_RATIO;
@@ -193,7 +204,7 @@ static CGFloat DESIGN_TITLE_TOP_MARGIN = 144;
     self.onboardingImageViewTopConstraint.constant *= Design.HEIGHT_RATIO;
     self.onboardingImageViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     
-    self.onboardingImageView.image = [self.twinmeApplication darkModeEnable] ? [UIImage imageNamed:@"OnboardingAddProfileDark"] : [UIImage imageNamed:@"OnboardingAddProfile"];
+    self.onboardingImageView.image = [self.twinmeApplication darkModeEnable:[self currentSpaceSettings]] ? [UIImage imageNamed:@"OnboardingAddProfileDark"] : [UIImage imageNamed:@"OnboardingAddProfile"];
     
     self.messageLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
     self.messageLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
@@ -259,6 +270,23 @@ static CGFloat DESIGN_TITLE_TOP_MARGIN = 144;
     self.closeView.accessibilityLabel = TwinmeLocalizedString(@"application_cancel", nil);
     UITapGestureRecognizer *closeGestureRecognizer = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(handleCloseTapGesture:)];
     [self.closeView addGestureRecognizer:closeGestureRecognizer];
+    
+    self.doNotShowLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
+    self.doNotShowLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
+    
+    self.doNotShowLabel.font = Design.FONT_MEDIUM28;
+    self.doNotShowLabel.textColor = Design.FONT_COLOR_DEFAULT;
+    
+    NSMutableAttributedString *laterAttributedString = [[NSMutableAttributedString alloc] initWithString:TwinmeLocalizedString(@"application_do_not_display", nil)];
+    [laterAttributedString addAttribute:NSUnderlineStyleAttributeName value:@1 range:NSMakeRange(0,
+                                                                                                 [laterAttributedString length])];
+    [self.doNotShowLabel setAttributedText:laterAttributedString];
+    
+    self.doNotShowViewWidthConstraint.constant *= Design.WIDTH_RATIO;
+    self.doNotShowViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    
+    self.doNotShowView.userInteractionEnabled = YES;
+    [self.doNotShowView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleDoNotShowTapGesture:)]];
 }
 
 - (void)handleCloseTapGesture:(UITapGestureRecognizer *)sender {
@@ -266,6 +294,16 @@ static CGFloat DESIGN_TITLE_TOP_MARGIN = 144;
     
     if (sender.state == UIGestureRecognizerStateEnded) {
         [self hapticFeedBack:UIImpactFeedbackStyleMedium];
+        [self finish];
+    }
+}
+
+- (void)handleDoNotShowTapGesture:(UITapGestureRecognizer *)sender {
+    DDLogVerbose(@"%@ handleDoNotShowTapGesture: %@", LOG_TAG, sender);
+    
+    if (sender.state == UIGestureRecognizerStateEnded) {
+        [self hapticFeedBack:UIImpactFeedbackStyleMedium];
+        [self.twinmeApplication setShowOnboardingType:OnboardingTypeProfile state:NO];
         [self finish];
     }
 }

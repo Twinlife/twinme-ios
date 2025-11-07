@@ -34,6 +34,8 @@ static const int ddLogLevel = DDLogLevelWarning;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *separatorViewHeightConstraint;
 @property (weak, nonatomic) IBOutlet UIView *separatorView;
 
+@property UIColor *defaultColor;
+
 @end
 
 //
@@ -50,6 +52,8 @@ static const int ddLogLevel = DDLogLevelWarning;
     
     [super awakeFromNib];
     
+    self.defaultColor = Design.MAIN_COLOR;
+    
     self.selectionStyle = UITableViewCellSelectionStyleNone;
     self.contentView.backgroundColor = Design.WHITE_COLOR;
     self.titleLeadingConstraint.constant *= Design.WIDTH_RATIO;
@@ -65,15 +69,16 @@ static const int ddLogLevel = DDLogLevelWarning;
     checkMarkViewLayer.borderWidth = Design.CHECKMARK_BORDER_WIDTH;
     checkMarkViewLayer.borderColor = Design.CHECKMARK_BORDER_COLOR.CGColor;
     
-    self.checkMarkImageView.tintColor = Design.MAIN_COLOR;
+    self.checkMarkImageView.tintColor = self.defaultColor;
     
     self.separatorViewHeightConstraint.constant = Design.SEPARATOR_HEIGHT;
     self.separatorView.backgroundColor = Design.SEPARATOR_COLOR_GREY;
 }
 
-- (void)bindWithTitle:(NSString *)title checked:(BOOL)checked {
-    DDLogVerbose(@"%@ bindWithTitle: %@ checked: %@", LOG_TAG, title, checked ? @"YES" : @"NO");
+- (void)bindWithTitle:(NSString *)title checked:(BOOL)checked defaultColor:(UIColor *)defaultColor {
+    DDLogVerbose(@"%@ bindWithTitle: %@ checked: %@ defaultColor: %@", LOG_TAG, title, checked ? @"YES" : @"NO", defaultColor);
     
+    self.defaultColor = defaultColor;
     self.title.text = title;
     
     if (checked) {
@@ -98,7 +103,7 @@ static const int ddLogLevel = DDLogLevelWarning;
     self.contentView.backgroundColor = Design.WHITE_COLOR;
     self.title.textColor = Design.FONT_COLOR_DEFAULT;
     self.separatorView.backgroundColor = Design.SEPARATOR_COLOR_GREY;
-    self.checkMarkImageView.tintColor = Design.MAIN_COLOR;
+    self.checkMarkImageView.tintColor = self.defaultColor;
 }
 
 @end

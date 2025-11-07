@@ -62,7 +62,6 @@
             } else {
                 title = TwinmeLocalizedString(@"conversations_view_controller_title", nil);
             }
-            
             break;
             
         default:

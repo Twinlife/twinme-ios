@@ -1,0 +1,8 @@
+NSAppleMusicUsageDescription = "TBD";
+NSCameraUsageDescription = "TBD";
+NSContactsUsageDescription = "TBD";
+NSFaceIDUsageDescription = "TBD";
+NSLocationWhenInUseUsageDescription = "TBD";
+NSMicrophoneUsageDescription = "TBD";
+NSPhotoLibraryUsageDescription = "TBD";
+NSPhotoLibraryAddUsageDescription = "TBD";

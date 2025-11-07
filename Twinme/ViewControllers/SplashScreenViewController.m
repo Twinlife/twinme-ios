@@ -40,12 +40,14 @@ static CGFloat ANIMATION_DURATION = 2.f;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *splashScreenTwinmeImageWidthConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *splashScreenTwinmeImageHeightConstraint;
 @property (weak, nonatomic) IBOutlet UIImageView *splashScreenTwinmeImage;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *premiumVersionImageHeightConstraint;
+@property (weak, nonatomic) IBOutlet UIImageView *premiumVersionImage;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *updgradeLabelWidthConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *updgradeLabelBottomConstraint;
 @property (weak, nonatomic) IBOutlet UILabel *updgradeLabel;
 
-@property ApplicationStateType state;
-@property BOOL isAnimationFinished;
+@property (nonatomic) ApplicationStateType state;
+@property (nonatomic) BOOL isAnimationFinished;
 @property (nonatomic) SplashService *splashService;
 
 @end
@@ -69,7 +71,7 @@ static CGFloat ANIMATION_DURATION = 2.f;
     if (self) {
         _isAnimationFinished = NO;
         _state = ApplicationStateTypeStarting;
-        _splashService = [[SplashService alloc] initWithTwinmeContext:self.twinmeContext subscriptionTwincodeId:nil delegate:self];
+        _splashService = [[SplashService alloc] initWithTwinmeContext:self.twinmeContext subscriptionTwincodeId:[self.twinmeApplication getInvitationSubscriptionTwincode] delegate:self];
     }
     return self;
 }
@@ -128,6 +130,13 @@ static CGFloat ANIMATION_DURATION = 2.f;
     }
 }
 
+- (void)onPremiumImage:(nonnull UIImage *)image {
+    DDLogVerbose(@"%@ onPremiumImage: %@", LOG_TAG, image);
+
+    self.premiumVersionImage.image = image;
+    self.premiumVersionImage.hidden = NO;
+}
+
 #pragma mark - Private methods
 
 - (void)initViews {
@@ -153,10 +162,13 @@ static CGFloat ANIMATION_DURATION = 2.f;
     self.updgradeLabelWidthConstraint.constant *= Design.WIDTH_RATIO;
     self.updgradeLabelBottomConstraint.constant *= Design.HEIGHT_RATIO;
     
-    self.updgradeLabel.textColor = Design.FONT_COLOR_DEFAULT;
+    self.updgradeLabel.textColor = [UIColor whiteColor];
     self.updgradeLabel.font = Design.FONT_REGULAR34;
     self.updgradeLabel.text = TwinmeLocalizedString(@"application_upgrade", nil);
     self.updgradeLabel.hidden = YES;
+    
+    self.premiumVersionImageHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    self.premiumVersionImage.hidden = YES;
 }
 
 - (void)animateLogo {
@@ -178,8 +190,16 @@ static CGFloat ANIMATION_DURATION = 2.f;
     animationTwinme.removedOnCompletion = NO;
     self.splashScreenTwinmeImage.layer.opacity = 1.0;
     
+    CABasicAnimation *animationPremium = [CABasicAnimation animationWithKeyPath:@"opacity"];
+    animationPremium.repeatCount = 1;
+    animationPremium.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseIn];
+    animationPremium.fromValue = [NSNumber numberWithFloat:0.0];
+    animationPremium.toValue = [NSNumber numberWithFloat:2.0];
+    animationPremium.removedOnCompletion = NO;
+    self.premiumVersionImage.layer.opacity = 1.0;
+    
     CAAnimationGroup *animationGroup = [CAAnimationGroup animation];
-    animationGroup.animations = @[animationLogo, animationTwinme];
+    animationGroup.animations = @[animationLogo, animationTwinme, animationPremium];
     animationGroup.delegate = self;
     animationGroup.duration = ANIMATION_DURATION;
     [self.splashScreenTwinmeImage.layer addAnimation:animationGroup forKey:nil];

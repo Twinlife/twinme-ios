@@ -114,28 +114,28 @@ static TLStringSharedConfigIdentifier *videoCallSoundConfig;
     
     switch (type) {
         case NotificationSoundTypeNotification:
-            return [[NotificationSoundSetting alloc] initWithType:NotificationSoundTypeNotification name:@"twinme Notification" soundId:0 soundPath:@"twinme_notification.caf" config:chatSoundConfig];
+	return [[NotificationSoundSetting alloc] initWithType:NotificationSoundTypeNotification name:@"Skred Notification" soundId:0 soundPath:@"twinme_notification_default.caf" config:chatSoundConfig];
             
         case NotificationSoundTypeAudioCall:
-            return [[NotificationSoundSetting alloc] initWithType:NotificationSoundTypeAudioCall name:@"twinme audio call" soundId:0 soundPath:@"twinme_audio_call.caf" config:audioCallSoundConfig];
+	  return [[NotificationSoundSetting alloc] initWithType:NotificationSoundTypeAudioCall name:@"Skred audio call" soundId:0 soundPath:@"twinme_ringtone_default.caf" config:audioCallSoundConfig];
             
         case NotificationSoundTypeVideoCall:
-            return [[NotificationSoundSetting alloc] initWithType:NotificationSoundTypeVideoCall name:@"twinme video call" soundId:0 soundPath:@"twinme_video_call.caf" config:videoCallSoundConfig];
+	  return [[NotificationSoundSetting alloc] initWithType:NotificationSoundTypeVideoCall name:@"Skred video call" soundId:0 soundPath:@"twinme_ringtone_default.caf" config:videoCallSoundConfig];
             
         case NotificationSoundTypeAudioCalling:
-            return [[NotificationSoundSetting alloc] initWithType:NotificationSoundTypeAudioCalling name:@"twinme calling" soundId:0 soundPath:@"twinme_connecting.caf"];
-        
+            return [[NotificationSoundSetting alloc] initWithType:NotificationSoundTypeAudioCalling name:@"Skred calling" soundId:0 soundPath:@"twinme_connecting.caf"];
+            
         case NotificationSoundTypeAudioRinging:
-            return [[NotificationSoundSetting alloc] initWithType:NotificationSoundTypeAudioRinging name:@"twinme ringing" soundId:0 soundPath:@"twinme_ringing.caf"];
+            return [[NotificationSoundSetting alloc] initWithType:NotificationSoundTypeAudioRinging name:@"Skred ringing" soundId:0 soundPath:@"twinme_ringing.caf"];
             
         case NotificationSoundTypeVideoCalling:
-            return [[NotificationSoundSetting alloc] initWithType:NotificationSoundTypeVideoCalling name:@"twinme calling" soundId:0 soundPath:@"twinme_connecting.caf"];
+            return [[NotificationSoundSetting alloc] initWithType:NotificationSoundTypeVideoCalling name:@"Skred calling" soundId:0 soundPath:@"twinme_connecting.caf"];
             
         case NotificationSoundTypeAudioCallEnd:
-            return [[NotificationSoundSetting alloc] initWithType:NotificationSoundTypeAudioCallEnd name:@"twinme call end" soundId:0 soundPath:@"twinme_call_end.caf"];
+            return [[NotificationSoundSetting alloc] initWithType:NotificationSoundTypeAudioCallEnd name:@"Skred call end" soundId:0 soundPath:@"twinme_call_end.caf"];
             
         case NotificationSoundTypeVideoCallEnd:
-            return [[NotificationSoundSetting alloc] initWithType:NotificationSoundTypeVideoCallEnd name:@"twinme call end" soundId:0 soundPath:@"twinme_call_end.caf"];
+            return [[NotificationSoundSetting alloc] initWithType:NotificationSoundTypeVideoCallEnd name:@"Skred call end" soundId:0 soundPath:@"twinme_call_end.caf"];
     }
 }
 
@@ -144,19 +144,19 @@ static TLStringSharedConfigIdentifier *videoCallSoundConfig;
     switch (type) {
         case NotificationSoundTypeNotification:
             return [[NSArray alloc] initWithObjects:
-                    [[NotificationSoundSetting alloc] initWithType:NotificationSoundTypeNotification name:@"twinme Notification" soundId:0 soundPath:@"twinme_notification.caf"],
+                    [[NotificationSoundSetting alloc] initWithType:NotificationSoundTypeNotification name:@"Skred Notification" soundId:0 soundPath:@"twinme_notification_default.caf"],
                     [[NotificationSoundSetting alloc] initWithType:NotificationSoundTypeNotification name:@"Default notification sound" soundId:1007 soundPath:nil],
                     nil];
             
         case NotificationSoundTypeAudioCall:
             return [[NSArray alloc] initWithObjects:
-                    [[NotificationSoundSetting alloc] initWithType:NotificationSoundTypeAudioCall name:@"twinme audio call" soundId:0 soundPath:@"twinme_audio_call.caf"],
-                    [[NotificationSoundSetting alloc] initWithType:NotificationSoundTypeAudioCall name:@"twinme video call" soundId:0 soundPath:@"twinme_video_call.caf"],
+                    [[NotificationSoundSetting alloc] initWithType:NotificationSoundTypeAudioCall name:@"Skred audio call" soundId:0 soundPath:@"twinme_ringtone_default.caf"],
+                    [[NotificationSoundSetting alloc] initWithType:NotificationSoundTypeAudioCall name:@"Skred video call" soundId:0 soundPath:@"twinme_ringtone_default.caf"],
                     nil];
         case NotificationSoundTypeVideoCall:
             return [[NSArray alloc] initWithObjects:
-                    [[NotificationSoundSetting alloc] initWithType:NotificationSoundTypeVideoCall name:@"twinme audio call" soundId:0 soundPath:@"twinme_audio_call.caf"],
-                    [[NotificationSoundSetting alloc] initWithType:NotificationSoundTypeVideoCall name:@"twinme video call" soundId:0 soundPath:@"twinme_video_call.caf"],
+                    [[NotificationSoundSetting alloc] initWithType:NotificationSoundTypeVideoCall name:@"Skred audio call" soundId:0 soundPath:@"twinme_ringtone_default.caf"],
+                    [[NotificationSoundSetting alloc] initWithType:NotificationSoundTypeVideoCall name:@"Skred video call" soundId:0 soundPath:@"twinme_ringtone_default.caf"],
                     nil];
         
         case NotificationSoundTypeAudioCalling:

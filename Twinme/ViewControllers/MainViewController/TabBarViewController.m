@@ -12,19 +12,21 @@
 
 #import "TabBarViewController.h"
 
-#import <TwinmeCommon/TwinmeNavigationController.h>
 #import "EditProfileViewController.h"
+
 #import "HistoryViewController.h"
 #import "ContactsViewController.h"
 #import "ConversationsViewController.h"
 #import "NotificationViewController.h"
-#import "ShowProfileViewController.h"
-
+#import "SpacesViewController.h"
 #import "UIGroupConversation.h"
+#import "OnboardingSpaceViewController.h"
+#import <TwinmeCommon/MainViewController.h>
 
 #import <TwinmeCommon/ApplicationDelegate.h>
 #import <TwinmeCommon/Design.h>
 #import <TwinmeCommon/TwinmeApplication.h>
+#import <TwinmeCommon/TwinmeNavigationController.h>
 #import <TwinmeCommon/Utils.h>
 
 #import "UIView+Toast.h"
@@ -44,7 +46,7 @@ static CGFloat DESIGN_TAB_ICON_INSET;
 
 @interface TabBarViewController ()<UITabBarControllerDelegate>
 
-@property (nonatomic) ShowProfileViewController *showProfileViewController;
+@property (nonatomic) SpacesViewController *spacesViewController;
 @property (nonatomic) HistoryViewController *historyViewController;
 @property (nonatomic) ContactsViewController *contactsViewController;
 @property (nonatomic) ConversationsViewController *conversationsViewController;
@@ -101,9 +103,9 @@ static CGFloat DESIGN_TAB_ICON_INSET;
     [super viewWillDisappear:animated];
 }
 
-- (void)profileNotFound {
-    DDLogVerbose(@"%@ profileNotFound", LOG_TAG);
-                 
+- (NSUInteger)getSelectedIndex {
+    
+    return self.selectedIndex;
 }
 
 - (void)updateNotifications:(BOOL)hasPendingNotifications {
@@ -118,12 +120,39 @@ static CGFloat DESIGN_TAB_ICON_INSET;
     self.notificationsViewController.tabBarItem.selectedImage = selectedImage;
 }
 
+- (void)updateSpace {
+    DDLogVerbose(@"%@ updateSpace", LOG_TAG);
+    
+    if (self.selectedIndex == 0) {
+        [self.spacesViewController updateCurrentSpace];
+    }
+}
+
+- (void)setCurrentSpace {
+    DDLogVerbose(@"%@ setCurrentSpace", LOG_TAG);
+    
+    [self.spacesViewController updateCurrentSpace];
+    [self.historyViewController updateCurrentSpace];
+    [self.contactsViewController updateCurrentSpace];
+    [self.conversationsViewController updateCurrentSpace];
+    [self.notificationsViewController updateCurrentSpace];
+}
+
 - (void)tabBar:(UITabBar *)tabBar didSelectItem:(UITabBarItem *)item {
     DDLogVerbose(@"%@ tabBar: %@ didSelectItem: %@", LOG_TAG, tabBar, item);
     
     ApplicationDelegate *delegate = (ApplicationDelegate *)[[UIApplication sharedApplication] delegate];
     TwinmeApplication *twinmeApplication = [delegate twinmeApplication];
     [Utils hapticFeedback:UIImpactFeedbackStyleLight hapticFeedbackMode:twinmeApplication.hapticFeedbackMode];
+    
+    if (item.tag == 0) {
+        MainViewController *mainViewController = delegate.mainViewController;
+        if (mainViewController.space && [twinmeApplication showSpaceOnboarding]) {
+            OnboardingSpaceViewController *onboardingSpaceViewController = [[UIStoryboard storyboardWithName:@"Space" bundle:nil] instantiateViewControllerWithIdentifier:@"OnboardingSpaceViewController"];
+            [onboardingSpaceViewController showInView:mainViewController hideFirstPart:NO];
+        }
+        [twinmeApplication hideSpaceOnboarding];
+    }
 }
 
 
@@ -159,12 +188,12 @@ static CGFloat DESIGN_TAB_ICON_INSET;
     [self updateTabBarAppearance];
     
     UIEdgeInsets iconInset = UIEdgeInsetsMake(DESIGN_TAB_ICON_INSET, 0, -DESIGN_TAB_ICON_INSET, 0);
-    self.showProfileViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"ShowProfileViewController"];
-    self.showProfileViewController.tabBarItem = [[UITabBarItem alloc] initWithTitle:nil image:[UIImage imageNamed:@"TabBarProfileGrey"] tag:0];
-    self.showProfileViewController.tabBarItem.imageInsets = iconInset;
-    self.showProfileViewController.tabBarItem.accessibilityLabel = TwinmeLocalizedString(@"application_profile", nil);
+    self.spacesViewController = [[UIStoryboard storyboardWithName:@"Space" bundle:nil] instantiateViewControllerWithIdentifier:@"SpacesViewController"];
+    self.spacesViewController.tabBarItem = [[UITabBarItem alloc] initWithTitle:nil image:[UIImage imageNamed:@"TabBarSpacesGrey"] tag:0];
+    self.spacesViewController.tabBarItem.imageInsets = iconInset;
+    self.spacesViewController.tabBarItem.accessibilityLabel = TwinmeLocalizedString(@"settings_space_view_controller_space_category_title", nil);
     
-    TwinmeNavigationController *profileNavigationController = [[TwinmeNavigationController alloc]initWithRootViewController:self.showProfileViewController];
+    TwinmeNavigationController *spacesNavigationController = [[TwinmeNavigationController alloc]initWithRootViewController:self.spacesViewController];
     
     self.historyViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"HistoryViewController"];
     self.historyViewController.tabBarItem = [[UITabBarItem alloc] initWithTitle:nil image:[UIImage imageNamed:@"TabBarCallGrey"] tag:1];
@@ -194,7 +223,7 @@ static CGFloat DESIGN_TAB_ICON_INSET;
     
     TwinmeNavigationController *notificationsNavigationController = [[TwinmeNavigationController alloc]initWithRootViewController:self.notificationsViewController];
     
-    NSArray *viewControllers = [NSArray arrayWithObjects:profileNavigationController, historyNavigationController, contactsNavigationController, conversationsNavigationController, notificationsNavigationController,  nil];
+    NSArray *viewControllers = [NSArray arrayWithObjects:spacesNavigationController, historyNavigationController, contactsNavigationController, conversationsNavigationController, notificationsNavigationController,  nil];
     
     [self setViewControllers:viewControllers animated:YES];
     
@@ -248,9 +277,9 @@ static CGFloat DESIGN_TAB_ICON_INSET;
     [self updateTabBarAppearance];
     
     UIEdgeInsets iconInset = UIEdgeInsetsMake(DESIGN_TAB_ICON_INSET, 0, -DESIGN_TAB_ICON_INSET, 0);
-    self.showProfileViewController.tabBarItem = [[UITabBarItem alloc] initWithTitle:nil image:[UIImage imageNamed:@"TabBarProfileGrey"] tag:0];
-    self.showProfileViewController.tabBarItem.imageInsets = iconInset;
-    self.showProfileViewController.tabBarItem.accessibilityLabel = TwinmeLocalizedString(@"application_profile", nil);
+    self.spacesViewController.tabBarItem = [[UITabBarItem alloc] initWithTitle:nil image:[UIImage imageNamed:@"TabBarSpacesGrey"] tag:0];
+    self.spacesViewController.tabBarItem.imageInsets = iconInset;
+    self.spacesViewController.tabBarItem.accessibilityLabel = TwinmeLocalizedString(@"settings_space_view_controller_space_category_title", nil);
     
     self.historyViewController.tabBarItem = [[UITabBarItem alloc] initWithTitle:nil image:[UIImage imageNamed:@"TabBarCallGrey"] tag:1];
     self.historyViewController.tabBarItem.imageInsets = iconInset;

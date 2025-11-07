@@ -26,6 +26,6 @@
 
 @property (nonatomic, weak) id<DisplayModeDelegate>delegate;
 
-- (void)bind:(DisplayMode)displayMode;
+- (void)bind:(DisplayMode)displayMode defaultColor:(UIColor *)defaultColor;
 
 @end

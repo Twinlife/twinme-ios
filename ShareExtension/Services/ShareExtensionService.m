@@ -68,9 +68,13 @@ static const int PUSH_OBJECT = 1 << 7;
 static const int PUSH_FILE = 1 << 8;
 static const int FIND_CONTACTS_AND_GROUPS = 1 << 9;
 static const int FIND_CONTACTS_AND_GROUPS_DONE = 1 << 10;
+static const int GET_SPACES = 1 << 11;
+static const int GET_SPACES_DONE = 1 << 12;
+static const int SET_CURRENT_SPACE = 1 << 13;
+// static const int SET_CURRENT_SPACE_DONE = 1 << 14;
 
-static NSString *APPLICATION_NAME = @"twinme";
-static NSString *APPLICATION_SCHEME = @"twinme";
+static NSString *APPLICATION_NAME = @"skred";
+static NSString *APPLICATION_SCHEME = @"skred";
 
 #define CONVERSATION_ACTION [NSString stringWithFormat:@"conversation.%@",[TLTwinlife TWINLIFE_DOMAIN]]
 
@@ -86,7 +90,7 @@ static NSString *APPLICATION_SCHEME = @"twinme";
 
 - (instancetype)init {
     
-    self = [super initWithName:APPLICATION_NAME applicationVersion:[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"] serializers:@[[[TLMessageSerializer alloc] init], [[TLTypingSerializer alloc] init], [[TLRoomCommandSerializer alloc] init], [[TLRoomCommandResultSerializer alloc] init]] enableKeepAlive:NO enableSetup:NO enableCaches:NO enableReports:NO enableInvocations:NO enableSpaces:NO refreshBadgeDelay:-1.0];
+    self = [super initWithName:APPLICATION_NAME applicationVersion:[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"] serializers:@[[[TLMessageSerializer alloc] init], [[TLTypingSerializer alloc] init], [[TLRoomCommandSerializer alloc] init], [[TLRoomCommandResultSerializer alloc] init]] enableKeepAlive:NO enableSetup:NO enableCaches:NO enableReports:NO enableInvocations:NO enableSpaces:YES refreshBadgeDelay:-1.0];
     
     if (self) {
         // Disable the account service to prevent any connection to the server.
@@ -191,7 +195,7 @@ static NSString *APPLICATION_SCHEME = @"twinme";
 
 - (void)onGetOrCreateConversationWithRequestId:(int64_t)requestId conversation:(id <TLConversation>)conversation {
     DDLogVerbose(@"%@ onGetOrCreateConversationWithRequestId: %lld conversation: %@", LOG_TAG, requestId, conversation);
-
+    
     NSNumber *operationId = [self.service getOperation:requestId];
     if (operationId == nil) {
         return;
@@ -202,7 +206,7 @@ static NSString *APPLICATION_SCHEME = @"twinme";
 
 - (void)onPushDescriptorRequestId:(int64_t)requestId conversation:(id<TLConversation>)conversation descriptor:(TLDescriptor *)descriptor {
     DDLogVerbose(@"%@ onPushDescriptorRequestId: %lld conversation: %@ objectDescriptor: %@", LOG_TAG, requestId, conversation, descriptor);
-
+    
     NSNumber *operationId = [self.service getOperation:requestId];
     if (operationId == nil) {
         return;
@@ -328,6 +332,7 @@ static ShareExtensionService *INSTANCE;
             DDLogVerbose(@"%@ stop task scheduled at %@ error: %@", LOG_TAG, request.earliestBeginDate, error);
         }
     }
+    
 
     // Clear memory before suspending.
     self.conversation = nil;
@@ -353,7 +358,7 @@ static ShareExtensionService *INSTANCE;
             [[self.twinmeContext getConversationService] addDelegate:self.shareServiceConversationServiceDelegate];
         }
         
-        [self getContactsAndGroups];
+        [self setup];
     }
 }
 
@@ -429,7 +434,7 @@ static ShareExtensionService *INSTANCE;
 
 - (void)onPushDescriptor:(nullable TLDescriptor *)descriptor {
     DDLogVerbose(@"%@ onPushDescriptor: descriptor: %@", LOG_TAG, descriptor);
-
+    
     self.needSchedule = YES;
     if (![self hasPendingRequests]) {
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -442,6 +447,16 @@ static ShareExtensionService *INSTANCE;
             }
         });
     }
+}
+
+- (void)setup {
+    DDLogVerbose(@"%@ setup", LOG_TAG);
+    
+    self.state &= ~(GET_CURRENT_SPACE | GET_CURRENT_SPACE_DONE);
+    self.state &= ~(GET_SPACES | GET_SPACES_DONE);
+    self.state &= ~(GET_CONTACTS | GET_CONTACTS_DONE);
+    self.state &= ~(GET_GROUPS | GET_GROUPS_DONE);
+    [self onOperation];
 }
 
 - (nonnull TLSpaceSettings *)getDefaultSpaceSettings {
@@ -529,14 +544,14 @@ static ShareExtensionService *INSTANCE;
 
 - (nonnull NSURL *)getConversationURLWithOriginator:(nonnull id<TLOriginator>)originator {
     DDLogVerbose(@"%@ getConversationURLWithOriginator: %@", LOG_TAG, originator);
-
+    
     NSString *url;
     if (originator.isGroup) {
         url = [NSString stringWithFormat:@"%@://%@?group=%@", APPLICATION_SCHEME, CONVERSATION_ACTION, originator.uuid.UUIDString];
     } else {
         url = [NSString stringWithFormat:@"%@://%@?contact=%@", APPLICATION_SCHEME, CONVERSATION_ACTION, originator.uuid.UUIDString];
     }
-
+    
     return [[NSURL alloc] initWithString:url];
 }
 
@@ -595,6 +610,18 @@ static ShareExtensionService *INSTANCE;
     [self onOperation];
 }
 
+- (void)setCurrentSpace:(nonnull TLSpace *)space {
+    DDLogVerbose(@"%@ setCurrentSpace: %@", LOG_TAG, space);
+    
+    int64_t requestId = [self newOperation:SET_CURRENT_SPACE];
+    [self.twinmeContext setCurrentSpaceWithRequestId:requestId space:space];
+    
+    self.state &= ~(GET_CURRENT_SPACE | GET_CURRENT_SPACE_DONE);
+    self.state &= ~(GET_CONTACTS | GET_CONTACTS_DONE);
+    self.state &= ~(GET_GROUPS | GET_GROUPS_DONE);
+    [self onOperation];
+}
+
 - (int64_t)newOperation:(int) operationId {
     DDLogVerbose(@"%@ newOperation: %d", LOG_TAG, operationId);
     
@@ -648,6 +675,9 @@ static ShareExtensionService *INSTANCE;
             dispatch_async(dispatch_get_main_queue(), ^{
                 self.state |= GET_CURRENT_SPACE_DONE;
                 self.space = space;
+                if (self.space) {
+                    [self.shareExtensionServiceDelegate onGetCurrentSpace:space];
+                }
                 [self onOperation];
             });
             [self onOperation];
@@ -655,6 +685,27 @@ static ShareExtensionService *INSTANCE;
         return;
     }
     if ((self.state & GET_CURRENT_SPACE_DONE) == 0) {
+        return;
+    }
+    
+    //
+    // Step 2: get the list of spaces.
+    //
+    if ((self.state & GET_SPACES) == 0) {
+        self.state |= GET_SPACES;
+ 
+        [self.twinmeContext findSpacesWithPredicate:^BOOL(TLSpace *space) {
+            return !space.settings.isSecret;
+        } withBlock:^(NSMutableArray<TLSpace *> *spaces) {
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self.shareExtensionServiceDelegate onGetSpaces:spaces];
+                self.state |= GET_SPACES_DONE;
+                [self onOperation];
+            });
+        }];
+    }
+    if ((self.state & GET_SPACES_DONE) == 0) {
         return;
     }
     
@@ -704,6 +755,28 @@ static ShareExtensionService *INSTANCE;
         return;
     }
 
+    //
+    // Step 4: get the list of groups before the conversations.
+    //
+    if ((self.state & GET_GROUPS) == 0) {
+        self.state |= GET_GROUPS;
+        
+        int64_t requestId = [self newOperation:GET_GROUPS];
+        DDLogVerbose(@"%@ getGroupsWithRequestId: %lld", LOG_TAG, requestId);
+        
+        [self.twinmeContext findGroupsWithFilter:[self.twinmeContext createSpaceFilter] withBlock:^(NSMutableArray<TLGroup *> *groups) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self finishOperation:requestId];
+                [(id<ShareExtensionServiceDelegate>)self.shareExtensionServiceDelegate onGetGroups:groups];
+                self.state |= GET_GROUPS_DONE;
+                [self onOperation];
+            });
+        }];
+    }
+    if ((self.state & GET_GROUPS_DONE) == 0) {
+        return;
+    }
+    
     //
     // We must search for a contact and group with some name.
     //

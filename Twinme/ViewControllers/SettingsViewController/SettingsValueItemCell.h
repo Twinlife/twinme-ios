@@ -16,6 +16,6 @@
 
 - (void)bindWithTitle:(nonnull NSString *)title value:(nonnull NSString *)value hiddenAccessory:(BOOL)hiddenAccessory;
 
-- (void)bindWithTitle:(nullable NSString *)title value:(nonnull NSString *)value;
+- (void)bindWithTitle:(nullable NSString *)title value:(nonnull NSString *)value backgroundColor:(nonnull UIColor *)backgroundColor;
 
 @end

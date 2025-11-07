@@ -1,5 +1,9 @@
-NSAppleMusicUsageDescription = "pour envoyer de la musique en streaming";
-NSCameraUsageDescription = "pour prendre des photos et passer des appels vidéo";
-NSMicrophoneUsageDescription = "pour passer des appels audio et vidéo";
-NSPhotoLibraryUsageDescription = "pour les photos utilisées dans les profils et messages de chat";
+NSAppleMusicUsageDescription = "pour connecter avec apple music";
+NSCameraUsageDescription = "pour prendre des photos et faire des appels vidéos";
+NSContactsUsageDescription = "Nous avons besoin d'avoir accès à votre liste de contact pour vous permettre d'inviter des personnes à se connecter avec vous.";
+NSFaceIDUsageDescription = "pour s’authentifier et déverrouiller l’accès à l’application";
+NSLocationAlwaysAndWhenInUseUsage = "pour partager votre emplacement en temps-réel lors d'un appel";
+NSLocationWhenInUseUsageDescription = "pour partager votre emplacement dans une conversation";
+NSMicrophoneUsageDescription = "pour les appels audio et vidéo";
+NSPhotoLibraryUsageDescription = "pour les images de profils et envoyer des messages images sur le chat";
 NSPhotoLibraryAddUsageDescription = "Pour enregistrer des photos et vidéos échangées dans les conversations, ainsi que les QR-codes d'invitation, dans l'album photo de l'appareil.";

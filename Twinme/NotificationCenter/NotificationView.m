@@ -24,6 +24,8 @@
 #import <TwinmeCommon/ApplicationDelegate.h>
 #import <TwinmeCommon/TwinmeApplication.h>
 
+#import "UIColor+Hex.h"
+
 #if 0
 static const int ddLogLevel = DDLogLevelVerbose;
 #else
@@ -273,7 +275,8 @@ static CGFloat DESIGN_NOTIFICATION_LINE_HEIGHT = 22.f;
     avatarViewLayer.masksToBounds = YES;
     
     if ([self.avatar isEqual:[TLTwinmeAttributes DEFAULT_GROUP_AVATAR]]) {
-        self.avatarView.backgroundColor = Design.GREY_ITEM;
+        self.avatarView.backgroundColor = [UIColor colorWithHexString:Design.DEFAULT_COLOR alpha:1.0];
+        self.avatarView.tintColor = [UIColor whiteColor];
     }
     
     if (self.actionButtons) {

@@ -459,7 +459,7 @@ static const int CONTACTS_VIEW_SECTION_COUNT = 2;
 - (void)requestInvitationCode {
     DDLogVerbose(@"%@ requestInvitationCode", LOG_TAG);
     
-    [self.invitationCodeService createInvitationWithCode:NO];
+    [self.invitationCodeService createInvitationWithCode:[self.twinmeApplication isSubscribedWithFeature:TLTwinmeApplicationFeatureGroupCall]];
 }
 
 - (void)deleteInvitationCode:(UIInvitationCode *)invitationCode {

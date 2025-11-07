@@ -12,7 +12,6 @@
 // Protocol: PersonalizationDelegate
 //
 
-
 @protocol PersonalizationDelegate <NSObject>
 
 - (void)updateColor;

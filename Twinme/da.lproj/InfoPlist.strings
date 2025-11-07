@@ -1,5 +1,9 @@
 NSAppleMusicUsageDescription = "at streame musik";
 NSCameraUsageDescription = "at tage billeder og foretage videoopkald";
+NSContactsUsageDescription = "Vi skal have adgang til din kontaktliste for at kunne invitere folk til at slutte sig til dig.";
+NSFaceIDUsageDescription = "for at godkende og låse op for applikationen";
+NSLocationAlwaysAndWhenInUseUsage = "at dele din placering i realtid under et opkald";
+NSLocationWhenInUseUsageDescription = "for at dele din placering i en samtale";
 NSMicrophoneUsageDescription = "at foretage stemme- og videoopkald";
 NSPhotoLibraryUsageDescription = "til profilbilleder og at sende chatbeskeder";
 NSPhotoLibraryAddUsageDescription = "For at gemme billeder og videoer fra samtaler, samt invitations-QR-koder, til enhedens fotoalbum.";

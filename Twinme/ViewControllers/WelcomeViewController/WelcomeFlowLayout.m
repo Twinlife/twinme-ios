@@ -9,7 +9,7 @@
 #import "WelcomeFlowLayout.h"
 
 //
-// Implementation: WelcomeCell
+// Implementation: WelcomeFlowLayout
 //
 
 @implementation WelcomeFlowLayout
