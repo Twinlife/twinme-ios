@@ -77,6 +77,7 @@ static NSString *MENU_ICON_CELL_IDENTIFIER = @"MenuIconCellIdentifier";
     }
     
     if (hideTitle) {
+        self.titleLabel.text = @"";
         self.tableViewTopConstraint.constant = 0;
         self.titleLabelTopConstraint.constant = 0;
     }

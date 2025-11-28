@@ -912,6 +912,14 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     }
     
     self.saveProfileView.backgroundColor = Design.MAIN_COLOR;
+
+    if ([self.twinmeApplication darkModeEnable:[self currentSpaceSettings]]) {
+        self.nameTextField.keyboardAppearance = UIKeyboardAppearanceDark;
+        self.descriptionTextView.keyboardAppearance = UIKeyboardAppearanceDark;
+    } else {
+        self.nameTextField.keyboardAppearance = UIKeyboardAppearanceLight;
+        self.descriptionTextView.keyboardAppearance = UIKeyboardAppearanceLight;
+    }
 }
 
 @end

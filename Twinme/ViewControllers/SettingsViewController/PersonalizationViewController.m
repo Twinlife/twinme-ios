@@ -605,7 +605,7 @@ static NSString *TWINME_SETTINGS_CELL_IDENTIFIER = @"TwinmeSettingsCellIdentifie
             mainColor = [UIColor colorWithHexString:self.defaultSpaceSettings.style alpha:1.0];
         }
         
-        [self.menuSelectColorView openMenu:mainColor title:color defaultColor:Design.DEFAULT_COLOR];
+        [self.menuSelectColorView openMenu:mainColor title:color defaultColor:Design.DEFAULT_COLOR spaceSettings:self.currentSpaceSettings];
     }
 }
 

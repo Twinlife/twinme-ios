@@ -464,10 +464,6 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
 - (BOOL)hasLandscapeMode {
     DDLogVerbose(@"%@ hasLandscapeMode", LOG_TAG);
     
-    if (![self isOneCameraEnableInCall]) {
-        return NO;
-    }
-    
     return YES;
 }
 
@@ -3435,7 +3431,6 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
     
     if (!self.callCertifyView) {
         self.callCertifyView = [[CallCertifyView alloc]init];
-        self.callCertifyView.frame = self.view.frame;
         self.callCertifyView.callCertifyViewDelegate = self;
         self.callCertifyView.avatar = self.callParticipantLocaleView.avatar;
         self.callCertifyView.name = self.originator.name;
@@ -3443,6 +3438,13 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
             self.callCertifyView.avatar = image;
         }];
         [self.view addSubview:self.callCertifyView];
+        
+        [NSLayoutConstraint activateConstraints:@[
+            [self.callCertifyView.topAnchor constraintEqualToAnchor:self.view.topAnchor],
+            [self.callCertifyView.bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor],
+            [self.callCertifyView.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor],
+            [self.callCertifyView.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor],
+        ]];
         
         [self.callCertifyView updateMessage];
     }
@@ -3780,8 +3782,8 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
     PremiumFeatureConfirmView *premiumFeatureConfirmView = [[PremiumFeatureConfirmView alloc] init];
     premiumFeatureConfirmView.confirmViewDelegate = self;
     premiumFeatureConfirmView.forceDarkMode = YES;
-    [premiumFeatureConfirmView initWithPremiumFeature:[[UIPremiumFeature alloc]initWithFeatureType:featureType spaceSettings:self.currentSpaceSettings] parentViewController:self.navigationController];
-    [self.navigationController.view addSubview:premiumFeatureConfirmView];
+    [premiumFeatureConfirmView initWithPremiumFeature:[[UIPremiumFeature alloc]initWithFeatureType:featureType spaceSettings:self.currentSpaceSettings] parentViewController:self];
+    [self.view addSubview:premiumFeatureConfirmView];
     [premiumFeatureConfirmView showConfirmView];
 }
  

@@ -28,6 +28,8 @@
 // Interface: MenuSelectColorView
 //
 
+@class TLSpaceSettings;
+
 @interface MenuSelectColorView : AbstractMenuView
 
 @property (weak, nonatomic) id<MenuSelectColorDelegate> menuSelectColorDelegate;
@@ -35,7 +37,7 @@
 
 - (void)initViews;
 
-- (void)openMenu:(UIColor *)color title:(NSString *)title defaultColor:(NSString *)defaultColor;
+- (void)openMenu:(UIColor *)color title:(NSString *)title defaultColor:(NSString *)defaultColor spaceSettings:(TLSpaceSettings *)spaceSettings;
 
 - (void)updateKeyboard:(CGFloat)sizeKeyboard;
 

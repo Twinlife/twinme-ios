@@ -218,6 +218,7 @@ static const int ddLogLevel = DDLogLevelWarning;
         
         self.deleteConfirmView = [[DeleteAccountConfirmView alloc] init];
         self.deleteConfirmView.confirmViewDelegate = self;
+        self.deleteConfirmView.spaceSettings = self.currentSpaceSettings;
         NSString *message = [NSString stringWithFormat:@"%@\n%@", TwinmeLocalizedString(@"application_operation_irreversible", nil), TwinmeLocalizedString(@"account_view_controller_delete_account", nil)];
         [ self.deleteConfirmView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:message avatar:nil icon:nil];
         [self.navigationController.view addSubview: self.deleteConfirmView];

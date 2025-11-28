@@ -351,6 +351,7 @@ static const int MAX_VISIBLE_LINES = 5;
     self.messageTextView.font = Design.FONT_REGULAR32;
     self.messageTextView.autocapitalizationType = UITextAutocapitalizationTypeSentences;
     self.messageTextView.returnKeyType = UIReturnKeyDefault;
+    self.messageTextView.keyboardAppearance = UIKeyboardAppearanceDark;
     self.messageTextView.delegate = self;
     self.messageTextView.text = TwinmeLocalizedString(@"conversation_view_controller_message", nil);
     self.messageTextView.textColor = Design.PLACEHOLDER_COLOR;

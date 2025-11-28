@@ -259,6 +259,12 @@ static const int ddLogLevel = DDLogLevelWarning;
     self.nameView.backgroundColor = Design.TEXTFIELD_POPUP_BACKGROUND_COLOR;
     self.nameTextField.textColor = Design.FONT_COLOR_DEFAULT;
     self.nameTextField.tintColor = Design.FONT_COLOR_DEFAULT;
+    
+    if ([self.twinmeApplication darkModeEnable:[self currentSpaceSettings]]) {
+        self.nameTextField.keyboardAppearance = UIKeyboardAppearanceDark;
+    } else {
+        self.nameTextField.keyboardAppearance = UIKeyboardAppearanceLight;
+    }
 }
 
 @end

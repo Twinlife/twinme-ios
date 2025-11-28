@@ -375,7 +375,7 @@ typedef enum {
         switch (indexPath.section) {
             case SECTION_PARTCIPANTS:
                 if (indexPath.row == 0) {
-                    switchState = self.allowInvitation;
+                    switchState = self.invitationMode == TLInvitationModePublic;
                     hiddenSwitch = NO;
                     tag = TAG_ALLOW_INVITATION;
                     title = TwinmeLocalizedString(@"settings_room_view_controller_allow_invite_contact", nil);
@@ -446,7 +446,7 @@ typedef enum {
     
     switch (updatedSwitch.tag) {
         case TAG_ALLOW_INVITATION:
-            self.allowInvitation = !self.allowInvitation;
+            self.invitationMode = updatedSwitch.isOn ? TLInvitationModePublic : TLInvitationModeAdmin;
             break;
             
         case TAG_ALLOW_INVITATION_AS_PERSONAL_CONTACT:

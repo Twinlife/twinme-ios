@@ -6,7 +6,7 @@
  *   Fabrice Trescartes (Fabrice.Trescartes@twin.life)
  */
 
-#import <TwinmeCommon/AbstractTwinmeViewController.h>
+#import "AbstractShowViewController.h"
 
 //
 // Interface: AdminRoomViewController
@@ -14,7 +14,7 @@
 
 @class TLContact;
 
-@interface AdminRoomViewController : AbstractTwinmeViewController
+@interface AdminRoomViewController : AbstractShowViewController
 
 - (void)initWithRoom:(TLContact *)room;
 

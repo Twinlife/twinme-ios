@@ -394,6 +394,7 @@ static const int ddLogLevel = DDLogLevelWarning;
     
     self.messageTextView.textContainerInset = UIEdgeInsetsMake(DESIGN_HEIGHT_INSET * 0.5 * Design.HEIGHT_RATIO, 0, DESIGN_HEIGHT_INSET * 0.5 * Design.HEIGHT_RATIO, 0);
     self.messageTextView.font = Design.FONT_REGULAR32;
+    self.messageTextView.keyboardAppearance = UIKeyboardAppearanceDark;
     self.messageTextView.textColor = [UIColor whiteColor];
     self.messageTextView.text = TwinmeLocalizedString(@"conversation_view_controller_message", nil);
     self.messageTextView.delegate = self;

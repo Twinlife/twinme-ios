@@ -29,6 +29,8 @@ static const int ddLogLevel = DDLogLevelWarning;
 #define DESIGN_CONFIRM_COLOR [UIColor colorWithRed:78./255. green:229./255. blue:184./255. alpha:1.0]
 
 static CGFloat DELAY_CLOSE = 5.f;
+static CGFloat DESIGN_BOTTOM_MARGIN_PORTRAIT = 234.f;
+static CGFloat DESIGN_BOTTOM_MARGIN_LANDSCAPE = 80.f;
 
 
 //
@@ -110,11 +112,24 @@ static CGFloat DELAY_CLOSE = 5.f;
     
     NSArray *objects = [[NSBundle mainBundle] loadNibNamed:@"CallCertifyView" owner:self options:nil];
     self = [objects objectAtIndex:0];
+    self.translatesAutoresizingMaskIntoConstraints = NO;
     
     if (self) {
         [self initViews];
     }
     return self;
+}
+
+- (void)layoutSubviews {
+    DDLogVerbose(@"%@ layoutSubviews", LOG_TAG);
+    
+    [self updateGradientBounds];
+    
+    if ([UIApplication sharedApplication].statusBarOrientation != UIInterfaceOrientationPortrait) {
+        self.confirmViewBottomConstraint.constant = Design.HEIGHT_RATIO * DESIGN_BOTTOM_MARGIN_LANDSCAPE;
+    } else {
+        self.confirmViewBottomConstraint.constant = Design.HEIGHT_RATIO * DESIGN_BOTTOM_MARGIN_PORTRAIT;
+    }
 }
 
 - (void)updateMessage {

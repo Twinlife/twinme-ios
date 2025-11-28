@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2017-2021 twinlife SA.
+ *  Copyright (c) 2017-2025 twinlife SA.
  *  SPDX-License-Identifier: AGPL-3.0-only
  *
  *  Contributors:
@@ -7,6 +7,7 @@
  *   Christian Jacquemot (Christian.Jacquemot@twinlife-systems.com)
  *   Chedi Baccari (Chedi.Baccari@twinlife-systems.com)
  *   Fabrice Trescartes (fabrice.trescartes@twin.life)
+ *   Stephane Carrez (Stephane.Carrez@twin.life)
  */
 
 #import <sys/utsname.h>
@@ -14,6 +15,7 @@
 #import <CocoaLumberjack.h>
 
 #import <Twinlife/TLManagementService.h>
+#import <Twinme/TLFeedbackAction.h>
 
 #import <Utils/NSString+Utils.h>
 
@@ -95,6 +97,8 @@ static NSInteger SUBJECT_TEXT_FIELD_TAG = 2;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *deviceInfoLabelTopConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *deviceInfoLabelBottomConstraint;
 @property (weak, nonatomic) IBOutlet UILabel *deviceInfoLabel;
+@property (nonatomic) UIView *overlayView;
+@property (nonatomic) UIActivityIndicatorView *activityIndicatorView;
 
 @property (nonatomic) NSString *deviceInfo;
 
@@ -153,19 +157,32 @@ static NSInteger SUBJECT_TEXT_FIELD_TAG = 2;
     NSString *subject = self.subjectField.text;
     NSString *message = self.messageTextView.text;
     if (subject.length != 0 || message.length != 0) {
-        NSString *logReport = nil;        
-        if (self.logsSwitch.isOn) {
-            logReport = [[self.twinmeContext getManagementService] buildLogReport];
-        }
+        self.overlayView.hidden = NO;
+        [self.activityIndicatorView startAnimating];
         
-        [[self.twinmeContext getManagementService] sendFeedbackWithDescription:message email:self.emailField.text subject:subject logReport:logReport];
+        TLFeedbackAction *feedbackAction = [[TLFeedbackAction alloc] initWithTwinmeContext:self.twinmeContext email:self.emailField.text subject:subject description:message sendLogReport:self.logsSwitch.isOn withBlock:^(TLBaseServiceErrorCode errorCode) {
+            
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                self.overlayView.hidden = YES;
+                [self.activityIndicatorView stopAnimating];
+                
+                if (errorCode == TLBaseServiceErrorCodeSuccess) {
+                    [[UIApplication sharedApplication].keyWindow makeToast:TwinmeLocalizedString(@"feedback_view_controller_send_message", nil)];
+                    [self.overlayView removeFromSuperview];
+                    [self finish];
+                } else if (errorCode == TLBaseServiceErrorCodeTimeoutError) {
+                    [[UIApplication sharedApplication].keyWindow makeToast:TwinmeLocalizedString(@"application_server_timeout", nil)];
+                } else {
+                    [[UIApplication sharedApplication].keyWindow makeToast:TwinmeLocalizedString(@"cleanup_view_controller_error", nil)];
+                }
+            });
+        }];
+        [feedbackAction start];
+        return;
     }
     
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [[UIApplication sharedApplication].keyWindow makeToast:TwinmeLocalizedString(@"feedback_view_controller_send_message", nil)];
-    });
-    
-    [self.navigationController popViewControllerAnimated:YES];
+    [self finish];
 }
 
 #pragma mark - UITextFieldDelegate
@@ -189,7 +206,7 @@ static NSInteger SUBJECT_TEXT_FIELD_TAG = 2;
 
 #pragma mark - UITextViewDelegate
 
--(void)textViewDidBeginEditing:(UITextView *)textView {
+- (void)textViewDidBeginEditing:(UITextView *)textView {
     DDLogVerbose(@"%@ textViewDidBeginEditing: %@", LOG_TAG, textView);
     
     if ([textView.text isEqualToString:TwinmeLocalizedString(@"feedback_view_controller_message", nil)]) {
@@ -365,8 +382,33 @@ static NSInteger SUBJECT_TEXT_FIELD_TAG = 2;
     self.deviceInfoLabel.textColor = Design.FONT_COLOR_DEFAULT;
     self.deviceInfoLabel.text = [NSString stringWithFormat:@"%@\n%@", [self deviceInfo], TwinmeLocalizedString(@"feedback_view_controller_gdpr_notice", nil)];
     
+    self.overlayView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, Design.DISPLAY_WIDTH, Design.DISPLAY_HEIGHT)];
+    self.overlayView.backgroundColor = Design.OVERLAY_COLOR;
+    self.overlayView.hidden = YES;
+    
+    if (@available(iOS 13.0, *)) {
+        self.activityIndicatorView = [[UIActivityIndicatorView alloc]initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleMedium];
+        self.activityIndicatorView.color = [UIColor whiteColor];
+    } else {
+        self.activityIndicatorView = [[UIActivityIndicatorView alloc]initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
+    }
+    self.activityIndicatorView.hidesWhenStopped = YES;
+    
+    [self.overlayView addSubview:self.activityIndicatorView];
+    
+    [self.activityIndicatorView setCenter:CGPointMake(Design.DISPLAY_WIDTH * 0.5, Design.DISPLAY_HEIGHT * 0.5)];
+    [self.navigationController.view addSubview:self.overlayView];
+    
     UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTapGesture)];
     [self.view addGestureRecognizer:tapGesture];
+}
+
+- (void)finish {
+    DDLogVerbose(@"%@ finish", LOG_TAG);
+    
+    [self.overlayView removeFromSuperview];
+    
+    [self.navigationController popViewControllerAnimated:YES];
 }
 
 - (void)handleTapGesture {
@@ -460,6 +502,14 @@ static NSInteger SUBJECT_TEXT_FIELD_TAG = 2;
     
     self.emailField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:TwinmeLocalizedString(@"feedback_view_controller_email", nil) attributes:[NSDictionary dictionaryWithObject:Design.PLACEHOLDER_COLOR forKey:NSForegroundColorAttributeName]];
     self.subjectField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:TwinmeLocalizedString(@"feedback_view_controller_subject", nil) attributes:[NSDictionary dictionaryWithObject:Design.PLACEHOLDER_COLOR forKey:NSForegroundColorAttributeName]];
+    
+    if ([self.twinmeApplication darkModeEnable:[self currentSpaceSettings]]) {
+        self.emailField.keyboardAppearance = UIKeyboardAppearanceDark;
+        self.subjectField.keyboardAppearance = UIKeyboardAppearanceDark;
+    } else {
+        self.emailField.keyboardAppearance = UIKeyboardAppearanceLight;
+        self.subjectField.keyboardAppearance = UIKeyboardAppearanceLight;
+    }
 }
 
 @end

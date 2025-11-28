@@ -6936,23 +6936,20 @@ typedef enum {
     self.tableView.tableHeaderView.backgroundColor = Design.CONVERSATION_BACKGROUND_COLOR;
     [self updateTableViewBackgroundColor];
     [self.textInputbar setBackgroundColor:Design.WHITE_COLOR];
-    
-    ApplicationDelegate *delegate = (ApplicationDelegate *)[[UIApplication sharedApplication] delegate];
-    TwinmeApplication *twinmeApplication = [delegate twinmeApplication];
-     
+
     TLSpaceSettings *spaceSettings = self.space.settings;
     if ([self.space.settings getBooleanWithName:PROPERTY_DEFAULT_APPEARANCE_SETTINGS defaultValue:YES]) {
         spaceSettings = self.twinmeContext.defaultSpaceSettings;
     }
-    
-    BOOL darkMode = [twinmeApplication darkModeEnable:spaceSettings];
-    
-    if (darkMode) {
+        
+    if ([self.twinmeApplication darkModeEnable:spaceSettings]) {
         self.textView.layer.borderColor = DESIGN_BORDER_COLOR.CGColor;
         self.textView.layer.borderWidth = 1.0f;
+        self.textView.keyboardAppearance = UIKeyboardAppearanceDark;
     } else {
         self.textView.layer.borderColor = [UIColor clearColor].CGColor;
         self.textView.layer.borderWidth = .0f;
+        self.textView.keyboardAppearance = UIKeyboardAppearanceLight;
     }
     
     if (self.headerOverlayView) {

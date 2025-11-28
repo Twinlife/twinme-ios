@@ -632,6 +632,12 @@ static UIColor *DESIGN_PLACEHOLDER_COLOR;
     
     [self.view setBackgroundColor:Design.GREY_BACKGROUND_COLOR];
     self.messageLabel.textColor = Design.FONT_COLOR_GREY;
+    
+    if ([self.twinmeApplication darkModeEnable:[self currentSpaceSettings]]) {
+        self.twincodeTextField.keyboardAppearance = UIKeyboardAppearanceDark;
+    } else {
+        self.twincodeTextField.keyboardAppearance = UIKeyboardAppearanceLight;
+    }
 }
 
 @end

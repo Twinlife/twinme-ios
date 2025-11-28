@@ -33,7 +33,7 @@
 #import "EnterInvitationCodeViewController.h"
 #import "InvitationCodeViewController.h"
 #import "ShowProfileViewController.h"
-#import "SuccessAuthentifiedRelationViewController.h"
+#import "SuccessAuthentifiedRelationView.h"
 #import "SettingsAdvancedViewController.h"
 
 #import <TwinmeCommon/Design.h>
@@ -67,7 +67,7 @@ static UIColor *DESIGN_PLACEHOLDER_COLOR;
 // Interface: AddContactViewController ()
 //
 
-@interface AddContactViewController () <AVCaptureMetadataOutputObjectsDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, AcceptInvitationDelegate, ShareProfileServiceDelegate, AlertMessageViewDelegate, PHPhotoLibraryChangeObserver, UITextFieldDelegate, AcceptInvitationSubscriptionDelegate, SuccessAuthentifiedRelationDelegate, ConfirmViewDelegate, CustomTabViewDelegate>
+@interface AddContactViewController () <AVCaptureMetadataOutputObjectsDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, AcceptInvitationDelegate, ShareProfileServiceDelegate, AlertMessageViewDelegate, PHPhotoLibraryChangeObserver, UITextFieldDelegate, AcceptInvitationSubscriptionDelegate, ConfirmViewDelegate, CustomTabViewDelegate>
 
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *customTabViewTopConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *customTabViewHeightConstraint;
@@ -639,6 +639,8 @@ static UIColor *DESIGN_PLACEHOLDER_COLOR;
     } else if ([abstractConfirmView isKindOfClass:[DefaultConfirmView class]]) {
         [self addProxy];
         [abstractConfirmView closeConfirmView];
+    } else if ([abstractConfirmView isKindOfClass:[SuccessAuthentifiedRelationView class]]) {
+        [abstractConfirmView closeConfirmView];
     }
 }
 
@@ -667,6 +669,16 @@ static UIColor *DESIGN_PLACEHOLDER_COLOR;
 - (void)didFinishCloseAnimation:(nonnull AbstractConfirmView *)abstractConfirmView {
     DDLogVerbose(@"%@ didFinishCloseAnimation: %@", LOG_TAG, abstractConfirmView);
     
+    if ([abstractConfirmView isKindOfClass:[SuccessAuthentifiedRelationView class]]) {
+        if (self.captureSession) {
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                [self.captureSession startRunning];
+            });
+        } else {
+            [self setupCaptureSession];
+        }
+    }
+    
     [abstractConfirmView removeFromSuperview];
     
     if (self.proxyToAdd) {
@@ -675,21 +687,6 @@ static UIColor *DESIGN_PLACEHOLDER_COLOR;
     
     if (self.resetInvitationConfirmView) {
         self.resetInvitationConfirmView = nil;
-    }
-}
-
-#pragma mark - SuccessAuthentifiedRelationDelegate
-
-- (void)closeSuccessAuthentifiedRelation {
-    DDLogVerbose(@"%@ closeSuccessAuthentifiedRelation", LOG_TAG);
-    
-    if (self.captureSession) {
-        self.highlightView.frame = CGRectZero;
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            [self.captureSession startRunning];
-        });
-    } else {
-        [self setupCaptureSession];
     }
 }
 
@@ -1203,10 +1200,11 @@ static UIColor *DESIGN_PLACEHOLDER_COLOR;
         [self.shareProfileService verifyAuthenticateWithURI:url withBlock:^(TLBaseServiceErrorCode errorCode, TLContact *contact) {
             if (errorCode == TLBaseServiceErrorCodeSuccess) {
                 [self.shareProfileService getImageWithContact:contact withBlock:^(UIImage *image) {
-                    SuccessAuthentifiedRelationViewController *successAuthentifiedRelationViewController = [[UIStoryboard storyboardWithName:@"Contact" bundle:nil] instantiateViewControllerWithIdentifier:@"SuccessAuthentifiedRelationViewController"];
-                    successAuthentifiedRelationViewController.successAuthentifiedRelationDelegate = self;
-                    [successAuthentifiedRelationViewController initWithName:contact.name avatar:image];
-                    [successAuthentifiedRelationViewController showInView:self.navigationController];
+                    SuccessAuthentifiedRelationView *successAuthentifiedRelationView = [[SuccessAuthentifiedRelationView alloc] init];
+                    successAuthentifiedRelationView.confirmViewDelegate = self;
+                    [successAuthentifiedRelationView initWithTitle:contact.name message:[NSString stringWithFormat:TwinmeLocalizedString(@"authentified_relation_view_controller_certified_message", nil), contact.name] avatar:image icon:nil];
+                    [self.navigationController.view addSubview:successAuthentifiedRelationView];
+                    [successAuthentifiedRelationView showConfirmView];
                 }];
             } else {
                 [self incorrectQRCode:TLBaseServiceErrorCodeBadRequest];
@@ -1686,6 +1684,12 @@ static UIColor *DESIGN_PLACEHOLDER_COLOR;
     self.twincodePasteAddView.backgroundColor = Design.MAIN_COLOR;
     
     self.twincodeTextField.attributedPlaceholder = [[NSAttributedString alloc]initWithString:TwinmeLocalizedString(@"scan_view_controller_paste_code", nil) attributes:[NSDictionary dictionaryWithObject:Design.PLACEHOLDER_COLOR forKey:NSForegroundColorAttributeName]];
+    
+    if ([self.twinmeApplication darkModeEnable:[self currentSpaceSettings]]) {
+        self.twincodeTextField.keyboardAppearance = UIKeyboardAppearanceDark;
+    } else {
+        self.twincodeTextField.keyboardAppearance = UIKeyboardAppearanceLight;
+    }
 }
 
 @end

@@ -493,6 +493,12 @@ static NSString * IP_PATTERN = @"^(?:[0-9]{1,3}\\.){3}[0-9]{1,3}$";
     self.proxyTextField.textColor = Design.FONT_COLOR_DEFAULT;
     self.proxyTextField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:TwinmeLocalizedString(@"proxy_view_controller_add_placeholder", nil) attributes:[NSDictionary dictionaryWithObject:Design.PLACEHOLDER_COLOR forKey:NSForegroundColorAttributeName]];
     self.formatLabel.textColor = Design.FONT_COLOR_GREY;
+    
+    if ([self.twinmeApplication darkModeEnable:[self currentSpaceSettings]]) {
+        self.proxyTextField.keyboardAppearance = UIKeyboardAppearanceDark;
+    } else {
+        self.proxyTextField.keyboardAppearance = UIKeyboardAppearanceLight;
+    }
 }
 
 @end

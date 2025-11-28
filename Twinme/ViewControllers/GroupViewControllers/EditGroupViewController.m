@@ -751,6 +751,14 @@ static const int ddLogLevel = DDLogLevelWarning;
     } else {
         self.descriptionTextView.textColor = Design.FONT_COLOR_DEFAULT;
     }
+    
+    if ([self.twinmeApplication darkModeEnable:[self currentSpaceSettings]]) {
+        self.nameTextField.keyboardAppearance = UIKeyboardAppearanceDark;
+        self.descriptionTextView.keyboardAppearance = UIKeyboardAppearanceDark;
+    } else {
+        self.nameTextField.keyboardAppearance = UIKeyboardAppearanceLight;
+        self.descriptionTextView.keyboardAppearance = UIKeyboardAppearanceLight;
+    }
 }
 
 @end

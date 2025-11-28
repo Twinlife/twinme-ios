@@ -11,8 +11,8 @@
 
 #include "Pods/Target Support Files/Pods-Skred/Pods-skred.debug.xcconfig"
 
-VERSION_NUMBER=21.4
+VERSION_NUMBER=21.5
 
-BUILD_NUMBER=334
+BUILD_NUMBER=335
 
 GCC_PREPROCESSOR_DEFINITIONS=$(inherited) SKRED

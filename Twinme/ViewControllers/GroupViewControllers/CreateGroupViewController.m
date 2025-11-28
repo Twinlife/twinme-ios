@@ -42,7 +42,7 @@ static const int ddLogLevel = DDLogLevelWarning;
 #endif
 
 static NSString *MEMBER_CELL_IDENTIFIER = @"ShowMemberCellIdentifier";
-// static CGFloat DESIGN_COLLECTION_CELL_HEIGHT = 120;
+
 static int MAX_GROUP_MEMBER = 5;
 
 static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
@@ -916,6 +916,14 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
         self.descriptionTextView.textColor = Design.PLACEHOLDER_COLOR;
     } else {
         self.descriptionTextView.textColor = Design.FONT_COLOR_DEFAULT;
+    }
+    
+    if ([self.twinmeApplication darkModeEnable:[self currentSpaceSettings]]) {
+        self.nameTextField.keyboardAppearance = UIKeyboardAppearanceDark;
+        self.descriptionTextView.keyboardAppearance = UIKeyboardAppearanceDark;
+    } else {
+        self.nameTextField.keyboardAppearance = UIKeyboardAppearanceLight;
+        self.descriptionTextView.keyboardAppearance = UIKeyboardAppearanceLight;
     }
 }
 

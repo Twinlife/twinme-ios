@@ -856,7 +856,7 @@ static const int GROUPS_VIEW_SECTION = 2;
             }
             
             addCommentCell.addCommentDelegate = self;
-            [addCommentCell bind];
+            [addCommentCell bind:self.currentSpaceSettings];
             
             return addCommentCell;
         }
@@ -1142,6 +1142,12 @@ static const int GROUPS_VIEW_SECTION = 2;
         glassIconImageView.tintColor = Design.PLACEHOLDER_COLOR;
     } else {
         self.searchController.searchBar.backgroundColor = Design.NAVIGATION_BAR_BACKGROUND_COLOR;
+    }
+    
+    if ([self.twinmeApplication darkModeEnable:[self currentSpaceSettings]]) {
+        self.searchController.searchBar.keyboardAppearance = UIKeyboardAppearanceDark;
+    } else {
+        self.searchController.searchBar.keyboardAppearance = UIKeyboardAppearanceLight;
     }
 }
 

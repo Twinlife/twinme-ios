@@ -399,6 +399,11 @@ typedef enum {
     DDLogVerbose(@"%@ reloadData", LOG_TAG);
     
     self.proxies = [[self.twinmeContext getConnectivityService] getUserProxies];
+    
+    if (self.proxies.count == 0 && [[self.twinmeContext getConnectivityService] isProxyEnabled]) {
+        [[self.twinmeContext getConnectivityService] saveWithProxyEnabled:NO];
+    }
+    
     [self.tableView reloadData];
 }
 

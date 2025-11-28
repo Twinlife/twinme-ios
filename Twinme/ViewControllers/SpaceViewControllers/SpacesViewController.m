@@ -1137,6 +1137,12 @@ static const int SPACES_VIEW_SECTION_COUNT = 1;
     } else {
         self.searchController.searchBar.backgroundColor = Design.NAVIGATION_BAR_BACKGROUND_COLOR;
     }
+    
+    if ([self.twinmeApplication darkModeEnable:[self currentSpaceSettings]]) {
+        self.searchController.searchBar.keyboardAppearance = UIKeyboardAppearanceDark;
+    } else {
+        self.searchController.searchBar.keyboardAppearance = UIKeyboardAppearanceLight;
+    }
 }
 
 - (void)setNavigationBarStyle {

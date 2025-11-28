@@ -172,7 +172,6 @@
 		4739C0DC2834F03B00A0E537 /* CallQualityView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4739C0D82834F03B00A0E537 /* CallQualityView.xib */; };
 		47416FA52507CBC4004D8A47 /* libUtils.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 47416FA42507C8E7004D8A47 /* libUtils.a */; };
 		47416FC225091651004D8A47 /* GLKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47416FC125091650004D8A47 /* GLKit.framework */; };
-		47691F252C9097B700E0E1D6 /* SuccessAuthentifiedRelationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 47691F242C9097B700E0E1D6 /* SuccessAuthentifiedRelationViewController.m */; };
 		476EE88C250F87FC00E8407E /* libwebrtc_objc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 83589D5A1E4A05A500E894FF /* libwebrtc_objc.a */; };
 		477F784127C6B93400C8ACF1 /* LastVersionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 477F783D27C6B93400C8ACF1 /* LastVersionManager.m */; };
 		477F784227C6B93400C8ACF1 /* LastVersion.m in Sources */ = {isa = PBXBuildFile; fileRef = 477F784027C6B93400C8ACF1 /* LastVersion.m */; };
@@ -243,6 +242,8 @@
 		5703BB492BC964AA001E3C65 /* AnnotationInfoCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 5703BB472BC964AA001E3C65 /* AnnotationInfoCell.m */; };
 		5703BB4C2BC96535001E3C65 /* UIAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = 5703BB4A2BC96535001E3C65 /* UIAnnotation.m */; };
 		5703C1812BFF2C6F001E3C65 /* SettingsGroupViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5703C1802BFF2C6F001E3C65 /* SettingsGroupViewController.m */; };
+		5704E2912ED84AB7006A1B1E /* SuccessAuthentifiedRelationView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5704E2902ED84AB7006A1B1E /* SuccessAuthentifiedRelationView.xib */; };
+		5704E2922ED84AB7006A1B1E /* SuccessAuthentifiedRelationView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5704E28F2ED84AB7006A1B1E /* SuccessAuthentifiedRelationView.m */; };
 		570694282CAB059800BAC643 /* CallCertifyView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 570694252CAB059800BAC643 /* CallCertifyView.xib */; };
 		570694292CAB059800BAC643 /* CallCertifyView.m in Sources */ = {isa = PBXBuildFile; fileRef = 570694272CAB059800BAC643 /* CallCertifyView.m */; };
 		570694452CAB066600BAC643 /* SettingsIconCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 570694422CAB066600BAC643 /* SettingsIconCell.xib */; };
@@ -432,7 +433,6 @@
 		833609BA2156A37A00D9FC61 /* FilePreviewViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 833609B72156A37A00D9FC61 /* FilePreviewViewController.m */; };
 		833609BB2156A37A00D9FC61 /* PreviewItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 833609B82156A37A00D9FC61 /* PreviewItem.m */; };
 		833C15152721454400F4C0E0 /* AudioTrack.m in Sources */ = {isa = PBXBuildFile; fileRef = 833C15132721454400F4C0E0 /* AudioTrack.m */; };
-		833C151B2721457000F4C0E0 /* ScanViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 833C15192721456F00F4C0E0 /* ScanViewController.m */; };
 		8340C78C222980E500B1776B /* LocationAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = 8340C78A222980E500B1776B /* LocationAnnotation.m */; };
 		8340C7942229A2B800B1776B /* LocationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8340C7932229A2B800B1776B /* LocationViewController.m */; };
 		8341A5032665153800256515 /* ReplyView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8341A4FB2665153800256515 /* ReplyView.xib */; };
@@ -1208,8 +1208,6 @@
 		47416F992507C8D5004D8A47 /* Notification.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Notification.xcodeproj; path = Notification/Notification.xcodeproj; sourceTree = "<group>"; };
 		47416F9F2507C8E7004D8A47 /* Utils.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Utils.xcodeproj; path = Utils/Utils.xcodeproj; sourceTree = "<group>"; };
 		47416FC125091650004D8A47 /* GLKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLKit.framework; path = System/Library/Frameworks/GLKit.framework; sourceTree = SDKROOT; };
-		47691F232C9097B700E0E1D6 /* SuccessAuthentifiedRelationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SuccessAuthentifiedRelationViewController.h; sourceTree = "<group>"; };
-		47691F242C9097B700E0E1D6 /* SuccessAuthentifiedRelationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SuccessAuthentifiedRelationViewController.m; sourceTree = "<group>"; };
 		477F783D27C6B93400C8ACF1 /* LastVersionManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LastVersionManager.m; path = Utilities/Update/LastVersionManager.m; sourceTree = "<group>"; };
 		477F783E27C6B93400C8ACF1 /* LastVersion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LastVersion.h; path = Utilities/Update/LastVersion.h; sourceTree = "<group>"; };
 		477F783F27C6B93400C8ACF1 /* LastVersionManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LastVersionManager.h; path = Utilities/Update/LastVersionManager.h; sourceTree = "<group>"; };
@@ -1311,6 +1309,9 @@
 		5703BB4B2BC96535001E3C65 /* UIAnnotation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UIAnnotation.h; path = ViewControllers/ConversationViewController/UIAnnotation.h; sourceTree = "<group>"; };
 		5703C1782BFF2C6F001E3C65 /* SettingsGroupViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SettingsGroupViewController.h; path = ViewControllers/GroupViewControllers/SettingsGroupViewController.h; sourceTree = "<group>"; };
 		5703C1802BFF2C6F001E3C65 /* SettingsGroupViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SettingsGroupViewController.m; path = ViewControllers/GroupViewControllers/SettingsGroupViewController.m; sourceTree = "<group>"; };
+		5704E28E2ED84AB7006A1B1E /* SuccessAuthentifiedRelationView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SuccessAuthentifiedRelationView.h; sourceTree = "<group>"; };
+		5704E28F2ED84AB7006A1B1E /* SuccessAuthentifiedRelationView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SuccessAuthentifiedRelationView.m; sourceTree = "<group>"; };
+		5704E2902ED84AB7006A1B1E /* SuccessAuthentifiedRelationView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SuccessAuthentifiedRelationView.xib; sourceTree = "<group>"; };
 		570694252CAB059800BAC643 /* CallCertifyView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = CallCertifyView.xib; path = ViewControllers/CallViewController/CallCertifyView.xib; sourceTree = "<group>"; };
 		570694262CAB059800BAC643 /* CallCertifyView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CallCertifyView.h; path = ViewControllers/CallViewController/CallCertifyView.h; sourceTree = "<group>"; };
 		570694272CAB059800BAC643 /* CallCertifyView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CallCertifyView.m; path = ViewControllers/CallViewController/CallCertifyView.m; sourceTree = "<group>"; };
@@ -1600,8 +1601,6 @@
 		833609B82156A37A00D9FC61 /* PreviewItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PreviewItem.m; path = ViewControllers/FilePreviewViewController/PreviewItem.m; sourceTree = "<group>"; };
 		833609B92156A37A00D9FC61 /* PreviewItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PreviewItem.h; path = ViewControllers/FilePreviewViewController/PreviewItem.h; sourceTree = "<group>"; };
 		833C15132721454400F4C0E0 /* AudioTrack.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AudioTrack.m; path = Utilities/AudioTrack.m; sourceTree = "<group>"; };
-		833C15192721456F00F4C0E0 /* ScanViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ScanViewController.m; path = ViewControllers/ScanViewController.m; sourceTree = "<group>"; };
-		833C151A2721456F00F4C0E0 /* ScanViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ScanViewController.h; path = ViewControllers/ScanViewController.h; sourceTree = "<group>"; };
 		8340C78A222980E500B1776B /* LocationAnnotation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LocationAnnotation.m; path = Utilities/LocationAnnotation.m; sourceTree = "<group>"; };
 		8340C78B222980E500B1776B /* LocationAnnotation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LocationAnnotation.h; path = Utilities/LocationAnnotation.h; sourceTree = "<group>"; };
 		8340C7922229A2B800B1776B /* LocationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LocationViewController.h; path = ViewControllers/LocationViewController.h; sourceTree = "<group>"; };
@@ -2643,8 +2642,6 @@
 				83FEE3A926174B940007C1F1 /* ProfilesViewController */,
 				57ABEE3E2B4FF01300D0F1C8 /* ProfileViewController */,
 				83FEE3E526174DF50007C1F1 /* RoomViewController */,
-				833C151A2721456F00F4C0E0 /* ScanViewController.h */,
-				833C15192721456F00F4C0E0 /* ScanViewController.m */,
 				83FEE3BD26174CE20007C1F1 /* SelectNotificationSoundViewController */,
 				8342F3C221E90FC300932916 /* SettingsViewController */,
 				83FEE3FD26174E4B0007C1F1 /* ShareViewController */,
@@ -2924,8 +2921,9 @@
 				57ABEDCB2B4596A000D0F1C8 /* ScheduleCell.xib */,
 				83E222A31C5A2FF900350665 /* ShowContactViewController.h */,
 				83E222A41C5A2FF900350665 /* ShowContactViewController.m */,
-				47691F232C9097B700E0E1D6 /* SuccessAuthentifiedRelationViewController.h */,
-				47691F242C9097B700E0E1D6 /* SuccessAuthentifiedRelationViewController.m */,
+				5704E28E2ED84AB7006A1B1E /* SuccessAuthentifiedRelationView.h */,
+				5704E28F2ED84AB7006A1B1E /* SuccessAuthentifiedRelationView.m */,
+				5704E2902ED84AB7006A1B1E /* SuccessAuthentifiedRelationView.xib */,
 				57DD47DA2DBBEFE200F14087 /* UIInvitationCode.h */,
 				57DD47DB2DBBEFE200F14087 /* UIInvitationCode.m */,
 			);
@@ -4062,6 +4060,7 @@
 				83FEE29C261748300007C1F1 /* SendButtonView.xib in Resources */,
 				83FEE2A1261748300007C1F1 /* InvitationContactItemCell.xib in Resources */,
 				83FEE307261748BB0007C1F1 /* InfoFileItemCell.xib in Resources */,
+				5704E2912ED84AB7006A1B1E /* SuccessAuthentifiedRelationView.xib in Resources */,
 				83FEE10B2617458A0007C1F1 /* twinme_notification.caf in Resources */,
 				010EC5B22A49AA5500DE3A11 /* DocumentCell.xib in Resources */,
 				83F1913521006CF2005B814D /* iPhone.storyboard in Resources */,
@@ -4441,6 +4440,7 @@
 				01BE325629C1C8C200A1803E /* PremiumServicesViewController.m in Sources */,
 				83FEE2ED261748900007C1F1 /* AddGroupMemberCell.m in Sources */,
 				5765D7212D5B63240061DD3B /* MenuConversationButtonView.m in Sources */,
+				5704E2922ED84AB7006A1B1E /* SuccessAuthentifiedRelationView.m in Sources */,
 				83FEE1B6261748010007C1F1 /* AddGroupCell.m in Sources */,
 				83FEE2EA261748900007C1F1 /* MenuGroupMemberView.m in Sources */,
 				83FEE0ED261745180007C1F1 /* UIViewController+ProgressIndicator.m in Sources */,
@@ -4484,7 +4484,6 @@
 				57F10D512AF543860090981D /* TemplateSpaceViewController.m in Sources */,
 				83FEE2E8261748900007C1F1 /* GroupMemberCell.m in Sources */,
 				01CC212729658D9800C96A66 /* UICall.m in Sources */,
-				47691F252C9097B700E0E1D6 /* SuccessAuthentifiedRelationViewController.m in Sources */,
 				5703BA142BC5A5FA001E3C65 /* AnnotationsView.m in Sources */,
 				010EC5B82A49AA5500DE3A11 /* CustomTabView.m in Sources */,
 				8321C0DA1E818010008EB89C /* PassthroughView.m in Sources */,
@@ -4672,7 +4671,6 @@
 				01A1558A29F2939D00E4B277 /* TypeCleanupViewController.m in Sources */,
 				83FEE316261748F10007C1F1 /* CallCell.m in Sources */,
 				57784DBD2B444C0B00B52840 /* AbstractMenuView.m in Sources */,
-				833C151B2721457000F4C0E0 /* ScanViewController.m in Sources */,
 				576A51CC2B2AED3E0000F90D /* MenuCallCapabilitiesView.m in Sources */,
 				57C49A802B71502F006EB227 /* CallConversationView.m in Sources */,
 				477F784A27C6B96400C8ACF1 /* PeerClearItemCell.m in Sources */,

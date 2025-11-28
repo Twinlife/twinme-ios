@@ -1864,6 +1864,12 @@ static int LAST_USED_CONVERSATION_COUNT = 99999;
         self.searchController.searchBar.backgroundColor = Design.NAVIGATION_BAR_BACKGROUND_COLOR;
     }
     
+    if ([self.twinmeApplication darkModeEnable:[self currentSpaceSettings]]) {
+        self.searchController.searchBar.keyboardAppearance = UIKeyboardAppearanceDark;
+    } else {
+        self.searchController.searchBar.keyboardAppearance = UIKeyboardAppearanceLight;
+    }
+    
     self.noConversationLabel.textColor = Design.FONT_COLOR_DEFAULT;
     self.inviteContactView.backgroundColor = Design.MAIN_COLOR;
     self.startConversationView.backgroundColor = Design.MAIN_COLOR;

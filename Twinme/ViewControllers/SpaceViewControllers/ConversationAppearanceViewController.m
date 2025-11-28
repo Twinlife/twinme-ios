@@ -813,7 +813,7 @@ static CGFloat DESIGN_RESET_HEIGHT = 160;
         self.menuSelectColorView = [[MenuSelectColorView alloc]init];
         self.menuSelectColorView.menuSelectColorDelegate = self;
         [self.tabBarController.view addSubview:self.menuSelectColorView];
-        [self.menuSelectColorView openMenu:color title:title defaultColor:[UIColor hexStringWithColor:defaultColor]];
+        [self.menuSelectColorView openMenu:color title:title defaultColor:[UIColor hexStringWithColor:defaultColor] spaceSettings:self.currentSpaceSettings];
     }
 }
 

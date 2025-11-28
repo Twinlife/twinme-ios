@@ -12,7 +12,11 @@
 // Interface: DeleteAccountConfirmView
 //
 
+@class TLSpaceSettings;
+
 @interface DeleteAccountConfirmView : AbstractConfirmView
+
+@property (nonatomic) TLSpaceSettings *spaceSettings;
 
 - (void)updateKeyboard:(CGFloat)sizeKeyboard;
 

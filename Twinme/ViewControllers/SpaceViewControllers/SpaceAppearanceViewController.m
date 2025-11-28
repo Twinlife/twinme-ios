@@ -542,7 +542,7 @@ typedef enum {
             mainColor = [UIColor colorWithHexString:self.space.settings.style alpha:1.0];
         }
         
-        [self.menuSelectColorView openMenu:mainColor title:color defaultColor:Design.DEFAULT_COLOR];
+        [self.menuSelectColorView openMenu:mainColor title:color defaultColor:Design.DEFAULT_COLOR spaceSettings:self.currentSpaceSettings];
     }
 }
 

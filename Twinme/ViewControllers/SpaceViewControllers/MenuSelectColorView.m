@@ -16,7 +16,10 @@
 #import "ConversationAppearanceViewController.h"
 #import "EditSpaceViewController.h"
 
+#import <TwinmeCommon/ApplicationDelegate.h>
 #import <TwinmeCommon/Design.h>
+#import <TwinmeCommon/TwinmeApplication.h>
+
 #import "UIContact.h"
 #import "UICustomColor.h"
 #import "UIColor+Hex.h"
@@ -77,6 +80,8 @@ static CGFloat DESIGN_COLLECTION_CELL_WIDTH = 70;
 @property (nonatomic) NSString *hexColor;
 @property (nonatomic) BOOL enterColorEnable;
 @property (nonatomic) CGFloat sizeCell;
+@property (nonatomic) TLSpaceSettings *spaceSettings;
+
 @end
 
 //
@@ -122,7 +127,7 @@ static CGFloat DESIGN_COLLECTION_CELL_WIDTH = 70;
     }];
 }
 
-- (void)openMenu:(UIColor *)color title:(NSString *)title defaultColor:(NSString *)defaultColor {
+- (void)openMenu:(UIColor *)color title:(NSString *)title defaultColor:(NSString *)defaultColor spaceSettings:(TLSpaceSettings *)spaceSettings {
     DDLogVerbose(@"%@ openMenu: %@", LOG_TAG, color);
     
     if (title) {
@@ -133,6 +138,7 @@ static CGFloat DESIGN_COLLECTION_CELL_WIDTH = 70;
     }
     
     self.defaultColor = defaultColor;
+    self.spaceSettings = spaceSettings;
     
     [self updateFont];
     [self updateColor];
@@ -482,6 +488,15 @@ static CGFloat DESIGN_COLLECTION_CELL_WIDTH = 70;
     self.enterColorTextField.tintColor = Design.FONT_COLOR_DEFAULT;
     self.cancelLabel.textColor = Design.FONT_COLOR_DEFAULT;
     self.confirmView.backgroundColor = Design.MAIN_COLOR;
+    
+    ApplicationDelegate *delegate = (ApplicationDelegate *)[[UIApplication sharedApplication] delegate];
+    TwinmeApplication *twinmeApplication = [delegate twinmeApplication];
+    
+    if ([twinmeApplication darkModeEnable:self.spaceSettings]) {
+        self.enterColorTextField.keyboardAppearance = UIKeyboardAppearanceDark;
+    } else {
+        self.enterColorTextField.keyboardAppearance = UIKeyboardAppearanceLight;
+    }
 }
 
 @end

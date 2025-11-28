@@ -12,10 +12,12 @@
 
 @protocol AddCommentDelegate;
 
+@class TLSpaceSettings;
+
 @interface AddCommentCell : UITableViewCell
 
 @property (weak, nonatomic) id<AddCommentDelegate> addCommentDelegate;
 
-- (void)bind;
+- (void)bind:(nonnull TLSpaceSettings *)spaceSettings;
 
 @end
