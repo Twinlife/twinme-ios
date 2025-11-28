@@ -348,7 +348,7 @@ static const int ddLogLevel = DDLogLevelWarning;
     // See https://developer.apple.com/library/archive/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/HandlingRemoteNotifications.html
     [self.twinmeContext setPushNotificationWithVariant:TL_MANAGEMENT_SERVICE_PUSH_NOTIFICATION_REMOTE_VARIANT token:TL_MANAGEMENT_SERVICE_PUSH_NOTIFICATION_APNS_ERROR];
     
-    [self.twinmeContext assertionWithAssertPoint:[ApplicationAssertPoint REGISTER_FOR_REMOTE_FAILED], nil];
+    [self.twinmeContext assertionWithAssertPoint:[ApplicationAssertPoint REGISTER_FOR_REMOTE_FAILED], [TLAssertValue initWithNSError:error], nil];
 }
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandler {

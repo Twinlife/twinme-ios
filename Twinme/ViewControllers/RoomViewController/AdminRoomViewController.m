@@ -16,6 +16,7 @@
 #import <Utils/NSString+Utils.h>
 
 #import "AdminRoomViewController.h"
+#import "AddParticipantsViewController.h"
 #import "InvitationRoomViewController.h"
 #import "SettingsRoomViewController.h"
 
@@ -24,7 +25,7 @@
 #import <TwinmeCommon/Design.h>
 #import "InsideBorderView.h"
 #import "DeviceAuthorization.h"
-#import "AlertView.h"
+#import "DeleteConfirmView.h"
 #import "MenuPhotoView.h"
 
 #if 0
@@ -38,77 +39,100 @@ static CGFloat DESIGN_SECTION_HEIGHT = 120;
 static CGFloat SECTION_HEIGHT;
 static CGFloat MIN_BOTTOM_APPEARANCE;
 
+static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
+
 //
 // Interface: AdminRoomViewController ()
 //
 
-@interface AdminRoomViewController () <UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITextFieldDelegate, UITextViewDelegate, AlertViewDelegate, EditRoomServiceDelegate, MenuPhotoViewDelegate>
+@interface AdminRoomViewController () <UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITextFieldDelegate, UITextViewDelegate,  EditRoomServiceDelegate, MenuPhotoViewDelegate, ConfirmViewDelegate>
 
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *scrollViewBottomConstraint;
-@property (weak, nonatomic) IBOutlet UIScrollView *scrollView;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *contentViewHeightConstraint;
-@property (weak, nonatomic) IBOutlet UIView *contentView;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *identityViewHeightConstraint;
-@property (weak, nonatomic) IBOutlet InsideBorderView *identityView;
-@property (weak, nonatomic) IBOutlet UITextField *nameTextField;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *avatarPlaceholderImageViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet UIImageView *avatarPlaceholderImageView;
+@property (weak, nonatomic) IBOutlet UIView *editAvatarView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *nameViewTopConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *nameViewWidthConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *nameViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet UIView *nameView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *nameTextFieldLeadingConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *nameTextFieldTrailingConstraint;
-@property (weak, nonatomic) IBOutlet UIView *avatarContainerView;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *avatarContainerViewHeightConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *avatarContainerViewTrailingConstraint;
-@property (weak, nonatomic) IBOutlet UIImageView *avatarView;
-@property (weak, nonatomic) IBOutlet UIImageView *cameraImageView;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *cameraImageViewHeightConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *welcomeMessageViewHeightConstraint;
-@property (weak, nonatomic) IBOutlet InsideBorderView *welcomeMessageView;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *welcomeMessageTextViewLeadingConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *welcomeMessageTextViewTrailingConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *welcomeMessageTextViewTopConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *welcomeMessageTextViewBottomConstraint;
-@property (weak, nonatomic) IBOutlet UITextView *welcomeMessageTextView;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *configurationTitleLeadingConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *configurationTitleWidthConstraint;
+@property (weak, nonatomic) IBOutlet UITextField *nameTextField;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *counterNameLabelTopConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *counterNameLabelWidthConstraint;
+@property (weak, nonatomic) IBOutlet UILabel *counterNameLabel;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *descriptionViewWidthConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *descriptionViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *descriptionViewTopConstraint;
+@property (weak, nonatomic) IBOutlet UIView *descriptionView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *descriptionTextViewLeadingConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *descriptionTextViewTrailingConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *descriptionTextViewTopConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *descriptionTextViewBottomConstraint;
+@property (weak, nonatomic) IBOutlet UITextView *descriptionTextView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *counterDescriptionLabelTopConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *counterDescriptionLabelWidthConstraint;
+@property (weak, nonatomic) IBOutlet UILabel *counterDescriptionLabel;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *configurationTitleTopConstraint;
 @property (weak, nonatomic) IBOutlet UILabel *configurationTitleLabel;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *inviteViewHeightConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *inviteViewTopConstraint;
-@property (weak, nonatomic) IBOutlet InsideBorderView *inviteView;
-@property (weak, nonatomic) IBOutlet UILabel *inviteLabel;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *inviteLabelLeadingConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *inviteLabelTrailingConstraint;
-@property (weak, nonatomic) IBOutlet UIImageView *inviteImageView;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *inviteImageViewHeightConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *inviteImageViewTrailingConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *settingsViewHeightConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *settingsViewTopConstraint;
 @property (weak, nonatomic) IBOutlet InsideBorderView *settingsView;
-@property (weak, nonatomic) IBOutlet UILabel *settingsLabel;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *settingsLabelLeadingConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *settingsLabelTrailingConstraint;
-@property (weak, nonatomic) IBOutlet UIImageView *settingsImageView;
+@property (weak, nonatomic) IBOutlet UILabel *settingsLabel;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *settingsImageViewLeadingConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *settingsImageViewHeightConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *settingsImageViewTrailingConstraint;
+@property (weak, nonatomic) IBOutlet UIImageView *settingsImageView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *settingsAccessoryImageHeightConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *settingsAccessoryImageTrailingConstraint;
+@property (weak, nonatomic) IBOutlet UIImageView *settingsAccessoryImageView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *inviteViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet InsideBorderView *inviteView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *inviteImageViewLeadingConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *inviteImageViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet UIImageView *inviteImageView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *inviteLabelLeadingConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *inviteLabelTrailingConstraint;
+@property (weak, nonatomic) IBOutlet UILabel *inviteLabel;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *inviteAccessoryImageViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *inviteAccessoryImageViewTrailingConstraint;
+@property (weak, nonatomic) IBOutlet UIImageView *inviteAccessoryImageView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *invitationCodeViewTopConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *invitationCodeViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet InsideBorderView *invitationCodeView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *invitationCodeImageViewLeadingConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *invitationCodeImageViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet UIImageView *invitationCodeImageView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *invitationCodeLabelLeadingConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *invitationCodeLabelTrailingConstraint;
+@property (weak, nonatomic) IBOutlet UILabel *invitationCodeLabel;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *invitationCodeAccessoryImageViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *invitationCodeAccessoryImageViewTrailingConstraint;
+@property (weak, nonatomic) IBOutlet UIImageView *invitationCodeAccessoryImageView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *saveViewTopConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *saveViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *saveViewWidthConstraint;
+@property (weak, nonatomic) IBOutlet UIView *saveView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *saveLabelWidthConstraint;
+@property (weak, nonatomic) IBOutlet UILabel *saveLabel;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *removeViewHeightConstraint;
 @property (weak, nonatomic) IBOutlet UIView *removeView;
 @property (weak, nonatomic) IBOutlet UILabel *removeLabel;
-@property (nonatomic) UIBarButtonItem *saveBarButtonItem;
 
 @property (nonatomic) UIView *overlayView;
 @property (nonatomic) MenuPhotoView *menuPhotoView;
 
 @property (nonatomic) CALayer *avatarContainerViewLayer;
-@property (nonatomic) UIImage *avatar;
-@property (nonatomic) UIImage *largeAvatar;
+@property (nonatomic) UIImage *updatedAvatar;
+@property (nonatomic) UIImage *updatedLargeAvatar;
 @property (nonatomic) NSString *nameContact;
 @property (nonatomic) NSString *welcomeMessage;
 @property (nonatomic) BOOL canSave;
 @property (nonatomic) BOOL updated;
 @property (nonatomic) BOOL keyboardHidden;
 
-@property (nonatomic) int nbLinesDescription;
-@property (nonatomic) int nbLinesWelcome;
-
 @property (nonatomic) TLContact *room;
+@property (nonatomic) TLRoomConfig *roomConfig;
 
 @property (nonatomic) EditRoomService *editRoomService;
 
@@ -128,6 +152,7 @@ static CGFloat MIN_BOTTOM_APPEARANCE;
     
     SECTION_HEIGHT = DESIGN_SECTION_HEIGHT * Design.HEIGHT_RATIO;
     MIN_BOTTOM_APPEARANCE = DESIGN_MIN_BOTTOM_APPEARANCE * Design.HEIGHT_RATIO;
+    DESIGN_AVATAR_PLACEHOLDER_COLOR = [UIColor colorWithRed:242./255. green:243./255. blue:245./255. alpha:1.0];
 }
 
 #pragma mark - UIViewController
@@ -141,8 +166,6 @@ static CGFloat MIN_BOTTOM_APPEARANCE;
         _canSave = NO;
         _updated = NO;
         _keyboardHidden = YES;
-        _nbLinesDescription = 0;
-        _nbLinesWelcome = 0;
         
         _editRoomService = [[EditRoomService alloc] initWithTwinmeContext:self.twinmeContext delegate:self];
     }
@@ -162,7 +185,7 @@ static CGFloat MIN_BOTTOM_APPEARANCE;
     
     [super viewWillAppear:animated];
     
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardDidShow:) name:UIKeyboardDidShowNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
 }
 
@@ -171,35 +194,36 @@ static CGFloat MIN_BOTTOM_APPEARANCE;
     
     [super viewWillDisappear:animated];
     
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardDidShowNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillHideNotification object:nil];
 }
 
-- (void)keyboardDidShow:(NSNotification *)notification {
-    DDLogVerbose(@"%@ keyboardDidShow: %@", LOG_TAG, notification);
+- (void)keyboardWillShow:(NSNotification *)notification {
+    DDLogVerbose(@"%@ keyboardWillShow: %@", LOG_TAG, notification);
     
-    NSDictionary *info = [notification userInfo];
-    CGPoint keyboardOrigin = [[info objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue].origin;
-    
-    self.scrollViewBottomConstraint.constant = self.view.frame.size.height - keyboardOrigin.y;
+    if (!self.keyboardHidden) {
+        return;
+    }
     
     self.keyboardHidden = NO;
+    NSDictionary *info = [notification userInfo];
+    CGSize keyboardSize = [[info objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue].size;
+    CGRect settingsFrame = self.settingsView.frame;
+    CGRect frame = self.view.frame;
+    CGFloat slidePosition = frame.size.height - (keyboardSize.height + settingsFrame.origin.y + settingsFrame.size.height);
+    [self moveSlideToPosition:slidePosition];
+    
+    if ([self.twinmeApplication getDefaultKeyboardHeight] != keyboardSize.height) {
+        [self.twinmeApplication setDefaultKeyboardHeight:keyboardSize.height];
+    }
 }
 
 - (void)keyboardWillHide:(NSNotification *)notification {
     DDLogVerbose(@"%@ keyboardWillHide: %@", LOG_TAG, notification);
     
-    self.scrollViewBottomConstraint.constant = 0;
-    
     self.keyboardHidden = YES;
-}
-
-- (void)viewDidLayoutSubviews {
-    DDLogVerbose(@"%@ viewDidLayoutSubviews", LOG_TAG);
     
-    if (self.contentViewHeightConstraint.constant < self.view.frame.size.height) {
-        self.contentViewHeightConstraint.constant = self.view.safeAreaLayoutGuide.layoutFrame.size.height;
-    }
+    [self moveSlideToInitialPosition];
 }
 
 - (void)initWithRoom:(TLContact *)room {
@@ -215,15 +239,17 @@ static CGFloat MIN_BOTTOM_APPEARANCE;
 - (void)onGetRoomConfig:(nonnull TLRoomConfig *)roomConfig {
     DDLogVerbose(@"%@ onGetRoomConfig: %@", LOG_TAG, roomConfig);
     
-    if (roomConfig.welcome) {
-        self.welcomeMessageTextView.text = roomConfig.welcome;
+    if (roomConfig.welcome && ![roomConfig.welcome isEqual:@""]) {
+        self.roomConfig = roomConfig;
+        self.descriptionTextView.text = roomConfig.welcome;
+        self.descriptionTextView.textColor = Design.FONT_COLOR_DEFAULT;
     }
 }
 
 - (void)onGetRoomConfigNotFound {
     DDLogVerbose(@"%@ onGetRoomConfigNotFound", LOG_TAG);
     
-    self.welcomeMessageTextView.text = TwinmeLocalizedString(@"admin_room_view_controller_welcome_message", nil);
+    self.descriptionTextView.text = TwinmeLocalizedString(@"admin_room_view_controller_welcome_message", nil);
 }
 
 - (void)onUpdateRoom:(nonnull TLContact *)room {
@@ -262,25 +288,32 @@ static CGFloat MIN_BOTTOM_APPEARANCE;
 - (void)textViewDidBeginEditing:(UITextView *)textView {
     DDLogVerbose(@"%@ textViewDidBeginEditing: %@", LOG_TAG, textView);
     
-    if (textView == self.welcomeMessageTextView && [self.welcomeMessageTextView.text isEqualToString:TwinmeLocalizedString(@"admin_room_view_controller_welcome_message", nil)]) {
-        self.welcomeMessageTextView.text = @"";
-        self.welcomeMessageTextView.textColor = Design.FONT_COLOR_DEFAULT;
+    if (textView == self.descriptionTextView && [self.descriptionTextView.text isEqualToString:TwinmeLocalizedString(@"admin_room_view_controller_welcome_message", nil)]) {
+        self.descriptionTextView.text = @"";
+        self.descriptionTextView.textColor = Design.FONT_COLOR_DEFAULT;
     }
 }
 
 - (void)textViewDidChange:(UITextView *)textView {
-    DDLogVerbose(@"%@ textViewDidChange", LOG_TAG);
+    DDLogVerbose(@"%@ textViewDidChange: %@", LOG_TAG, textView);
     
-    [self centerTextDescription:textView];
     [self setUpdated];
+    
+    self.counterDescriptionLabel.text = [NSString stringWithFormat:@"%lu/%d", (unsigned long)self.descriptionTextView.text.length, MAX_DESCRIPTION_LENGTH];
+}
+
+- (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text {
+    DDLogVerbose(@"%@ textView: %@ shouldChangeTextInRange: %lu replacementText: %@", LOG_TAG, textView, (unsigned long)range.length, text);
+    
+    return textView.text.length + (text.length - range.length) <= MAX_DESCRIPTION_LENGTH;
 }
 
 - (void)textViewDidEndEditing:(UITextView *)textView {
     DDLogVerbose(@"%@ textViewDidEndEditing: %@", LOG_TAG, textView);
     
-    if (textView == self.welcomeMessageTextView && [self.welcomeMessageTextView.text isEqualToString:@""]) {
-        self.welcomeMessageTextView.text = TwinmeLocalizedString(@"admin_room_view_controller_welcome_message", nil);
-        self.welcomeMessageTextView.textColor = Design.PLACEHOLDER_COLOR;
+    if (textView == self.descriptionTextView && [self.descriptionTextView.text isEqualToString:@""]) {
+        self.descriptionTextView.text = TwinmeLocalizedString(@"admin_room_view_controller_welcome_message", nil);
+        self.descriptionTextView.textColor = Design.PLACEHOLDER_COLOR;
     }
 }
 
@@ -289,20 +322,13 @@ static CGFloat MIN_BOTTOM_APPEARANCE;
 - (void)imagePickerController:(UIImagePickerController *)pickerController didFinishPickingMediaWithInfo:(NSDictionary *)info {
     DDLogVerbose(@"%@ imagePickerController: %@ didFinishPickingMediaWithInfo: %@", LOG_TAG, pickerController, info);
     
+    self.navigationController.navigationBarHidden = YES;
+    
     [pickerController dismissViewControllerAnimated:YES completion:^{
-        self.avatarContainerViewLayer.borderColor = [UIColor clearColor].CGColor;
-        
-        self.largeAvatar = info[UIImagePickerControllerEditedImage];
-        self.avatar = [self.largeAvatar resizeImage];
-        
-        CATransition *animation = [CATransition animation];
-        animation.type = kCATransitionFade;
-        animation.subtype = kCATransitionFromTop;
-        animation.duration = 0.5;
-        [self.avatarView.layer addAnimation:animation forKey:nil];
-        self.avatarView.image = self.avatar;
-        self.cameraImageView.hidden = YES;
-        
+        self.avatarPlaceholderImageView.hidden = NO;
+        self.updatedLargeAvatar = info[UIImagePickerControllerEditedImage];
+        self.updatedAvatar = [self.updatedLargeAvatar resizeImage];
+        self.avatarView.image = self.updatedLargeAvatar;
         [self setUpdated];
     }];
 }
@@ -310,20 +336,43 @@ static CGFloat MIN_BOTTOM_APPEARANCE;
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)pickerController {
     DDLogVerbose(@"%@ imagePickerControllerDidCancel: %@", LOG_TAG, pickerController);
     
+    self.navigationController.navigationBarHidden = YES;
     [pickerController dismissViewControllerAnimated:YES completion:nil];
 }
 
-#pragma mark - AlertViewDelegate
+#pragma mark - UIAdaptivePresentationControllerDelegate
 
-- (void)handleAcceptButtonClick:(AlertView *)alertView {
-    DDLogVerbose(@"%@ handleAcceptButtonClick: %@", LOG_TAG, alertView);
-    
-    [self.editRoomService deleteRoom:self.room];
+- (void)presentationControllerWillDismiss:(UIPresentationController *)presentationController {
+    DDLogVerbose(@"%@ presentationControllerWillDismiss: %@", LOG_TAG, presentationController);
+
+    self.navigationController.navigationBarHidden = YES;
 }
 
-- (void)handleCancelButtonClick:(AlertView *)alertView {
-    DDLogVerbose(@"%@ handleCancelButtonClick: %@", LOG_TAG, alertView);
+#pragma mark - ConfirmViewDelegate
+
+- (void)didTapConfirm:(nonnull AbstractConfirmView *)abstractConfirmView {
+    DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractConfirmView);
     
+    [self.editRoomService deleteRoom:self.room];
+    [abstractConfirmView closeConfirmView];
+}
+
+- (void)didTapCancel:(nonnull AbstractConfirmView *)abstractConfirmView {
+    DDLogVerbose(@"%@ didTapCancel: %@", LOG_TAG, abstractConfirmView);
+    
+    [abstractConfirmView closeConfirmView];
+}
+
+- (void)didClose:(nonnull AbstractConfirmView *)abstractConfirmView {
+    DDLogVerbose(@"%@ didClose: %@", LOG_TAG, abstractConfirmView);
+    
+    [abstractConfirmView closeConfirmView];
+}
+
+- (void)didFinishCloseAnimation:(nonnull AbstractConfirmView *)abstractConfirmView {
+    DDLogVerbose(@"%@ didFinishCloseAnimation: %@", LOG_TAG, abstractConfirmView);
+    
+    [abstractConfirmView removeFromSuperview];
 }
 
 #pragma mark - MenuPhotoViewDelegate
@@ -331,21 +380,21 @@ static CGFloat MIN_BOTTOM_APPEARANCE;
 - (void)menuPhotoDidSelectCamera:(MenuPhotoView *)menuPhotoView {
     DDLogVerbose(@"%@ menuPhotoDidSelectCamera", LOG_TAG);
     
-    [self closeMenu];
+    [menuPhotoView removeFromSuperview];
     [self takePhoto];
 }
 
 - (void)menuPhotoDidSelectGallery:(MenuPhotoView *)menuPhotoView {
     DDLogVerbose(@"%@ menuPhotoDidSelectGallery", LOG_TAG);
     
-    [self closeMenu];
+    [menuPhotoView removeFromSuperview];
     [self selectPhoto];
 }
 
-- (void)cancelMenu:(MenuPhotoView *)menuPhotoView {
+- (void)cancelMenuPhoto:(MenuPhotoView *)menuPhotoView {
     DDLogVerbose(@"%@ cancelMenu", LOG_TAG);
     
-    [self closeMenu];
+    [menuPhotoView removeFromSuperview];
 }
 
 #pragma mark - Private methods
@@ -354,135 +403,196 @@ static CGFloat MIN_BOTTOM_APPEARANCE;
     DDLogVerbose(@"%@ setUpdated", LOG_TAG);
     
     self.nameContact = self.nameTextField.text;
-    self.welcomeMessage = self.welcomeMessageTextView.text;
+    self.welcomeMessage = self.descriptionTextView.text;
     
-    if ([self.nameContact isEqualToString:self.room.name] && !self.avatar) {
+    if ([self.nameContact isEqualToString:self.room.name] && [self.welcomeMessage isEqualToString:self.roomConfig.welcome] && !self.updatedAvatar) {
         if (!self.canSave) {
             return;
         }
-        self.canSave = false;
-        self.saveBarButtonItem.enabled = NO;
+        self.canSave = NO;
+        self.saveView.alpha = 0.5f;
     } else {
         if (self.canSave) {
             return;
         }
-        self.canSave = true;
-        self.saveBarButtonItem.enabled = YES;
+        self.canSave = YES;
+        self.saveView.alpha = 1.0f;
     }
 }
 
 - (void)initViews {
     DDLogVerbose(@"%@ initViews", LOG_TAG);
     
-    self.view.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
+    [super initViews];
     
-    [self setNavigationTitle:TwinmeLocalizedString(@"application_edit", nil)];
-    
+    self.view.backgroundColor = Design.WHITE_COLOR;
     [self.view addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(dismissKeyboard)]];
+        
+    [self.editAvatarView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleAvatarTapGesture:)]];
+    self.editAvatarView.isAccessibilityElement = YES;
     
-    self.saveBarButtonItem = [[UIBarButtonItem alloc]initWithTitle:TwinmeLocalizedString(@"application_save", nil) style:UIBarButtonItemStylePlain target:self action:@selector(handleSaveTapGesture:)];
-    [self.saveBarButtonItem setTitleTextAttributes: @{NSFontAttributeName : Design.FONT_BOLD36, NSForegroundColorAttributeName: [UIColor whiteColor]} forState:UIControlStateNormal];
-    [self.saveBarButtonItem setTitleTextAttributes: @{NSFontAttributeName : Design.FONT_BOLD36, NSForegroundColorAttributeName: [UIColor colorWithWhite:1.0 alpha:0.5]} forState:UIControlStateDisabled];
-    self.saveBarButtonItem.enabled = NO;
-    self.navigationItem.rightBarButtonItem = self.saveBarButtonItem;
+    self.avatarView.backgroundColor = DESIGN_AVATAR_PLACEHOLDER_COLOR;
     
-    self.scrollView.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
+    self.avatarPlaceholderImageViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     
-    self.contentViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
-    self.contentView.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
+    self.nameLabel.text = TwinmeLocalizedString(@"show_room_view_controller_room_title", nil);
     
-    self.identityViewHeightConstraint.constant  *= Design.HEIGHT_RATIO;
-    self.identityView.backgroundColor = Design.WHITE_COLOR;
-    [self.identityView setBorder:Design.SEPARATOR_COLOR_GREY borderWidth:Design.SEPARATOR_HEIGHT width:[[UIScreen mainScreen] bounds].size.width height:self.identityViewHeightConstraint.constant left:false right:false top:true bottom:false];
+    self.nameViewTopConstraint.constant *= Design.HEIGHT_RATIO;
+    self.nameViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    self.nameViewWidthConstraint.constant *= Design.WIDTH_RATIO;
+    self.nameView.backgroundColor = Design.TEXTFIELD_BACKGROUND_COLOR;
+    self.nameView.layer.cornerRadius = Design.CONTAINER_RADIUS;
+    self.nameView.clipsToBounds = YES;
     
     self.nameTextFieldLeadingConstraint.constant *= Design.WIDTH_RATIO;
     self.nameTextFieldTrailingConstraint.constant *= Design.WIDTH_RATIO;
-    self.nameTextField.font = Design.FONT_REGULAR32;
+    self.nameTextField.font = Design.FONT_REGULAR44;
     self.nameTextField.textColor = Design.FONT_COLOR_DEFAULT;
-    self.nameTextField.placeholder = TwinmeLocalizedString(@"application_name_hint", nil);
+    self.nameTextField.tintColor = Design.FONT_COLOR_DEFAULT;
+    [self.nameTextField setReturnKeyType:UIReturnKeyDone];
     self.nameTextField.delegate = self;
     [self.nameTextField addTarget:self action:@selector(textFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
     
-    self.avatarContainerViewHeightConstraint.constant  *= Design.HEIGHT_RATIO;
-    self.avatarContainerViewTrailingConstraint.constant *= Design.WIDTH_RATIO;
+    self.counterNameLabelTopConstraint.constant *= Design.HEIGHT_RATIO;
+    self.counterNameLabelWidthConstraint.constant *= Design.WIDTH_RATIO;
     
-    self.cameraImageViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
-    self.cameraImageView.tintColor = Design.EDIT_AVATAR_IMAGE_COLOR;
+    self.counterNameLabel.font = Design.FONT_REGULAR26;
+    self.counterNameLabel.textColor = Design.FONT_COLOR_DEFAULT;
+    self.counterNameLabel.text = [NSString stringWithFormat:@"0/%d", MAX_NAME_LENGTH];
     
-    self.avatarContainerViewLayer = self.avatarContainerView.layer;
-    self.avatarContainerViewLayer.cornerRadius = self.avatarContainerViewHeightConstraint.constant * 0.5;
-    self.avatarContainerViewLayer.masksToBounds = YES;
+    self.descriptionViewWidthConstraint.constant *= Design.WIDTH_RATIO;
+    self.descriptionViewHeightConstraint.constant = Design.DESCRIPTION_HEIGHT;
+    self.descriptionViewTopConstraint.constant *= Design.HEIGHT_RATIO;
+    self.descriptionView.backgroundColor = Design.TEXTFIELD_BACKGROUND_COLOR;
+    self.descriptionView.layer.cornerRadius = Design.CONTAINER_RADIUS;
+    self.descriptionView.clipsToBounds = YES;
     
-    self.avatarView.userInteractionEnabled = YES;
-    [self.avatarView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleAvatarTapGesture:)]];
-    self.avatarView.backgroundColor = Design.EDIT_AVATAR_BACKGROUND_COLOR;
+    self.descriptionTextViewLeadingConstraint.constant *= Design.WIDTH_RATIO;
+    self.descriptionTextViewTrailingConstraint.constant *= Design.WIDTH_RATIO;
     
-    self.welcomeMessageViewHeightConstraint.constant  *= Design.HEIGHT_RATIO;
-    self.welcomeMessageView.backgroundColor = Design.WHITE_COLOR;
-    [self.welcomeMessageView setBorder:Design.SEPARATOR_COLOR_GREY borderWidth:Design.SEPARATOR_HEIGHT width:[[UIScreen mainScreen] bounds].size.width height:self.welcomeMessageViewHeightConstraint.constant left:false right:false top:true bottom:false];
+    self.descriptionTextView.font = Design.FONT_REGULAR28;
+    self.descriptionTextView.textColor = Design.PLACEHOLDER_COLOR;
+    self.descriptionTextView.tintColor = Design.FONT_COLOR_DEFAULT;
+    self.descriptionTextView.delegate = self;
+    self.descriptionTextView.text = TwinmeLocalizedString(@"admin_room_view_controller_welcome_message", nil);
+    self.descriptionTextView.textContainer.lineFragmentPadding = 0;
+    self.descriptionTextView.textContainerInset = UIEdgeInsetsZero;
     
-    self.welcomeMessageTextViewLeadingConstraint.constant *= Design.WIDTH_RATIO;
-    self.welcomeMessageTextViewTrailingConstraint.constant *= Design.WIDTH_RATIO;
+    self.counterDescriptionLabelTopConstraint.constant *= Design.HEIGHT_RATIO;
+    self.counterDescriptionLabelWidthConstraint.constant *= Design.WIDTH_RATIO;
     
-    self.welcomeMessageTextView.font = Design.FONT_REGULAR32;
-    self.welcomeMessageTextView.textColor = Design.PLACEHOLDER_COLOR;
-    self.welcomeMessageTextView.backgroundColor = Design.WHITE_COLOR;
-    self.welcomeMessageTextView.text = TwinmeLocalizedString(@"admin_room_view_controller_welcome_message", nil);
-    self.welcomeMessageTextView.delegate = self;
-    self.welcomeMessageTextView.textContainer.lineFragmentPadding = 0;
-    self.welcomeMessageTextView.textContainerInset = UIEdgeInsetsZero;
-    
-    CGFloat welcomeTextMargin = (self.welcomeMessageViewHeightConstraint.constant - self.welcomeMessageTextView.font.lineHeight) / 2.0;
-    self.welcomeMessageTextViewTopConstraint.constant = welcomeTextMargin;
-    self.welcomeMessageTextViewBottomConstraint.constant = welcomeTextMargin;
-    
+    self.counterDescriptionLabel.font = Design.FONT_REGULAR26;
+    self.counterDescriptionLabel.textColor = Design.FONT_COLOR_DEFAULT;
+    self.counterDescriptionLabel.text = [NSString stringWithFormat:@"0/%d", MAX_DESCRIPTION_LENGTH];
+
     self.configurationTitleTopConstraint.constant *= Design.HEIGHT_RATIO;
-    self.configurationTitleLeadingConstraint.constant *= Design.WIDTH_RATIO;
-    self.configurationTitleWidthConstraint.constant *= Design.WIDTH_RATIO;
-    
+
     self.configurationTitleLabel.text = TwinmeLocalizedString(@"application_configuration", nil);
     self.configurationTitleLabel.font = Design.FONT_BOLD28;
     self.configurationTitleLabel.textColor = Design.FONT_COLOR_DEFAULT;
     
+    self.settingsViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    self.settingsViewTopConstraint.constant *= Design.HEIGHT_RATIO;
+    
+    [self.settingsView setBorder:Design.SEPARATOR_COLOR_GREY borderWidth:Design.SEPARATOR_HEIGHT width:self.descriptionViewWidthConstraint.constant  height:self.settingsViewHeightConstraint.constant left:false right:false top:true bottom:true];
+    
+    self.settingsView.userInteractionEnabled = true;
+    self.settingsView.backgroundColor = Design.WHITE_COLOR;
+    self.settingsView.isAccessibilityElement = YES;
+    self.settingsView.accessibilityLabel = TwinmeLocalizedString(@"settings_view_controller_title", nil);
+    
+    UITapGestureRecognizer *settingsViewGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSettingsTapGesture:)];
+    [self.settingsView addGestureRecognizer:settingsViewGestureRecognizer];
+    
+    self.settingsLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
+    self.settingsLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
+    self.settingsLabel.font = Design.FONT_REGULAR34;
+    self.settingsLabel.textColor = Design.FONT_COLOR_DEFAULT;
+    self.settingsLabel.text = TwinmeLocalizedString(@"settings_view_controller_title", nil);
+    
+    self.settingsImageViewLeadingConstraint.constant *= Design.WIDTH_RATIO;
+    self.settingsImageViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    self.settingsImageView.tintColor = Design.UNSELECTED_TAB_COLOR;
+    
+    self.settingsAccessoryImageHeightConstraint.constant = Design.ACCESSORY_HEIGHT;
+    self.settingsAccessoryImageTrailingConstraint.constant *= Design.WIDTH_RATIO;
+    self.settingsAccessoryImageView.tintColor = Design.ACCESSORY_COLOR;
+    self.settingsAccessoryImageView.image = [self.settingsAccessoryImageView.image imageFlippedForRightToLeftLayoutDirection];
+    
     self.inviteViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
-    self.inviteViewTopConstraint.constant *= Design.HEIGHT_RATIO;
+    
+    [self.inviteView setBorder:Design.SEPARATOR_COLOR_GREY borderWidth:Design.SEPARATOR_HEIGHT width:self.descriptionViewWidthConstraint.constant  height:self.inviteViewHeightConstraint.constant left:false right:false top:true bottom:true];
+    
+    self.inviteView.userInteractionEnabled = true;
     self.inviteView.backgroundColor = Design.WHITE_COLOR;
-    [self.inviteView setBorder:Design.SEPARATOR_COLOR_GREY borderWidth:Design.SEPARATOR_HEIGHT width:[[UIScreen mainScreen] bounds].size.width height:self.inviteViewHeightConstraint.constant left:false right:false top:true bottom:true];
+    self.inviteView.isAccessibilityElement = YES;
+    self.inviteView.accessibilityLabel = TwinmeLocalizedString(@"show_room_view_controller_invite_participants", nil);
     
     UITapGestureRecognizer *inviteViewGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleInviteTapGesture:)];
     [self.inviteView addGestureRecognizer:inviteViewGestureRecognizer];
     
     self.inviteLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
     self.inviteLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
-    self.inviteLabel.font = Design.FONT_REGULAR32;
+    self.inviteLabel.font = Design.FONT_REGULAR34;
     self.inviteLabel.textColor = Design.FONT_COLOR_DEFAULT;
     self.inviteLabel.text = TwinmeLocalizedString(@"show_room_view_controller_invite_participants", nil);
     
+    self.inviteImageViewLeadingConstraint.constant *= Design.WIDTH_RATIO;
     self.inviteImageViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
-    self.inviteImageViewTrailingConstraint.constant *= Design.WIDTH_RATIO;
-    self.inviteImageView.tintColor = Design.BLACK_COLOR;
-    self.inviteImageView.image = [self.inviteImageView.image imageFlippedForRightToLeftLayoutDirection];
+    self.inviteImageView.tintColor = Design.UNSELECTED_TAB_COLOR;
     
-    self.settingsViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
-    self.settingsViewTopConstraint.constant *= Design.HEIGHT_RATIO;
+    self.inviteAccessoryImageViewHeightConstraint.constant = Design.ACCESSORY_HEIGHT;
+    self.inviteAccessoryImageViewTrailingConstraint.constant *= Design.WIDTH_RATIO;
+    self.inviteAccessoryImageView.tintColor = Design.ACCESSORY_COLOR;
+    self.inviteAccessoryImageView.image = [self.inviteAccessoryImageView.image imageFlippedForRightToLeftLayoutDirection];
     
-    self.settingsView.backgroundColor = Design.WHITE_COLOR;
-    [self.settingsView setBorder:Design.SEPARATOR_COLOR_GREY borderWidth:Design.SEPARATOR_HEIGHT width:[[UIScreen mainScreen] bounds].size.width height:self.settingsViewHeightConstraint.constant left:false right:false top:true bottom:true];
+    self.invitationCodeViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    self.invitationCodeViewTopConstraint.constant *= Design.HEIGHT_RATIO;
     
-    UITapGestureRecognizer *settingsViewGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSettingsTapGesture:)];
-    [self.settingsView addGestureRecognizer:settingsViewGestureRecognizer];
+    [self.invitationCodeView setBorder:Design.SEPARATOR_COLOR_GREY borderWidth:Design.SEPARATOR_HEIGHT width:self.descriptionViewWidthConstraint.constant  height:self.invitationCodeViewHeightConstraint.constant left:false right:false top:true bottom:true];
     
-    self.settingsLabel.font = Design.FONT_REGULAR32;
-    self.settingsLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    self.settingsLabel.text = TwinmeLocalizedString(@"settings_view_controller_title", nil);
+    self.invitationCodeView.userInteractionEnabled = true;
+    self.invitationCodeView.backgroundColor = Design.WHITE_COLOR;
+    self.invitationCodeView.isAccessibilityElement = YES;
+    self.invitationCodeView.accessibilityLabel = TwinmeLocalizedString(@"show_profile_view_controller_twincode_title", nil);
     
-    self.settingsLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
-    self.settingsLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
-    self.settingsImageView.tintColor = Design.BLACK_COLOR;
-    self.settingsImageView.image = [self.inviteImageView.image imageFlippedForRightToLeftLayoutDirection];
+    UITapGestureRecognizer *invitationCodeViewGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleInvitationCodeTapGesture:)];
+    [self.invitationCodeView addGestureRecognizer:invitationCodeViewGestureRecognizer];
     
-    self.settingsImageViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
-    self.settingsImageViewTrailingConstraint.constant *= Design.WIDTH_RATIO;
+    self.invitationCodeLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
+    self.invitationCodeLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
+    self.invitationCodeLabel.font = Design.FONT_REGULAR34;
+    self.invitationCodeLabel.textColor = Design.FONT_COLOR_DEFAULT;
+    self.invitationCodeLabel.text = TwinmeLocalizedString(@"show_profile_view_controller_twincode_title", nil);
+    
+    self.invitationCodeImageViewLeadingConstraint.constant *= Design.WIDTH_RATIO;
+    self.invitationCodeImageViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    
+    self.invitationCodeImageView.image = [self.invitationCodeImageView.image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    self.invitationCodeImageView.tintColor = Design.UNSELECTED_TAB_COLOR;
+    
+    self.invitationCodeAccessoryImageViewHeightConstraint.constant = Design.ACCESSORY_HEIGHT;
+    self.invitationCodeAccessoryImageViewTrailingConstraint.constant *= Design.WIDTH_RATIO;
+    self.invitationCodeAccessoryImageView.tintColor = Design.ACCESSORY_COLOR;
+    self.invitationCodeAccessoryImageView.image = [self.invitationCodeAccessoryImageView.image imageFlippedForRightToLeftLayoutDirection];
+    
+    self.saveViewTopConstraint.constant *= Design.HEIGHT_RATIO;
+    self.saveViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    self.saveViewWidthConstraint.constant *= Design.WIDTH_RATIO;
+    
+    self.saveView.backgroundColor = Design.MAIN_COLOR;
+    self.saveView.userInteractionEnabled = YES;
+    self.saveView.layer.cornerRadius = Design.CONTAINER_RADIUS;
+    self.saveView.clipsToBounds = YES;
+    self.saveView.isAccessibilityElement = YES;
+    self.saveView.alpha = 0.5;
+    self.saveView.accessibilityLabel = TwinmeLocalizedString(@"application_save", nil);
+    [self.saveView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSaveTapGesture:)]];
+    
+    self.saveLabelWidthConstraint.constant *= Design.WIDTH_RATIO;
+    self.saveLabel.font = Design.FONT_BOLD36;
+    self.saveLabel.textColor = [UIColor whiteColor];
+    self.saveLabel.text = TwinmeLocalizedString(@"application_save", nil);
     
     self.removeViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     self.removeView.backgroundColor = Design.BACKGROUND_COLOR_WHITE_OPACITY11;
@@ -509,7 +619,6 @@ static CGFloat MIN_BOTTOM_APPEARANCE;
     [self.tabBarController.view addSubview:self.menuPhotoView];
     
     [self updateRoom];
-    [self centerTextDescription:self.welcomeMessageTextView];
 }
 
 - (void)finish {
@@ -528,7 +637,7 @@ static CGFloat MIN_BOTTOM_APPEARANCE;
     
     if (!self.keyboardHidden) {
         [self.nameTextField resignFirstResponder];
-        [self.welcomeMessageTextView resignFirstResponder];
+        [self.descriptionTextView resignFirstResponder];
     }
 }
 
@@ -558,15 +667,30 @@ static CGFloat MIN_BOTTOM_APPEARANCE;
         updatedName = self.nameTextField.placeholder;
     }
     
-    [self.editRoomService updateRoomWithName:self.room name:updatedName avatar:self.avatar largeAvatar:self.largeAvatar welcomeMessage:self.welcomeMessageTextView.text];
+    NSString *updatedDescription =  [self.descriptionTextView.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+    if ([updatedDescription isEqualToString:TwinmeLocalizedString(@"admin_room_view_controller_welcome_message", nil)]) {
+        updatedDescription = @"";
+    }
+    
+    BOOL updated = ![updatedName isEqualToString:self.nameTextField.placeholder] || ![updatedDescription isEqualToString:self.roomConfig.welcome];
+    updated = updated || self.updatedLargeAvatar != nil;
+    
+    if (updated) {
+        [self.editRoomService updateRoomWithName:self.room name:updatedName avatar:self.updatedLargeAvatar largeAvatar:self.updatedLargeAvatar welcomeMessage:updatedDescription];
+    }
 }
 
 - (void)handleRemoveTapGesture:(UITapGestureRecognizer *)sender {
     DDLogVerbose(@"%@ handleRemoveTapGesture: %@", LOG_TAG, sender);
     
     if (sender.state == UIGestureRecognizerStateEnded) {
-        AlertView *alertView = [[AlertView alloc] initWithTitle:TwinmeLocalizedString(@"application_delete", nil) message:TwinmeLocalizedString(@"application_delete_message", nil) cancelButtonTitle:TwinmeLocalizedString(@"application_no", nil) otherButtonTitles:TwinmeLocalizedString(@"application_yes", nil) alertViewDelegate:self];
-        [alertView showInView:self.tabBarController];
+        DeleteConfirmView *deleteConfirmView = [[DeleteConfirmView alloc] init];
+        deleteConfirmView.confirmViewDelegate = self;
+        deleteConfirmView.deleteConfirmType = DeleteConfirmTypeOriginator;
+    
+        [deleteConfirmView initWithTitle:self.room.name message:TwinmeLocalizedString(@"application_delete_message", nil)  avatar:self.avatarView.image icon:[UIImage imageNamed:@"ActionBarDelete"]];
+        [self.navigationController.view addSubview:deleteConfirmView];
+        [deleteConfirmView showConfirmView];
     }
 }
 
@@ -574,9 +698,9 @@ static CGFloat MIN_BOTTOM_APPEARANCE;
     DDLogVerbose(@"%@ handleInviteTapGesture: %@", LOG_TAG, sender);
     
     if (sender.state == UIGestureRecognizerStateEnded) {
-        InvitationRoomViewController *invitationRoomViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"InvitationRoomViewController"];
-        [invitationRoomViewController initWithRoom:self.room];
-        [self.navigationController pushViewController:invitationRoomViewController animated:YES];
+        AddParticipantsViewController *addParticipantsViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"AddParticipantsViewController"];
+        [addParticipantsViewController initWithRoom:self.room];
+        [self.navigationController pushViewController:addParticipantsViewController animated:YES];
     }
 }
 
@@ -587,6 +711,16 @@ static CGFloat MIN_BOTTOM_APPEARANCE;
         SettingsRoomViewController *settingsRoomViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"SettingsRoomViewController"];
         [settingsRoomViewController initWithRoom:self.room];
         [self.navigationController pushViewController:settingsRoomViewController animated:YES];
+    }
+}
+
+- (void)handleInvitationCodeTapGesture:(UITapGestureRecognizer *)sender {
+    DDLogVerbose(@"%@ handleInvitationCodeTapGesture: %@", LOG_TAG, sender);
+    
+    if (sender.state == UIGestureRecognizerStateEnded) {
+        InvitationRoomViewController *invitationRoomViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"InvitationRoomViewController"];
+        [invitationRoomViewController initWithRoom:self.room];
+        [self.navigationController pushViewController:invitationRoomViewController animated:YES];
     }
 }
 
@@ -649,43 +783,6 @@ static CGFloat MIN_BOTTOM_APPEARANCE;
     }
 }
 
-- (void)centerTextDescription:(UITextView *)textView {
-    DDLogVerbose(@"%@ centerTextDescription", LOG_TAG);
-    
-    int nbLines = textView.contentSize.height / textView.font.lineHeight;
-    
-    int lastNbLines = self.nbLinesDescription;
-    
-    if (textView == self.welcomeMessageTextView) {
-        lastNbLines = self.nbLinesWelcome;
-    }
-    
-    if (nbLines != lastNbLines) {
-        CGFloat lastDescriptionViewHeight = textView.frame.size.height;
-        CGFloat newDescriptionViewHeight = textView.contentSize.height + (self.welcomeMessageTextViewTopConstraint.constant * 2.0);
-        
-        if (newDescriptionViewHeight < SECTION_HEIGHT) {
-            newDescriptionViewHeight = SECTION_HEIGHT;
-        }
-        
-        if (lastDescriptionViewHeight != newDescriptionViewHeight) {
-            
-            CGRect descriptionTextRect = textView.frame;
-            descriptionTextRect.size.height = textView.contentSize.height;
-            textView.frame = descriptionTextRect;
-            
-            [textView setContentOffset:CGPointZero animated:YES];
-            
-            if (textView == self.welcomeMessageTextView) {
-                self.welcomeMessageViewHeightConstraint.constant = newDescriptionViewHeight;
-                [self.welcomeMessageView clearBorder];
-                [self.welcomeMessageView setBorder:Design.SEPARATOR_COLOR_GREY borderWidth:Design.SEPARATOR_HEIGHT width:[[UIScreen mainScreen] bounds].size.width height:newDescriptionViewHeight left:false right:false top:true bottom:false];
-                self.nbLinesWelcome = nbLines;
-            }
-        }
-    }
-}
-
 - (void)openMenuPhoto {
     DDLogVerbose(@"%@ openMenuPhoto", LOG_TAG);
     
@@ -693,7 +790,7 @@ static CGFloat MIN_BOTTOM_APPEARANCE;
     
     MenuPhotoView *menuPhotoView = [[MenuPhotoView alloc]init];
     menuPhotoView.menuPhotoViewDelegate = self;
-    [self.tabBarController.view addSubview:menuPhotoView];
+    [self.navigationController.view addSubview:menuPhotoView];
     [menuPhotoView openMenu:YES];
 }
 
@@ -714,34 +811,68 @@ static CGFloat MIN_BOTTOM_APPEARANCE;
     self.nameTextField.placeholder = self.room.name;
     self.nameTextField.text = self.room.name;
     [self.editRoomService getImageWithContact:self.room withBlock:^(UIImage *image) {
-        self.avatar = image;
+        self.avatarView.image = image;
     }];
-    self.avatarView.image = self.avatar;
 }
 
 - (void)updateFont {
     DDLogVerbose(@"%@ updateFont", LOG_TAG);
-    
-    [self.saveBarButtonItem setTitleTextAttributes: @{NSFontAttributeName: Design.FONT_BOLD36, NSForegroundColorAttributeName: [UIColor whiteColor]} forState:UIControlStateNormal];
-    [self.saveBarButtonItem setTitleTextAttributes: @{NSFontAttributeName: Design.FONT_BOLD36, NSForegroundColorAttributeName: [UIColor colorWithWhite:1.0 alpha:0.5]} forState:UIControlStateDisabled];
+        
+    [super updateFont];
     
     self.nameTextField.font = Design.FONT_REGULAR32;
-    self.welcomeMessageTextView.font = Design.FONT_REGULAR32;
+    self.descriptionTextView.font = Design.FONT_REGULAR32;
     self.configurationTitleLabel.font = Design.FONT_BOLD28;
-    self.inviteLabel.font = Design.FONT_REGULAR32;
+    self.settingsLabel.font = Design.FONT_REGULAR34;
+    self.inviteLabel.font = Design.FONT_REGULAR34;
+    self.invitationCodeLabel.font = Design.FONT_REGULAR34;
+    self.saveLabel.font = Design.FONT_BOLD36;
+    self.removeLabel.font = Design.FONT_REGULAR34;
 }
 
 - (void)updateColor {
     DDLogVerbose(@"%@ updateColor", LOG_TAG);
     
+    [super updateColor];
+    
     self.nameTextField.textColor = Design.FONT_COLOR_DEFAULT;
-    self.welcomeMessageTextView.textColor = Design.PLACEHOLDER_COLOR;
+    self.descriptionTextView.textColor = Design.PLACEHOLDER_COLOR;
     self.configurationTitleLabel.textColor = Design.FONT_COLOR_DEFAULT;
     self.inviteLabel.textColor = Design.FONT_COLOR_DEFAULT;
+    self.saveView.backgroundColor = Design.MAIN_COLOR;
+    self.removeLabel.textColor = Design.DELETE_COLOR_RED;
     
     if (self.room) {
         self.nameTextField.attributedPlaceholder = [[NSAttributedString alloc]initWithString:self.room.name attributes:[NSDictionary dictionaryWithObject:Design.PLACEHOLDER_COLOR forKey:NSForegroundColorAttributeName]];
     }
+    
+    if ([self.twinmeApplication darkModeEnable]) {
+        self.nameTextField.keyboardAppearance = UIKeyboardAppearanceDark;
+        self.descriptionTextView.keyboardAppearance = UIKeyboardAppearanceDark;
+    } else {
+        self.nameTextField.keyboardAppearance = UIKeyboardAppearanceLight;
+        self.descriptionTextView.keyboardAppearance = UIKeyboardAppearanceLight;
+    }
+    
+    self.settingsView.backgroundColor = Design.WHITE_COLOR;
+    self.settingsLabel.textColor = Design.FONT_COLOR_DEFAULT;
+    self.settingsImageView.tintColor = Design.UNSELECTED_TAB_COLOR;
+    self.settingsAccessoryImageView.tintColor = Design.ACCESSORY_COLOR;
+    
+    self.inviteView.backgroundColor = Design.WHITE_COLOR;
+    self.inviteLabel.textColor = Design.FONT_COLOR_DEFAULT;
+    self.inviteImageView.tintColor = Design.UNSELECTED_TAB_COLOR;
+    self.inviteAccessoryImageView.tintColor = Design.ACCESSORY_COLOR;
+    
+    self.invitationCodeView.backgroundColor = Design.WHITE_COLOR;
+    self.invitationCodeLabel.textColor = Design.FONT_COLOR_DEFAULT;
+    self.invitationCodeImageView.tintColor = Design.UNSELECTED_TAB_COLOR;
+    self.invitationCodeAccessoryImageView.tintColor = Design.ACCESSORY_COLOR;
+    
+    self.invitationCodeView.backgroundColor = Design.WHITE_COLOR;
+    self.invitationCodeLabel.textColor = Design.FONT_COLOR_DEFAULT;
+    self.invitationCodeImageView.tintColor = Design.UNSELECTED_TAB_COLOR;
+    self.invitationCodeAccessoryImageView.tintColor = Design.ACCESSORY_COLOR;
 }
 
 @end

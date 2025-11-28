@@ -751,6 +751,12 @@ static const int CONTACTS_VIEW_SECTION_COUNT = 2;
         self.searchController.searchBar.backgroundColor = Design.NAVIGATION_BAR_BACKGROUND_COLOR;
     }
     
+    if ([self.twinmeApplication darkModeEnable]) {
+        self.searchController.searchBar.keyboardAppearance = UIKeyboardAppearanceDark;
+    } else {
+        self.searchController.searchBar.keyboardAppearance = UIKeyboardAppearanceLight;
+    }
+    
     self.view.backgroundColor = Design.WHITE_COLOR;
     self.contactTableView.backgroundColor = Design.WHITE_COLOR;
     self.noContactLabel.textColor = Design.FONT_COLOR_DEFAULT;

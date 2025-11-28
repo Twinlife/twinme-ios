@@ -666,6 +666,12 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     self.messageLabel.textColor = Design.FONT_COLOR_DEFAULT;
     self.nameTextField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:TwinmeLocalizedString(@"application_name_hint", nil) attributes:[NSDictionary dictionaryWithObject:Design.PLACEHOLDER_COLOR forKey:NSForegroundColorAttributeName]];
     self.counterNameLabel.textColor = Design.FONT_COLOR_DEFAULT;
+    
+    if ([self.twinmeApplication darkModeEnable]) {
+        self.nameTextField.keyboardAppearance = UIKeyboardAppearanceDark;
+    } else {
+        self.nameTextField.keyboardAppearance = UIKeyboardAppearanceLight;
+    }
 }
 
 @end

@@ -12,7 +12,9 @@
 
 #import <Utils/NSString+Utils.h>
 
+#import <TwinmeCommon/ApplicationDelegate.h>
 #import <TwinmeCommon/Design.h>
+#import <TwinmeCommon/TwinmeApplication.h>
 
 #if 0
 static const int ddLogLevel = DDLogLevelVerbose;
@@ -157,6 +159,15 @@ static CGFloat DESIGN_TEXTFIELD_HEIGHT = 82;
     self.confirmLabel.text = TwinmeLocalizedString(@"delete_account_view_controller_delete", nil);
         
     self.cancelLabel.textColor = Design.FONT_COLOR_DEFAULT;
+    
+    ApplicationDelegate *delegate = (ApplicationDelegate *)[[UIApplication sharedApplication] delegate];
+    TwinmeApplication *twinmeApplication = [delegate twinmeApplication];
+    
+    if ([twinmeApplication darkModeEnable]) {
+        self.deleteConfirmTextField.keyboardAppearance = UIKeyboardAppearanceDark;
+    } else {
+        self.deleteConfirmTextField.keyboardAppearance = UIKeyboardAppearanceLight;
+    }
 }
 
 @end

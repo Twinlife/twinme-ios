@@ -44,7 +44,7 @@
 #import "FatalErrorViewController.h"
 #import "WhatsNewViewController.h"
 #import "AccountMigrationViewController.h"
-#import "SuccessAuthentifiedRelationViewController.h"
+#import "SuccessAuthentifiedRelationView.h"
 #import "SettingsAdvancedViewController.h"
 
 #import "MainService.h"
@@ -483,10 +483,12 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
 - (void)didTapConfirm:(nonnull AbstractConfirmView *)abstractConfirmView {
     DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractConfirmView);
     
-    if ([abstractConfirmView isKindOfClass:[DefaultConfirmView class]] && self.proxyToAdd) {
-        [self addProxy];
-    } else {
-        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString] options:@{} completionHandler:nil];
+    if ([abstractConfirmView isKindOfClass:[DefaultConfirmView class]]) {
+        if (self.proxyToAdd) {
+            [self addProxy];
+        } else {
+            [[UIApplication sharedApplication] openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString] options:@{} completionHandler:nil];
+        }
     }
 
     [abstractConfirmView closeConfirmView];
@@ -1069,9 +1071,11 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
         [self.mainService verifyAuthenticateWithURI:url withBlock:^(TLBaseServiceErrorCode errorCode, TLContact *contact) {
             if (errorCode == TLBaseServiceErrorCodeSuccess) {
                 [self.mainService getImageWithContact:contact withBlock:^(UIImage *image) {
-                    SuccessAuthentifiedRelationViewController *successAuthentifiedRelationViewController = [[UIStoryboard storyboardWithName:@"Contact" bundle:nil] instantiateViewControllerWithIdentifier:@"SuccessAuthentifiedRelationViewController"];
-                    [successAuthentifiedRelationViewController initWithName:contact.name avatar:image];
-                    [successAuthentifiedRelationViewController showInView:self];
+                    SuccessAuthentifiedRelationView *successAuthentifiedRelationView = [[SuccessAuthentifiedRelationView alloc] init];
+                    successAuthentifiedRelationView.confirmViewDelegate = self;
+                    [successAuthentifiedRelationView initWithTitle:contact.name message:[NSString stringWithFormat:TwinmeLocalizedString(@"authentified_relation_view_controller_certified_message", nil), contact.name] avatar:image icon:nil];
+                    [self.view addSubview:successAuthentifiedRelationView];
+                    [successAuthentifiedRelationView showConfirmView];
                 }];
             } else {
                 [self incorrectQRCode:TLBaseServiceErrorCodeBadRequest];

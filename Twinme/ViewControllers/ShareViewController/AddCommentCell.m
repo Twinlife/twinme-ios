@@ -12,7 +12,9 @@
 
 #import "ShareViewController.h"
 
+#import <TwinmeCommon/ApplicationDelegate.h>
 #import <TwinmeCommon/Design.h>
+#import <TwinmeCommon/TwinmeApplication.h>
 
 #import <Utils/NSString+Utils.h>
 
@@ -113,6 +115,15 @@ static const int ddLogLevel = DDLogLevelWarning;
     self.commentTextField.tintColor = Design.FONT_COLOR_DEFAULT;
     self.commentTextField.backgroundColor = Design.FORWARD_COMMENT_COLOR;
     self.containerView.backgroundColor = Design.FORWARD_COMMENT_COLOR;
+    
+    ApplicationDelegate *delegate = (ApplicationDelegate *)[[UIApplication sharedApplication] delegate];
+    TwinmeApplication *twinmeApplication = [delegate twinmeApplication];
+    
+    if ([twinmeApplication darkModeEnable]) {
+        self.commentTextField.keyboardAppearance = UIKeyboardAppearanceDark;
+    } else {
+        self.commentTextField.keyboardAppearance = UIKeyboardAppearanceLight;
+    }
 }
 
 @end

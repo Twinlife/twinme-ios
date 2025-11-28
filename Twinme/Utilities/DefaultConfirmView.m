@@ -54,8 +54,7 @@ static const CGFloat DESIGN_LARGE_IMAGE_HEIGHT = 400;
     
     NSArray *objects = [[NSBundle mainBundle] loadNibNamed:@"DefaultConfirmView" owner:self options:nil];
     self = [objects objectAtIndex:0];
-    
-    self.frame = CGRectMake(0, 0, Design.DISPLAY_WIDTH, Design.DISPLAY_HEIGHT);
+    self.translatesAutoresizingMaskIntoConstraints = NO;
     
     if (self) {
         [self initViews];

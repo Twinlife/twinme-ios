@@ -557,6 +557,14 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     } else {
         self.descriptionTextView.textColor = Design.FONT_COLOR_DEFAULT;
     }
+    
+    if ([self.twinmeApplication darkModeEnable]) {
+        self.nameTextField.keyboardAppearance = UIKeyboardAppearanceDark;
+        self.descriptionTextView.keyboardAppearance = UIKeyboardAppearanceDark;
+    } else {
+        self.nameTextField.keyboardAppearance = UIKeyboardAppearanceLight;
+        self.descriptionTextView.keyboardAppearance = UIKeyboardAppearanceLight;
+    }
 }
 
 @end

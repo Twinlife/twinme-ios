@@ -23,7 +23,6 @@ static const int ddLogLevel = DDLogLevelWarning;
 #endif
 
 static const CGFloat CONTENT_MIN_HEIGHT = 634;
-// static const CGFloat IMAGE_HEIGHT = 240;
 
 //
 // Interface: OnboardingConfirmView ()
@@ -59,13 +58,17 @@ static const CGFloat CONTENT_MIN_HEIGHT = 634;
     
     NSArray *objects = [[NSBundle mainBundle] loadNibNamed:@"OnboardingConfirmView" owner:self options:nil];
     self = [objects objectAtIndex:0];
-    
-    self.frame = CGRectMake(0, 0, Design.DISPLAY_WIDTH, Design.DISPLAY_HEIGHT);
-    
+    self.translatesAutoresizingMaskIntoConstraints = NO;
     if (self) {
         [self initViews];
     }
     return self;
+}
+
+- (void)layoutSubviews {
+    DDLogVerbose(@"%@ layoutSubviews", LOG_TAG);
+    
+    [self updateTextViewHeight];
 }
 
 - (void)initWithTitle:(NSString *)title message:(NSString *)message image:(UIImage *)image action:(NSString *)action actionColor:(UIColor *)actionColor cancel:(NSString *)cancel {
@@ -150,7 +153,7 @@ static const CGFloat CONTENT_MIN_HEIGHT = 634;
     DDLogVerbose(@"%@ updateTextViewHeight", LOG_TAG);
     
     CGRect titleRect;
-    CGFloat textWidth = Design.DISPLAY_WIDTH - self.messageTextViewLeadingConstraint.constant - self.messageTextViewTrailingConstraint.constant;
+    CGFloat textWidth = self.frame.size.width - self.messageTextViewLeadingConstraint.constant - self.messageTextViewTrailingConstraint.constant;
     
     if (self.titleLabel.attributedText) {
         titleRect =
@@ -163,7 +166,7 @@ static const CGFloat CONTENT_MIN_HEIGHT = 634;
         } context:nil];
     }
 
-    CGFloat maxHeight = Design.DISPLAY_HEIGHT - (CONTENT_MIN_HEIGHT * Design.HEIGHT_RATIO) - titleRect.size.height;
+    CGFloat maxHeight = self.frame.size.height - (CONTENT_MIN_HEIGHT * Design.HEIGHT_RATIO) - titleRect.size.height;
 
     CGRect messageRect = [self.messageTextView.text boundingRectWithSize:CGSizeMake(textWidth, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin|NSStringDrawingUsesFontLeading attributes:@{
         NSFontAttributeName : Design.FONT_MEDIUM32

@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2020-2021 twinlife SA.
+ *  Copyright (c) 2020-2025 twinlife SA.
  *  SPDX-License-Identifier: AGPL-3.0-only
  *
  *  Contributors:
@@ -27,8 +27,8 @@
 #import <TwinmeCommon/Design.h>
 #import <TwinmeCommon/RoomMemberService.h>
 
-#import "AlertView.h"
 #import "AlertMessageView.h"
+#import "DefaultConfirmView.h"
 
 
 #if 0
@@ -53,12 +53,9 @@ static NSInteger ADMIN_ALERT_VIEW_TAG = 2;
 static NSInteger INVITATION_ALERT_VIEW_TAG = 3;
 static NSInteger REMOVE_ADMIN_ALERT_VIEW_TAG = 4;
 
-@interface RoomMembersViewController () <UITableViewDelegate, UITableViewDataSource, AlertViewDelegate, RoomMemberServiceDelegate, MenuRoomMembersDelegate, AlertMessageViewDelegate>
+@interface RoomMembersViewController () <UITableViewDelegate, UITableViewDataSource, AlertMessageViewDelegate, RoomMemberServiceDelegate, MenuRoomMembersDelegate, ConfirmViewDelegate>
 
 @property (weak, nonatomic) IBOutlet UITableView *membersTableView;
-
-@property (nonatomic) MenuRoomMemberView *menuRoomMemberView;
-@property (nonatomic) UIView *overlayView;
 
 @property (nonatomic) NSMutableArray *uiRoomAdmins;
 @property (nonatomic) NSMutableArray *uiRoomMembers;
@@ -316,21 +313,20 @@ static NSInteger REMOVE_ADMIN_ALERT_VIEW_TAG = 4;
 
 #pragma mark - MenuRoomMembersDelegate
 
-- (void)cancelMenu {
-    DDLogVerbose(@"%@ cancelMenu", LOG_TAG);
-    
-    [self closeMenu];
-}
-
-- (void)changeAdministrator:(UIRoomMember *)uiMember {
+- (void)changeAdministrator:(MenuRoomMemberView *)menuRoomMemberView uiMember:(UIRoomMember *)uiMember {
     DDLogVerbose(@"%@ changeAdministrator: %@", LOG_TAG, uiMember);
     
-    AlertView *alertView = [[AlertView alloc] initWithTitle:TwinmeLocalizedString(@"room_members_view_controller_change_admin_title", nil) message:TwinmeLocalizedString(@"application_confirm", nil) cancelButtonTitle:TwinmeLocalizedString(@"application_no", nil) otherButtonTitles:TwinmeLocalizedString(@"application_yes", nil) alertViewDelegate:self];
-    alertView.view.tag = ADMIN_ALERT_VIEW_TAG;
-    [alertView showInView:self.tabBarController];
+    DefaultConfirmView *defaultConfirmView = [[DefaultConfirmView alloc] init];
+    defaultConfirmView.confirmViewDelegate = self;
+    defaultConfirmView.tag = ADMIN_ALERT_VIEW_TAG;
+    [defaultConfirmView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:TwinmeLocalizedString(@"room_members_view_controller_change_admin_title", nil) image:nil avatar:nil action:TwinmeLocalizedString(@"application_confirm", nil) actionColor:nil cancel:TwinmeLocalizedString(@"application_cancel", nil)];
+    [self.navigationController.view addSubview:defaultConfirmView];
+    [defaultConfirmView showConfirmView];
+    
+    [menuRoomMemberView removeFromSuperview];
 }
 
-- (void)removeAdministrator:(UIRoomMember *)uiMember {
+- (void)removeAdministrator:(MenuRoomMemberView *)menuRoomMemberView uiMember:(UIRoomMember *)uiMember {
     DDLogVerbose(@"%@ removeAdministrator: %@", LOG_TAG, uiMember);
     
     if (self.uiRoomAdmins.count == 1) {
@@ -341,14 +337,32 @@ static NSInteger REMOVE_ADMIN_ALERT_VIEW_TAG = 4;
         [alertMessageView showAlertView];
         
     } else {
-        AlertView *alertView = [[AlertView alloc] initWithTitle:TwinmeLocalizedString(@"room_members_view_controller_remove_admin_title", nil) message:TwinmeLocalizedString(@"application_confirm", nil) cancelButtonTitle:TwinmeLocalizedString(@"application_no", nil) otherButtonTitles:TwinmeLocalizedString(@"application_yes", nil) alertViewDelegate:self];
-        alertView.view.tag = REMOVE_ADMIN_ALERT_VIEW_TAG;
-        [alertView showInView:self.tabBarController];
+        DefaultConfirmView *defaultConfirmView = [[DefaultConfirmView alloc] init];
+        defaultConfirmView.confirmViewDelegate = self;
+        defaultConfirmView.tag = REMOVE_ADMIN_ALERT_VIEW_TAG;
+        [defaultConfirmView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:TwinmeLocalizedString(@"room_members_view_controller_remove_admin_title", nil) image:nil avatar:nil action:TwinmeLocalizedString(@"application_confirm", nil) actionColor:nil cancel:TwinmeLocalizedString(@"application_cancel", nil)];
+        [self.navigationController.view addSubview:defaultConfirmView];
+        [defaultConfirmView showConfirmView];
     }
+    
+    [menuRoomMemberView removeFromSuperview];
 }
 
-- (void)removeFromRoom:(UIRoomMember *)uiMember {
-    DDLogVerbose(@"%@ removeFromRoom: %@", LOG_TAG, uiMember);
+- (void)inviteMemberAsContact:(MenuRoomMemberView *)menuRoomMemberView uiMember:(UIRoomMember *)uiMember canInvite:(BOOL)canInvite {
+    DDLogVerbose(@"%@ inviteMemberAsContact: %@ canInvite: %d", LOG_TAG, uiMember, canInvite);
+    
+    DefaultConfirmView *defaultConfirmView = [[DefaultConfirmView alloc] init];
+    defaultConfirmView.confirmViewDelegate = self;
+    defaultConfirmView.tag = INVITATION_ALERT_VIEW_TAG;
+    [defaultConfirmView initWithTitle:TwinmeLocalizedString(@"group_member_view_controller_invitation_title", nil) message:[NSString stringWithFormat:TwinmeLocalizedString(@"group_member_view_controller_invitation_message %@", nil), uiMember.name] image:nil avatar:nil action:TwinmeLocalizedString(@"application_confirm", nil) actionColor:nil cancel:TwinmeLocalizedString(@"application_cancel", nil)];
+    [self.navigationController.view addSubview:defaultConfirmView];
+    [defaultConfirmView showConfirmView];
+    
+    [menuRoomMemberView removeFromSuperview];
+}
+
+- (void)removeMember:(MenuRoomMemberView *)menuRoomMemberView uiMember:(UIRoomMember *)uiMember canRemove:(BOOL)canRemove {
+    DDLogVerbose(@"%@ removeMember: %@ canRemove: %d", LOG_TAG, uiMember, canRemove);
     
     BOOL isAdmin = NO;
     for (UIRoomMember *uiRoomMember in self.uiRoomAdmins) {
@@ -362,50 +376,60 @@ static NSInteger REMOVE_ADMIN_ALERT_VIEW_TAG = 4;
         AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
         alertMessageView.alertMessageViewDelegate = self;
         [alertMessageView initWithTitle:TwinmeLocalizedString(@"room_members_view_controller_remove_admin_title", nil) message:TwinmeLocalizedString(@"room_members_view_controller_only_admin_message", nil)];
-        [self.tabBarController.view addSubview:alertMessageView];
+        [self.navigationController.view addSubview:alertMessageView];
         [alertMessageView showAlertView];
     } else {
-        AlertView *alertView = [[AlertView alloc] initWithTitle:TwinmeLocalizedString(@"application_remove", nil) message:TwinmeLocalizedString(@"room_members_view_controller_delete_message", nil) cancelButtonTitle:TwinmeLocalizedString(@"application_no", nil) otherButtonTitles:TwinmeLocalizedString(@"application_yes", nil) alertViewDelegate:self];
-        alertView.view.tag = DELETE_ALERT_VIEW_TAG;
-        [alertView showInView:self.tabBarController];
+        DefaultConfirmView *defaultConfirmView = [[DefaultConfirmView alloc] init];
+        defaultConfirmView.confirmViewDelegate = self;
+        defaultConfirmView.tag = DELETE_ALERT_VIEW_TAG;
+        [defaultConfirmView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:TwinmeLocalizedString(@"room_members_view_controller_delete_message", nil) image:nil avatar:nil action:TwinmeLocalizedString(@"application_confirm", nil) actionColor:nil cancel:TwinmeLocalizedString(@"application_cancel", nil)];
+        [self.navigationController.view addSubview:defaultConfirmView];
+        [defaultConfirmView showConfirmView];
     }
+    
+    [menuRoomMemberView removeFromSuperview];
 }
 
-- (void)inviteMember:(UIRoomMember *)uiMember {
-    DDLogVerbose(@"%@ inviteMember: %@", LOG_TAG, uiMember);
+- (void)cancelMenuRoomMember:(MenuRoomMemberView *)menuRoomMemberView {
+    DDLogVerbose(@"%@ cancelMenuRoomMember: %@", LOG_TAG, menuRoomMemberView);
     
-    AlertView *alertView = [[AlertView alloc] initWithTitle:TwinmeLocalizedString(@"group_member_view_controller_invitation_title", nil) message:[NSString stringWithFormat:TwinmeLocalizedString(@"group_member_view_controller_invitation_message %@", nil), uiMember.name] cancelButtonTitle:TwinmeLocalizedString(@"application_cancel", nil) otherButtonTitles:TwinmeLocalizedString(@"application_ok", nil) alertViewDelegate:self];
-    [alertView.view setTag:INVITATION_ALERT_VIEW_TAG];
-    [alertView showInView:self.tabBarController];
+    [menuRoomMemberView removeFromSuperview];
 }
 
-#pragma mark - AlertViewDelegate
+#pragma mark - ConfirmViewDelegate
 
-- (void)handleAcceptButtonClick:(AlertView *)alertView {
-    DDLogVerbose(@"%@ handleAcceptButtonClick: %@", LOG_TAG, alertView);
+- (void)didTapConfirm:(nonnull AbstractConfirmView *)abstractConfirmView {
+    DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractConfirmView);
     
-    if (alertView.view.tag == DELETE_ALERT_VIEW_TAG) {
+    if (abstractConfirmView.tag == DELETE_ALERT_VIEW_TAG) {
         [self.roomMemberService removeMember:self.selectedMember.twincodeOutbound.uuid];
-    } else if (alertView.view.tag == ADMIN_ALERT_VIEW_TAG) {
+    } else if (abstractConfirmView.tag == ADMIN_ALERT_VIEW_TAG) {
         [self.roomMemberService setRoomAdministrator:self.selectedMember.twincodeOutbound.uuid];
-    } else if (alertView.view.tag == INVITATION_ALERT_VIEW_TAG) {
+    } else if (abstractConfirmView.tag == INVITATION_ALERT_VIEW_TAG) {
         [self.roomMemberService inviteMember:self.selectedMember.twincodeOutbound.uuid];
-    } else if (alertView.view.tag == REMOVE_ADMIN_ALERT_VIEW_TAG) {
+    } else if (abstractConfirmView.tag == REMOVE_ADMIN_ALERT_VIEW_TAG) {
         [self.roomMemberService removeAdministrator:self.selectedMember.twincodeOutbound.uuid];
     }
-    [self closeMenu];
+    
+    [abstractConfirmView closeConfirmView];
 }
 
-- (void)handleCancelButtonClick:(AlertView *)alertView {
-    DDLogVerbose(@"%@ handleCancelButtonClick: %@", LOG_TAG, alertView);
+- (void)didTapCancel:(nonnull AbstractConfirmView *)abstractConfirmView {
+    DDLogVerbose(@"%@ didTapCancel: %@", LOG_TAG, abstractConfirmView);
     
-    [self closeMenu];
+    [abstractConfirmView closeConfirmView];
 }
 
-- (void)handleCloseButtonClick:(AlertView *)alertView {
-    DDLogVerbose(@"%@ handleCloseButtonClick: %@", LOG_TAG, alertView);
+- (void)didClose:(nonnull AbstractConfirmView *)abstractConfirmView {
+    DDLogVerbose(@"%@ didClose: %@", LOG_TAG, abstractConfirmView);
     
-    [self closeMenu];
+    [abstractConfirmView closeConfirmView];
+}
+
+- (void)didFinishCloseAnimation:(nonnull AbstractConfirmView *)abstractConfirmView {
+    DDLogVerbose(@"%@ didFinishCloseAnimation: %@", LOG_TAG, abstractConfirmView);
+    
+    [abstractConfirmView removeFromSuperview];
 }
 
 #pragma mark - AlertMessageViewDelegate
@@ -439,21 +463,6 @@ static NSInteger REMOVE_ADMIN_ALERT_VIEW_TAG = 4;
     
     [self.membersTableView registerNib:[UINib nibWithNibName:@"RoomMemberCell" bundle:nil] forCellReuseIdentifier:ROOM_MEMBER_CELL_IDENTIFIER];
     [self.membersTableView registerNib:[UINib nibWithNibName:@"GroupMemberSectionHeaderCell" bundle:nil] forCellReuseIdentifier:GROUP_MEMBER_SECTION_HEADER_CELL_IDENTIFIER];
-    
-    self.overlayView = [UIView new];
-    self.overlayView.frame = CGRectMake(0, 0, Design.DISPLAY_WIDTH, Design.DISPLAY_HEIGHT);
-    self.overlayView.backgroundColor = Design.OVERLAY_COLOR;
-    self.overlayView.hidden = YES;
-    self.overlayView.userInteractionEnabled = YES;
-    [self.tabBarController.view addSubview:self.overlayView];
-    
-    self.menuRoomMemberView = [[MenuRoomMemberView alloc] init];
-    self.menuRoomMemberView.hidden = YES;
-    self.menuRoomMemberView.menuRoomMemberDelegate = self;
-    [self.tabBarController.view addSubview:self.menuRoomMemberView];
-    
-    UITapGestureRecognizer *tapOverlayGesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(closeMenu)];
-    [self.overlayView addGestureRecognizer:tapOverlayGesture];
 }
 
 - (void)finish {
@@ -477,24 +486,10 @@ static NSInteger REMOVE_ADMIN_ALERT_VIEW_TAG = 4;
         return;
     }
     
-    self.overlayView.hidden = NO;
-    self.menuRoomMemberView.hidden = NO;
-    [self.tabBarController.view bringSubviewToFront:self.overlayView];
-    [self.tabBarController.view bringSubviewToFront:self.menuRoomMemberView];
-    
-    CGRect rectMenu = self.menuRoomMemberView.frame;
-    rectMenu.origin.y = Design.DISPLAY_HEIGHT - rectMenu.size.height;
-    self.menuRoomMemberView.frame = rectMenu;
-    
-    [self.menuRoomMemberView openMenu:self.selectedMember showAdminAction:showAdminAction showInviteAction:showInviteAction removeAdminAction:removeAdminAction];
-}
-
-- (void)closeMenu {
-    DDLogVerbose(@"%@ closeMenu", LOG_TAG);
-    
-    self.overlayView.hidden = YES;
-    self.menuRoomMemberView.hidden = YES;
-    self.selectedMember = nil;
+    MenuRoomMemberView *menuRoomMemberView = [[MenuRoomMemberView alloc]init];
+    menuRoomMemberView.menuRoomMemberDelegate = self;
+    [self.navigationController.view addSubview:menuRoomMemberView];
+    [menuRoomMemberView openMenu:self.selectedMember showAdminAction:showAdminAction showInviteAction:showInviteAction removeAdminAction:removeAdminAction];
 }
 
 - (void)updateFont {

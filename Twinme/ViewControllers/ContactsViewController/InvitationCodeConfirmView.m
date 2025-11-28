@@ -38,9 +38,7 @@ static const int ddLogLevel = DDLogLevelWarning;
     
     NSArray *objects = [[NSBundle mainBundle] loadNibNamed:@"InvitationCodeConfirmView" owner:self options:nil];
     self = [objects objectAtIndex:0];
-    
-    self.frame = CGRectMake(0, 0, Design.DISPLAY_WIDTH, Design.DISPLAY_HEIGHT);
-    
+    self.translatesAutoresizingMaskIntoConstraints = NO;
     if (self) {
         [self initViews];
     }

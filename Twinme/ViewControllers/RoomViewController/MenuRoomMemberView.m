@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2020-2021 twinlife SA.
+ *  Copyright (c) 2020-2025 twinlife SA.
  *  SPDX-License-Identifier: AGPL-3.0-only
  *
  *  Contributors:
@@ -12,7 +12,6 @@
 
 #import "MenuRoomMemberView.h"
 
-#import "RoomMembersViewController.h"
 #import <TwinmeCommon/Design.h>
 #import "UIRoomMember.h"
 
@@ -22,56 +21,57 @@ static const int ddLogLevel = DDLogLevelVerbose;
 static const int ddLogLevel = DDLogLevelWarning;
 #endif
 
-static const CGFloat ANIMATION_DURATION = 0.1;
-static const CGFloat DESIGN_MENU_VIEW_HEIGHT = 770;
-static const CGFloat DESIGN_HEADER_ACTION_VIEW_HEIGHT = 220;
-static const CGFloat DESIGN_ACTION_VIEW_HEIGHT = 120;
 
 //
 // Interface: MenuRoomMemberView ()
 //
 
-@interface MenuRoomMemberView () <CAAnimationDelegate>
+@interface MenuRoomMemberView ()<CAAnimationDelegate>
 
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *cancelViewWidthConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *cancelViewHeightConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *cancelViewBottomConstraint;
-@property (weak, nonatomic) IBOutlet UIView *cancelView;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *cancelLabelWidthConstraint;
-@property (weak, nonatomic) IBOutlet UILabel *cancelLabel;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *actionViewWidthConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *actionViewHeightConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *actionViewBottomConstraint;
-@property (weak, nonatomic) IBOutlet UIView *actionView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *headerViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet UIView *headerView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *avatarViewHeightConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *avatarViewTopConstraint;
 @property (weak, nonatomic) IBOutlet UIImageView *avatarView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *nameLabelWidthConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *nameLabelTopConstraint;
 @property (weak, nonatomic) IBOutlet UILabel *nameLabel;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *separatorAdminViewHeightConstraint;
-@property (weak, nonatomic) IBOutlet UIView *separatorAdminView;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *adminViewHeightConstraint;
-@property (weak, nonatomic) IBOutlet UIView *adminView;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *adminLabelWidthConstraint;
-@property (weak, nonatomic) IBOutlet UILabel *adminLabel;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *separatorInviteViewHeightConstraint;
 @property (weak, nonatomic) IBOutlet UIView *separatorInviteView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *inviteViewHeightConstraint;
 @property (weak, nonatomic) IBOutlet UIView *inviteView;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *inviteLabelWidthConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *inviteImageViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *inviteImageViewLeadingConstraint;
+@property (weak, nonatomic) IBOutlet UIImageView *inviteImageView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *inviteLabelLeadingConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *inviteLabelTrailingConstraint;
 @property (weak, nonatomic) IBOutlet UILabel *inviteLabel;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *separatorAdminViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet UIView *separatorAdminView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *adminViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet UIView *adminView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *adminImageViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *adminImageViewLeadingConstraint;
+@property (weak, nonatomic) IBOutlet UIImageView *adminImageView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *adminLabelLeadingConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *adminLabelTrailingConstraint;
+@property (weak, nonatomic) IBOutlet UILabel *adminLabel;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *separatorRemoveViewHeightConstraint;
 @property (weak, nonatomic) IBOutlet UIView *separatorRemoveView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *removeImageViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *removeImageViewLeadingConstraint;
+@property (weak, nonatomic) IBOutlet UIImageView *removeImageView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *removeViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *removeViewBottomConstraint;
 @property (weak, nonatomic) IBOutlet UIView *removeView;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *removeLabelWidthConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *removeLabelLeadingConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *removeLabelTrailingConstraint;
 @property (weak, nonatomic) IBOutlet UILabel *removeLabel;
 
 @property (nonatomic) UIRoomMember *uiMember;
 
-@property (nonatomic) NSMutableArray *animationArray;
-
+@property (nonatomic) BOOL canInvite;
+@property (nonatomic) BOOL canRemove;
 @property (nonatomic) BOOL removeAdmin;
 
 @end
@@ -90,11 +90,10 @@ static const CGFloat DESIGN_ACTION_VIEW_HEIGHT = 120;
 - (instancetype)init {
     DDLogVerbose(@"%@ init", LOG_TAG);
     
-    self = [super init];
+    NSArray *objects = [[NSBundle mainBundle] loadNibNamed:@"MenuRoomMemberView" owner:self options:nil];
+    self = [objects objectAtIndex:0];
     
-    self.frame = CGRectMake(0, 0, Design.DISPLAY_WIDTH, DESIGN_MENU_VIEW_HEIGHT * Design.HEIGHT_RATIO);
-    
-    self.animationArray = [[NSMutableArray alloc]init];
+    self.frame = CGRectMake(0, 0, Design.DISPLAY_WIDTH, Design.DISPLAY_HEIGHT);
     self.removeAdmin = NO;
     
     if (self) {
@@ -106,28 +105,21 @@ static const CGFloat DESIGN_ACTION_VIEW_HEIGHT = 120;
 #pragma mark - Public methods
 
 - (void)openMenu:(UIRoomMember *)uiMember showAdminAction:(BOOL)showAdminAction showInviteAction:(BOOL)showInviteAction removeAdminAction:(BOOL)removeAdminAction {
-    DDLogVerbose(@"%@ openMenu: %@", LOG_TAG, uiMember);
+    DDLogVerbose(@"%@ openMenu: %@ showAdminAction: %@ showInviteAction: %@ removeAdminAction: %@", LOG_TAG, uiMember, showAdminAction ? @"YES" : @"NO", showInviteAction ? @"YES" : @"NO", removeAdminAction ? @"YES" : @"NO");
     
     self.uiMember = uiMember;
+    
+    self.canRemove = showInviteAction;
+    self.canInvite = showInviteAction;
     self.removeAdmin = removeAdminAction;
-    
-    [self updateMember];
-    [self updateFont];
-    [self updateColor];
-    
-    self.actionView.alpha = 0;
-    self.cancelView.alpha = 0;
-    
-    int countAction = 0;
     
     if (showAdminAction) {
         self.adminView.hidden = NO;
         self.removeView.hidden = NO;
         self.separatorAdminView.hidden = NO;
         self.separatorRemoveView.hidden = NO;
-        self.adminViewHeightConstraint.constant = Design.HEIGHT_RATIO * DESIGN_ACTION_VIEW_HEIGHT;
-        self.removeViewHeightConstraint.constant = Design.HEIGHT_RATIO * DESIGN_ACTION_VIEW_HEIGHT;
-        countAction = 2;
+        self.adminViewHeightConstraint.constant = Design.SETTING_CELL_HEIGHT;
+        self.removeViewHeightConstraint.constant = Design.SETTING_CELL_HEIGHT;
         
         if (self.removeAdmin) {
             self.adminLabel.text = TwinmeLocalizedString(@"room_members_view_controller_remove_admin_title", nil);
@@ -146,57 +138,18 @@ static const CGFloat DESIGN_ACTION_VIEW_HEIGHT = 120;
     if (showInviteAction) {
         self.inviteView.hidden = NO;
         self.separatorInviteView.hidden = NO;
-        self.inviteViewHeightConstraint.constant = Design.HEIGHT_RATIO * DESIGN_ACTION_VIEW_HEIGHT;
-        countAction += 1;
+        self.inviteViewHeightConstraint.constant = Design.SETTING_CELL_HEIGHT;
     } else {
         self.inviteView.hidden = YES;
         self.separatorInviteView.hidden = YES;
         self.inviteViewHeightConstraint.constant = 0;
     }
     
-    self.actionViewHeightConstraint.constant = (DESIGN_HEADER_ACTION_VIEW_HEIGHT * Design.HEIGHT_RATIO) + (countAction * Design.HEIGHT_RATIO * DESIGN_ACTION_VIEW_HEIGHT);
-    
-    [self.animationArray removeAllObjects];
-    [self.animationArray addObjectsFromArray:[NSArray arrayWithObjects:@"cancel", @"action", nil]];
-    [self animationMenu];
-}
-
-- (void)animationMenu {
-    DDLogVerbose(@"%@ animationMenu", LOG_TAG);
-    
-    UIView *animationView;
-    NSString *key = self.animationArray.firstObject;
-    
-    if ([key isEqualToString:@"cancel"]) {
-        animationView = self.cancelView;
-    } else if ([key isEqualToString:@"action"]) {
-        animationView = self.actionView;
-    }
-    
-    if (animationView) {
-        CABasicAnimation *animation = [CABasicAnimation animationWithKeyPath:@"opacity"];
-        [animation setValue:key forKey:@"layer"];
-        animation.delegate = self;
-        animation.repeatCount = 1;
-        animation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseIn];
-        animation.duration = ANIMATION_DURATION;
-        animation.fromValue = [NSNumber numberWithFloat:0.0];
-        animation.toValue = [NSNumber numberWithFloat:1.0];
-        animation.removedOnCompletion = NO;
-        animationView.layer.opacity = 1.0;
-        [animationView.layer addAnimation:animation forKey:nil];
-    }
-}
-
-- (void)animationDidStop:(CAAnimation *)animation finished:(BOOL)finished {
-    DDLogVerbose(@"%@ animationDidStop: %@ finished:%d", LOG_TAG, animation, finished);
-    
-    if (finished) {
-        [self.animationArray removeObjectAtIndex:0];
-        if (self.animationArray.count > 0) {
-            [self animationMenu];
-        }
-    }
+    [self updateMember];
+    [self updateFont];
+    [self updateColor];
+        
+    [super openMenu];
 }
 
 #pragma mark - Private methods
@@ -204,40 +157,10 @@ static const CGFloat DESIGN_ACTION_VIEW_HEIGHT = 120;
 - (void)initViews {
     DDLogVerbose(@"%@ initViews", LOG_TAG);
     
-    self.userInteractionEnabled = YES;
+    [super initViews];
     
-    NSArray *objects = [[NSBundle mainBundle] loadNibNamed:@"MenuRoomMemberView" owner:self options:nil];
-    UIView *view = [objects objectAtIndex:0];
-    view.frame = CGRectMake(0, 0, Design.DISPLAY_WIDTH, DESIGN_MENU_VIEW_HEIGHT * Design.HEIGHT_RATIO);
-    [self addSubview:[objects objectAtIndex:0]];
-    
-    self.cancelViewWidthConstraint.constant *= Design.WIDTH_RATIO;
-    self.cancelViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
-    
-    self.cancelView.userInteractionEnabled = YES;
-    self.cancelView.isAccessibilityElement = YES;
-    self.cancelView.accessibilityLabel = TwinmeLocalizedString(@"application_cancel", nil);
-    self.cancelView.backgroundColor = Design.POPUP_BACKGROUND_COLOR;
-    self.cancelView.layer.cornerRadius = 28 * Design.HEIGHT_RATIO;
-    self.cancelView.clipsToBounds = YES;
-    
-    UITapGestureRecognizer *tapCancelGesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(handleCancelViewTapGesture:)];
-    [self.cancelView addGestureRecognizer:tapCancelGesture];
-    
-    self.cancelLabelWidthConstraint.constant *= Design.WIDTH_RATIO;
-    
-    self.cancelLabel.textColor = [UIColor colorWithRed:0 green:122./255. blue:255./255. alpha:1];
-    self.cancelLabel.font = Design.FONT_BOLD34;
-    self.cancelLabel.text = TwinmeLocalizedString(@"application_cancel", nil);
-    
-    self.actionViewWidthConstraint.constant *= Design.WIDTH_RATIO;
-    self.actionViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
-    self.actionViewBottomConstraint.constant *= Design.HEIGHT_RATIO;
-    
-    self.actionView.userInteractionEnabled = YES;
-    self.actionView.backgroundColor = Design.POPUP_BACKGROUND_COLOR;
-    self.actionView.layer.cornerRadius = 28 * Design.HEIGHT_RATIO;
-    self.actionView.clipsToBounds = YES;
+    self.headerViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    self.headerView.backgroundColor = Design.POPUP_BACKGROUND_COLOR;
     
     self.avatarViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     self.avatarViewTopConstraint.constant *= Design.HEIGHT_RATIO;
@@ -249,25 +172,12 @@ static const CGFloat DESIGN_ACTION_VIEW_HEIGHT = 120;
     self.nameLabelTopConstraint.constant *= Design.HEIGHT_RATIO;
     
     self.nameLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    self.nameLabel.font = Design.FONT_REGULAR34;
+    self.nameLabel.font = Design.FONT_MEDIUM34;
     
-    self.adminViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
-    self.adminView.backgroundColor = Design.SEPARATOR_COLOR_GREY;
-    
-    self.adminView.backgroundColor = Design.POPUP_BACKGROUND_COLOR;
-    self.adminView.userInteractionEnabled = YES;
-    
-    UITapGestureRecognizer *tapAdminGesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(handleAdminViewTapGesture:)];
-    [self.adminView addGestureRecognizer:tapAdminGesture];
-    
-    self.adminLabelWidthConstraint.constant *= Design.WIDTH_RATIO;
-    
-    self.adminLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    self.adminLabel.font = Design.FONT_BOLD34;
-    self.adminLabel.text = TwinmeLocalizedString(@"room_members_view_controller_change_admin_title", nil);
+    self.separatorInviteViewHeightConstraint.constant = Design.SEPARATOR_HEIGHT;
+    self.separatorInviteView.backgroundColor = Design.SEPARATOR_COLOR_GREY;
     
     self.inviteViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
-    self.inviteView.backgroundColor = Design.SEPARATOR_COLOR_GREY;
     
     self.inviteView.backgroundColor = Design.POPUP_BACKGROUND_COLOR;
     self.inviteView.userInteractionEnabled = YES;
@@ -275,22 +185,52 @@ static const CGFloat DESIGN_ACTION_VIEW_HEIGHT = 120;
     UITapGestureRecognizer *tapInviteGesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(handleInviteViewTapGesture:)];
     [self.inviteView addGestureRecognizer:tapInviteGesture];
     
-    self.inviteLabelWidthConstraint.constant *= Design.WIDTH_RATIO;
+    self.inviteImageViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    self.inviteImageViewLeadingConstraint.constant *= Design.WIDTH_RATIO;
+    
+    self.inviteImageView.image = [self.inviteImageView.image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    self.inviteImageView.tintColor = Design.BLACK_COLOR;
+    
+    self.inviteLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
+    self.inviteLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
     
     self.inviteLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    self.inviteLabel.font = Design.FONT_BOLD34;
+    self.inviteLabel.font = Design.FONT_MEDIUM34;
     self.inviteLabel.text = TwinmeLocalizedString(@"group_member_view_controller_invite_personnal_relation", nil);
-    
-    self.separatorInviteViewHeightConstraint.constant = Design.SEPARATOR_HEIGHT;
-    self.separatorInviteView.backgroundColor = Design.SEPARATOR_COLOR_GREY;
     
     self.separatorAdminViewHeightConstraint.constant = Design.SEPARATOR_HEIGHT;
     self.separatorAdminView.backgroundColor = Design.SEPARATOR_COLOR_GREY;
+    
+    self.adminViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    
+    self.adminView.backgroundColor = Design.POPUP_BACKGROUND_COLOR;
+    self.adminView.userInteractionEnabled = YES;
+    
+    UITapGestureRecognizer *tapAdmineGesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(handleAdminViewTapGesture:)];
+    [self.adminView addGestureRecognizer:tapAdmineGesture];
+    
+    self.adminImageViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    self.adminImageViewLeadingConstraint.constant *= Design.WIDTH_RATIO;
+    
+    self.adminImageView.image = [self.adminImageView.image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    self.adminImageView.tintColor = Design.BLACK_COLOR;
+    
+    self.adminLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
+    self.adminLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
+    
+    self.adminLabel.textColor = Design.FONT_COLOR_DEFAULT;
+    self.adminLabel.font = Design.FONT_MEDIUM34;
+    self.adminLabel.text = TwinmeLocalizedString(@"room_members_view_controller_change_admin_title", nil);
     
     self.separatorRemoveViewHeightConstraint.constant = Design.SEPARATOR_HEIGHT;
     self.separatorRemoveView.backgroundColor = Design.SEPARATOR_COLOR_GREY;
     
     self.removeViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    
+    UIWindow *window = UIApplication.sharedApplication.keyWindow;
+    CGFloat safeAreaInset = window.safeAreaInsets.bottom;
+    
+    self.removeViewBottomConstraint.constant = safeAreaInset;
     
     self.removeView.backgroundColor = Design.POPUP_BACKGROUND_COLOR;
     self.removeView.userInteractionEnabled = YES;
@@ -298,10 +238,14 @@ static const CGFloat DESIGN_ACTION_VIEW_HEIGHT = 120;
     UITapGestureRecognizer *tapRemoveGesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(handleRemoveViewTapGesture:)];
     [self.removeView addGestureRecognizer:tapRemoveGesture];
     
-    self.removeLabelWidthConstraint.constant *= Design.WIDTH_RATIO;
+    self.removeImageViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    self.removeImageViewLeadingConstraint.constant *= Design.WIDTH_RATIO;
+    
+    self.removeLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
+    self.removeLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
     
     self.removeLabel.textColor = Design.FONT_COLOR_RED;
-    self.removeLabel.font = Design.FONT_BOLD34;
+    self.removeLabel.font = Design.FONT_MEDIUM34;
     self.removeLabel.text = TwinmeLocalizedString(@"application_remove", nil);
 }
 
@@ -310,15 +254,25 @@ static const CGFloat DESIGN_ACTION_VIEW_HEIGHT = 120;
     
     self.nameLabel.text = self.uiMember.name;
     self.avatarView.image = self.uiMember.avatar;
+    
+    if (self.canRemove) {
+        self.removeView.alpha = 1.0f;
+    } else {
+        self.removeView.alpha = 0.5f;
+    }
+    
+    if (self.canInvite) {
+        self.inviteView.alpha = 1.0f;
+    } else {
+        self.inviteView.alpha = 0.5f;
+    }
 }
 
-- (void)handleCancelViewTapGesture:(UITapGestureRecognizer *)sender {
-    DDLogVerbose(@"%@ handleCancelViewTapGesture: %@", LOG_TAG, sender);
+- (void)finish {
+    DDLogVerbose(@"%@ finish", LOG_TAG);
     
-    if (sender.state == UIGestureRecognizerStateEnded) {
-        if ([self.menuRoomMemberDelegate respondsToSelector:@selector(cancelMenu)]) {
-            [self.menuRoomMemberDelegate cancelMenu];
-        }
+    if ([self.menuRoomMemberDelegate respondsToSelector:@selector(cancelMenuRoomMember:)]) {
+        [self.menuRoomMemberDelegate cancelMenuRoomMember:self];
     }
 }
 
@@ -326,8 +280,18 @@ static const CGFloat DESIGN_ACTION_VIEW_HEIGHT = 120;
     DDLogVerbose(@"%@ handleRemoveViewTapGesture: %@", LOG_TAG, sender);
     
     if (sender.state == UIGestureRecognizerStateEnded) {
-        if ([self.menuRoomMemberDelegate respondsToSelector:@selector(removeFromRoom:)]) {
-            [self.menuRoomMemberDelegate removeFromRoom:self.uiMember];
+        if ([self.menuRoomMemberDelegate respondsToSelector:@selector(removeMember:uiMember:canRemove:)]) {
+            [self.menuRoomMemberDelegate removeMember:self uiMember:self.uiMember canRemove:self.canRemove];
+        }
+    }
+}
+
+- (void)handleInviteViewTapGesture:(UITapGestureRecognizer *)sender {
+    DDLogVerbose(@"%@ handleInviteViewTapGesture: %@", LOG_TAG, sender);
+    
+    if (sender.state == UIGestureRecognizerStateEnded) {
+        if ([self.menuRoomMemberDelegate respondsToSelector:@selector(inviteMemberAsContact:uiMember:canInvite:)]) {
+            [self.menuRoomMemberDelegate inviteMemberAsContact:self uiMember:self.uiMember canInvite:self.canInvite];
         }
     }
 }
@@ -337,23 +301,13 @@ static const CGFloat DESIGN_ACTION_VIEW_HEIGHT = 120;
     
     if (sender.state == UIGestureRecognizerStateEnded) {
         if (self.removeAdmin) {
-            if ([self.menuRoomMemberDelegate respondsToSelector:@selector(removeAdministrator:)]) {
-                [self.menuRoomMemberDelegate removeAdministrator:self.uiMember];
+            if ([self.menuRoomMemberDelegate respondsToSelector:@selector(removeAdministrator:uiMember:)]) {
+                [self.menuRoomMemberDelegate removeAdministrator:self uiMember:self.uiMember];
             }
         } else {
-            if ([self.menuRoomMemberDelegate respondsToSelector:@selector(changeAdministrator:)]) {
-                [self.menuRoomMemberDelegate changeAdministrator:self.uiMember];
+            if ([self.menuRoomMemberDelegate respondsToSelector:@selector(changeAdministrator:uiMember:)]) {
+                [self.menuRoomMemberDelegate changeAdministrator:self uiMember:self.uiMember];
             }
-        }
-    }
-}
-
-- (void)handleInviteViewTapGesture:(UITapGestureRecognizer *)sender {
-    DDLogVerbose(@"%@ handleInviteViewTapGesture: %@", LOG_TAG, sender);
-    
-    if (sender.state == UIGestureRecognizerStateEnded) {
-        if ([self.menuRoomMemberDelegate respondsToSelector:@selector(inviteMember:)]) {
-            [self.menuRoomMemberDelegate inviteMember:self.uiMember];
         }
     }
 }
@@ -361,24 +315,9 @@ static const CGFloat DESIGN_ACTION_VIEW_HEIGHT = 120;
 - (void)updateFont {
     DDLogVerbose(@"%@ updateFont", LOG_TAG);
     
-    self.removeLabel.font = Design.FONT_BOLD34;
-    self.adminLabel.font = Design.FONT_BOLD34;
-    self.nameLabel.font = Design.FONT_REGULAR34;
-    self.cancelLabel.font = Design.FONT_BOLD34;
-}
-
-- (void)updateColor {
-    DDLogVerbose(@"%@ updateColor", LOG_TAG);
-    
-    self.nameLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    self.adminLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    self.removeLabel.textColor = Design.FONT_COLOR_RED;
-    self.separatorAdminView.backgroundColor = Design.SEPARATOR_COLOR_GREY;
-    self.separatorRemoveView.backgroundColor = Design.SEPARATOR_COLOR_GREY;
-    self.removeView.backgroundColor = Design.POPUP_BACKGROUND_COLOR;
-    self.adminView.backgroundColor = Design.POPUP_BACKGROUND_COLOR;
-    self.actionView.backgroundColor = Design.POPUP_BACKGROUND_COLOR;
-    self.cancelView.backgroundColor = Design.POPUP_BACKGROUND_COLOR;
+    self.removeLabel.font = Design.FONT_MEDIUM34;
+    self.inviteLabel.font = Design.FONT_MEDIUM34;
+    self.nameLabel.font = Design.FONT_MEDIUM34;
 }
 
 @end

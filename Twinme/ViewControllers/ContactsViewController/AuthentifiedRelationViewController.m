@@ -17,7 +17,7 @@
 #import <Utils/NSString+Utils.h>
 
 #import "AuthentifiedRelationViewController.h"
-#import "SuccessAuthentifiedRelationViewController.h"
+#import "SuccessAuthentifiedRelationView.h"
 
 #import "AlertMessageView.h"
 #import "OnboardingConfirmView.h"
@@ -265,8 +265,10 @@ static const CGFloat DESIGN_HIGHLIGHT_VIEW_CORNER_RADIUS = 4;
 - (void)didTapCancel:(nonnull AbstractConfirmView *)abstractConfirmView {
     DDLogVerbose(@"%@ didTapCancel: %@", LOG_TAG, abstractConfirmView);
     
-    [self.twinmeApplication setShowOnboardingType:OnboardingTypeCertifiedRelation state:NO];
-    [abstractConfirmView closeConfirmView];
+    if ([abstractConfirmView isKindOfClass:[OnboardingConfirmView class]]) {
+        [self.twinmeApplication setShowOnboardingType:OnboardingTypeCertifiedRelation state:NO];
+        [abstractConfirmView closeConfirmView];
+    }
 }
 
 - (void)didClose:(nonnull AbstractConfirmView *)abstractConfirmView {
@@ -599,9 +601,11 @@ static const CGFloat DESIGN_HIGHLIGHT_VIEW_CORNER_RADIUS = 4;
 - (void)showSuccessAuthentification {
     DDLogVerbose(@"%@ showSuccessAuthentification", LOG_TAG);
     
-    SuccessAuthentifiedRelationViewController *successAuthentifiedRelationViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"SuccessAuthentifiedRelationViewController"];
-    [successAuthentifiedRelationViewController initWithName:self.contact.name avatar:self.contactAvatar];
-    [successAuthentifiedRelationViewController showInView:self.navigationController];
+    SuccessAuthentifiedRelationView *successAuthentifiedRelationView = [[SuccessAuthentifiedRelationView alloc] init];
+    successAuthentifiedRelationView.confirmViewDelegate = self;
+    [successAuthentifiedRelationView initWithTitle:self.contact.name message:[NSString stringWithFormat:TwinmeLocalizedString(@"authentified_relation_view_controller_certified_message", nil), self.contact.name] avatar:self.contactAvatar icon:nil];
+    [self.navigationController.view addSubview:successAuthentifiedRelationView];
+    [successAuthentifiedRelationView showConfirmView];
 }
 
 - (void)updateFont {

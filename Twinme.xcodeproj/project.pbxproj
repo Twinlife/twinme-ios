@@ -247,7 +247,6 @@
 		47CD18252E9CF7DB00F0E361 /* UIColor+Hex.m in Sources */ = {isa = PBXBuildFile; fileRef = 83C7E6EB24015EC2005735DD /* UIColor+Hex.m */; };
 		47CD18262E9CF7DB00F0E361 /* OnboardingSpaceFirstPartCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 5739B1382B5FA78700B15E26 /* OnboardingSpaceFirstPartCell.m */; };
 		47CD18272E9CF7DB00F0E361 /* PeerCallItemCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 83C7E7232401608F005735DD /* PeerCallItemCell.m */; };
-		47CD18282E9CF7DB00F0E361 /* SuccessAuthentifiedRelationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 573EA1262C5B6B8B00D0748A /* SuccessAuthentifiedRelationViewController.m */; };
 		47CD18292E9CF7DB00F0E361 /* ExportViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 01543F87298D133B002E636E /* ExportViewController.m */; };
 		47CD182A2E9CF7DB00F0E361 /* TwinmeSettingsItemCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 83C7E745240161EA005735DD /* TwinmeSettingsItemCell.m */; };
 		47CD182B2E9CF7DB00F0E361 /* SelectedMembersCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 8394C78F24E6889C0014AD53 /* SelectedMembersCell.m */; };
@@ -456,7 +455,6 @@
 		47CD18F72E9CF7DB00F0E361 /* MenuPropagatingProfileView.m in Sources */ = {isa = PBXBuildFile; fileRef = 57DE12442E43320F00E7106A /* MenuPropagatingProfileView.m */; };
 		47CD18F82E9CF7DB00F0E361 /* CreateExternalCallViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 01D932A729F0376100175376 /* CreateExternalCallViewController.m */; };
 		47CD18F92E9CF7DB00F0E361 /* UIPremiumFeature.m in Sources */ = {isa = PBXBuildFile; fileRef = 01BC46C229ACD95F00817149 /* UIPremiumFeature.m */; };
-		47CD18FA2E9CF7DB00F0E361 /* ScanViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 834FC4E4271FEAD90098B22B /* ScanViewController.m */; };
 		47CD18FB2E9CF7DB00F0E361 /* PeerClearItemCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 019078E027BE4CB70043E615 /* PeerClearItemCell.m */; };
 		47CD18FC2E9CF7DB00F0E361 /* PreviewAppearanceCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 01EBEA4A294228330034E0F6 /* PreviewAppearanceCell.m */; };
 		47CD18FD2E9CF7DB00F0E361 /* RoundRectProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = 83B82909232CB1EF002F12BE /* RoundRectProgressView.m */; };
@@ -898,6 +896,10 @@
 		5703BB2E2BC958D9001E3C65 /* AnnotationInfoCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 5703BB2C2BC958D9001E3C65 /* AnnotationInfoCell.m */; };
 		5703BB312BC958EB001E3C65 /* UIAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = 5703BB302BC958EB001E3C65 /* UIAnnotation.m */; };
 		5703C14B2BFDC333001E3C65 /* SettingsGroupViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5703C14A2BFDC333001E3C65 /* SettingsGroupViewController.m */; };
+		5704E24E2ED7B209006A1B1E /* SuccessAuthentifiedRelationView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5704E24D2ED7B209006A1B1E /* SuccessAuthentifiedRelationView.m */; };
+		5704E24F2ED7B209006A1B1E /* SuccessAuthentifiedRelationView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5704E24D2ED7B209006A1B1E /* SuccessAuthentifiedRelationView.m */; };
+		5704E2512ED7B217006A1B1E /* SuccessAuthentifiedRelationView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5704E2502ED7B217006A1B1E /* SuccessAuthentifiedRelationView.xib */; };
+		5704E2522ED7B217006A1B1E /* SuccessAuthentifiedRelationView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5704E2502ED7B217006A1B1E /* SuccessAuthentifiedRelationView.xib */; };
 		571000632D2C0810002954D0 /* DeleteAccountConfirmView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 571000622D2C0810002954D0 /* DeleteAccountConfirmView.xib */; };
 		572175A02EC4CC1D002DB76E /* ProxyViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5721759F2EC4CC1D002DB76E /* ProxyViewController.m */; };
 		572175A12EC4CC1D002DB76E /* ProxyViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5721759F2EC4CC1D002DB76E /* ProxyViewController.m */; };
@@ -923,7 +925,6 @@
 		5739B1402B5FA78700B15E26 /* OnboardingSpaceFirstPartCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 5739B1382B5FA78700B15E26 /* OnboardingSpaceFirstPartCell.m */; };
 		5739B1412B5FA78700B15E26 /* OnboardingSpaceSecondPartCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 5739B13A2B5FA78700B15E26 /* OnboardingSpaceSecondPartCell.m */; };
 		5739B1422B5FA78700B15E26 /* OnboardingSpaceFirstPartCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5739B13B2B5FA78700B15E26 /* OnboardingSpaceFirstPartCell.xib */; };
-		573EA1272C5B6B8B00D0748A /* SuccessAuthentifiedRelationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 573EA1262C5B6B8B00D0748A /* SuccessAuthentifiedRelationViewController.m */; };
 		574769312DE6E5270043C66F /* EditMessageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 574769302DE6E5270043C66F /* EditMessageView.m */; };
 		574769352DE6E54D0043C66F /* EditMessageView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 574769342DE6E54D0043C66F /* EditMessageView.xib */; };
 		574DB1142EBE3873000E1F90 /* PaddingLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 574DB1132EBE3873000E1F90 /* PaddingLabel.m */; };
@@ -1115,7 +1116,6 @@
 		834C96F72487FC9F007C7B4C /* MenuGroupMemberView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 834C96F42487FC9E007C7B4C /* MenuGroupMemberView.xib */; };
 		834C96FA2487FCC1007C7B4C /* NewConversationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 834C96F82487FCC0007C7B4C /* NewConversationViewController.m */; };
 		834FC4E3271FEAC40098B22B /* EditProfileViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 834FC4E1271FEAC40098B22B /* EditProfileViewController.m */; };
-		834FC4E6271FEAD90098B22B /* ScanViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 834FC4E4271FEAD90098B22B /* ScanViewController.m */; };
 		834FE7C51E8DA384009E8E54 /* ConversationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 834FE7C41E8DA384009E8E54 /* ConversationViewController.m */; };
 		83505CF425BC65FE004C784C /* NotificationErrorView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 83505CF225BC65FD004C784C /* NotificationErrorView.xib */; };
 		83505CF525BC65FE004C784C /* NotificationErrorView.m in Sources */ = {isa = PBXBuildFile; fileRef = 83505CF325BC65FE004C784C /* NotificationErrorView.m */; };
@@ -2048,6 +2048,9 @@
 		5703BB302BC958EB001E3C65 /* UIAnnotation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = UIAnnotation.m; path = ViewControllers/ConversationFilesViewController/UIAnnotation.m; sourceTree = "<group>"; };
 		5703C1492BFDC333001E3C65 /* SettingsGroupViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SettingsGroupViewController.h; sourceTree = "<group>"; };
 		5703C14A2BFDC333001E3C65 /* SettingsGroupViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SettingsGroupViewController.m; sourceTree = "<group>"; };
+		5704E24C2ED7B209006A1B1E /* SuccessAuthentifiedRelationView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SuccessAuthentifiedRelationView.h; sourceTree = "<group>"; };
+		5704E24D2ED7B209006A1B1E /* SuccessAuthentifiedRelationView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SuccessAuthentifiedRelationView.m; sourceTree = "<group>"; };
+		5704E2502ED7B217006A1B1E /* SuccessAuthentifiedRelationView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SuccessAuthentifiedRelationView.xib; sourceTree = "<group>"; };
 		571000622D2C0810002954D0 /* DeleteAccountConfirmView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = DeleteAccountConfirmView.xib; sourceTree = "<group>"; };
 		5721759E2EC4CC1D002DB76E /* ProxyViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ProxyViewController.h; sourceTree = "<group>"; };
 		5721759F2EC4CC1D002DB76E /* ProxyViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ProxyViewController.m; sourceTree = "<group>"; };
@@ -2081,8 +2084,6 @@
 		5739B1392B5FA78700B15E26 /* OnboardingSpaceViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OnboardingSpaceViewController.h; sourceTree = "<group>"; };
 		5739B13A2B5FA78700B15E26 /* OnboardingSpaceSecondPartCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OnboardingSpaceSecondPartCell.m; sourceTree = "<group>"; };
 		5739B13B2B5FA78700B15E26 /* OnboardingSpaceFirstPartCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = OnboardingSpaceFirstPartCell.xib; sourceTree = "<group>"; };
-		573EA1252C5B6B8B00D0748A /* SuccessAuthentifiedRelationViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SuccessAuthentifiedRelationViewController.h; sourceTree = "<group>"; };
-		573EA1262C5B6B8B00D0748A /* SuccessAuthentifiedRelationViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SuccessAuthentifiedRelationViewController.m; sourceTree = "<group>"; };
 		5747692F2DE6E5270043C66F /* EditMessageView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = EditMessageView.h; path = ViewControllers/ConversationViewController/EditMessageView.h; sourceTree = "<group>"; };
 		574769302DE6E5270043C66F /* EditMessageView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = EditMessageView.m; path = ViewControllers/ConversationViewController/EditMessageView.m; sourceTree = "<group>"; };
 		574769342DE6E54D0043C66F /* EditMessageView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = EditMessageView.xib; path = ViewControllers/ConversationViewController/EditMessageView.xib; sourceTree = "<group>"; };
@@ -2352,8 +2353,6 @@
 		834C96F92487FCC1007C7B4C /* NewConversationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewConversationViewController.h; sourceTree = "<group>"; };
 		834FC4E1271FEAC40098B22B /* EditProfileViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EditProfileViewController.m; sourceTree = "<group>"; };
 		834FC4E2271FEAC40098B22B /* EditProfileViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditProfileViewController.h; sourceTree = "<group>"; };
-		834FC4E4271FEAD90098B22B /* ScanViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ScanViewController.m; path = ViewControllers/ScanViewController.m; sourceTree = "<group>"; };
-		834FC4E5271FEAD90098B22B /* ScanViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ScanViewController.h; path = ViewControllers/ScanViewController.h; sourceTree = "<group>"; };
 		834FE7C31E8DA384009E8E54 /* ConversationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ConversationViewController.h; path = ViewControllers/ConversationViewController/ConversationViewController.h; sourceTree = "<group>"; };
 		834FE7C41E8DA384009E8E54 /* ConversationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ConversationViewController.m; path = ViewControllers/ConversationViewController/ConversationViewController.m; sourceTree = "<group>"; };
 		83505CF225BC65FD004C784C /* NotificationErrorView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = NotificationErrorView.xib; path = Utilities/NotificationErrorView.xib; sourceTree = "<group>"; };
@@ -3412,8 +3411,6 @@
 				8372CCE7242355BB009D4264 /* ProfilesViewController */,
 				57ABEE2F2B4FED8B00D0F1C8 /* ProfileViewController */,
 				8361BEF92565076100AD8867 /* RoomViewController */,
-				834FC4E5271FEAD90098B22B /* ScanViewController.h */,
-				834FC4E4271FEAD90098B22B /* ScanViewController.m */,
 				83F491A921E8DFF500CAF01A /* SelectNotificationSoundViewController */,
 				83F491A021E8DD2900CAF01A /* SettingsViewController */,
 				836600DC24781FF7008C3141 /* ShareViewController */,
@@ -3610,8 +3607,9 @@
 				57AF1F902D06E18200E38EE5 /* ResetInvitationConfirmView.xib */,
 				83E222A31C5A2FF900350665 /* ShowContactViewController.h */,
 				83E222A41C5A2FF900350665 /* ShowContactViewController.m */,
-				573EA1252C5B6B8B00D0748A /* SuccessAuthentifiedRelationViewController.h */,
-				573EA1262C5B6B8B00D0748A /* SuccessAuthentifiedRelationViewController.m */,
+				5704E24C2ED7B209006A1B1E /* SuccessAuthentifiedRelationView.h */,
+				5704E24D2ED7B209006A1B1E /* SuccessAuthentifiedRelationView.m */,
+				5704E2502ED7B217006A1B1E /* SuccessAuthentifiedRelationView.xib */,
 				57DD46F52DBBE5F600F14087 /* UIInvitationCode.h */,
 				57DD46F62DBBE5F600F14087 /* UIInvitationCode.m */,
 			);
@@ -5189,6 +5187,7 @@
 				836C6BD4231918A100CD3AF1 /* privacy_policy_ru.html in Resources */,
 				836C6C0023191A1F00CD3AF1 /* terms_of_service_sv.html in Resources */,
 				8361BF0E25650B3000AD8867 /* RoomMemberCell.xib in Resources */,
+				5704E2522ED7B217006A1B1E /* SuccessAuthentifiedRelationView.xib in Resources */,
 				01CEB04A2A3A03B3006BFAF4 /* DocumentCell.xib in Resources */,
 				83EF7F9B20CA85B8002A7224 /* VideoItemCell.xib in Resources */,
 				832FE73C2260CBE600615897 /* TypingAvatarCell.xib in Resources */,
@@ -5455,6 +5454,7 @@
 				47CD1A4C2E9CF7DB00F0E361 /* privacy_policy_ru.html in Resources */,
 				47CD1A4D2E9CF7DB00F0E361 /* terms_of_service_sv.html in Resources */,
 				47CD1A4E2E9CF7DB00F0E361 /* RoomMemberCell.xib in Resources */,
+				5704E2512ED7B217006A1B1E /* SuccessAuthentifiedRelationView.xib in Resources */,
 				47CD1A4F2E9CF7DB00F0E361 /* DocumentCell.xib in Resources */,
 				47CD1A502E9CF7DB00F0E361 /* VideoItemCell.xib in Resources */,
 				47CD1A512E9CF7DB00F0E361 /* TypingAvatarCell.xib in Resources */,
@@ -5639,7 +5639,6 @@
 				83C7E6EC24015EC2005735DD /* UIColor+Hex.m in Sources */,
 				5739B1402B5FA78700B15E26 /* OnboardingSpaceFirstPartCell.m in Sources */,
 				83C7E72A24016090005735DD /* PeerCallItemCell.m in Sources */,
-				573EA1272C5B6B8B00D0748A /* SuccessAuthentifiedRelationViewController.m in Sources */,
 				01543F8F298D133C002E636E /* ExportViewController.m in Sources */,
 				83C7E74C240161EA005735DD /* TwinmeSettingsItemCell.m in Sources */,
 				8394C79224E6889D0014AD53 /* SelectedMembersCell.m in Sources */,
@@ -5852,7 +5851,6 @@
 				57DE12452E43320F00E7106A /* MenuPropagatingProfileView.m in Sources */,
 				01D932B329F0376100175376 /* CreateExternalCallViewController.m in Sources */,
 				01BC46C329ACD95F00817149 /* UIPremiumFeature.m in Sources */,
-				834FC4E6271FEAD90098B22B /* ScanViewController.m in Sources */,
 				019078E227BE4CB70043E615 /* PeerClearItemCell.m in Sources */,
 				01EBEA53294228360034E0F6 /* PreviewAppearanceCell.m in Sources */,
 				83B8290B232CB1F0002F12BE /* RoundRectProgressView.m in Sources */,
@@ -5952,6 +5950,7 @@
 				01D400A32A41D42600ED1274 /* CustomTabCell.m in Sources */,
 				5774BF302C4AB6F100491014 /* AuthentifiedRelationViewController.m in Sources */,
 				5703BB2E2BC958D9001E3C65 /* AnnotationInfoCell.m in Sources */,
+				5704E24E2ED7B209006A1B1E /* SuccessAuthentifiedRelationView.m in Sources */,
 				830400B41DE7384000A3CA39 /* SendButtonView.m in Sources */,
 				57B28B542B2AF28A000A8324 /* MenuDateTimeView.m in Sources */,
 			);
@@ -6009,7 +6008,6 @@
 				47CD18252E9CF7DB00F0E361 /* UIColor+Hex.m in Sources */,
 				47CD18262E9CF7DB00F0E361 /* OnboardingSpaceFirstPartCell.m in Sources */,
 				47CD18272E9CF7DB00F0E361 /* PeerCallItemCell.m in Sources */,
-				47CD18282E9CF7DB00F0E361 /* SuccessAuthentifiedRelationViewController.m in Sources */,
 				47CD18292E9CF7DB00F0E361 /* ExportViewController.m in Sources */,
 				47CD182A2E9CF7DB00F0E361 /* TwinmeSettingsItemCell.m in Sources */,
 				47CD182B2E9CF7DB00F0E361 /* SelectedMembersCell.m in Sources */,
@@ -6222,7 +6220,6 @@
 				47CD18F72E9CF7DB00F0E361 /* MenuPropagatingProfileView.m in Sources */,
 				47CD18F82E9CF7DB00F0E361 /* CreateExternalCallViewController.m in Sources */,
 				47CD18F92E9CF7DB00F0E361 /* UIPremiumFeature.m in Sources */,
-				47CD18FA2E9CF7DB00F0E361 /* ScanViewController.m in Sources */,
 				47CD18FB2E9CF7DB00F0E361 /* PeerClearItemCell.m in Sources */,
 				47CD18FC2E9CF7DB00F0E361 /* PreviewAppearanceCell.m in Sources */,
 				47CD18FD2E9CF7DB00F0E361 /* RoundRectProgressView.m in Sources */,
@@ -6322,6 +6319,7 @@
 				47CD19592E9CF7DB00F0E361 /* CustomTabCell.m in Sources */,
 				47CD195A2E9CF7DB00F0E361 /* AuthentifiedRelationViewController.m in Sources */,
 				47CD195B2E9CF7DB00F0E361 /* AnnotationInfoCell.m in Sources */,
+				5704E24F2ED7B209006A1B1E /* SuccessAuthentifiedRelationView.m in Sources */,
 				47CD195C2E9CF7DB00F0E361 /* SendButtonView.m in Sources */,
 				47CD195D2E9CF7DB00F0E361 /* MenuDateTimeView.m in Sources */,
 			);

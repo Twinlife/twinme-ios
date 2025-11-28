@@ -107,15 +107,22 @@ static const int ddLogLevel = DDLogLevelWarning;
 - (void)showConfirmView {
     DDLogVerbose(@"%@ showConfirmView", LOG_TAG);
     
+    [NSLayoutConstraint activateConstraints:@[
+        [self.topAnchor constraintEqualToAnchor:self.superview.topAnchor],
+        [self.bottomAnchor constraintEqualToAnchor:self.superview.bottomAnchor],
+        [self.leadingAnchor constraintEqualToAnchor:self.superview.leadingAnchor],
+        [self.trailingAnchor constraintEqualToAnchor:self.superview.trailingAnchor],
+    ]];
+    
     [self updateFont];
     [self updateColor];
-            
+    
     [UIView animateWithDuration:Design.ANIMATION_VIEW_DURATION
                           delay:0
                         options:0
                      animations:^{
         self.overlayView.alpha = 0.3f;
-        self.actionView.frame = CGRectMake(0, Design.DISPLAY_HEIGHT - self.actionView.frame.size.height, Design.DISPLAY_WIDTH, self.actionView.frame.size.height);
+        self.actionView.frame = CGRectMake(0, self.superview.frame.size.height - self.actionView.frame.size.height, self.superview.frame.size.width, self.actionView.frame.size.height);
     }
                      completion:nil];
 }
@@ -128,7 +135,7 @@ static const int ddLogLevel = DDLogLevelWarning;
                         options:0
                      animations:^{
         self.overlayView.alpha = 0.f;
-        self.actionView.frame = CGRectMake(0, Design.DISPLAY_HEIGHT, Design.DISPLAY_WIDTH, self.actionView.frame.size.height);
+        self.actionView.frame = CGRectMake(0, self.superview.frame.size.height, self.superview.frame.size.width, self.actionView.frame.size.height);
     }
                      completion:^(BOOL finished) {
         [self finish];
@@ -154,12 +161,19 @@ static const int ddLogLevel = DDLogLevelWarning;
     
     self.userInteractionEnabled = YES;
     
-    self.overlayView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, Design.DISPLAY_WIDTH, Design.DISPLAY_HEIGHT)];
-    self.overlayView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    self.overlayView = [[UIView alloc]init];
+    self.overlayView.translatesAutoresizingMaskIntoConstraints = NO;
     self.overlayView.alpha = .0f;
     self.overlayView.backgroundColor = [UIColor blackColor];
     
     [self insertSubview:self.overlayView atIndex:0];
+    
+    [NSLayoutConstraint activateConstraints:@[
+        [self.overlayView.topAnchor constraintEqualToAnchor:self.topAnchor],
+        [self.overlayView.bottomAnchor constraintEqualToAnchor:self.bottomAnchor],
+        [self.overlayView.leadingAnchor constraintEqualToAnchor:self.leadingAnchor],
+        [self.overlayView.trailingAnchor constraintEqualToAnchor:self.trailingAnchor],
+    ]];
     
     UITapGestureRecognizer *tapOverlayGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleCloseConfirmView:)];
     [self.overlayView addGestureRecognizer:tapOverlayGestureRecognizer];

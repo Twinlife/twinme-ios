@@ -69,8 +69,8 @@ static NSString *MENU_ICON_CELL_IDENTIFIER = @"MenuIconCellIdentifier";
     DDLogVerbose(@"%@ openMenu", LOG_TAG);
     
     self.titleLabel.hidden = hideTitle;
-    
     if (hideTitle) {
+        self.titleLabel.text = @"";
         self.tableViewTopConstraint.constant = 0;
         self.titleLabelTopConstraint.constant = 0;
     }

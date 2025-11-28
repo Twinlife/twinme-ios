@@ -14,7 +14,10 @@
 
 #import "ColorCell.h"
 
+#import <TwinmeCommon/ApplicationDelegate.h>
 #import <TwinmeCommon/Design.h>
+#import <TwinmeCommon/TwinmeApplication.h>
+
 #import "UIContact.h"
 #import "UICustomColor.h"
 #import "UIColor+Hex.h"
@@ -472,6 +475,15 @@ static CGFloat DESIGN_COLLECTION_CELL_WIDTH = 70;
     self.enterColorTextField.tintColor = Design.FONT_COLOR_DEFAULT;
     self.cancelLabel.textColor = Design.FONT_COLOR_DEFAULT;
     self.confirmView.backgroundColor = Design.MAIN_COLOR;
+    
+    ApplicationDelegate *delegate = (ApplicationDelegate *)[[UIApplication sharedApplication] delegate];
+    TwinmeApplication *twinmeApplication = [delegate twinmeApplication];
+    
+    if ([twinmeApplication darkModeEnable]) {
+        self.enterColorTextField.keyboardAppearance = UIKeyboardAppearanceDark;
+    } else {
+        self.enterColorTextField.keyboardAppearance = UIKeyboardAppearanceLight;
+    }
 }
 
 @end

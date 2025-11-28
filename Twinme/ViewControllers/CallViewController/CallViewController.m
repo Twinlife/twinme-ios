@@ -440,10 +440,6 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
 - (BOOL)hasLandscapeMode {
     DDLogVerbose(@"%@ hasLandscapeMode", LOG_TAG);
     
-    if (![self isOneCameraEnableInCall]) {
-        return NO;
-    }
-    
     return YES;
 }
 
@@ -651,7 +647,7 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
             [onboardingConfirmView initWithTitle:TwinmeLocalizedString(@"call_view_controller_camera_control_needs_help", nil) message: TwinmeLocalizedString(@"call_view_controller_camera_control_onboarding_part_2", nil) image:[UIImage imageNamed:@"OnboardingControlCamera"] action:TwinmeLocalizedString(@"application_ok", nil) actionColor:nil cancel:TwinmeLocalizedString(@"application_do_not_display", nil)];
             
             [self.view addSubview:onboardingConfirmView];
-            [onboardingConfirmView showConfirmView];
+            [onboardingConfirmView showConfirmView];            
         } else {
             [self showPremiumFeature:FeatureTypeRemoteControl];
         }
@@ -2867,7 +2863,6 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
     
     if (!self.callCertifyView) {
         self.callCertifyView = [[CallCertifyView alloc]init];
-        self.callCertifyView.frame = self.view.frame;
         self.callCertifyView.callCertifyViewDelegate = self;
         self.callCertifyView.avatar = self.callParticipantLocaleView.avatar;
         self.callCertifyView.name = self.originator.name;
@@ -2875,6 +2870,13 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
             self.callCertifyView.avatar = image;
         }];
         [self.view addSubview:self.callCertifyView];
+        
+        [NSLayoutConstraint activateConstraints:@[
+            [self.callCertifyView.topAnchor constraintEqualToAnchor:self.view.topAnchor],
+            [self.callCertifyView.bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor],
+            [self.callCertifyView.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor],
+            [self.callCertifyView.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor],
+        ]];
         
         [self.callCertifyView updateMessage];
     }
@@ -3212,8 +3214,8 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
     PremiumFeatureConfirmView *premiumFeatureConfirmView = [[PremiumFeatureConfirmView alloc] init];
     premiumFeatureConfirmView.confirmViewDelegate = self;
     premiumFeatureConfirmView.forceDarkMode = YES;
-    [premiumFeatureConfirmView initWithPremiumFeature:[[UIPremiumFeature alloc]initWithFeatureType:featureType] parentViewController:self.navigationController];
-    [self.navigationController.view addSubview:premiumFeatureConfirmView];
+    [premiumFeatureConfirmView initWithPremiumFeature:[[UIPremiumFeature alloc]initWithFeatureType:featureType] parentViewController:self];
+    [self.view addSubview:premiumFeatureConfirmView];
     [premiumFeatureConfirmView showConfirmView];
 }
 

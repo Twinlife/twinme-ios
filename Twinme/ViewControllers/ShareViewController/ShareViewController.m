@@ -1068,6 +1068,12 @@ static const int GROUPS_VIEW_SECTION = 2;
     } else {
         self.searchController.searchBar.backgroundColor = Design.NAVIGATION_BAR_BACKGROUND_COLOR;
     }
+    
+    if ([self.twinmeApplication darkModeEnable]) {
+        self.searchController.searchBar.keyboardAppearance = UIKeyboardAppearanceDark;
+    } else {
+        self.searchController.searchBar.keyboardAppearance = UIKeyboardAppearanceLight;
+    }
 }
 
 @end

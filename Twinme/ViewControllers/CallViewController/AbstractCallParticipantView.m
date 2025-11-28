@@ -143,7 +143,7 @@ static CGFloat THUMBNAIL_PARTICIPANT_HEIGHT;
     
     self.mainParticipantWidth = [self getMainParticipantWidth];
     self.mainParticipantHeight = [self getMainParticipantHeight];
-    
+        
     self.hideName = hideName;
     
     if (!CALL_IS_TERMINATED(self.callStatus)) {
@@ -158,7 +158,7 @@ static CGFloat THUMBNAIL_PARTICIPANT_HEIGHT;
         participantWidth = self.mainParticipantWidth;
         participantHeight = self.mainParticipantHeight;
         if (self.isLandscape) {
-            if (!CALL_IS_ACTIVE(self.callStatus) && self.nbParticipants == 2) {
+            if ((!self.isVideoCall || !CALL_IS_ACTIVE(self.callStatus)) && self.nbParticipants == 2) {
                 participantX = (parentViewWidth * 0.5) - (participantWidth * 0.5);
             } else {
                 participantX = 0;

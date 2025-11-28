@@ -737,6 +737,22 @@ static const CGFloat DESIGN_TEXTFIELD_MARGIN = 20;
     self.enterCode6TextField.layer.borderColor = Design.BLACK_COLOR.CGColor;
     
     self.overlayView.backgroundColor = Design.OVERLAY_COLOR;
+    
+    if ([self.twinmeApplication darkModeEnable]) {
+        self.enterCode1TextField.keyboardAppearance = UIKeyboardAppearanceDark;
+        self.enterCode2TextField.keyboardAppearance = UIKeyboardAppearanceDark;
+        self.enterCode3TextField.keyboardAppearance = UIKeyboardAppearanceDark;
+        self.enterCode4TextField.keyboardAppearance = UIKeyboardAppearanceDark;
+        self.enterCode5TextField.keyboardAppearance = UIKeyboardAppearanceDark;
+        self.enterCode6TextField.keyboardAppearance = UIKeyboardAppearanceDark;
+    } else {
+        self.enterCode1TextField.keyboardAppearance = UIKeyboardAppearanceLight;
+        self.enterCode2TextField.keyboardAppearance = UIKeyboardAppearanceLight;
+        self.enterCode3TextField.keyboardAppearance = UIKeyboardAppearanceLight;
+        self.enterCode4TextField.keyboardAppearance = UIKeyboardAppearanceLight;
+        self.enterCode5TextField.keyboardAppearance = UIKeyboardAppearanceLight;
+        self.enterCode6TextField.keyboardAppearance = UIKeyboardAppearanceLight;
+    }
 }
 
 @end

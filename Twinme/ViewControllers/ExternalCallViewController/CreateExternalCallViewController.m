@@ -1196,6 +1196,14 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
         self.descriptionTextView.textColor = Design.FONT_COLOR_DEFAULT;
     }
     
+    if ([self.twinmeApplication darkModeEnable]) {
+        self.nameTextField.keyboardAppearance = UIKeyboardAppearanceDark;
+        self.descriptionTextView.keyboardAppearance = UIKeyboardAppearanceDark;
+    } else {
+        self.nameTextField.keyboardAppearance = UIKeyboardAppearanceLight;
+        self.descriptionTextView.keyboardAppearance = UIKeyboardAppearanceLight;
+    }
+    
     self.limitedLabel.textColor = Design.FONT_COLOR_DEFAULT;
     self.startLabel.textColor = Design.FONT_COLOR_DEFAULT;
     self.startDateView.layer.backgroundColor = Design.BACKGROUND_COLOR_GREY.CGColor;
