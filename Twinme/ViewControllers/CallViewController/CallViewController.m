@@ -1599,6 +1599,8 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
     self.callCertifyView = nil;
     self.headerView.alpha = 1.0f;
     
+    [self updateMenu];
+    
     if (self.menuHidden) {
         self.menuHidden = NO;
         [self animateMenu:YES];
@@ -2311,6 +2313,12 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
         }
     }
     
+    if (!self.controlCameraView.hidden) {
+        self.unreadMessageViewTrailingConstraint.constant = self.headerViewHeightConstraint.constant;
+    } else {
+        self.unreadMessageViewTrailingConstraint.constant = 0;
+    }
+    
     if ([self.callService currentHoldCall]) {
         CallState *holdCallState = [self.callService currentHoldCall];
         
@@ -2895,6 +2903,7 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
         
         OnboardingConfirmView *onboardingConfirmView = [[OnboardingConfirmView alloc] init];
         onboardingConfirmView.confirmViewDelegate = self;
+        onboardingConfirmView.forceDarkMode = YES;
         
         UIImage *image = [self.twinmeApplication darkModeEnable] ? [UIImage imageNamed:@"OnboardingAuthentifiedRelationDark"] : [UIImage imageNamed:@"OnboardingAuthentifiedRelation"];
         NSString *message = [NSString stringWithFormat:TwinmeLocalizedString(@"call_view_controller_certify_onboarding_start_message", nil), self.contactName];

@@ -1,5 +1,0 @@
-NSAppleMusicUsageDescription = "müzik çalmak";
-NSCameraUsageDescription = "fotoğraf çekmek ve görüntülü arama yapmak";
-NSMicrophoneUsageDescription = "sesli ve görüntülü arama yapmak";
-NSPhotoLibraryUsageDescription = "profil resimleri ve sohbetlerde göndermek";
-NSPhotoLibraryAddUsageDescription = "Konuşmalarda paylaşılan fotoğraf ve videoları, davet QR kodlarını cihazın fotoğraf albümüne kaydetmek.";

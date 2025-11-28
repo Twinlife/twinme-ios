@@ -1,5 +1,0 @@
-NSAppleMusicUsageDescription = "音楽をストリーミングします";
-NSCameraUsageDescription = "写真を撮ったりビデオ通話をしたりできます";
-NSMicrophoneUsageDescription = "音声通話やビデオ通話ができます";
-NSPhotoLibraryUsageDescription = "プロフィール画像とチャットメッセージを送信します";
-NSPhotoLibraryAddUsageDescription = "会話で交換された写真やビデオ、および招待用 QR コードをデバイスのフォト アルバムに保存します。";

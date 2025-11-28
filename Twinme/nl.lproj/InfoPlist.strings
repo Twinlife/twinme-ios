@@ -1,5 +1,0 @@
-NSAppleMusicUsageDescription = "Voor het streamen van muziek";
-NSCameraUsageDescription = "Voor het schieten van foto\'s en maken van video-oproepen";
-NSMicrophoneUsageDescription = "Voor het maken van telefonische en video-oproepen";
-NSPhotoLibraryUsageDescription = "Voor profielafbeeldingen en het verzenden van chatberichten";
-NSPhotoLibraryAddUsageDescription = "Om foto's en video's van gesprekken, evenals QR-codes voor uitnodigingen, op te slaan in het fotoalbum van het apparaat.";

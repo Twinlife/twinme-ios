@@ -20,6 +20,7 @@
 
 #import "SettingsAdvancedViewController.h"
 #import "MessageSettingsViewController.h"
+#import "AddProxyViewController.h"
 #import "ProxyViewController.h"
 #import "DebugSettingsViewController.h"
 
@@ -332,14 +333,14 @@ typedef enum {
             return;
         }
         
-        ProxyViewController *proxyViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"ProxyViewController"];
-        
-        if (indexPath.row != self.proxies.count + 2 == SECTION_PROXIES) {
-            TLProxyDescriptor *proxyDescriptor = self.proxies[indexPath.row - 2];
-            proxyViewController.proxyDescriptor = proxyDescriptor;
+        if (indexPath.row == self.proxies.count + 2) {
+            AddProxyViewController *addProxyViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"AddProxyViewController"];
+            [self.navigationController pushViewController:addProxyViewController animated:YES];
+        } else {
+            ProxyViewController *proxyViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"ProxyViewController"];
+            proxyViewController.proxyPosition = (int) (indexPath.row - 2);
+            [self.navigationController pushViewController:proxyViewController animated:YES];
         }
-        
-        [self.navigationController pushViewController:proxyViewController animated:YES];
     } else if (indexPath.section == SECTION_DEBUG) {
         DebugSettingsViewController *debugSettingsViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"DebugSettingsViewController"];
         [self.navigationController pushViewController:debugSettingsViewController animated:YES];

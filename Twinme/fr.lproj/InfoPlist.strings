@@ -1,5 +1,0 @@
-NSAppleMusicUsageDescription = "pour envoyer de la musique en streaming";
-NSCameraUsageDescription = "pour prendre des photos et passer des appels vidéo";
-NSMicrophoneUsageDescription = "pour passer des appels audio et vidéo";
-NSPhotoLibraryUsageDescription = "pour les photos utilisées dans les profils et messages de chat";
-NSPhotoLibraryAddUsageDescription = "Pour enregistrer des photos et vidéos échangées dans les conversations, ainsi que les QR-codes d'invitation, dans l'album photo de l'appareil.";

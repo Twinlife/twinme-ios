@@ -1,5 +1,0 @@
-NSAppleMusicUsageDescription = "संगीत स्ट्रीम करने लिए";
-NSCameraUsageDescription = "चित्र लेने और वीडियो कॉल करने के लिए";
-NSMicrophoneUsageDescription = "वॉइस और वीडियो कॉल करने के लिए";
-NSPhotoLibraryUsageDescription = "प्रोफाइल छवियों के लिए और चैट संदेश भेजने के लिए";
-NSPhotoLibraryAddUsageDescription = "बातचीत में आदान-प्रदान की गई फ़ोटो और वीडियो, साथ ही आमंत्रण क्यूआर-कोड को डिवाइस के फ़ोटो एल्बम में सहेजने के लिए।";

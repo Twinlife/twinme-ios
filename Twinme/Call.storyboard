@@ -161,7 +161,7 @@
                                         </constraints>
                                     </view>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="1cI-6o-OTe" userLabel="Unread Message View">
-                                        <rect key="frame" x="241" y="0.0" width="100" height="100"/>
+                                        <rect key="frame" x="341" y="0.0" width="100" height="100"/>
                                         <subviews>
                                             <button opaque="NO" contentMode="scaleAspectFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3bU-mT-HDA">
                                                 <rect key="frame" x="0.0" y="0.0" width="100" height="100"/>
@@ -259,7 +259,7 @@
                                     <constraint firstItem="tYr-Ba-IzX" firstAttribute="centerY" secondItem="OHA-Jr-ato" secondAttribute="centerY" id="LdM-cw-WJ1"/>
                                     <constraint firstAttribute="trailing" secondItem="tYr-Ba-IzX" secondAttribute="trailing" constant="34" id="M5O-4U-Kmu"/>
                                     <constraint firstItem="JID-Uu-iFz" firstAttribute="leading" secondItem="OHA-Jr-ato" secondAttribute="leading" id="e0F-JW-bXt"/>
-                                    <constraint firstItem="1cI-6o-OTe" firstAttribute="trailing" secondItem="nsf-SN-0ln" secondAttribute="leading" id="eJe-qw-c8v"/>
+                                    <constraint firstItem="3Ii-Gn-kfT" firstAttribute="leading" secondItem="1cI-6o-OTe" secondAttribute="trailing" id="eJe-qw-c8v"/>
                                     <constraint firstItem="1cI-6o-OTe" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="fbR-Z5-NV8" secondAttribute="trailing" id="g2f-6W-feT"/>
                                     <constraint firstAttribute="height" constant="100" id="hOt-Pi-bWY"/>
                                     <constraint firstItem="JID-Uu-iFz" firstAttribute="centerY" secondItem="OHA-Jr-ato" secondAttribute="centerY" id="jyb-04-5hD"/>

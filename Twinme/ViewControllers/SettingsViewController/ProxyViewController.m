@@ -8,20 +8,26 @@
 
 #import <CocoaLumberjack.h>
 
+#import "ProxyViewController.h"
+
+#import "AddProxyViewController.h"
+
 #import <Twinlife/TLConnectivityService.h>
 #import <Twinlife/TLProxyDescriptor.h>
 
+#include <Photos/Photos.h>
+
 #import <Utils/NSString+Utils.h>
 
-#import "ProxyViewController.h"
 #import <TwinmeCommon/Design.h>
+#import <TwinmeCommon/ProxyService.h>
+#import <TwinmeCommon/Utils.h>
 
+#import "DeviceAuthorization.h"
 #import "OnboardingConfirmView.h"
 #import "DefaultConfirmView.h"
-#import "AlertMessageView.h"
-#import "TwinmeTextField.h"
-
-#import <TwinmeCommon/ProxyService.h>
+#import "ProxyView.h"
+#import "UIView+Toast.h"
 
 #if 0
 static const int ddLogLevel = DDLogLevelVerbose;
@@ -32,41 +38,87 @@ static const int ddLogLevel = DDLogLevelWarning;
 static NSString * URL_PATTERN = @"((http|https)://)?([(w|W)]{3}+\\.)?+(.)+\\.+[A-Za-z]{2,3}+(\\.)?+(/(.)*)?";
 static NSString * IP_PATTERN = @"^(?:[0-9]{1,3}\\.){3}[0-9]{1,3}$";
 
+static const CGFloat DESIGN_QRCODE_TOP_MARGIN = 60;
+
 //
 // Interface: ProxyViewController ()
 //
 
-@interface ProxyViewController () <UITextFieldDelegate, ConfirmViewDelegate, AlertMessageViewDelegate, ProxyServiceDelegate>
+@interface ProxyViewController () <ProxyServiceDelegate, PHPhotoLibraryChangeObserver>
 
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *containerViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *containerViewWidthConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *containerViewTopConstraint;
 @property (weak, nonatomic) IBOutlet UIView *containerView;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *proxyViewTopConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *proxyViewWidthConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *proxyViewHeightConstraint;
-@property (weak, nonatomic) IBOutlet UIView *proxyView;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *proxyTextFieldLeadingConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *proxyTextFieldTrailingConstraint;
-@property (weak, nonatomic) IBOutlet TwinmeTextField *proxyTextField;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *saveProxyViewTopConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *saveProxyViewHeightConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *saveProxyViewWidthConstraint;
-@property (weak, nonatomic) IBOutlet UIView *saveProxyView;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *saveProxyLabelWidthConstraint;
-@property (weak, nonatomic) IBOutlet UILabel *saveProxyLabel;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *qrcodeViewTopConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *qrcodeViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet UIImageView *qrcodeView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *proxyLabelTopConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *proxyLabelLeadingConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *proxyLabelTrailingConstraint;
+@property (weak, nonatomic) IBOutlet UILabel *proxyLabel;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *zoomViewTopConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *zoomViewTrailingConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *zoomViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet UIView *zoomView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *zoomImageViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet UIView *zoomImageView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *saveViewTopConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *saveViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet UIView *saveView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *saveRoundedViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet UIView *saveRoundedView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *saveImageViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet UIView *saveImageView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *saveLabelTopConstraint;
+@property (weak, nonatomic) IBOutlet UILabel *saveLabel;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *editViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *editViewTopConstraint;
+@property (weak, nonatomic) IBOutlet UIView *editView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *editRoundedViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet UIView *editRoundedView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *editImageViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet UIView *editImageView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *editLabelTopConstraint;
+@property (weak, nonatomic) IBOutlet UILabel *editLabel;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *proxyCopyViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet UIView *proxyCopyView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *proxyCopyRoundedViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet UIView *proxyCopyRoundedView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *proxyCopyImageViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet UIView *proxyCopyImageView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *proxyCopyLabelTopConstraint;
+@property (weak, nonatomic) IBOutlet UILabel *proxyCopyLabel;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *shareViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *shareViewWidthConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *shareViewBottomConstraint;
+@property (weak, nonatomic) IBOutlet UIView *shareView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *shareLabelLeadingConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *shareLabelTrailingConstraint;
+@property (weak, nonatomic) IBOutlet UILabel *shareLabel;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *shareSubLabelLeadingConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *shareSubLabelTrailingConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *shareSubLabelTopConstraint;
+@property (weak, nonatomic) IBOutlet UILabel *shareSubLabel;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *shareImageViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *shareImageViewLeadingConstraint;
+@property (weak, nonatomic) IBOutlet UIImageView *shareImageView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *messageLabelLeadingConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *messageLabelTrailingConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *messageLabelTopConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *messageLabelWidthConstraint;
 @property (weak, nonatomic) IBOutlet UILabel *messageLabel;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *formatLabelTopConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *formatLabelWidthConstraint;
-@property (weak, nonatomic) IBOutlet UILabel *formatLabel;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *removeViewHeightConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *removeViewTopConstraint;
 @property (weak, nonatomic) IBOutlet UIView *removeView;
 @property (weak, nonatomic) IBOutlet UILabel *removeLabel;
 
-@property (nonatomic) BOOL keyboardHidden;
-@property (nonatomic) BOOL showOnboardingView;
-
+@property (weak, nonatomic, nullable) TLSNIProxyDescriptor *proxyDescriptor;
 @property (nonatomic) ProxyService *proxyService;
+
+@property (nonatomic) BOOL saveQRCodeInGallery;
+@property (nonatomic) BOOL zoomQRCode;
+@property (nonatomic) CGFloat qrCodeInitialTop;
+@property (nonatomic) CGFloat qrCodeInitialHeight;
+@property (nonatomic) CGFloat qrCodeMaxHeight;
 
 @end
 
@@ -87,7 +139,10 @@ static NSString * IP_PATTERN = @"^(?:[0-9]{1,3}\\.){3}[0-9]{1,3}$";
     self = [super initWithCoder:coder];
     
     if (self) {
-        _keyboardHidden = YES;
+        _saveQRCodeInGallery = NO;
+        _qrCodeInitialTop = DESIGN_QRCODE_TOP_MARGIN * Design.HEIGHT_RATIO;
+        _qrCodeInitialHeight = 0;
+        _qrCodeMaxHeight = 0;
         _proxyService = [[ProxyService alloc] initWithTwinmeContext:self.twinmeContext delegate:self];
     }
     return self;
@@ -106,14 +161,15 @@ static NSString * IP_PATTERN = @"^(?:[0-9]{1,3}\\.){3}[0-9]{1,3}$";
     
     [super viewWillAppear:animated];
     
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillChangeFrame:) name:UIKeyboardWillChangeFrameNotification object:nil];
+    NSMutableArray *proxies = [[self.twinmeContext getConnectivityService] getUserProxies];
+    if (self.proxyPosition >= 0 && self.proxyPosition < proxies.count) {
+        self.proxyDescriptor = [proxies objectAtIndex:self.proxyPosition];
+    }
     
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didPasteItemNotification:) name:TwinmeTextFieldDidPasteItemNotification object:nil];
-    
-    if (!self.showOnboardingView && !self.proxyDescriptor && [self.twinmeApplication startOnboarding:OnboardingTypeProxy]) {
-        [self showOnboarding:YES];
+    if (self.proxyDescriptor) {
+        [self.proxyService getProxyURI:self.proxyDescriptor];
+    } else {
+        [self finish];
     }
 }
 
@@ -121,31 +177,6 @@ static NSString * IP_PATTERN = @"^(?:[0-9]{1,3}\\.){3}[0-9]{1,3}$";
     DDLogVerbose(@"%@ viewWillDisappear: %@", LOG_TAG, animated ? @"YES" : @"NO");
     
     [super viewWillDisappear:animated];
-    
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillHideNotification object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillChangeFrameNotification object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:TwinmeTextFieldDidPasteItemNotification object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:TwinmeTextFieldDeleteBackWardNotification object:nil];
-}
-
-- (void)viewDidAppear:(BOOL)animated {
-    DDLogVerbose(@"%@ viewDidAppear: %@", LOG_TAG, animated ? @"YES" : @"NO");
-    
-    [super viewDidAppear:animated];
-}
-
-- (void)didPasteItemNotification:(NSNotification *)notification {
-    DDLogVerbose(@"%@ didPasteItemNotification: %@", LOG_TAG, notification);
-    
-    NSString *pastedContent = (NSString *)notification.object;
-
-    if ([pastedContent containsString:TLTwincodeURI.PROXY_ACTION]) {
-        pastedContent = [pastedContent stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@"%@/", TLTwincodeURI.PROXY_ACTION] withString:@""];
-    }
-    
-    self.proxyTextField.text = pastedContent;
-    [self setUpdated];
 }
 
 #pragma mark - ProxyServiceDelegate
@@ -153,7 +184,6 @@ static NSString * IP_PATTERN = @"^(?:[0-9]{1,3}\\.){3}[0-9]{1,3}$";
 - (void)onAddProxy:(nonnull TLSNIProxyDescriptor *)proxyDescriptor {
     DDLogVerbose(@"%@ onAddProxy: %@", LOG_TAG, proxyDescriptor);
     
-    [self finish];
 }
 
 - (void)onDeleteProxy:(nonnull TLSNIProxyDescriptor *)proxyDescriptor {
@@ -167,81 +197,37 @@ static NSString * IP_PATTERN = @"^(?:[0-9]{1,3}\\.){3}[0-9]{1,3}$";
 - (void)onErrorAddProxy {
     DDLogVerbose(@"%@ onErrorAddProxy", LOG_TAG);
         
-    [self showAlertMessage:TwinmeLocalizedString(@"proxy_view_controller_invalid_format", nil)];
 }
 
 - (void)onErrorAlreadyUsed {
     DDLogVerbose(@"%@ onErrorAlreadyUsed", LOG_TAG);
     
-    [self showAlertMessage:TwinmeLocalizedString(@"proxy_view_controller_already_use", nil)];
 }
 
 - (void)onErrorLimitReached {
     DDLogVerbose(@"%@ onErrorLimitReached", LOG_TAG);
     
-    [self showAlertMessage:TwinmeLocalizedString(@"proxy_view_controller_limit", nil)];
 }
 
-#pragma mark - UITextFieldDelegate
-
-- (BOOL)textFieldShouldReturn:(UITextField *)textField {
-    DDLogVerbose(@"%@ textFieldShouldReturn: %@", LOG_TAG, textField);
+- (void)onGetProxyUri:(nullable TLTwincodeURI *)twincodeURI proxyescriptor:(nonnull TLSNIProxyDescriptor *)proxyDescriptor {
+    DDLogVerbose(@"%@ onGetProxyUri: %@ proxyescriptor: %@", LOG_TAG, twincodeURI, proxyDescriptor);
     
-    [textField resignFirstResponder];
-    
-    return NO;
-}
-
-- (void)textFieldDidChange:(UITextField *)textField{
-    DDLogVerbose(@"%@ textFieldDidChange: %@", LOG_TAG, textField);
-    
-    [self setUpdated];
-}
-
-#pragma mark - ConfirmViewDelegate
-
-- (void)didTapConfirm:(nonnull AbstractConfirmView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractConfirmView);
-
-    [abstractConfirmView closeConfirmView];
-}
-
-- (void)didTapCancel:(nonnull AbstractConfirmView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didTapCancel: %@", LOG_TAG, abstractConfirmView);
-    
-    [abstractConfirmView closeConfirmView];
-    [self.twinmeApplication setShowOnboardingType:OnboardingTypeProxy state:NO];
-}
-
-- (void)didClose:(nonnull AbstractConfirmView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didClose: %@", LOG_TAG, abstractConfirmView);
-    
-    [abstractConfirmView closeConfirmView];
-}
-
-- (void)didFinishCloseAnimation:(nonnull AbstractConfirmView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didFinishCloseAnimation: %@", LOG_TAG, abstractConfirmView);
-    
-    if (!self.showOnboardingView) {
-        self.showOnboardingView = YES;
-        [self.proxyTextField becomeFirstResponder];
+    if (twincodeURI && [self.proxyDescriptor isEqual:proxyDescriptor]) {
+        [self updateProxy:twincodeURI];
     }
-    
-    [abstractConfirmView removeFromSuperview];
 }
 
-#pragma mark - AlertMessageViewDelegate
+#pragma mark - PHPhotoLibraryChangeObserver Methods
 
-- (void)didCloseAlertMessage:(nonnull AlertMessageView *)alertMessageView {
-    DDLogVerbose(@"%@ didCloseAlertMessage: %@", LOG_TAG, alertMessageView);
+- (void)photoLibraryDidChange:(PHChange *)changeInstance {
+    DDLogVerbose(@"%@ photoLibraryDidChange: %@", LOG_TAG, changeInstance);
     
-    [alertMessageView closeAlertView];
-}
-
-- (void)didFinishCloseAlertMessageAnimation:(nonnull AlertMessageView *)alertMessageView {
-    DDLogVerbose(@"%@ didFinishCloseAlertMessageAnimation: %@", LOG_TAG, alertMessageView);
-    
-    [alertMessageView removeFromSuperview];
+    [[PHPhotoLibrary sharedPhotoLibrary] unregisterChangeObserver:self];
+    if (self.saveQRCodeInGallery) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self saveQRCodeWithPermissionCheck];
+        });
+    }
 }
 
 #pragma mark - Private methods
@@ -249,66 +235,178 @@ static NSString * IP_PATTERN = @"^(?:[0-9]{1,3}\\.){3}[0-9]{1,3}$";
 - (void)initViews {
     DDLogVerbose(@"%@ initViews", LOG_TAG);
         
-    self.view.backgroundColor = Design.WHITE_COLOR;
-    [self.view addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(dismissKeyboard)]];
+    self.view.backgroundColor = Design.GREY_BACKGROUND_COLOR;
     
     [self setNavigationTitle:TwinmeLocalizedString(@"proxy_view_controller_title", nil)];
-                
-    self.proxyViewTopConstraint.constant *= Design.HEIGHT_RATIO;
-    self.proxyViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
-    self.proxyViewWidthConstraint.constant *= Design.WIDTH_RATIO;
-    self.proxyView.backgroundColor = Design.TEXTFIELD_BACKGROUND_COLOR;
-    self.proxyView.layer.cornerRadius = Design.CONTAINER_RADIUS;
-    self.proxyView.clipsToBounds = YES;
     
-    self.proxyTextFieldLeadingConstraint.constant *= Design.WIDTH_RATIO;
-    self.proxyTextFieldTrailingConstraint.constant *= Design.WIDTH_RATIO;
-    self.proxyTextField.font = Design.FONT_REGULAR44;
-    self.proxyTextField.textColor = Design.FONT_COLOR_DEFAULT;
-    self.proxyTextField.tintColor = Design.FONT_COLOR_DEFAULT;
-    self.proxyTextField.placeholder = TwinmeLocalizedString(@"application_name_hint", nil);
-    [self.proxyTextField setReturnKeyType:UIReturnKeyDone];
-    self.proxyTextField.delegate = self;
-    [self.proxyTextField addTarget:self action:@selector(textFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
+    self.containerViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    self.containerViewWidthConstraint.constant *= Design.WIDTH_RATIO;
+    self.containerViewTopConstraint.constant *= Design.HEIGHT_RATIO;
     
-    self.saveProxyViewTopConstraint.constant *= Design.HEIGHT_RATIO;
-    self.saveProxyViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
-    self.saveProxyViewWidthConstraint.constant *= Design.WIDTH_RATIO;
+    self.containerView.backgroundColor = Design.POPUP_BACKGROUND_COLOR;
+    self.containerView.clipsToBounds = YES;
     
-    self.saveProxyView.backgroundColor = Design.MAIN_COLOR;
-    self.saveProxyView.userInteractionEnabled = YES;
-    self.saveProxyView.isAccessibilityElement = YES;
-    self.saveProxyView.alpha = 0.5;
-    self.saveProxyView.layer.cornerRadius = Design.CONTAINER_RADIUS;
-    self.saveProxyView.clipsToBounds = YES;
-    self.saveProxyView.isAccessibilityElement = YES;
-    self.saveProxyView.accessibilityLabel = TwinmeLocalizedString(@"application_save", nil);
-    [self.saveProxyView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSaveTapGesture:)]];
+    self.containerView.layer.shadowOpacity = Design.SHADOW_OPACITY;
+    self.containerView.layer.shadowOffset = Design.SHADOW_OFFSET;
+    self.containerView.layer.shadowRadius = Design.SHADOW_RADIUS;
+    self.containerView.layer.shadowColor = Design.SHADOW_COLOR_DEFAULT.CGColor;
+    self.containerView.layer.cornerRadius = Design.POPUP_RADIUS;
+    self.containerView.layer.masksToBounds = NO;
     
-    self.saveProxyLabelWidthConstraint.constant *= Design.WIDTH_RATIO;
-    self.saveProxyLabel.font = Design.FONT_BOLD36;
-    self.saveProxyLabel.textColor = [UIColor whiteColor];
-    self.saveProxyLabel.text = TwinmeLocalizedString(@"application_save", nil);
+    self.qrcodeViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    self.qrcodeViewTopConstraint.constant *= Design.HEIGHT_RATIO;
     
-    UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTapGesture)];
-    [self.view addGestureRecognizer:tapGesture];
+    self.qrcodeView.clipsToBounds = YES;
+    self.qrcodeView.layer.cornerRadius = Design.CONTAINER_RADIUS;
+    self.qrcodeView.userInteractionEnabled = YES;
+    self.qrcodeView.backgroundColor = [UIColor whiteColor];
     
+    [self.qrcodeView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleQRCodeTapGesture:)]];
+        
+    self.zoomViewTopConstraint.constant *= Design.HEIGHT_RATIO;
+    self.zoomViewTrailingConstraint.constant *= Design.WIDTH_RATIO;
+    self.zoomViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    
+    self.zoomView.clipsToBounds = YES;
+    self.zoomView.backgroundColor = Design.WHITE_COLOR;
+    self.zoomView.layer.cornerRadius = self.zoomViewHeightConstraint.constant * 0.5;
+    self.zoomView.layer.borderColor = Design.GREY_ITEM.CGColor;
+    self.zoomView.layer.borderWidth = 1.0;
+    self.zoomView.isAccessibilityElement = YES;
+    
+    UITapGestureRecognizer *zoomGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleQRCodeTapGesture:)];
+    [self.zoomView addGestureRecognizer:zoomGestureRecognizer];
+    
+    self.zoomImageViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    
+    self.zoomImageView.tintColor = Design.BLACK_COLOR;
+    
+    self.proxyLabelTopConstraint.constant *= Design.HEIGHT_RATIO;
+    self.proxyLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
+    self.proxyLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
+    
+    [self.proxyLabel setFont:Design.FONT_MEDIUM28];
+    self.proxyLabel.textColor = [UIColor whiteColor];
+    self.proxyLabel.numberOfLines = 1;
+    [self.proxyLabel setAdjustsFontSizeToFitWidth:YES];
+    self.proxyLabel.userInteractionEnabled = YES;
+    [self.proxyLabel addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleProxyCopyTapGesture:)]];
+    
+    self.editViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    self.editViewTopConstraint.constant *= Design.HEIGHT_RATIO;
+        
+    UITapGestureRecognizer *editCodeGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleEditTapGesture:)];
+    [self.editView addGestureRecognizer:editCodeGestureRecognizer];
+    self.editView.isAccessibilityElement = YES;
+    self.editView.accessibilityLabel = TwinmeLocalizedString(@"application_edit", nil);
+    
+    self.editRoundedViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    self.editRoundedView.clipsToBounds = YES;
+    self.editRoundedView.backgroundColor = Design.WHITE_COLOR;
+    self.editRoundedView.layer.cornerRadius = self.editRoundedViewHeightConstraint.constant * 0.5;
+    self.editRoundedView.layer.borderColor = Design.GREY_ITEM.CGColor;
+    self.editRoundedView.layer.borderWidth = 1.0;
+    
+    self.editImageViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    self.editImageView.tintColor = Design.BLACK_COLOR;
+    
+    self.editLabelTopConstraint.constant *= Design.HEIGHT_RATIO;
+    
+    self.editLabel.font = Design.FONT_MEDIUM28;
+    self.editLabel.textColor = [UIColor whiteColor];
+    self.editLabel.text = TwinmeLocalizedString(@"application_edit", nil);
+    
+    self.saveViewTopConstraint.constant *= Design.HEIGHT_RATIO;
+    self.saveViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    
+    UITapGestureRecognizer *saveCodeGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSaveQRCodeTapGesture:)];
+    [self.saveView addGestureRecognizer:saveCodeGestureRecognizer];
+    self.saveView.isAccessibilityElement = YES;
+    self.saveView.accessibilityLabel = TwinmeLocalizedString(@"application_save", nil);
+    
+    self.saveRoundedViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    
+    self.saveRoundedView.clipsToBounds = YES;
+    self.saveRoundedView.backgroundColor = Design.WHITE_COLOR;
+    self.saveRoundedView.layer.cornerRadius = self.saveRoundedViewHeightConstraint.constant * 0.5;
+    self.saveRoundedView.layer.borderColor = Design.GREY_ITEM.CGColor;
+    self.saveRoundedView.layer.borderWidth = 1.0;
+
+    self.saveImageViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    self.saveImageView.tintColor =Design.BLACK_COLOR;
+    
+    self.saveLabelTopConstraint.constant *= Design.HEIGHT_RATIO;
+    
+    self.saveLabel.font = Design.FONT_MEDIUM28;
+    self.saveLabel.textColor = [UIColor whiteColor];
+    self.saveLabel.text = TwinmeLocalizedString(@"application_save", nil);
+    
+    self.proxyCopyViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    
+    UITapGestureRecognizer *proxyCopyGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleProxyCopyTapGesture:)];
+    [self.proxyCopyView addGestureRecognizer:proxyCopyGestureRecognizer];
+    self.proxyCopyView.isAccessibilityElement = YES;
+    self.proxyCopyView.accessibilityLabel = TwinmeLocalizedString(@"conversation_view_controller_menu_item_view_copy_title", nil);
+    
+    self.proxyCopyRoundedViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    self.proxyCopyRoundedView.clipsToBounds = YES;
+    self.proxyCopyRoundedView.backgroundColor = [UIColor blackColor];
+    self.proxyCopyRoundedView.layer.cornerRadius = self.proxyCopyRoundedViewHeightConstraint.constant * 0.5;
+    self.proxyCopyRoundedView.layer.borderColor = Design.GREY_ITEM.CGColor;
+    self.proxyCopyRoundedView.layer.borderWidth = 1.0;
+    
+    self.proxyCopyImageViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    self.proxyCopyImageView.tintColor = Design.BLACK_COLOR;
+    
+    self.proxyCopyLabelTopConstraint.constant *= Design.HEIGHT_RATIO;
+    
+    self.proxyCopyLabel.font = Design.FONT_MEDIUM28;
+    self.proxyCopyLabel.textColor = [UIColor whiteColor];
+    self.proxyCopyLabel.text = TwinmeLocalizedString(@"conversation_view_controller_menu_item_view_copy_title", nil);
+    
+    self.shareViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    self.shareViewWidthConstraint.constant *= Design.WIDTH_RATIO;
+    self.shareViewBottomConstraint.constant *= Design.HEIGHT_RATIO;
+    
+    self.shareView.backgroundColor = Design.MAIN_COLOR;
+    self.shareView.userInteractionEnabled = YES;
+    self.shareView.layer.cornerRadius = self.shareViewHeightConstraint.constant * 0.5;
+    self.shareView.clipsToBounds = YES;
+    self.shareView.isAccessibilityElement = YES;
+    self.shareView.accessibilityLabel = TwinmeLocalizedString(@"share_view_controller_title", nil);
+    [self.shareView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleShareTapGesture:)]];
+    
+    self.shareImageViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    self.shareImageViewLeadingConstraint.constant *= Design.WIDTH_RATIO;
+    
+    self.shareImageView.tintColor = [UIColor whiteColor];
+    
+    self.shareLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
+    self.shareLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
+    
+    self.shareLabel.font = Design.FONT_MEDIUM36;
+    self.shareLabel.textColor = [UIColor whiteColor];
+    self.shareLabel.text = TwinmeLocalizedString(@"share_view_controller_title", nil);
+    
+    [self.shareLabel setContentHuggingPriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisHorizontal];
+    
+    self.shareSubLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
+    self.shareSubLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
+    self.shareSubLabelTopConstraint.constant *= Design.HEIGHT_RATIO;
+    
+    self.shareSubLabel.font = Design.FONT_REGULAR24;
+    self.shareSubLabel.textColor = Design.FONT_COLOR_GREY;
+    self.shareSubLabel.text = TwinmeLocalizedString(@"add_contact_view_controller_social_subtitle", nil);
+    
+    self.messageLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
+    self.messageLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
     self.messageLabelTopConstraint.constant *= Design.HEIGHT_RATIO;
-    self.messageLabelWidthConstraint.constant *= Design.WIDTH_RATIO;
     
-    self.messageLabel.font = Design.FONT_REGULAR32;
-    self.messageLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    self.messageLabel.hidden = YES;
-    
-    self.formatLabelTopConstraint.constant *= Design.HEIGHT_RATIO;
-    self.formatLabelWidthConstraint.constant *= Design.WIDTH_RATIO;
-    
-    self.formatLabel.font = Design.FONT_MEDIUM_ITALIC28;
-    self.formatLabel.textColor = Design.FONT_COLOR_GREY;
-    self.formatLabel.text = [NSString stringWithFormat:@"%@\n%@", TwinmeLocalizedString(@"proxy_view_controller_format", nil), TwinmeLocalizedString(@"proxy_view_controller_format_sample", nil)];
-    
+    [self.messageLabel setFont:Design.FONT_REGULAR30];
+    self.messageLabel.textColor = [UIColor whiteColor];
+    self.messageLabel.text = TwinmeLocalizedString(@"proxy_view_controller_share_message", nil);
+        
     self.removeViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
-    self.removeViewTopConstraint.constant *= Design.HEIGHT_RATIO;
     
     self.removeView.backgroundColor = Design.BACKGROUND_COLOR_WHITE_OPACITY11;
     UITapGestureRecognizer *removeViewGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleRemoveTapGesture:)];
@@ -317,44 +415,10 @@ static NSString * IP_PATTERN = @"^(?:[0-9]{1,3}\\.){3}[0-9]{1,3}$";
     self.removeLabel.font = Design.FONT_REGULAR34;
     self.removeLabel.textColor = Design.DELETE_COLOR_RED;
     self.removeLabel.text = TwinmeLocalizedString(@"application_delete", nil);
-    
-    if (self.proxyDescriptor) {
-        self.proxyTextField.text = self.proxyDescriptor.proxyDescription;
-        self.removeView.hidden = NO;
-        UIBarButtonItem *shareBarButtonItem =  [[UIBarButtonItem alloc]initWithImage:[UIImage imageNamed:@"ShareItem"] style:UIBarButtonItemStylePlain target:self action:@selector(handleShareTapGesture:)];
-        shareBarButtonItem.tintColor = [UIColor whiteColor];
-        shareBarButtonItem.accessibilityLabel = TwinmeLocalizedString(@"conversation_view_controller_menu_item_view_info_title", nil);
-        self.navigationItem.rightBarButtonItem = shareBarButtonItem;
-        
-        if (self.proxyDescriptor.proxyStatus != TLConnectionErrorNone) {
-            self.messageLabel.hidden = NO;
-            self.messageLabel.text = TwinmeLocalizedString(@"proxy_view_controller_warning", nil);
-        } else {
-            self.messageLabelTopConstraint.constant = 0;
-        }
-        
-    } else {
-        self.messageLabelTopConstraint.constant = 0;
-        self.removeView.hidden = YES;
-        UIBarButtonItem *infoBarButtonItem =  [[UIBarButtonItem alloc]initWithImage:[UIImage imageNamed:@"OnboardingInfoIcon"] style:UIBarButtonItemStylePlain target:self action:@selector(handleInfoTapGesture:)];
-        infoBarButtonItem.tintColor = [UIColor whiteColor];
-        infoBarButtonItem.accessibilityLabel = TwinmeLocalizedString(@"conversation_view_controller_menu_item_view_info_title", nil);
-        self.navigationItem.rightBarButtonItem = infoBarButtonItem;
-    }
-}
 
-- (void)setUpdated {
-    DDLogVerbose(@"%@ setUpdated", LOG_TAG);
-    
-    if (self.proxyDescriptor) {
-        if ([self.proxyDescriptor.host.lowercaseString isEqualToString:self.proxyTextField.text.lowercaseString]) {
-            self.saveProxyView.alpha = 0.5;
-        } else {
-            self.saveProxyView.alpha = [self.proxyTextField.text length] > 0 ? 1.0 : 0.5;
-        }
-    } else {
-        self.saveProxyView.alpha = [self.proxyTextField.text length] > 0 ? 1.0 : 0.5;
-    }
+    self.qrCodeInitialHeight = self.qrcodeViewHeightConstraint.constant;
+    self.qrCodeInitialTop = self.qrcodeViewTopConstraint.constant;
+    self.qrCodeMaxHeight = self.containerViewWidthConstraint.constant - self.proxyLabelLeadingConstraint.constant - self.proxyLabelTrailingConstraint.constant;
 }
 
 - (void)finish {
@@ -368,66 +432,94 @@ static NSString * IP_PATTERN = @"^(?:[0-9]{1,3}\\.){3}[0-9]{1,3}$";
     [self.navigationController popViewControllerAnimated:YES];
 }
 
-- (void)keyboardWillShow:(NSNotification *)notification {
-    DDLogVerbose(@"%@ keyboardWillShow: %@", LOG_TAG, notification);
+- (void)updateProxy:(nonnull TLTwincodeURI *)twincodeURI {
+    DDLogVerbose(@"%@ updateProxy", LOG_TAG);
     
-    if (!self.keyboardHidden) {
-        return;
+    if (self.proxyDescriptor) {
+        NSString *proxyURL = [NSString stringWithFormat:@"%@/%@", TLTwincodeURI.PROXY_ACTION, self.proxyDescriptor.proxyDescription];
+        self.qrcodeView.image = [Utils makeQRCode:proxyURL scale:10];
     }
-    
-    self.keyboardHidden = NO;
-    NSDictionary *info = [notification userInfo];
-    CGSize keyboardSize = [[info objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue].size;
-    
-    if ([self.twinmeApplication getDefaultKeyboardHeight] != keyboardSize.height) {
-        [self.twinmeApplication setDefaultKeyboardHeight:keyboardSize.height];
-    }
+    self.proxyLabel.text = self.proxyDescriptor.proxyDescription;
 }
 
-- (void)keyboardWillHide:(NSNotification *)notification {
-    DDLogVerbose(@"%@ keyboardWillHide: %@", LOG_TAG, notification);
-    
-    self.keyboardHidden = YES;
-}
-
-- (void)keyboardWillChangeFrame:(NSNotification *)notification {
-    DDLogVerbose(@"%@ keyboardWillChangeFrame: %@", LOG_TAG, notification);
-    
-    NSDictionary *info = [notification userInfo];
-    CGSize keyboardSize = [[info objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue].size;
-    
-    if ([self.twinmeApplication getDefaultKeyboardHeight] != keyboardSize.height) {
-        [self.twinmeApplication setDefaultKeyboardHeight:keyboardSize.height];
-    }
-}
-
-- (void)dismissKeyboard {
-    DDLogVerbose(@"%@ dismissKeyboard", LOG_TAG);
-    
-    if (!self.keyboardHidden) {
-        [self.proxyTextField resignFirstResponder];
-    }
-}
-
-- (void)handleTapGesture {
-    DDLogVerbose(@"%@ handleTapGesture", LOG_TAG);
-    
-    if ([self.proxyTextField isFirstResponder]) {
-        [self.proxyTextField resignFirstResponder];
-    }
-}
-
-- (void)handleSaveTapGesture:(UITapGestureRecognizer *)sender {
-    DDLogVerbose(@"%@ handleSaveTapGesture: %@", LOG_TAG, sender);
+- (void)handleQRCodeTapGesture:(UITapGestureRecognizer *)sender {
+    DDLogVerbose(@"%@ handleQRCodeTapGesture: %@", LOG_TAG, sender);
     
     if (sender.state == UIGestureRecognizerStateEnded) {
+        [self updateQRCodeSize];
+    }
+}
+
+- (void)updateQRCodeSize {
+    DDLogVerbose(@"%@ updateProfile", LOG_TAG);
+    
+    self.zoomQRCode = !self.zoomQRCode;
+    float alpha = self.zoomQRCode ? 0.0 : 1.0;
+    
+    CGFloat qrCodeHeight = self.zoomQRCode ? self.qrCodeMaxHeight : self.qrCodeInitialHeight;
+    CGFloat qrCodeTop = self.qrCodeInitialTop;
+    CGFloat animateActionDelay = self.zoomQRCode ? 0.f : 0.1f;
+    CGFloat animateQRCodeDelay = self.zoomQRCode ? 0.1f : 0.f;
+   
+    [self animateQRCodeAction:alpha delay:animateActionDelay];
+    [self animateQRCodeSize:qrCodeTop height:qrCodeHeight delay:animateQRCodeDelay];
+}
+
+- (void)animateQRCodeAction:(CGFloat)alpha delay:(CGFloat)delay {
+    DDLogVerbose(@"%@ animateQRCodeAction", LOG_TAG);
         
-        if (self.proxyTextField.alpha < 1.0) {
-            return;
-        }
+    [UIView animateWithDuration:0.1 delay:delay options: UIViewAnimationOptionCurveEaseInOut animations:^{
+        self.proxyCopyView.alpha = alpha;
+        self.editView.alpha = alpha;
+        self.saveView.alpha = alpha;
+        self.zoomView.alpha = alpha;
+        self.proxyLabel.alpha = alpha;
+    } completion:^(BOOL finished) {
+    }];
+}
+
+- (void)animateQRCodeSize:(CGFloat)top height:(CGFloat)height delay:(CGFloat)delay {
+    DDLogVerbose(@"%@ animateQRCodeSize", LOG_TAG);
+    
+    [UIView animateWithDuration:0.1 delay:delay options: UIViewAnimationOptionCurveEaseInOut animations:^{
+        self.qrcodeViewTopConstraint.constant = top;
+        self.qrcodeViewHeightConstraint.constant = height;
         
-        [self dismissKeyboard];
-        [self.proxyService verifyProxyURI:[NSURL URLWithString:self.proxyTextField.text] proxyDescriptor:self.proxyDescriptor];
+        [self.view setNeedsLayout];
+        [self.view layoutIfNeeded];
+        
+    } completion:^(BOOL finished) {
+    }];
+}
+
+- (void)handleEditTapGesture:(UITapGestureRecognizer *)sender {
+    DDLogVerbose(@"%@ handleEditTapGesture: %@", LOG_TAG, sender);
+    
+    if (sender.state == UIGestureRecognizerStateEnded) {
+        AddProxyViewController *proxyViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"AddProxyViewController"];
+        proxyViewController.proxyDescriptor = self.proxyDescriptor;
+        [self.navigationController pushViewController:proxyViewController animated:YES];
+    }
+}
+
+- (void)handleProxyCopyTapGesture:(UITapGestureRecognizer *)sender {
+    DDLogVerbose(@"%@ handleProxyCopyTapGesture: %@", LOG_TAG, sender);
+    
+    if (sender.state == UIGestureRecognizerStateEnded) {
+        [self hapticFeedBack:UIImpactFeedbackStyleHeavy];
+        [[UIPasteboard generalPasteboard] setString:self.proxyDescriptor.proxyDescription];
+        [[UIApplication sharedApplication].keyWindow makeToast:TwinmeLocalizedString(@"conversation_view_controller_menu_item_view_copy_message",nil)];
+    }
+}
+
+- (void)handleSaveQRCodeTapGesture:(UITapGestureRecognizer *)sender {
+    DDLogVerbose(@"%@ handleSaveQRCodeTapGesture: %@", LOG_TAG, sender);
+    
+    if (sender.state == UIGestureRecognizerStateEnded) {
+        [self hapticFeedBack:UIImpactFeedbackStyleHeavy];
+        
+        self.saveQRCodeInGallery = YES;
+        [self saveQRCodeWithPermissionCheck];
     }
 }
 
@@ -444,21 +536,12 @@ static NSString * IP_PATTERN = @"^(?:[0-9]{1,3}\\.){3}[0-9]{1,3}$";
     }
 }
 
-- (void)handleInfoTapGesture:(UITapGestureRecognizer *)sender {
-    DDLogVerbose(@"%@ handleInfoTapGesture ", LOG_TAG);
-        
-    [self hapticFeedBack:UIImpactFeedbackStyleHeavy];
-    [self dismissKeyboard];
-    [self showOnboarding:NO];
-}
-
 - (void)handleShareTapGesture:(UITapGestureRecognizer *)sender {
     DDLogVerbose(@"%@ handleShareTapGesture ", LOG_TAG);
  
     [self hapticFeedBack:UIImpactFeedbackStyleHeavy];
-    [self dismissKeyboard];
         
-    NSString *urlString = [NSString stringWithFormat:@"%@/%@", TLTwincodeURI.PROXY_ACTION, self.proxyDescriptor.host];
+    NSString *urlString = [NSString stringWithFormat:@"%@/%@", TLTwincodeURI.PROXY_ACTION, self.proxyDescriptor.proxyDescription];
     
     NSString *message = [NSString stringWithFormat:TwinmeLocalizedString(@"proxy_view_controller_share", nil), urlString];
     UIActivityViewController *activityViewController = [[UIActivityViewController alloc] initWithActivityItems:@[message] applicationActivities:nil];
@@ -480,55 +563,126 @@ static NSString * IP_PATTERN = @"^(?:[0-9]{1,3}\\.){3}[0-9]{1,3}$";
     }
 }
 
-- (void)showOnboarding:(BOOL)cancelAction {
-    DDLogVerbose(@"%@ showOnboarding", LOG_TAG);
+- (void)saveQRCodeWithPermissionCheck {
+    DDLogVerbose(@"%@ saveQRCodeWithPermissionCheck", LOG_TAG);
     
-    OnboardingConfirmView *onboardingConfirmView = [[OnboardingConfirmView alloc] init];
-    onboardingConfirmView.confirmViewDelegate = self;
-    [onboardingConfirmView initWithTitle:TwinmeLocalizedString(@"proxy_view_controller_title", nil) message:TwinmeLocalizedString(@"proxy_view_controller_onboarding", nil) image:[UIImage imageNamed:@"OnboardingProxy"] action:TwinmeLocalizedString(@"application_ok", nil) actionColor:nil cancel:cancelAction ? TwinmeLocalizedString(@"application_do_not_display", nil) : nil];
-    
-    NSMutableAttributedString *attributedTitle = [[NSMutableAttributedString alloc] initWithString:TwinmeLocalizedString(@"proxy_view_controller_title", nil) attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_BOLD36, NSFontAttributeName, Design.FONT_COLOR_DEFAULT, NSForegroundColorAttributeName, nil]];
-    [onboardingConfirmView updateTitle:attributedTitle];
-    
-    if (!cancelAction) {
-        [onboardingConfirmView hideCancelAction];
+    PHAuthorizationStatus photoAuthorizationStatus = [DeviceAuthorization devicePhotoAuthorizationStatus];
+    switch (photoAuthorizationStatus) {
+        case PHAuthorizationStatusNotDetermined: {
+            if (@available(iOS 14, *)) {
+                [PHPhotoLibrary requestAuthorizationForAccessLevel:PHAccessLevelAddOnly handler:^(PHAuthorizationStatus authorizationStatus) {
+                    if ([DeviceAuthorization devicePhotoAuthorizationAccessGranted:authorizationStatus]) {
+                        dispatch_async(dispatch_get_main_queue(), ^(void) {
+                            [self saveQRCode];
+                        });
+                    }
+                }];
+            } else {
+                [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus authorizationStatus) {
+                    if ([DeviceAuthorization devicePhotoAuthorizationAccessGranted:authorizationStatus]) {
+                        dispatch_async(dispatch_get_main_queue(), ^(void) {
+                            [self saveQRCode];
+                        });
+                    }
+                }];
+            }
+            break;
+        }
+            
+        case PHAuthorizationStatusRestricted:
+        case PHAuthorizationStatusDenied:
+            [DeviceAuthorization showPhotoSettingsAlertInController:self];
+            break;
+            
+        case PHAuthorizationStatusAuthorized:
+        case PHAuthorizationStatusLimited:
+            [self saveQRCode];
+            break;
     }
-    
-    [self.navigationController.view addSubview:onboardingConfirmView];
-    [onboardingConfirmView showConfirmView];
 }
 
-- (void)showAlertMessage:(NSString *)message {
-    DDLogVerbose(@"%@ showAlertMessage: %@", LOG_TAG, message);
+- (void)saveQRCode {
+    DDLogVerbose(@"%@ saveQRCode", LOG_TAG);
     
-    AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
-    alertMessageView.alertMessageViewDelegate = self;
-    [alertMessageView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:message];
-    [self.navigationController.view addSubview:alertMessageView];
-    [alertMessageView showAlertView];
+    UIImage *qrcodeToSave;
+    ProxyView *proxyView;
+    
+    if (self.proxyDescriptor) {
+        proxyView = [[ProxyView alloc] initWithProxy:self.proxyDescriptor.proxyDescription qrcode:self.qrcodeView.image message:TwinmeLocalizedString(@"proxy_view_controller_share_message", nil)];
+        qrcodeToSave = [proxyView screenshot];
+    }
+    
+    if (!qrcodeToSave) {
+        return;
+    }
+    
+    [[PHPhotoLibrary sharedPhotoLibrary] registerChangeObserver:self];
+    
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"title = %@", TwinmeLocalizedString(@"application_name", nil)];
+    PHFetchOptions *fetchOptions = [[PHFetchOptions alloc] init];
+    fetchOptions.predicate = predicate;
+    PHFetchResult *result = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeAlbum subtype:PHAssetCollectionSubtypeAny options:fetchOptions];
+    
+    proxyView = nil;
+    
+    [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
+        PHAssetCollectionChangeRequest *albumRequest;
+        if (result.count == 0) {
+            albumRequest = [PHAssetCollectionChangeRequest creationRequestForAssetCollectionWithTitle:TwinmeLocalizedString(@"application_name", nil)];
+        } else {
+            albumRequest = [PHAssetCollectionChangeRequest changeRequestForAssetCollection:result.firstObject];
+        }
+        PHAssetChangeRequest *createImageRequest = [PHAssetChangeRequest creationRequestForAssetFromImage:qrcodeToSave];
+        [albumRequest addAssets:@[createImageRequest.placeholderForCreatedAsset]];
+    } completionHandler:^(BOOL success, NSError *error) {
+        if (success) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                self.saveQRCodeInGallery = NO;
+                [[UIApplication sharedApplication].keyWindow makeToast:TwinmeLocalizedString(@"capture_view_controller_qrcode_saved",nil)];
+            });
+        }
+    }];
 }
 
 - (void)updateFont {
     DDLogVerbose(@"%@ updateFont", LOG_TAG);
     
-    self.proxyTextField.font = Design.FONT_REGULAR28;
-    self.saveProxyLabel.font = Design.FONT_BOLD36;
-    self.messageLabel.font = Design.FONT_REGULAR32;
     self.removeLabel.font = Design.FONT_REGULAR34;
-    self.formatLabel.font = Design.FONT_MEDIUM_ITALIC28;
+    [self.saveLabel setFont:Design.FONT_MEDIUM28];
+    [self.proxyCopyLabel setFont:Design.FONT_MEDIUM28];
+    [self.editLabel setFont:Design.FONT_MEDIUM28];
+    self.proxyLabel.font = Design.FONT_BOLD34;
+    [self.messageLabel setFont:Design.FONT_REGULAR28];
+    [self.shareLabel setFont:Design.FONT_MEDIUM32];
+    self.shareSubLabel.font = Design.FONT_REGULAR24;
+    self.removeLabel.font = Design.FONT_REGULAR34;
 }
 
 - (void)updateColor {
     DDLogVerbose(@"%@ updateColor", LOG_TAG);
     
-    [super updateColor];
-    
-    self.proxyView.backgroundColor = Design.TEXTFIELD_BACKGROUND_COLOR;
-    self.saveProxyView.backgroundColor = Design.MAIN_COLOR;
+    self.view.backgroundColor = Design.GREY_BACKGROUND_COLOR;
+    self.proxyLabel.textColor = Design.FONT_COLOR_DEFAULT;
+    self.containerView.backgroundColor = Design.POPUP_BACKGROUND_COLOR;
     self.messageLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    self.proxyTextField.textColor = Design.FONT_COLOR_DEFAULT;
-    self.proxyTextField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:TwinmeLocalizedString(@"proxy_view_controller_add_placeholder", nil) attributes:[NSDictionary dictionaryWithObject:Design.PLACEHOLDER_COLOR forKey:NSForegroundColorAttributeName]];
-    self.formatLabel.textColor = Design.FONT_COLOR_GREY;
+    self.saveLabel.textColor = Design.FONT_COLOR_DEFAULT;
+    self.editLabel.textColor = Design.FONT_COLOR_DEFAULT;
+    self.proxyCopyLabel.textColor = Design.FONT_COLOR_DEFAULT;
+    self.shareSubLabel.textColor = Design.FONT_COLOR_GREY;
+    self.shareView.backgroundColor = Design.MAIN_COLOR;
+    self.removeLabel.textColor = Design.DELETE_COLOR_RED;
+    
+    self.editRoundedView.backgroundColor = Design.WHITE_COLOR;
+    self.editRoundedView.layer.borderColor = Design.GREY_ITEM.CGColor;
+    self.editImageView.tintColor = Design.BLACK_COLOR;
+    
+    self.saveRoundedView.backgroundColor = Design.WHITE_COLOR;
+    self.saveRoundedView.layer.borderColor = Design.GREY_ITEM.CGColor;
+    self.saveImageView.tintColor = Design.BLACK_COLOR;
+    
+    self.proxyCopyRoundedView.backgroundColor = Design.WHITE_COLOR;
+    self.proxyCopyRoundedView.layer.borderColor = Design.GREY_ITEM.CGColor;
+    self.proxyCopyImageView.tintColor = Design.BLACK_COLOR;
 }
 
 @end

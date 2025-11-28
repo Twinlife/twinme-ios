@@ -1,5 +1,0 @@
-NSAppleMusicUsageDescription = "um Musik zu streamen";
-NSCameraUsageDescription = "um Videos aufzunehmen und Videoanrufe zu tätigen";
-NSMicrophoneUsageDescription = "für Profilbilder und um Chat-Nachrichten zu senden";
-NSPhotoLibraryUsageDescription = "um Ihren Twincode in Fotos zu speichern";
-NSPhotoLibraryAddUsageDescription = "Zum Speichern von Fotos und Videos aus Unterhaltungen sowie Einladungs-QR-Codes im Fotoalbum des Geräts.";

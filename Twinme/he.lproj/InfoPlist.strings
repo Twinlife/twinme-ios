@@ -1,5 +1,0 @@
-NSAppleMusicUsageDescription = "להזרים מוזיקה";
-NSCameraUsageDescription = "לצלם תמונות ולקיים שיחות וידאו";
-NSMicrophoneUsageDescription = "לקיים שיחות קוליות/וידאו";
-NSPhotoLibraryUsageDescription = "לתמונות פרופיל ולשליחת הודעות צ'אט";
-NSPhotoLibraryAddUsageDescription = "כדי לשמור תמונות וסרטונים שהוחלפו בשיחות, כמו גם קודי QR להזמנה, באלבום התמונות של המכשיר.";

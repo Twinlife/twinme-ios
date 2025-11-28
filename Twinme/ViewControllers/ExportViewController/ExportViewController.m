@@ -537,7 +537,7 @@ static NSString *EXPORT_VOICE_SHORT_NAME = @"voice";
     }
     
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-    [dateFormatter setDateFormat:@"YYMMdd"];
+    [dateFormatter setDateFormat:@"YYYY-MM-dd"];
     [exportFileName appendString:[dateFormatter stringFromDate:[NSDate date]]];
     [exportFileName appendString:@".zip"];
     

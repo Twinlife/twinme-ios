@@ -1,5 +1,0 @@
-NSAppleMusicUsageDescription = "untuk streaming musik";
-NSCameraUsageDescription = "untuk mengambil oto dan melakukan panggilan video";
-NSMicrophoneUsageDescription = "untuk melakukan panggilan suara dan video";
-NSPhotoLibraryUsageDescription = "untuk gambar profil dan mengirim pesan obrolan";
-NSPhotoLibraryAddUsageDescription = "Untuk menyimpan foto dan video dari percakapan, serta kode QR undangan, ke album foto perangkat.";

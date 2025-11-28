@@ -2489,7 +2489,7 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "يدعوك @% للانضمام إلى المجموعة"
+            "value" : "يدعوك %@ للانضمام إلى المجموعة"
           }
         },
         "da" : {
@@ -19720,7 +19720,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "This image/video format is not supported by the application."
+            "value" : " The file was not found."
           }
         },
         "es" : {
@@ -19875,7 +19875,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "The file was not found."
+            "value" : "This image/video format is not supported by the application."
           }
         },
         "es" : {
@@ -24752,7 +24752,7 @@
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "U heeft geen profielfoto"
+            "value" : "U moet de afbeelding invoeren die u vertegenwoordigt bij de contacten die u met dit profiel uitnodigt."
           }
         },
         "pl" : {
@@ -24907,7 +24907,7 @@
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "U heeft geen profielfoto"
+            "value" : "U moet de naam definiëren die u vertegenwoordigt bij de contacten die u met dit profiel uitnodigt."
           }
         },
         "pl" : {
@@ -30894,7 +30894,7 @@
         "fa" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ باید به تماس"
+            "value" : "%@ باید به تماس‌های ویدیویی اجازه دهد تا بتوانند یک رابطه را از طریق تماس ویدیویی تأیید کنند."
           }
         },
         "fi" : {
@@ -35360,7 +35360,7 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "هل قال الكلمة من قبل @% متطابقة؟"
+            "value" : "هل قال الكلمة من قبل %@ متطابقة؟"
           }
         },
         "da" : {
@@ -35390,7 +35390,7 @@
         "fa" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "آیا این کلمه توسط @% یکسان گفته شده است؟"
+            "value" : "آیا این کلمه توسط %@ یکسان گفته شده است؟"
           }
         },
         "fi" : {
@@ -49503,7 +49503,7 @@
         "fa" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ برخی از پیام"
+            "value" : "%@ برخی از پیام‌های قدیمی را پاک کرد."
           }
         },
         "fi" : {
@@ -56651,7 +56651,7 @@
         "he" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "השב ל-@%1$ "
+            "value" : "השב ל-%1$@ "
           }
         },
         "hi" : {
@@ -61595,7 +61595,7 @@
         "fa" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "نام پیش"
+            "value" : "نام پیش‌فرض (مهمان) که نماینده آنها در تماس است را تغییر دهید"
           }
         },
         "fi" : {
@@ -71961,7 +71961,7 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "استرداد محتويات المحادثة مع @% قيد التقدم."
+            "value" : "استرداد محتويات المحادثة مع %@ قيد التقدم."
           }
         },
         "da" : {
@@ -84884,7 +84884,7 @@
         "he" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "סרוק את קוד ה-QR הזה כדי להתקשר ל-@%1$."
+            "value" : "סרוק את קוד ה-QR הזה כדי להתקשר ל-%1$@."
           }
         },
         "hi" : {
@@ -86262,7 +86262,7 @@
         "fa" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "اکیدا توصیه می"
+            "value" : "اکیداً توصیه می‌شود روابطی که با یک مینی‌کد برقرار شده‌اند را برای تقویت امنیت آنها تأیید کنید."
           }
         },
         "fi" : {
@@ -111187,6 +111187,161 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "在您的裝置上使用 twinme 開啟 %@ 連結即可自動配置此代理程式。"
+          }
+        }
+      }
+    },
+    "proxy_view_controller_share_message" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "قم بمشاركة هذا الوكيل مع الأشخاص الذين لم يعد بإمكانهم الاتصال بالخدمة بسبب محاولات الحظر."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Del denne proxy med dem, der ikke længere kan oprette forbindelse til tjenesten på grund af blokeringsforsøg."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Teilen Sie diesen Proxy mit denjenigen, die aufgrund von Blockierungsversuchen keine Verbindung mehr zum Dienst herstellen können."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Share this proxy with those who can no longer connect to the service due to blocking attempts."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Comparte este proxy con aquellos que ya no pueden conectarse al servicio debido a intentos de bloqueo."
+          }
+        },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "این پروکسی را با کسانی که به دلیل تلاش‌های مسدودسازی دیگر نمی‌توانند به سرویس متصل شوند، به اشتراک بگذارید."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jaa tämä välityspalvelin niiden kanssa, jotka eivät enää pysty muodostamaan yhteyttä palveluun estoyritysten vuoksi."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Partagez ce proxy avec ceux qui ne peuvent plus se connecter au service en raison de tentatives de blocage."
+          }
+        },
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "שתף את הפרוקסי הזה עם אלו שכבר לא יכולים להתחבר לשירות עקב ניסיונות חסימה."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "इस प्रॉक्सी को उन लोगों के साथ साझा करें जो अवरोधन प्रयासों के कारण अब सेवा से कनेक्ट नहीं हो पा रहे हैं।"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bagikan proksi ini dengan mereka yang tidak dapat lagi terhubung ke layanan karena upaya pemblokiran."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Condividi questo proxy con coloro che non riescono più a connettersi al servizio a causa di tentativi di blocco."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ブロックの試みによりサービスに接続できなくなったユーザーとこのプロキシを共有します。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "차단 시도로 인해 더 이상 서비스에 연결할 수 없는 사용자에게 이 프록시를 공유해 주세요."
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Del denne proxy-tjeneren med de som ikke lenger kan koble til tjenesten på grunn av blokkeringsforsøk."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deel deze proxy met degenen die vanwege blokkeringspogingen geen verbinding meer kunnen maken met de service."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Udostępnij ten serwer proxy tym, którzy nie mogą już połączyć się z usługą ze względu na próby blokowania."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Partilhe este proxy com aqueles que já não se conseguem ligar ao serviço devido a tentativas de bloqueio."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Поделитесь этим прокси-сервером с теми, кто больше не может подключиться к сервису из-за попыток блокировки."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dela denna proxy med de som inte längre kan ansluta till tjänsten på grund av blockeringsförsök."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bu proxy'yi engelleme girişimleri nedeniyle artık servise bağlanamayan kişilerle paylaşın."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Поділіться цим проксі-сервером з тими, хто більше не може підключитися до сервісу через спроби блокування."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chia sẻ proxy này với những người không thể kết nối với dịch vụ do bị chặn."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "请将此代理服务器分享给因网络封锁而无法连接到该服务的用户。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "請將此代理伺服器分享給因網路封鎖而無法連接到該服務的使用者。"
           }
         }
       }
