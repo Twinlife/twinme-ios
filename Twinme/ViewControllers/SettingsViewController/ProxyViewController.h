@@ -8,14 +8,12 @@
 
 #import <TwinmeCommon/AbstractTwinmeViewController.h>
 
-@class TLSNIProxyDescriptor;
-
 //
-// Interface: ProxyViewController
+// Interface: SettingsAdvancedViewController
 //
 
 @interface ProxyViewController : AbstractTwinmeViewController
 
-@property (weak, nonatomic, nullable) TLSNIProxyDescriptor *proxyDescriptor;
+@property (nonatomic) int proxyPosition;
 
 @end

@@ -169,7 +169,7 @@
                                         </constraints>
                                     </view>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="zJf-MK-tgk" userLabel="Add Participant View">
-                                        <rect key="frame" x="491" y="0.0" width="100" height="100"/>
+                                        <rect key="frame" x="476" y="0.0" width="100" height="100"/>
                                         <subviews>
                                             <button opaque="NO" contentMode="scaleAspectFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ZGx-hy-5yh">
                                                 <rect key="frame" x="0.0" y="0.0" width="100" height="100"/>
@@ -198,7 +198,7 @@
                                         </constraints>
                                     </view>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="14S-em-hhn" userLabel="Unread Message View">
-                                        <rect key="frame" x="291" y="0.0" width="100" height="100"/>
+                                        <rect key="frame" x="376" y="0.0" width="100" height="100"/>
                                         <subviews>
                                             <button opaque="NO" contentMode="scaleAspectFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="67e-1S-W2r">
                                                 <rect key="frame" x="0.0" y="0.0" width="100" height="100"/>
@@ -224,7 +224,7 @@
                                         </constraints>
                                     </view>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Dy8-8v-Aft" userLabel="Shared Location View">
-                                        <rect key="frame" x="191" y="0.0" width="100" height="100"/>
+                                        <rect key="frame" x="276" y="0.0" width="100" height="100"/>
                                         <subviews>
                                             <button opaque="NO" contentMode="scaleAspectFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="OSY-S8-R7m">
                                                 <rect key="frame" x="0.0" y="0.0" width="100" height="100"/>
@@ -250,7 +250,7 @@
                                         </constraints>
                                     </view>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="xQD-mk-3e4" userLabel="Control Camera View">
-                                        <rect key="frame" x="391" y="0.0" width="100" height="100"/>
+                                        <rect key="frame" x="376" y="0.0" width="100" height="100"/>
                                         <subviews>
                                             <button opaque="NO" contentMode="scaleAspectFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dhS-cS-4go">
                                                 <rect key="frame" x="0.0" y="0.0" width="100" height="100"/>
@@ -276,20 +276,20 @@
                                         </constraints>
                                     </view>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="251" text=".name" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7r7-2T-zfI">
-                                        <rect key="frame" x="86" y="15.5" width="105" height="69.5"/>
+                                        <rect key="frame" x="86" y="15.5" width="150" height="69.5"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="58"/>
                                         <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="AuthentifiedRelationIcon" translatesAutoresizingMaskIntoConstraints="NO" id="bWe-Al-lEl">
-                                        <rect key="frame" x="201" y="33" width="34" height="34"/>
+                                        <rect key="frame" x="246" y="33" width="34" height="34"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="34" id="717-VA-Abr"/>
                                             <constraint firstAttribute="width" secondItem="bWe-Al-lEl" secondAttribute="height" multiplier="1:1" id="7Gw-DA-b77"/>
                                         </constraints>
                                     </imageView>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="254" verticalHuggingPriority="251" horizontalCompressionResistancePriority="753" text="time" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="CiN-Zj-Qoo">
-                                        <rect key="frame" x="591" y="9.5" width="125" height="81.5"/>
+                                        <rect key="frame" x="576" y="9.5" width="140" height="81.5"/>
                                         <constraints>
                                             <constraint firstAttribute="width" priority="750" constant="140" id="xgl-MD-bqS"/>
                                         </constraints>
@@ -316,7 +316,7 @@
                                     <constraint firstItem="14S-em-hhn" firstAttribute="centerY" secondItem="oRV-Va-ts1" secondAttribute="centerY" id="BYU-xB-hZm"/>
                                     <constraint firstItem="CiN-Zj-Qoo" firstAttribute="leading" secondItem="zJf-MK-tgk" secondAttribute="trailing" id="D3S-Tz-EpH"/>
                                     <constraint firstItem="CiN-Zj-Qoo" firstAttribute="centerY" secondItem="oRV-Va-ts1" secondAttribute="centerY" id="IE3-4k-BWD"/>
-                                    <constraint firstItem="14S-em-hhn" firstAttribute="trailing" secondItem="xQD-mk-3e4" secondAttribute="leading" id="KfP-gk-EhE"/>
+                                    <constraint firstItem="zJf-MK-tgk" firstAttribute="leading" secondItem="14S-em-hhn" secondAttribute="trailing" id="KfP-gk-EhE"/>
                                     <constraint firstItem="xQD-mk-3e4" firstAttribute="height" secondItem="oRV-Va-ts1" secondAttribute="height" id="Qc7-Uw-FvZ"/>
                                     <constraint firstItem="xSX-XS-Ya2" firstAttribute="centerY" secondItem="oRV-Va-ts1" secondAttribute="centerY" id="SRl-2a-tsP"/>
                                     <constraint firstAttribute="trailing" secondItem="CiN-Zj-Qoo" secondAttribute="trailing" constant="34" id="St5-cK-hF4"/>

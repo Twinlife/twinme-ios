@@ -1,9 +1,0 @@
-NSAppleMusicUsageDescription = "अपने apple संगीत को जोड़ने के लिए";
-NSCameraUsageDescription = "तस्वीरें लेने और वीडियो कॉल करने के लिए";
-NSContactsUsageDescription = "हमें आपकी संपर्क सूची तक पहुंचने की आवश्यकता है ताकि लोगों को आपसे जुड़ने के लिए आमंत्रित किया जा सके.";
-NSFaceIDUsageDescription = "प्रमाणित और आवेदन के लिए उपयोग अनलॉक";
-NSLocationAlwaysAndWhenInUseUsage = "कॉल के दौरान वास्तविक समय में अपना स्थान साझा करने के लिए";
-NSLocationWhenInUseUsageDescription = "बातचीत में अपना स्थान साझा करने के लिए";
-NSMicrophoneUsageDescription = "ऑडियो और वीडियो कॉल करने के लिए";
-NSPhotoLibraryUsageDescription = "प्रोफ़ाइल छवियों के लिए और चैट संदेशों में भेजने के लिए";
-NSPhotoLibraryAddUsageDescription = "बातचीत में आदान-प्रदान की गई फ़ोटो और वीडियो, साथ ही आमंत्रण क्यूआर-कोड को डिवाइस के फ़ोटो एल्बम में सहेजने के लिए।";

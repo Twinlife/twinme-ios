@@ -1,9 +1,0 @@
-NSAppleMusicUsageDescription = "untuk menghubungkan musik apple Anda";
-NSCameraUsageDescription = "untuk mengambil gambar dan melakukan panggilan video";
-NSContactsUsageDescription = "Kami harus mengakses daftar kontak agar dapat mengundang orang lain untuk bergabung dengan Anda.";
-NSFaceIDUsageDescription = "untuk mengautentikasi dan membuka kunci akses ke aplikasi";
-NSLocationAlwaysAndWhenInUseUsage = "untuk membagikan lokasi Anda secara real-time selama panggilan";
-NSLocationWhenInUseUsageDescription = "untuk membagikan lokasi Anda dalam percakapan";
-NSMicrophoneUsageDescription = "untuk melakukan panggilan audio dan video";
-NSPhotoLibraryUsageDescription = "untuk gambar profil dan untuk mengirim pesan obrolan";
-NSPhotoLibraryAddUsageDescription = "Untuk menyimpan foto dan video dari percakapan, serta kode QR undangan, ke album foto perangkat.";

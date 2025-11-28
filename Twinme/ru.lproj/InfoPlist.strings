@@ -1,9 +1,0 @@
-NSAppleMusicUsageDescription = "для подключения к Apple Music";
-NSCameraUsageDescription = "чтобы делать снимки и совершать видеозвонки";
-NSContactsUsageDescription = "Нам необходим доступ к списку контактов, чтобы иметь возможность приглашать людей присоединиться к вам.";
-NSFaceIDUsageDescription = "для аутентификации и разблокировки доступа к приложению";
-NSLocationAlwaysAndWhenInUseUsage = "чтобы поделиться своим местоположением в режиме реального времени во время разговора";
-NSLocationWhenInUseUsageDescription = "чтобы поделиться своим местоположением в разговоре";
-NSMicrophoneUsageDescription = "совершать голосовые и видеозвонки";
-NSPhotoLibraryUsageDescription = "для изображения профиля и отправки сообщений чата";
-NSPhotoLibraryAddUsageDescription = "Сохранять фотографии и видео из бесед, а также QR-коды приглашений, в фотоальбоме устройства.";

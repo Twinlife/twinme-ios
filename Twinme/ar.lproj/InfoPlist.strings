@@ -1,9 +1,0 @@
-NSAppleMusicUsageDescription = "لتوصيل موسيقى Apple الخاصة بك";
-NSCameraUsageDescription = "لالتقاط الصور وإجراء مكالمات الفيديو";
-NSContactsUsageDescription = "نحتاج إلى الوصول إلى قائمة جهات الاتصال حتى نتمكن من دعوة الأشخاص للانضمام إليك.";
-NSFaceIDUsageDescription = "للمصادقة وفتح الوصول إلى التطبيق";
-NSLocationAlwaysAndWhenInUseUsage = "لمشاركة موقعك في الوقت الفعلي أثناء المكالمة";
-NSLocationWhenInUseUsageDescription = "لمشاركة موقعك في المحادثة";
-NSMicrophoneUsageDescription = "لإجراء مكالمات الصوت والفيديو";
-NSPhotoLibraryUsageDescription = "لصور الصفحة الشخصية وإرسال رسائل الدردشة";
-NSPhotoLibraryAddUsageDescription = "لحفظ الصور ومقاطع الفيديو من المحادثات، وكذلك رموز QR الخاصة بالدعوة، في ألبوم الصور الخاص بالجهاز.";

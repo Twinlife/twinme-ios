@@ -1,9 +1,0 @@
-NSAppleMusicUsageDescription = "Musiikin suoratoisto";
-NSCameraUsageDescription = "kuvien ottamiseen ja videopuheluiden soittamiseen";
-NSContactsUsageDescription = "Meidän on käytettävä yhteystietoluetteloasi voidaksemme kutsua ihmisiä liittymään sinuun.";
-NSFaceIDUsageDescription = "todentamaan ja avaamaan sovelluksen käyttöoikeuden";
-NSLocationAlwaysAndWhenInUseUsage = "jakaa sijaintisi reaaliajassa puhelun aikana";
-NSLocationWhenInUseUsageDescription = "jakaaksesi sijaintisi keskustelussa";
-NSMicrophoneUsageDescription = "ääni- ja videopuheluiden soittamiseen";
-NSPhotoLibraryUsageDescription = "profiilin kuviin ja pikaviestien lähettämiseen";
-NSPhotoLibraryAddUsageDescription = "Voit tallentaa keskusteluissa vaihdetut kuvat ja videot sekä kutsujen QR-koodit laitteen valokuva-albumiin.";

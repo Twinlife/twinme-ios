@@ -1,9 +1,0 @@
-NSAppleMusicUsageDescription = "để phát trực tuyến nhạc";
-NSCameraUsageDescription = "để chụp ảnh và thực hiện cuộc gọi video";
-NSFaceIDUsageDescription = "để xác thực và mở khóa truy cập ứng dụng";
-NSLocationAlwaysAndWhenInUseUsage = "để chia sẻ vị trí của bạn theo thời gian thực trong cuộc gọi";
-NSLocationWhenInUseUsageDescription = "để chia sẻ vị trí của bạn trong một cuộc trò chuyện";
-NSMicrophoneUsageDescription = "để chụp ảnh và thực hiện cuộc gọi video";
-NSPhotoLibraryUsageDescription = "để sử dụng ảnh đại diện và gửi trong các tin nhắn trò chuyện";
-NSPhotoLibraryAddUsageDescription = "Để lưu ảnh và video được trao đổi trong cuộc trò chuyện, cũng như mã QR mời, vào album ảnh của thiết bị.";
-

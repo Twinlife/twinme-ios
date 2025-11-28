@@ -1,9 +1,0 @@
-NSAppleMusicUsageDescription = "for connect your apple music";
-NSCameraUsageDescription = "to take pictures and make video calls";
-NSContactsUsageDescription = "We need to access your contact list to be able to invite people to join you.";
-NSFaceIDUsageDescription = "to authenticate and unlock access to the application";
-NSLocationAlwaysAndWhenInUseUsage = "to share your location in real-time during a call";
-NSLocationWhenInUseUsageDescription = "to share your location in a conversation";
-NSMicrophoneUsageDescription = "to make audio and video calls";
-NSPhotoLibraryUsageDescription = "for profile images and to send in chat messages";
-NSPhotoLibraryAddUsageDescription = "To save photos and videos exchanged in conversations, as well as invitation QR-codes, to the device's photo album.";

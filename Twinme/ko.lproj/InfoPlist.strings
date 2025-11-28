@@ -1,9 +1,0 @@
-NSAppleMusicUsageDescription = "애플 뮤직 연결용";
-NSCameraUsageDescription = "사진 촬영 및 영상 통화용";
-NSContactsUsageDescription = "사람을 초대하려면 연락처 목록에 액세스해야 합니다.";
-NSFaceIDUsageDescription = "애플리케이션에 대한 액세스 인증 및 잠금 해제";
-NSLocationAlwaysAndWhenInUseUsage = "통화 중에 실시간으로 위치를 공유하려면";
-NSLocationWhenInUseUsageDescription = "대화에서 위치를 공유하려면";
-NSMicrophoneUsageDescription = "음성 및 영상 통화용";
-NSPhotoLibraryUsageDescription = "프로필 이미지와 채팅 메시지 전송용";
-NSPhotoLibraryAddUsageDescription = "대화에서 교환된 사진과 비디오, 초대 QR 코드를 기기의 사진 앨범에 저장합니다.";

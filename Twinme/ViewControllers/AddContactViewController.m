@@ -1133,11 +1133,16 @@ static UIColor *DESIGN_PLACEHOLDER_COLOR;
 - (void)handleDecode:(NSString *)decodedResult {
     DDLogVerbose(@"%@ handleDecode: %@ ", LOG_TAG, decodedResult);
     
+    if ([decodedResult hasPrefix:TLTwincodeURI.PROXY_ACTION]) {
+        decodedResult = [decodedResult stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@"%@/", TLTwincodeURI.PROXY_ACTION] withString:@""];
+    }
+    
     NSURL *url = [NSURL URLWithString:decodedResult];
     if (!url) {
         [self incorrectQRCode:-1];
         return;
     }
+    
     [self.shareProfileService parseUriWithUri:url withBlock:^(TLBaseServiceErrorCode errorCode, TLTwincodeURI *uri) {
         if (errorCode != TLBaseServiceErrorCodeSuccess) {
             [self incorrectQRCode:errorCode];
@@ -1193,7 +1198,7 @@ static UIColor *DESIGN_PLACEHOLDER_COLOR;
             [acceptInvitationViewController showInView:self.navigationController.view];
         }
     } else if (twincodeUri.kind == TLTwincodeURIKindProxy) {
-        [self showProxy:twincodeUri.twincodeOptions];
+        [self showProxy:twincodeUri.uri];
     } else if (twincodeUri.kind == TLTwincodeURIKindAuthenticate) {
         [self.shareProfileService verifyAuthenticateWithURI:url withBlock:^(TLBaseServiceErrorCode errorCode, TLContact *contact) {
             if (errorCode == TLBaseServiceErrorCodeSuccess) {
@@ -1527,10 +1532,9 @@ static UIColor *DESIGN_PLACEHOLDER_COLOR;
     TLSNIProxyDescriptor *proxy = [TLSNIProxyDescriptor createWithProxyDescription:self.proxyToAdd];
     [proxies addObject:proxy];
     [[self.twinmeContext getConnectivityService] saveWithUserProxies:proxies];
-    
-    [self.navigationController popToRootViewControllerAnimated:YES];
-    
+        
     dispatch_async(dispatch_get_main_queue(), ^{
+        [self.navigationController popToRootViewControllerAnimated:YES];
         SettingsAdvancedViewController *settingsAdvancedViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"SettingsAdvancedViewController"];
         [self.navigationController pushViewController:settingsAdvancedViewController animated:YES];
     });

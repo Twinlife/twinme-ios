@@ -247,6 +247,9 @@
 		570694292CAB059800BAC643 /* CallCertifyView.m in Sources */ = {isa = PBXBuildFile; fileRef = 570694272CAB059800BAC643 /* CallCertifyView.m */; };
 		570694452CAB066600BAC643 /* SettingsIconCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 570694422CAB066600BAC643 /* SettingsIconCell.xib */; };
 		570694462CAB066600BAC643 /* SettingsIconCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 570694442CAB066600BAC643 /* SettingsIconCell.m */; };
+		572176672EC61CF4002DB76E /* ProxyView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 572176662EC61CF4002DB76E /* ProxyView.xib */; };
+		572176682EC61CF4002DB76E /* AddProxyViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 572176632EC61CF4002DB76E /* AddProxyViewController.m */; };
+		572176692EC61CF4002DB76E /* ProxyView.m in Sources */ = {isa = PBXBuildFile; fileRef = 572176652EC61CF4002DB76E /* ProxyView.m */; };
 		5725B9972D37F87500F2E04F /* AlertMessageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5725B9952D37F87500F2E04F /* AlertMessageView.m */; };
 		5725B9982D37F87500F2E04F /* AlertMessageView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5725B9962D37F87500F2E04F /* AlertMessageView.xib */; };
 		5725BAA82D39553D00F2E04F /* AbstractConfirmView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5725BAA72D39553D00F2E04F /* AbstractConfirmView.m */; };
@@ -258,6 +261,8 @@
 		574855CF2C98469300B1C6DB /* DeletedAccountViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 574855CC2C98469300B1C6DB /* DeletedAccountViewController.m */; };
 		574855D02C98469300B1C6DB /* DeleteAccountViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 574855CA2C98469300B1C6DB /* DeleteAccountViewController.m */; };
 		574855D32C9846FA00B1C6DB /* AccountViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 574855D22C9846FA00B1C6DB /* AccountViewController.m */; };
+		574DB1972EBE67EC000E1F90 /* PaddingLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 574DB1962EBE67EC000E1F90 /* PaddingLabel.m */; };
+		574DB1F12EC1E7E8000E1F90 /* InfoPlist.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 574DB1F02EC1E7E8000E1F90 /* InfoPlist.xcstrings */; };
 		574F95872E990879008A2DFF /* opensource.html in Resources */ = {isa = PBXBuildFile; fileRef = 574F95862E990879008A2DFF /* opensource.html */; };
 		5756462C2C9D979600BD77BE /* bip39_wordlist_en.txt in Resources */ = {isa = PBXBuildFile; fileRef = 5756462B2C9D979600BD77BE /* bip39_wordlist_en.txt */; };
 		5758AEFE2E2E3E7B00A970C4 /* WelcomeHelpViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5758AEFD2E2E3E7B00A970C4 /* WelcomeHelpViewController.m */; };
@@ -503,7 +508,6 @@
 		83E9618426A87C7F0071038B /* SettingsInformationCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 83E9618126A87C7F0071038B /* SettingsInformationCell.xib */; };
 		83E9618526A87C7F0071038B /* SettingsInformationCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 83E9618326A87C7F0071038B /* SettingsInformationCell.m */; };
 		83F1913521006CF2005B814D /* iPhone.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 83F1913421006CF2005B814D /* iPhone.storyboard */; };
-		83FEE0BD2617440C0007C1F1 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 83FEE0BA2617440C0007C1F1 /* InfoPlist.strings */; };
 		83FEE0E8261745180007C1F1 /* UIView+GradientBackgroundColor.m in Sources */ = {isa = PBXBuildFile; fileRef = 83FEE0DA261745170007C1F1 /* UIView+GradientBackgroundColor.m */; };
 		83FEE0E9261745180007C1F1 /* UIViewController+Utils.m in Sources */ = {isa = PBXBuildFile; fileRef = 83FEE0DB261745170007C1F1 /* UIViewController+Utils.m */; };
 		83FEE0EA261745180007C1F1 /* UIImage+ImageEffects.m in Sources */ = {isa = PBXBuildFile; fileRef = 83FEE0E2261745180007C1F1 /* UIImage+ImageEffects.m */; };
@@ -1104,13 +1108,6 @@
 		019A09BD2AB88CB1002B0033 /* SideSpaceCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = SideSpaceCell.xib; path = ViewControllers/MainViewController/SideSpaceCell.xib; sourceTree = "<group>"; };
 		019A09BE2AB88CB1002B0033 /* SideSpaceCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SideSpaceCell.h; path = ViewControllers/MainViewController/SideSpaceCell.h; sourceTree = "<group>"; };
 		019A09BF2AB88CB1002B0033 /* SideSpaceCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SideSpaceCell.m; path = ViewControllers/MainViewController/SideSpaceCell.m; sourceTree = "<group>"; };
-		019D508B287484BD0032EF84 /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
-		019D508D287484C70032EF84 /* da */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = da; path = da.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		019D508F287484D20032EF84 /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		019D5091287484DF0032EF84 /* fi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fi; path = fi.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		019D5093287484EC0032EF84 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		019D5095287484FC0032EF84 /* nb */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nb; path = nb.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		019D5097287485340032EF84 /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		01A058832822AD920068B387 /* DisplayModeCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DisplayModeCell.h; path = ViewControllers/SettingsViewController/DisplayModeCell.h; sourceTree = "<group>"; };
 		01A058842822AD920068B387 /* DisplayModeCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DisplayModeCell.m; path = ViewControllers/SettingsViewController/DisplayModeCell.m; sourceTree = "<group>"; };
 		01A058852822AD930068B387 /* DisplayModeCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = DisplayModeCell.xib; path = ViewControllers/SettingsViewController/DisplayModeCell.xib; sourceTree = "<group>"; };
@@ -1246,7 +1243,6 @@
 		47946E8C2971EBD500FE9CA6 /* ReactionCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ReactionCell.h; path = ViewControllers/ConversationViewController/ReactionCell.h; sourceTree = "<group>"; };
 		47946E8D2971EBD500FE9CA6 /* RecentsMediaViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RecentsMediaViewController.h; path = ViewControllers/ConversationViewController/RecentsMediaViewController.h; sourceTree = "<group>"; };
 		47946E8E2971EBD500FE9CA6 /* ReactionCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = ReactionCell.xib; path = ViewControllers/ConversationViewController/ReactionCell.xib; sourceTree = "<group>"; };
-		479BB65B27D3D73A00621B0B /* uk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = uk; path = uk.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		47BA61721923D3140008C131 /* Skred.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Skred.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		47BA61751923D3150008C131 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		47BA61771923D3150008C131 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -1296,7 +1292,6 @@
 		57002A8B2DEF6A3A003EDDC3 /* SearchContentMessageCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = SearchContentMessageCell.h; path = ViewControllers/ConversationsViewController/SearchContentMessageCell.h; sourceTree = "<group>"; };
 		57002A8C2DEF6A3A003EDDC3 /* SearchContentMessageCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = SearchContentMessageCell.m; path = ViewControllers/ConversationsViewController/SearchContentMessageCell.m; sourceTree = "<group>"; };
 		57002A8D2DEF6A3A003EDDC3 /* SearchContentMessageCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = SearchContentMessageCell.xib; path = ViewControllers/ConversationsViewController/SearchContentMessageCell.xib; sourceTree = "<group>"; };
-		57002F1E2E03F52A003EDDC3 /* vi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = vi; path = vi.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		570214762DAFA86E00C1EC31 /* PreviewFilesViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = PreviewFilesViewController.h; path = ViewControllers/ConversationViewController/PreviewFilesViewController.h; sourceTree = "<group>"; };
 		570214772DAFA86E00C1EC31 /* PreviewFilesViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = PreviewFilesViewController.m; path = ViewControllers/ConversationViewController/PreviewFilesViewController.m; sourceTree = "<group>"; };
 		570214792DAFA88100C1EC31 /* UIPreviewInfo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = UIPreviewInfo.h; path = ViewControllers/ConversationViewController/UIPreviewInfo.h; sourceTree = "<group>"; };
@@ -1322,6 +1317,11 @@
 		570694422CAB066600BAC643 /* SettingsIconCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = SettingsIconCell.xib; path = ViewControllers/SettingsViewController/SettingsIconCell.xib; sourceTree = "<group>"; };
 		570694432CAB066600BAC643 /* SettingsIconCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SettingsIconCell.h; path = ViewControllers/SettingsViewController/SettingsIconCell.h; sourceTree = "<group>"; };
 		570694442CAB066600BAC643 /* SettingsIconCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SettingsIconCell.m; path = ViewControllers/SettingsViewController/SettingsIconCell.m; sourceTree = "<group>"; };
+		572176622EC61CF4002DB76E /* AddProxyViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AddProxyViewController.h; path = ViewControllers/SettingsViewController/AddProxyViewController.h; sourceTree = "<group>"; };
+		572176632EC61CF4002DB76E /* AddProxyViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = AddProxyViewController.m; path = ViewControllers/SettingsViewController/AddProxyViewController.m; sourceTree = "<group>"; };
+		572176642EC61CF4002DB76E /* ProxyView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ProxyView.h; path = ViewControllers/SettingsViewController/ProxyView.h; sourceTree = "<group>"; };
+		572176652EC61CF4002DB76E /* ProxyView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = ProxyView.m; path = ViewControllers/SettingsViewController/ProxyView.m; sourceTree = "<group>"; };
+		572176662EC61CF4002DB76E /* ProxyView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = ProxyView.xib; path = ViewControllers/SettingsViewController/ProxyView.xib; sourceTree = "<group>"; };
 		5725B9942D37F87500F2E04F /* AlertMessageView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AlertMessageView.h; path = Utilities/AlertMessageView.h; sourceTree = "<group>"; };
 		5725B9952D37F87500F2E04F /* AlertMessageView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = AlertMessageView.m; path = Utilities/AlertMessageView.m; sourceTree = "<group>"; };
 		5725B9962D37F87500F2E04F /* AlertMessageView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = AlertMessageView.xib; path = Utilities/AlertMessageView.xib; sourceTree = "<group>"; };
@@ -1342,6 +1342,9 @@
 		574855CC2C98469300B1C6DB /* DeletedAccountViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DeletedAccountViewController.m; sourceTree = "<group>"; };
 		574855D12C9846FA00B1C6DB /* AccountViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AccountViewController.h; sourceTree = "<group>"; };
 		574855D22C9846FA00B1C6DB /* AccountViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AccountViewController.m; sourceTree = "<group>"; };
+		574DB1952EBE67EC000E1F90 /* PaddingLabel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = PaddingLabel.h; path = Utilities/PaddingLabel.h; sourceTree = "<group>"; };
+		574DB1962EBE67EC000E1F90 /* PaddingLabel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = PaddingLabel.m; path = Utilities/PaddingLabel.m; sourceTree = "<group>"; };
+		574DB1F02EC1E7E8000E1F90 /* InfoPlist.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = InfoPlist.xcstrings; sourceTree = "<group>"; };
 		574F95862E990879008A2DFF /* opensource.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = opensource.html; sourceTree = "<group>"; };
 		5756462B2C9D979600BD77BE /* bip39_wordlist_en.txt */ = {isa = PBXFileReference; lastKnownFileType = text; name = bip39_wordlist_en.txt; path = ../bip39_wordlist_en.txt; sourceTree = "<group>"; };
 		5758AEFC2E2E3E7B00A970C4 /* WelcomeHelpViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WelcomeHelpViewController.h; sourceTree = "<group>"; };
@@ -1713,18 +1716,6 @@
 		83E9618226A87C7F0071038B /* SettingsInformationCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SettingsInformationCell.h; path = ViewControllers/SettingsViewController/SettingsInformationCell.h; sourceTree = "<group>"; };
 		83E9618326A87C7F0071038B /* SettingsInformationCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SettingsInformationCell.m; path = ViewControllers/SettingsViewController/SettingsInformationCell.m; sourceTree = "<group>"; };
 		83F1913421006CF2005B814D /* iPhone.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = iPhone.storyboard; sourceTree = "<group>"; };
-		83FEE0BB2617440C0007C1F1 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		83FEE0C02617441C0007C1F1 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		83FEE0C32617442C0007C1F1 /* fa */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fa; path = fa.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		83FEE0C42617443E0007C1F1 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		83FEE0C7261744540007C1F1 /* he */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = he; path = he.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		83FEE0C8261744650007C1F1 /* hi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hi; path = hi.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		83FEE0CA261744740007C1F1 /* id */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = id; path = id.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		83FEE0CC261744860007C1F1 /* it */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it; path = it.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		83FEE0CE261744970007C1F1 /* pl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pl; path = pl.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		83FEE0D1261744AD0007C1F1 /* pt-PT */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-PT"; path = "pt-PT.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
-		83FEE0D2261744C10007C1F1 /* tr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = tr; path = tr.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		83FEE0D4261744D10007C1F1 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		83FEE0DA261745170007C1F1 /* UIView+GradientBackgroundColor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UIView+GradientBackgroundColor.m"; path = "Categories/UIView+GradientBackgroundColor.m"; sourceTree = "<group>"; };
 		83FEE0DB261745170007C1F1 /* UIViewController+Utils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UIViewController+Utils.m"; path = "Categories/UIViewController+Utils.m"; sourceTree = "<group>"; };
 		83FEE0DC261745170007C1F1 /* UIViewController+ProgressIndicator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIViewController+ProgressIndicator.h"; path = "Categories/UIViewController+ProgressIndicator.h"; sourceTree = "<group>"; };
@@ -2031,11 +2022,6 @@
 		83FEE40026174E710007C1F1 /* ShareSectionHeaderCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ShareSectionHeaderCell.h; path = ViewControllers/ShareViewController/ShareSectionHeaderCell.h; sourceTree = "<group>"; };
 		83FEE40126174E710007C1F1 /* ShareViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ShareViewController.m; path = ViewControllers/ShareViewController/ShareViewController.m; sourceTree = "<group>"; };
 		83FEE40226174E710007C1F1 /* ShareSectionHeaderCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = ShareSectionHeaderCell.xib; path = ViewControllers/ShareViewController/ShareSectionHeaderCell.xib; sourceTree = "<group>"; };
-		83FEE4B5261761370007C1F1 /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = Base; path = Base.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		83FEE4B7261761470007C1F1 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		83FEE4BA2617618B0007C1F1 /* ko */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ko; path = ko.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		83FEE4BC261761A00007C1F1 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		83FEE4BE261761B50007C1F1 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		9A105E20B5B2EC3578E2AEEC /* Pods-Skred.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Skred.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Skred/Pods-Skred.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -2591,7 +2577,7 @@
 				8368012A1C10CBB900D46BDC /* ApplicationDelegate.m */,
 				837FA48C1E64CCBB00E52845 /* Categories */,
 				8319C6C01E41103E008B4EF1 /* Configuration */,
-				83FEE0BA2617440C0007C1F1 /* InfoPlist.strings */,
+				574DB1F02EC1E7E8000E1F90 /* InfoPlist.xcstrings */,
 				83F1913421006CF2005B814D /* iPhone.storyboard */,
 				57BCE36B2E70A3D60049CC31 /* Localizable.xcstrings */,
 				47BA61811923D3150008C131 /* main.m */,
@@ -2738,6 +2724,8 @@
 				5781FBD72EB3C0450057324F /* OnboardingDetailView.h */,
 				5781FBD82EB3C0450057324F /* OnboardingDetailView.m */,
 				5781FBD92EB3C0450057324F /* OnboardingDetailView.xib */,
+				574DB1952EBE67EC000E1F90 /* PaddingLabel.h */,
+				574DB1962EBE67EC000E1F90 /* PaddingLabel.m */,
 				8321C0D81E818010008EB89C /* PassthroughView.h */,
 				8321C0D91E818010008EB89C /* PassthroughView.m */,
 				8393A2DF2638723D0011BAA2 /* RecordView.h */,
@@ -3038,6 +3026,8 @@
 				01995B3B28C23E79001B7BC5 /* AboutViewController.m */,
 				57784DBC2B444C0B00B52840 /* AbstractMenuView.h */,
 				57784DBA2B444C0B00B52840 /* AbstractMenuView.m */,
+				572176622EC61CF4002DB76E /* AddProxyViewController.h */,
+				572176632EC61CF4002DB76E /* AddProxyViewController.m */,
 				83FEE37C261749BD0007C1F1 /* ColorCell.h */,
 				83FEE383261749BE0007C1F1 /* ColorCell.m */,
 				83FEE369261749BC0007C1F1 /* ColorCell.xib */,
@@ -3078,6 +3068,9 @@
 				57E790E82E7472BE00759A00 /* ProxyCell.h */,
 				57E790E92E7472BE00759A00 /* ProxyCell.m */,
 				57E790EA2E7472BE00759A00 /* ProxyCell.xib */,
+				572176642EC61CF4002DB76E /* ProxyView.h */,
+				572176652EC61CF4002DB76E /* ProxyView.m */,
+				572176662EC61CF4002DB76E /* ProxyView.xib */,
 				57E790EB2E7472BE00759A00 /* ProxyViewController.h */,
 				57E790EC2E7472BE00759A00 /* ProxyViewController.m */,
 				5703BA342BC6E6DF001E3C65 /* QualityOfServicesCell.h */,
@@ -4079,7 +4072,6 @@
 				57BF13B92D021C11001459CA /* DeleteSpaceConfirmView.xib in Resources */,
 				5765D6FD2D5B62170061DD3B /* BottomConversationView.xib in Resources */,
 				01045BCB29A4CE7700769703 /* ExpirationDateCell.xib in Resources */,
-				83FEE0BD2617440C0007C1F1 /* InfoPlist.strings in Resources */,
 				47DCF2E52EB3DC57001AC393 /* tool.cfg in Resources */,
 				83FEE364261749960007C1F1 /* NotificationCell.xib in Resources */,
 				5765D7222D5B63240061DD3B /* MenuConversationButtonView.xib in Resources */,
@@ -4098,6 +4090,7 @@
 				018FB1E027A2E27D004305BC /* LinkItemCell.xib in Resources */,
 				83E123E0270ADE6600C946DC /* SettingsSectionFooterCell.xib in Resources */,
 				83FEE2C3261748300007C1F1 /* MenuSendOptionsView.xib in Resources */,
+				572176672EC61CF4002DB76E /* ProxyView.xib in Resources */,
 				83FEE2B1261748300007C1F1 /* PeerAudioItemCell.xib in Resources */,
 				83FEE387261749BE0007C1F1 /* ColorCell.xib in Resources */,
 				83FEE2EF261748900007C1F1 /* GroupMemberCell.xib in Resources */,
@@ -4235,6 +4228,7 @@
 				5765D7052D5B622A0061DD3B /* MenuActionConversationView.xib in Resources */,
 				5765D7062D5B622A0061DD3B /* MenuActionConversationCell.xib in Resources */,
 				5725B9982D37F87500F2E04F /* AlertMessageView.xib in Resources */,
+				574DB1F12EC1E7E8000E1F90 /* InfoPlist.xcstrings in Resources */,
 				5766F2322D1998FA0081877D /* CallAgainConfirmView.xib in Resources */,
 				010EC5B62A49AA5500DE3A11 /* ItemSelectedActionView.xib in Resources */,
 			);
@@ -4626,6 +4620,8 @@
 				83FEE2F9261748900007C1F1 /* SelectedGroupMemberCell.m in Sources */,
 				83FEE199261746E70007C1F1 /* TwinmeNavigationController.m in Sources */,
 				576A9AC72B7D61AD00A1FC65 /* CallNameCell.m in Sources */,
+				572176682EC61CF4002DB76E /* AddProxyViewController.m in Sources */,
+				572176692EC61CF4002DB76E /* ProxyView.m in Sources */,
 				83FEE274261748300007C1F1 /* SendButtonView.m in Sources */,
 				83FEE391261749BE0007C1F1 /* SettingsItemCell.m in Sources */,
 				019A099F2AB88786002B0033 /* EditSpaceViewController.m in Sources */,
@@ -4635,6 +4631,7 @@
 				836467D926B2B39F00ACA087 /* AdminRoomViewController.m in Sources */,
 				47DE447B28B4C1A200B0D5AD /* CallMenuView.m in Sources */,
 				01CD50832931218000748BDC /* EmojiSizeCell.m in Sources */,
+				574DB1972EBE67EC000E1F90 /* PaddingLabel.m in Sources */,
 				83FEE3C526174D0D0007C1F1 /* SelectNotificationSoundViewController.m in Sources */,
 				57F171C82E86B66200ED7DAE /* ApplicationAssertion.m in Sources */,
 				01045BC829A4CE7700769703 /* ExpirationDateCell.m in Sources */,
@@ -4817,39 +4814,6 @@
 				83E9607626A5DDA60071038B /* Base */,
 			);
 			name = MainInterface.storyboard;
-			sourceTree = "<group>";
-		};
-		83FEE0BA2617440C0007C1F1 /* InfoPlist.strings */ = {
-			isa = PBXVariantGroup;
-			children = (
-				83FEE0BB2617440C0007C1F1 /* en */,
-				83FEE0C02617441C0007C1F1 /* es */,
-				83FEE0C32617442C0007C1F1 /* fa */,
-				83FEE0C42617443E0007C1F1 /* fr */,
-				83FEE0C7261744540007C1F1 /* he */,
-				83FEE0C8261744650007C1F1 /* hi */,
-				83FEE0CA261744740007C1F1 /* id */,
-				83FEE0CC261744860007C1F1 /* it */,
-				83FEE0CE261744970007C1F1 /* pl */,
-				83FEE0D1261744AD0007C1F1 /* pt-PT */,
-				83FEE0D2261744C10007C1F1 /* tr */,
-				83FEE0D4261744D10007C1F1 /* zh-Hans */,
-				83FEE4B5261761370007C1F1 /* Base */,
-				83FEE4B7261761470007C1F1 /* ar */,
-				83FEE4BA2617618B0007C1F1 /* ko */,
-				83FEE4BC261761A00007C1F1 /* ja */,
-				83FEE4BE261761B50007C1F1 /* ru */,
-				479BB65B27D3D73A00621B0B /* uk */,
-				019D508B287484BD0032EF84 /* zh-Hant */,
-				019D508D287484C70032EF84 /* da */,
-				019D508F287484D20032EF84 /* nl */,
-				019D5091287484DF0032EF84 /* fi */,
-				019D5093287484EC0032EF84 /* de */,
-				019D5095287484FC0032EF84 /* nb */,
-				019D5097287485340032EF84 /* sv */,
-				57002F1E2E03F52A003EDDC3 /* vi */,
-			);
-			name = InfoPlist.strings;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */

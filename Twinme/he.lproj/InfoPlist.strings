@@ -1,9 +1,0 @@
-NSAppleMusicUsageDescription = "כדי להתחבר למוזיקת התפוחים שלך";
-NSCameraUsageDescription = "לצלם ולבצע שיחות וידאו";
-NSContactsUsageDescription = "עלינו לגשת לרשימת אנשי הקשר שלך כדי שנוכל להזמין אנשים להצטרף אליך.";
-NSFaceIDUsageDescription = "כדי לאמת ולפתוח את הגישה ליישום";
-NSLocationAlwaysAndWhenInUseUsage = "כדי לשתף את המיקום שלך בזמן אמת במהלך שיחה";
-NSLocationWhenInUseUsageDescription = "כדי לשתף את המיקום שלך בשיחה";
-NSMicrophoneUsageDescription = "לביצוע שיחות שמע ווידאו";
-NSPhotoLibraryUsageDescription = "לתמונות פרופיל ולשליחת שיחות צ\'אט";
-NSPhotoLibraryAddUsageDescription = "כדי לשמור תמונות וסרטונים שהוחלפו בשיחות, כמו גם קודי QR להזמנה, באלבום התמונות של המכשיר.";

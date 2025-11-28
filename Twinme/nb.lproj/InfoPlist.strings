@@ -1,9 +1,0 @@
-NSAppleMusicUsageDescription = "å streame musikk";
-NSCameraUsageDescription = "å ta bilder og ha videosamtaler";
-NSContactsUsageDescription = "Vi må ha tilgang til kontaktlisten din for å kunne invitere folk til å bli med deg.";
-NSFaceIDUsageDescription = "for å autentisere og låse opp tilgang til applikasjonen";
-NSLocationAlwaysAndWhenInUseUsage = "for å dele posisjonen din i sanntid under en samtale";
-NSLocationWhenInUseUsageDescription = "for å dele posisjonen din i en samtale";
-NSMicrophoneUsageDescription = "å ha tale- og videosamtaler";
-NSPhotoLibraryUsageDescription = "for profilbilder og for å sende inn chat-meldinger";
-NSPhotoLibraryAddUsageDescription = "For å lagre bilder og videoer utvekslet i samtaler, samt invitasjons-QR-koder, til enhetens fotoalbum.";

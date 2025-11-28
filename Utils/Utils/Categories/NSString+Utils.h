@@ -14,7 +14,7 @@
 // Interface: NSString (Utils)
 //
 
-#define TwinmeLocalizedString(key, comment) [NSString localizedStringForKey:(key) replaceValue:(comment)]
+#define TwinmeLocalizedString(key, comment) NSLocalizedString((key), (comment))
 
 @interface NSString (Utils)
 

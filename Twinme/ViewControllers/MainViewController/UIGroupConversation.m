@@ -49,7 +49,9 @@
         NSString *memberName = @"";
         for (TLGroupMember *member in self.groupMembers) {
             if ([self.lastDescriptor isTwincodeOutbound:member.peerTwincodeOutboundId]) {
-                memberName = member.memberName;
+                if (member.memberName && ![member.memberName isEqual:@""]) {
+                    memberName = member.memberName;
+                }
                 break;
             }
         }
@@ -118,13 +120,16 @@
                 break;
         }
         
-        NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc]initWithString:memberName];
-        if (![memberName isEqual:@""]) {
-            [attributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:TwinmeLocalizedString(@" : ", nil)]];
+        if (memberName) {
+            NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc]initWithString:memberName];
+            if (![memberName isEqual:@""]) {
+                [attributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:@" : "]];
+            }
+            [attributedString appendAttributedString:lastMessage];
+            return attributedString;
+        } else {
+            return lastMessage;
         }
-        [attributedString appendAttributedString:lastMessage];
-                
-        return attributedString;
     } else if (self.groupConversationStateType == TLGroupConversationStateCreated) {
         lastMessage = [[NSAttributedString alloc]initWithString:TwinmeLocalizedString(@"conversation_view_controller_invitation_accepted", nil)];
     }

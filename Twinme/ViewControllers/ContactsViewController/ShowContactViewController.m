@@ -48,6 +48,7 @@
 #import "SlideContactView.h"
 #import "MenuCertifyView.h"
 #import "UIColor+Hex.h"
+#import "PaddingLabel.h"
 #import "UIView+Toast.h"
 
 #import <TwinmeCommon/CoachMark.h>
@@ -126,7 +127,7 @@ static CGFloat DESIGN_NAME_DEFAULT_WIDTH = 420;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *settingsLabelTrailingConstraint;
 @property (weak, nonatomic) IBOutlet UILabel *settingsLabel;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *settingsNewLabelHeightConstraint;
-@property (weak, nonatomic) IBOutlet UILabel *settingsNewLabel;
+@property (weak, nonatomic) IBOutlet PaddingLabel *settingsNewLabel;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *settingsAccessoryViewTrailingConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *settingsAccessoryViewHeightConstraint;
 @property (weak, nonatomic) IBOutlet UIImageView *settingsAccessoryView;
@@ -669,11 +670,9 @@ static CGFloat DESIGN_NAME_DEFAULT_WIDTH = 420;
     self.settingsNewLabel.font = Design.FONT_MEDIUM32;
     self.settingsNewLabel.textColor = [UIColor whiteColor];
     
-    NSMutableString *messageNewFeature = [[NSMutableString alloc]initWithString:@"  "];
-    [messageNewFeature appendString:TwinmeLocalizedString(@"application_new", nil)];
-    [messageNewFeature appendString:@"  "];
-    self.settingsNewLabel.textAlignment = NSTextAlignmentNatural;
-    self.settingsNewLabel.text = messageNewFeature;
+    self.settingsNewLabel.textAlignment = NSTextAlignmentCenter;
+    self.settingsNewLabel.insets = UIEdgeInsetsMake(0, Design.TEXT_PADDING, 0, Design.TEXT_PADDING);
+    self.settingsNewLabel.text = TwinmeLocalizedString(@"application_new", nil);
     
     self.settingsNewLabel.clipsToBounds = YES;
     self.settingsNewLabel.userInteractionEnabled = YES;
