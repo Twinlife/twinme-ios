@@ -35664,6 +35664,316 @@
         }
       }
     },
+    "call_view_controller_connected_bluetooth" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تمت إعادة توجيه دفق الصوت إلى جهاز بلوتوث."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lydstrømmen er blevet omdirigeret til en Bluetooth-enhed."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der Audiostream wurde an ein Bluetooth-Gerät umgeleitet."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The audio stream has been redirected to a Bluetooth device."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La transmisión de audio se ha redirigido a un dispositivo Bluetooth."
+          }
+        },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "جریان صدا به یک دستگاه بلوتوث هدایت شده است."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Äänivirta on ohjattu uudelleen Bluetooth-laitteeseen."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le flux audio a été redirigé vers un appareil Bluetooth."
+          }
+        },
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "זרם האודיו הועבר למכשיר בלוטות'."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ऑडियो स्ट्रीम को ब्लूटूथ डिवाइस पर रीडायरेक्ट कर दिया गया है।"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aliran audio telah dialihkan ke perangkat Bluetooth."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Il flusso audio è stato reindirizzato a un dispositivo Bluetooth."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "オーディオストリームが Bluetooth デバイスにリダイレクトされました。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "오디오 스트림이 Bluetooth 기기로 리디렉션되었습니다."
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lydstrømmen er omdirigert til en Bluetooth-enhet."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "De audiostream is omgeleid naar een Bluetooth-apparaat."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Strumień audio został przekierowany do urządzenia Bluetooth."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O fluxo de áudio foi redirecionado para um dispositivo Bluetooth."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Аудиопоток перенаправлен на Bluetooth-устройство."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ljudströmmen har omdirigerats till en Bluetooth-enhet."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ses akışı bir Bluetooth cihazına yönlendirildi."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Аудіопотік перенаправлено на Bluetooth-пристрій."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Luồng âm thanh đã được chuyển hướng đến thiết bị Bluetooth."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "音频流已重定向至蓝牙设备。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "音訊串流已重新導向至藍芽裝置。 "
+          }
+        }
+      }
+    },
+    "call_view_controller_connected_speaker" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "لقد تمت إعادة توجيه مجرى الصوت إلى مكبر الصوت."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lydstrømmen er blevet omdirigeret til højttaleren."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der Audiostream wurde an den Lautsprecher umgeleitet."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The audio stream has been redirected to the speaker."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La transmisión de audio se ha redirigido al altavoz."
+          }
+        },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "جریان صدا به بلندگو هدایت شده است."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Äänivirta on ohjattu uudelleen kaiuttimeen."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le flux audio a été redirigé vers le haut-parleur."
+          }
+        },
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "זרם האודיו הועבר לרמקול."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ऑडियो स्ट्रीम को स्पीकर पर रीडायरेक्ट कर दिया गया है।"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aliran audio telah dialihkan ke speaker."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Il flusso audio è stato reindirizzato all'altoparlante."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "オーディオストリームがスピーカーにリダイレクトされました。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "오디오 스트림이 스피커로 리디렉션되었습니다."
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lydstrømmen er omdirigert til høyttaleren."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "De audiostream is omgeleid naar de luidspreker."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Strumień audio został przekierowany do głośnika."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O fluxo de áudio foi redirecionado para o altifalante."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Аудиопоток перенаправлен на динамик."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ljudströmmen har omdirigerats till högtalaren."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ses akışı hoparlöre yönlendirildi."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Аудіопотік перенаправлений на динамік."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Luồng âm thanh đã được chuyển hướng đến loa."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "音频流已重定向至扬声器。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "音訊串流已重新導向至揚聲器。"
+          }
+        }
+      }
+    },
     "call_view_controller_error_call_interrupted" : {
       "extractionState" : "manual",
       "localizations" : {
