@@ -263,6 +263,7 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
 @property (nonatomic, nullable) AbstractTwinmeService *twinmeService;
 @property (nonatomic, nullable) AbstractTwinmeContextDelegate *twinmeServiceDelegate;
 
+@property (nonatomic) AudioDeviceType currentAudioDeviceType;
 @property (nonatomic) float videoZoom;
 @property (nonatomic) float remoteZoom;
 
@@ -335,6 +336,7 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
         _getDescriptorsDone = NO;
         _hideMenuOnVideoCall = NO;
         _accessCameraGranted = NO;
+        _currentAudioDeviceType = AudioDeviceTypeNone;
         _callParticipantViewMode = CallParticipantViewModeSmallLocale;
         _callParticipantViews = [[NSMutableArray alloc]init];
         
@@ -1075,9 +1077,14 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
 }
 
 - (void)onEventWithParticipant:(nonnull CallParticipant *)participant event:(CallParticipantEvent)event {
-    DDLogVerbose(@"%@ onEventWithParticipant: %@", LOG_TAG, participant);
+    DDLogVerbose(@"%@ onEventWithParticipant: %@ - event : %d", LOG_TAG, participant, event);
     
     if (!self.uiInitialized) {
+        return;
+    }
+    
+    if (event == CallParticipantEventIdentity && [self.callService callStatus] == CallStatusTerminated) {
+        [self finish];
         return;
     }
     
@@ -1323,6 +1330,11 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
     
     CallStatus callStatus = [self.callService callStatus];
     if (CALL_IS_ACTIVE(callStatus)) {
+        
+        if ([self.callService getCurrentAudioDevice]) {
+            self.currentAudioDeviceType = [self.callService getCurrentAudioDevice].type;
+        }
+        
         [self updateView:callStatus];
         
         if (!self.hideMenuOnVideoCall) {
@@ -1379,6 +1391,34 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
 - (void)onMessageAudioSinkUpdate:(nonnull NSNotification *)notification {
     DDLogVerbose(@"%@ onMessageAudioSinkUpdate: %@", LOG_TAG, notification);
     
+    if ([self.callService getCurrentAudioDevice].type == self.currentAudioDeviceType) {
+        return;
+    }
+        
+    self.currentAudioDeviceType = [self.callService getCurrentAudioDevice].type;
+        
+    NSString *updateAudioMessage = @"";
+    
+    switch (self.currentAudioDeviceType) {
+        case AudioDeviceTypeBluetooth:
+            updateAudioMessage = TwinmeLocalizedString(@"call_view_controller_connected_bluetooth", nil);
+            break;
+            
+        case AudioDeviceTypeSpeakerPhone:
+            updateAudioMessage = TwinmeLocalizedString(@"call_view_controller_connected_speaker", nil);
+            break;
+            
+        default:
+            break;
+    }
+    
+    CallStatus callStatus = [self.callService callStatus];
+    if (CALL_IS_ACTIVE(callStatus) && ![updateAudioMessage isEqualToString:@""]) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [[UIApplication sharedApplication].keyWindow makeToast:updateAudioMessage];
+        });
+    }
+    
     [self updateMenu];
 }
 
@@ -1426,8 +1466,7 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
         
         self.showCallQuality = [self.twinmeApplication askCallQualityWithCallDuration:self.elapsedTime];
         if (self.showCallQuality) {
-            CallQualityView *callQualityView = [[CallQualityView alloc]initWithDelegate:self];
-            [callQualityView showInView:self];
+            [self showCallQualityView];
         } else {
             self.terminateTimer = [NSTimer scheduledTimerWithTimeInterval:CLOSE_DELAY target:self selector:@selector(terminateFire:) userInfo:nil repeats:NO];
         }
@@ -1662,6 +1701,13 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
 
 #pragma mark - ConfirmViewDelegate
 
+- (void)didSendCallQuality:(AbstractConfirmView *)abstractConfirmView quality:(int)quality {
+    DDLogVerbose(@"%@ didSendCallQuality: %@ quality:%d", LOG_TAG, abstractConfirmView, quality);
+    
+    [self.callService sendCallQuality:quality];
+    [abstractConfirmView closeConfirmView];
+}
+
 - (void)didTapConfirm:(nonnull AbstractConfirmView *)abstractConfirmView {
     DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractConfirmView);
     
@@ -1729,21 +1775,10 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
     DDLogVerbose(@"%@ didFinishCloseAnimation: %@", LOG_TAG, abstractConfirmView);
 
     [abstractConfirmView removeFromSuperview];
-}
-
-#pragma mark - CallQualityViewDelegate
-
-- (void)closeCallQuality {
-    DDLogVerbose(@"%@ closeCallQuality", LOG_TAG);
     
-    [self finish];
-}
-
-- (void)sendCallQuality:(int)quality {
-    DDLogVerbose(@"%@ sendCallQuality: %d", LOG_TAG, quality);
-    
-    [self.callService sendCallQuality:quality];
-    [self finish];
+    if ([abstractConfirmView isKindOfClass:[CallQualityView class]]) {
+        [self finish];
+    }
 }
 
 #pragma mark - AddCallParticipantDelegate
@@ -3329,8 +3364,7 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
         }
         
         if (self.showCallQuality) {
-            CallQualityView *callQualityView = [[CallQualityView alloc]initWithDelegate:self];
-            [callQualityView showInView:self];
+            [self showCallQualityView];
         } else {
             [self finish];
         }
@@ -3488,6 +3522,17 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
     }
 }
 
+- (void)showCallQualityView {
+    DDLogVerbose(@"%@ showCallQualityView", LOG_TAG);
+    
+    CallQualityView *callQualityView = [[CallQualityView alloc] init];
+    callQualityView.callQualityViewDelegate = self;
+    callQualityView.confirmViewDelegate = self;
+    callQualityView.forceDarkMode = YES;
+    [self.view addSubview:callQualityView];
+    [callQualityView showConfirmView];
+}
+
 - (void)updateParticipantsViewConstraint {
     DDLogVerbose(@"%@ updateParticipantsViewConstraint", LOG_TAG);
     
@@ -3627,8 +3672,12 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
             return TwinmeLocalizedString(@"video_call_view_controller_terminate_not_authorized", nil);
             
         case TLPeerConnectionServiceTerminateReasonGone:
-            return [NSString stringWithFormat:TwinmeLocalizedString(@"video_call_view_controller_terminate_gone %@", nil), self.contactName];
-            
+            if (self.elapsedTime > 0) {
+                return [NSString stringWithFormat:TwinmeLocalizedString(@"call_view_controller_error_call_interrupted", nil), terminateReason];
+            } else {
+                return [NSString stringWithFormat:TwinmeLocalizedString(@"video_call_view_controller_terminate_gone %@", nil), self.contactName];
+            }
+        
         case TLPeerConnectionServiceTerminateReasonRevoked:
             return [NSString stringWithFormat:TwinmeLocalizedString(@"video call terminated: %@ has revoked this identity", nil), self.contactName];
             

@@ -1,16 +1,16 @@
 /*
- *  Copyright (c) 2022 twinlife SA.
+ *  Copyright (c) 2022-2025 twinlife SA.
  *  SPDX-License-Identifier: AGPL-3.0-only
  *
  *  Contributors:
  *   Fabrice Trescartes (Fabrice.Trescartes@twin.life)
  */
 
+#import "AbstractConfirmView.h"
+
 @protocol CallQualityViewDelegate <NSObject>
 
-- (void)closeCallQuality;
-
-- (void)sendCallQuality:(int)quality;
+- (void)didSendCallQuality:(nonnull AbstractConfirmView *)abstractConfirmView quality:(int)quality;
 
 @end
 
@@ -18,10 +18,8 @@
 // Interface: CallQualityView
 //
 
-@interface CallQualityView : UIViewController
+@interface CallQualityView : AbstractConfirmView
 
-- (instancetype)initWithDelegate:(id<CallQualityViewDelegate>)callQualityViewDelegate;
-
-- (void)showInView:(UIViewController *)view;
+@property (weak, nonatomic) id<CallQualityViewDelegate> callQualityViewDelegate;
 
 @end
