@@ -22,6 +22,7 @@
 #import "PeerVideoItem.h"
 #import "Item.h"
 #import "UIPreviewMedia.h"
+#import "TwinmeSlider.h"
 
 #import <Utils/NSString+Utils.h>
 
@@ -62,7 +63,7 @@ static const CGFloat DESIGN_ACTION_PREVIEW_HEIGHT = 380;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *sliderHeightConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *sliderLeadingConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *sliderTrailingConstraint;
-@property (weak, nonatomic) IBOutlet UISlider *slider;
+@property (weak, nonatomic) IBOutlet TwinmeSlider *slider;
 
 @property (nonatomic) AVPlayer *videoPlayer;
 @property (nonatomic) AVPlayerLayer *playerLayer;
@@ -110,18 +111,20 @@ static const CGFloat DESIGN_ACTION_PREVIEW_HEIGHT = 380;
     [self.playView addGestureRecognizer:playPauseTapGesture];
     
     self.playImageViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
-    self.playImageView.image = [UIImage imageNamed:@"AudioItemPlayerPause"];
+    self.playImageView.image = [UIImage imageNamed:@"AudioItemPlayerPlay"];
     self.playImageView.tintColor = [UIColor whiteColor];
     
     self.videoTimerLabelTopConstraint.constant *= Design.HEIGHT_RATIO;
     
     self.videoTimerLabel.textColor = [UIColor whiteColor];
     self.videoTimerLabel.font = Design.FONT_REGULAR28;
+    self.videoTimerLabel.text = @"";
     
     self.videoDurationLabelTopConstraint.constant *= Design.HEIGHT_RATIO;
     
     self.videoDurationLabel.textColor = [UIColor whiteColor];
     self.videoDurationLabel.font = Design.FONT_REGULAR28;
+    self.videoDurationLabel.text = @"";
     
     self.messageLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
     self.messageLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
@@ -276,6 +279,12 @@ static const CGFloat DESIGN_ACTION_PREVIEW_HEIGHT = 380;
     }
     
     return NO;
+}
+
+- (BOOL)isPlayerControlVisible {
+    DDLogVerbose(@"%@ isPlayerControlVisible", LOG_TAG);
+    
+    return !self.actionView.hidden;
 }
 
 - (void)onTouchUpInsideContentView:(UITapGestureRecognizer *)tapGesture {

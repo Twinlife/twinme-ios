@@ -259,6 +259,8 @@
 		573185A02C90A6FB001F484A /* MenuCertifyView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5731859D2C90A6FB001F484A /* MenuCertifyView.xib */; };
 		573185A12C90A6FB001F484A /* MenuCertifyView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5731859C2C90A6FB001F484A /* MenuCertifyView.m */; };
 		573185A52C90A706001F484A /* AuthentifiedRelationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 573185A42C90A706001F484A /* AuthentifiedRelationViewController.m */; };
+		5746E9502EEC3A0800FC36DE /* FullScreenMediaCollectionView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5746E94F2EEC3A0800FC36DE /* FullScreenMediaCollectionView.m */; };
+		5746E9532EEC3A1F00FC36DE /* TwinmeSlider.m in Sources */ = {isa = PBXBuildFile; fileRef = 5746E9522EEC3A1F00FC36DE /* TwinmeSlider.m */; };
 		574855CF2C98469300B1C6DB /* DeletedAccountViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 574855CC2C98469300B1C6DB /* DeletedAccountViewController.m */; };
 		574855D02C98469300B1C6DB /* DeleteAccountViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 574855CA2C98469300B1C6DB /* DeleteAccountViewController.m */; };
 		574855D32C9846FA00B1C6DB /* AccountViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 574855D22C9846FA00B1C6DB /* AccountViewController.m */; };
@@ -1337,6 +1339,10 @@
 		573185A32C90A706001F484A /* AuthentifiedRelationViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AuthentifiedRelationViewController.h; sourceTree = "<group>"; };
 		573185A42C90A706001F484A /* AuthentifiedRelationViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AuthentifiedRelationViewController.m; sourceTree = "<group>"; };
 		5739B2172B63F36200B15E26 /* TwinmeCommonFramework.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = TwinmeCommonFramework.xcodeproj; path = TwinmeCommonFramework/TwinmeCommonFramework.xcodeproj; sourceTree = "<group>"; };
+		5746E94E2EEC3A0800FC36DE /* FullScreenMediaCollectionView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FullScreenMediaCollectionView.h; sourceTree = "<group>"; };
+		5746E94F2EEC3A0800FC36DE /* FullScreenMediaCollectionView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FullScreenMediaCollectionView.m; sourceTree = "<group>"; };
+		5746E9512EEC3A1F00FC36DE /* TwinmeSlider.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = TwinmeSlider.h; path = Utilities/TwinmeSlider.h; sourceTree = "<group>"; };
+		5746E9522EEC3A1F00FC36DE /* TwinmeSlider.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = TwinmeSlider.m; path = Utilities/TwinmeSlider.m; sourceTree = "<group>"; };
 		574855C92C98469300B1C6DB /* DeleteAccountViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DeleteAccountViewController.h; sourceTree = "<group>"; };
 		574855CA2C98469300B1C6DB /* DeleteAccountViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DeleteAccountViewController.m; sourceTree = "<group>"; };
 		574855CB2C98469300B1C6DB /* DeletedAccountViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DeletedAccountViewController.h; sourceTree = "<group>"; };
@@ -2133,6 +2139,8 @@
 				012C79472A670697000B819C /* FullScreenImageCell.h */,
 				012C794C2A670698000B819C /* FullScreenImageCell.m */,
 				012C79462A670697000B819C /* FullScreenImageCell.xib */,
+				5746E94E2EEC3A0800FC36DE /* FullScreenMediaCollectionView.h */,
+				5746E94F2EEC3A0800FC36DE /* FullScreenMediaCollectionView.m */,
 				012C79482A670697000B819C /* FullScreenMediaViewController.h */,
 				012C79492A670697000B819C /* FullScreenMediaViewController.m */,
 				012C794B2A670697000B819C /* FullScreenVideoCell.h */,
@@ -2746,6 +2754,8 @@
 				83237C91278C377800FCE0E7 /* TwincodeView.xib */,
 				5781FCE92EB4D38F0057324F /* TwinmeSearchController.h */,
 				5781FCEA2EB4D38F0057324F /* TwinmeSearchController.m */,
+				5746E9512EEC3A1F00FC36DE /* TwinmeSlider.h */,
+				5746E9522EEC3A1F00FC36DE /* TwinmeSlider.m */,
 				0120D5EF279EC0E0006876AC /* TwinmeTextField.h */,
 				0120D5F0279EC0E0006876AC /* TwinmeTextField.m */,
 				5777AAC52C11F610003130CD /* UIAppInfo.h */,
@@ -4462,6 +4472,7 @@
 				57638ACC2C5137FC0006DEC8 /* MapView.m in Sources */,
 				01795E8E291A6FEA00C56352 /* EnableNotificationCell.m in Sources */,
 				57ABEDA32B454EED00D0F1C8 /* MenuIconCell.m in Sources */,
+				5746E9532EEC3A1F00FC36DE /* TwinmeSlider.m in Sources */,
 				837803F0238C193F004C5F7D /* AbstractTwinmeViewController.m in Sources */,
 				477F785027C6B97E00C8ACF1 /* ClearItem.m in Sources */,
 				01CC21502967225600C96A66 /* UINotification.m in Sources */,
@@ -4532,6 +4543,7 @@
 				573185A12C90A6FB001F484A /* MenuCertifyView.m in Sources */,
 				57D5AD2D2CEB837B00D46A0C /* LogsViewController.m in Sources */,
 				83FEE2A5261748300007C1F1 /* TypingView.m in Sources */,
+				5746E9502EEC3A0800FC36DE /* FullScreenMediaCollectionView.m in Sources */,
 				5765D7762D5B666E0061DD3B /* PreviewLocationViewController.m in Sources */,
 				837803F6238C1BEC004C5F7D /* ZoomSlider.m in Sources */,
 				01045BC929A4CE7700769703 /* ExpirationPeriodCell.m in Sources */,

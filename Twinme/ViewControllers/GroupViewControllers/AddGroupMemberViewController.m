@@ -512,7 +512,11 @@ static const int CONTACTS_VIEW_SECTION = 1;
         NSIndexPath *deletedIndexPath = [NSIndexPath indexPathForItem:indexContact inSection:0];
         [self.uiMembers removeObjectAtIndex:indexContact];
         [selectedMemberCell.membersCollectionView deleteItemsAtIndexPaths:@[deletedIndexPath]];
-        [addGroupMemberCell setChecked:NO];
+        
+        if ([addGroupMemberCell isKindOfClass:[AddGroupMemberCell class]]) {
+            [addGroupMemberCell setChecked:NO];
+        }
+        
     } else {
         BOOL isMaxGroupMembers = NO;
         if (self.group) {
@@ -538,7 +542,10 @@ static const int CONTACTS_VIEW_SECTION = 1;
         NSIndexPath *insertedIndexPath = [NSIndexPath indexPathForItem:self.uiMembers.count - 1 inSection:0];
         [selectedMemberCell.membersCollectionView insertItemsAtIndexPaths:@[insertedIndexPath]];
         [selectedMemberCell.membersCollectionView scrollToItemAtIndexPath:insertedIndexPath atScrollPosition:UICollectionViewScrollPositionRight animated:YES];
-        [addGroupMemberCell setChecked:YES];
+        
+        if ([addGroupMemberCell isKindOfClass:[AddGroupMemberCell class]]) {
+            [addGroupMemberCell setChecked:YES];
+        }
     }
     
     [self updateSelectedMemberView];

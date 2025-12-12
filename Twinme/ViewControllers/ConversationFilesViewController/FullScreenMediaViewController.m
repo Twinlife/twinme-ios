@@ -36,6 +36,7 @@
 #import "DeviceAuthorization.h"
 #import "UIView+Toast.h"
 #import "DeleteConfirmView.h"
+#import "FullScreenMediaCollectionView.h"
 
 #if 0
 static const int ddLogLevel = DDLogLevelVerbose;
@@ -52,7 +53,7 @@ static NSString *FULL_SCREEN_VIDEO_CELL_IDENTIFIER = @"FullScreenVideoCellIdenti
 
 @interface FullScreenMediaViewController ()<UICollectionViewDelegate, UICollectionViewDataSource, FullScreenMediaDelegate, ConversationFilesServiceDelegate, ConfirmViewDelegate>
 
-@property (weak, nonatomic) IBOutlet UICollectionView *mediaCollectionView;
+@property (weak, nonatomic) IBOutlet FullScreenMediaCollectionView *mediaCollectionView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *headerViewHeightConstraint;
 @property (weak, nonatomic) IBOutlet UIView *headerView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *closeViewWidthConstraint;
@@ -87,6 +88,7 @@ static NSString *FULL_SCREEN_VIDEO_CELL_IDENTIFIER = @"FullScreenVideoCellIdenti
 @property (nonatomic) NSInteger currentItemIndex;
 @property (nonatomic) int startIndex;
 @property (nonatomic) BOOL initScroll;
+@property (nonatomic) BOOL startVideo;
 
 @property (nonatomic) BOOL hideAction;
 @property (nonatomic) AudioSessionManager *audioSessionManager;
@@ -113,6 +115,8 @@ static NSString *FULL_SCREEN_VIDEO_CELL_IDENTIFIER = @"FullScreenVideoCellIdenti
     if (self) {
         _hideAction = NO;
         _initScroll = NO;
+        _startVideo = NO;
+        _currentItemIndex = -1;
         _conversationFileService = [[ConversationFilesService alloc] initWithTwinmeContext:self.twinmeContext delegate:self];
         _audioSessionManager = [[AudioSessionManager alloc] init];
     }
@@ -168,6 +172,8 @@ static NSString *FULL_SCREEN_VIDEO_CELL_IDENTIFIER = @"FullScreenVideoCellIdenti
         } else {
            [self.mediaCollectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UICollectionViewScrollPositionNone animated:NO];
         }
+        
+        [self updateCurrentItem];
     }
 }
 
@@ -312,11 +318,6 @@ static NSString *FULL_SCREEN_VIDEO_CELL_IDENTIFIER = @"FullScreenVideoCellIdenti
                 FullScreenImageCell *fullScreenImageCell = (FullScreenImageCell *)cell;
                 [fullScreenImageCell resetZoom];
             }
-        } else if (item.type == ItemTypeVideo || item.type == ItemTypePeerVideo) {
-            if ([cell isKindOfClass:[FullScreenVideoCell class]]) {
-                FullScreenVideoCell *fullScreenVideoCell = (FullScreenVideoCell *)cell;
-                [fullScreenVideoCell stopVideo];
-            }
         }
     }
 }
@@ -365,12 +366,24 @@ static NSString *FULL_SCREEN_VIDEO_CELL_IDENTIFIER = @"FullScreenVideoCellIdenti
             self.saveItemView.alpha = 1.f;
         }
         
-        if (item.type == ItemTypeVideo || item.type == ItemTypePeerVideo) {
+        if (self.startVideo && (item.type == ItemTypeVideo || item.type == ItemTypePeerVideo)) {
             FullScreenVideoCell *fullScreenVideoCell = (FullScreenVideoCell *)cell;
-            [fullScreenVideoCell playVideoWithAudioSession:self.audioSessionManager];
-            // Record the video item so that we can stop it correctly if we leave the view.
-            self.videoItem = fullScreenVideoCell;
+            if ([fullScreenVideoCell isKindOfClass:[FullScreenVideoCell class]]) {
+                self.startVideo = NO;
+                [fullScreenVideoCell playVideoWithAudioSession:self.audioSessionManager];
+                self.videoItem = fullScreenVideoCell;
+                self.mediaCollectionView.isVideoControlVisible = self.videoItem.isPlayerControlVisible;
+            }
         }
+    }
+}
+
+
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
+    DDLogVerbose(@"%@ scrollViewDidEndDecelerating: %@", LOG_TAG, scrollView);
+    
+    if (scrollView == self.mediaCollectionView) {
+        [self updateCurrentItem];
     }
 }
 
@@ -386,6 +399,8 @@ static NSString *FULL_SCREEN_VIDEO_CELL_IDENTIFIER = @"FullScreenVideoCellIdenti
         self.footerView.hidden = YES;
         self.headerView.hidden = YES;
     }
+    
+    self.mediaCollectionView.isVideoControlVisible = !self.hideAction;
 }
 
 #pragma mark - ConfirmViewDelegate
@@ -444,7 +459,7 @@ static NSString *FULL_SCREEN_VIDEO_CELL_IDENTIFIER = @"FullScreenVideoCellIdenti
             [fullScreenImageCell resetZoom];
         }
     }
-    
+
     [self.mediaCollectionView.collectionViewLayout invalidateLayout];
 }
 
@@ -460,6 +475,7 @@ static NSString *FULL_SCREEN_VIDEO_CELL_IDENTIFIER = @"FullScreenVideoCellIdenti
     self.mediaCollectionView.pagingEnabled = YES;
     self.mediaCollectionView.dataSource = self;
     self.mediaCollectionView.delegate = self;
+    self.mediaCollectionView.isVideoControlVisible = YES;
     [self.mediaCollectionView registerNib:[UINib nibWithNibName:@"FullScreenImageCell" bundle:nil] forCellWithReuseIdentifier:FULL_SCREEN_IMAGE_CELL_IDENTIFIER];
     [self.mediaCollectionView registerNib:[UINib nibWithNibName:@"FullScreenVideoCell" bundle:nil] forCellWithReuseIdentifier:FULL_SCREEN_VIDEO_CELL_IDENTIFIER];
     
@@ -791,25 +807,59 @@ static NSString *FULL_SCREEN_VIDEO_CELL_IDENTIFIER = @"FullScreenVideoCellIdenti
 - (void)getVisibleItem {
     DDLogVerbose(@"%@ getVisibleItem", LOG_TAG);
     
-    NSArray *indexPaths = self.mediaCollectionView.indexPathsForVisibleItems;
-    
-    if (indexPaths.count > 0) {
-        NSIndexPath *first = [indexPaths firstObject];
-        self.currentItem = [self.items objectAtIndex:first.row];
+    if (self.currentItemIndex < 0 || self.currentItemIndex >= self.items.count) {
+        return;
     }
+    
+    self.currentItem = [self.items objectAtIndex:self.currentItemIndex];
 }
 
 - (NSInteger)getCurrentIndex {
     DDLogVerbose(@"%@ getCurrentIndex", LOG_TAG);
     
-    NSArray *indexPaths = self.mediaCollectionView.indexPathsForVisibleItems;
+    CGFloat width = self.mediaCollectionView.bounds.size.width;
+    CGFloat offset = self.mediaCollectionView.contentOffset.x;
+
+    NSInteger index = (NSInteger)lround(offset / width);
+    return index;
+}
+
+- (void)updateCurrentItem {
+    DDLogVerbose(@"%@ updateCurrentItem", LOG_TAG);
     
-    if (indexPaths.count > 0) {
-        NSIndexPath *first = [indexPaths firstObject];
-        return first.row;
+    NSInteger lastIndex = self.currentItemIndex;
+    self.currentItemIndex = [self getCurrentIndex];
+    
+    if (lastIndex == self.currentItemIndex) {
+        return;
     }
     
-    return -1;
+    if (self.currentItem && lastIndex != -1) {
+        if (self.currentItem.type == ItemTypeVideo || self.currentItem.type == ItemTypePeerVideo) {
+            FullScreenVideoCell *fullScreenVideoCell = (FullScreenVideoCell *)[self.mediaCollectionView cellForItemAtIndexPath:[NSIndexPath indexPathForRow:lastIndex inSection:0]];
+            if ([fullScreenVideoCell isKindOfClass:[FullScreenVideoCell class]]) {
+                [fullScreenVideoCell stopVideo];
+            }
+        }
+    }
+    
+    [self getVisibleItem];
+    
+    if (self.currentItem) {
+        if (self.currentItem.type == ItemTypeVideo || self.currentItem.type == ItemTypePeerVideo) {
+            self.mediaCollectionView.isCurrentItemVideo = YES;
+            FullScreenVideoCell *fullScreenVideoCell = (FullScreenVideoCell *)[self.mediaCollectionView cellForItemAtIndexPath:[NSIndexPath indexPathForRow:self.currentItemIndex inSection:0]];
+            if ([fullScreenVideoCell isKindOfClass:[FullScreenVideoCell class]]) {
+                [fullScreenVideoCell playVideoWithAudioSession:self.audioSessionManager];
+                self.videoItem = fullScreenVideoCell;
+                self.mediaCollectionView.isVideoControlVisible = self.videoItem.isPlayerControlVisible;
+            } else {
+                self.startVideo = YES;
+            }
+        } else {
+            self.mediaCollectionView.isCurrentItemVideo = NO;
+        }
+    }
 }
 
 - (void)openDeleteConfirmView:(UIImage *)avatar {

@@ -53,13 +53,13 @@ static const int ddLogLevel = DDLogLevelWarning;
     
     self.iconViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     self.iconViewLeadingConstraint.constant *= Design.WIDTH_RATIO;
-        
+    
     self.iconView.clipsToBounds = YES;
     self.iconView.layer.cornerRadius = self.iconViewHeightConstraint.constant * 0.5f;
     self.iconView.alpha = 0.f;
     
     self.iconImageViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
-
+    
     self.titleLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
     self.titleLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
     
@@ -87,13 +87,14 @@ static const int ddLogLevel = DDLogLevelWarning;
     self.iconImageView.image = actionConversation.icon;
     self.iconImageView.image = [self.iconImageView.image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     self.iconImageView.tintColor = actionConversation.iconColor;
-        
-   [UIView animateWithDuration:0.2 delay:delay options: UIViewAnimationOptionCurveEaseInOut animations:^{
-        self.iconView.alpha = 1.0f;
-        self.titleLabel.alpha = 1.0f;
+    
+    CGFloat alpha = actionConversation.enabled ? 1.0f : 0.5f;
+    [UIView animateWithDuration:0.2 delay:delay options: UIViewAnimationOptionCurveEaseInOut animations:^{
+        self.iconView.alpha = alpha;
+        self.titleLabel.alpha = alpha;
     } completion:^(BOOL finished) {
     }];
-        
+    
     [self updateColor];
     [self updateFont];
 }

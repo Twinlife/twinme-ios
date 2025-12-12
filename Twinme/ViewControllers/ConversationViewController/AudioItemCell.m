@@ -23,6 +23,7 @@
 
 #import "AudioItem.h"
 #import "ConversationViewController.h"
+
 #import <TwinmeCommon/AudioPlayerManager.h>
 
 #import "AnnotationCell.h"
@@ -80,6 +81,14 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
 @property (weak, nonatomic) IBOutlet AudioTrackView *audioTrackView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *durationLabelBottomConstraint;
 @property (weak, nonatomic) IBOutlet UILabel *durationLabel;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *speedViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *speedViewWidthConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *speedViewTrailingConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *speedViewBottomConstraint;
+@property (weak, nonatomic) IBOutlet UIView *speedView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *speedLabelLeadingConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *speedLabelTrailingConstraint;
+@property (weak, nonatomic) IBOutlet UILabel *speedLabel;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *stateImageViewHeightConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *stateImageViewTrailingConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *stateImageViewBottomConstraint;
@@ -185,7 +194,7 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
     self.playerButtonView.backgroundColor = [UIColor whiteColor];
     self.playerButtonView.layer.cornerRadius = self.playerButtonViewHeightConstraint.constant * 0.5;
     
-    UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleplayerButtonViewTapGestureRecognizer:)];
+    UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handlePlayerButtonViewTapGestureRecognizer:)];
     [self.playerButtonView addGestureRecognizer:tapGesture];
     [tapGesture requireGestureRecognizerToFail:longPressGesture];
     [tapContentGesture requireGestureRecognizerToFail:longPressGesture];
@@ -215,6 +224,26 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
     self.durationLabelBottomConstraint.constant *= Design.HEIGHT_RATIO;
     self.durationLabel.font = Design.FONT_MEDIUM26;
     self.durationLabel.textColor = [UIColor whiteColor];
+    
+    self.speedViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    self.speedViewWidthConstraint.constant *= Design.WIDTH_RATIO;
+    self.speedViewTrailingConstraint.constant *= Design.WIDTH_RATIO;
+    self.speedViewBottomConstraint.constant *= Design.HEIGHT_RATIO;
+    
+    self.speedView.clipsToBounds = YES;
+    self.speedView.hidden = YES;
+    self.speedView.backgroundColor = [UIColor whiteColor];
+    self.speedView.layer.cornerRadius = self.speedViewHeightConstraint.constant * 0.5;
+    
+    UITapGestureRecognizer *tapSpeedGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSpeedViewTapGestureRecognizer:)];
+    [self.speedView addGestureRecognizer:tapSpeedGesture];
+    [tapSpeedGesture requireGestureRecognizerToFail:longPressGesture];
+    
+    self.speedLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
+    self.speedLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
+    
+    self.speedLabel.font = Design.FONT_MEDIUM26;
+    self.speedLabel.textColor = [UIColor blackColor];
     
     self.stateImageViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     self.stateImageViewTrailingConstraint.constant *= Design.WIDTH_RATIO;
@@ -319,7 +348,7 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
     self.checkMarkView.hidden = YES;
     self.checkMarkView.backgroundColor = [UIColor whiteColor];
     self.checkMarkImageView.tintColor = Design.MAIN_COLOR;
-    
+        
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(proximityChanged) name:UIDeviceProximityStateDidChangeNotification object:nil];
 }
 
@@ -344,6 +373,7 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
     self.replyView.hidden = YES;
     self.replyToImageContentView.hidden = YES;
     self.replyLabel.text = nil;
+    self.speedView.hidden = YES;
     
     if ([UIDevice currentDevice].proximityMonitoringEnabled) {
         [UIDevice currentDevice].proximityMonitoringEnabled = NO;
@@ -383,7 +413,7 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
     
     self.url = [audioItem.audioDescriptor getURL];
     
-    int nbLines = self.audioTrackViewWidthConstraint.constant / 2;
+    int nbLines = self.audioTrackViewWidthConstraint.constant / AUDIO_TRACK_LINE_SPACE;
     if (!self.audioTrackLoader) {
         self.audioTrackLoader = [[AsyncAudioTrackLoader alloc] initWithItem:item audioDescriptor:audioItem.audioDescriptor nbLines:nbLines];
         [asyncManager addItemWithAsyncLoader:self.audioTrackLoader];
@@ -401,6 +431,8 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
     }
     
     self.durationLabel.text = [NSString convertWithInterval:audioItem.audioDescriptor.duration format:format];
+    [self updateRate];
+    
     self.contentDeleteAudioView.hidden = YES;
     
     [self.contentAudioView setBackgroundColor:[[conversationViewController getCustomAppearance] getMessageBackgroundColor]];
@@ -514,7 +546,8 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
     
     if (self.item.isEphemeralItem) {
         self.ephemeralView.hidden = NO;
-        
+        self.speedViewTrailingConstraint.constant = self.ephemeralViewTrailingConstraint.constant * 2 + self.ephemeralViewHeightConstraint.constant;
+
         if (self.updateEphemeralTimer) {
             [self.updateEphemeralTimer invalidate];
             self.updateEphemeralTimer = nil;
@@ -524,6 +557,7 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
         self.updateEphemeralTimer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(updateEphemeralView) userInfo:nil repeats:YES];
     } else {
         self.ephemeralView.hidden = YES;
+        self.speedViewTrailingConstraint.constant = self.ephemeralViewTrailingConstraint.constant;
     }
     
     self.stateImageView.backgroundColor = [UIColor clearColor];
@@ -952,8 +986,8 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
     self.replyToImageContentView.layer.mask = maskReplyImage;
 }
 
-- (void)handleplayerButtonViewTapGestureRecognizer:(UITapGestureRecognizer *)recognizer {
-    DDLogVerbose(@"%@ handleplayerButtonViewTapGestureRecognizer: %@",LOG_TAG, recognizer);
+- (void)handlePlayerButtonViewTapGestureRecognizer:(UITapGestureRecognizer *)recognizer {
+    DDLogVerbose(@"%@ handlePlayerButtonViewTapGestureRecognizer: %@",LOG_TAG, recognizer);
     
     if (self.isSelectItemMode) {
         if ([self.selectItemDelegate respondsToSelector:@selector(didSelectItem:)]) {
@@ -967,9 +1001,11 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
     AudioPlayerManager *audioPlayerManager = [AudioPlayerManager sharedInstance];
     audioPlayerManager.descriptorId = self.item.descriptorId;
 
+    [self updateRate];
     if (!self.isPaused) {
         self.pauseImageView.hidden = NO;
         self.playerImageView.hidden = YES;
+        self.speedView.hidden = NO;
         [UIDevice currentDevice].proximityMonitoringEnabled = YES;
         [audioPlayerManager playWithURL:self.url currentTime:self.currentTime startPlayingBlock:^{
             self.timer = [NSTimer scheduledTimerWithTimeInterval:0.05 target:self selector:@selector(updateTime:) userInfo:nil repeats:YES];
@@ -978,10 +1014,21 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
     } else {
         self.pauseImageView.hidden = YES;
         self.playerImageView.hidden = NO;
+        self.speedView.hidden = YES;
         [UIDevice currentDevice].proximityMonitoringEnabled = NO;
         [audioPlayerManager pause];
         self.isPaused = NO;
         self.currentTime = [audioPlayerManager currentPlaybackTime];
+    }
+}
+
+- (void)handleSpeedViewTapGestureRecognizer:(UITapGestureRecognizer *)recognizer {
+    DDLogVerbose(@"%@ handleSpeedViewTapGestureRecognizer: %@",LOG_TAG, recognizer);
+    
+    if (recognizer.state == UIGestureRecognizerStateEnded) {
+        AudioPlayerManager *audioPlayerManager = [AudioPlayerManager sharedInstance];
+        [audioPlayerManager updateRate];
+        [self updateRate];
     }
 }
 
@@ -1008,10 +1055,10 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
             format = @"hh:mm:ss";
         }
         self.durationLabel.text = [NSString convertWithInterval:duration - playbackTime format:format];
-        
         if (![audioPlayerManager isPlaying]) {
             self.pauseImageView.hidden = YES;
             self.playerImageView.hidden = NO;
+            self.speedView.hidden = YES;
             [audioPlayerManager stop];
             self.isPaused = NO;
             [self.timer invalidate];
@@ -1027,6 +1074,18 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
         [self.timer invalidate];
         self.pauseImageView.hidden = YES;
         self.playerImageView.hidden = NO;
+        self.speedView.hidden = YES;
+    }
+}
+
+- (void)updateRate {
+    DDLogVerbose(@"%@ updateRate", LOG_TAG);
+    
+    AudioPlayerManager *audioPlayerManager = [AudioPlayerManager sharedInstance];
+    if (fmod(audioPlayerManager.rate, 1) != 0) {
+        self.speedLabel.text = [NSString stringWithFormat:@"%.1fx", audioPlayerManager.rate];
+    } else {
+        self.speedLabel.text = [NSString stringWithFormat:@"%.0fx", audioPlayerManager.rate];
     }
 }
 

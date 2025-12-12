@@ -10,6 +10,9 @@
 // Interface: AudioTrackView
 //
 
+#define AUDIO_TRACK_LINE_SPACE 8.f
+#define AUDIO_TRACK_LINE_WIDTH 4.f
+
 @class AudioTrack;
 
 @protocol AudioTrackViewDelegate;

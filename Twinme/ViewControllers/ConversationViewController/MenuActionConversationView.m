@@ -56,7 +56,7 @@ static NSString *MENU_ACTION_CONVERSATION_CELL_IDENTIFIER = @"MenuActionConversa
 
 #pragma mark - UIView
 
-- (instancetype)initWithSpaceSettings:(nonnull TLSpaceSettings *)spaceSettings {
+- (instancetype)initWithSpaceSettings:(nonnull TLSpaceSettings *)spaceSettings sendAllowed:(BOOL)sendAllowed {
     DDLogVerbose(@"%@ init", LOG_TAG);
     
     NSArray *objects = [[NSBundle mainBundle] loadNibNamed:@"MenuActionConversationView" owner:self options:nil];
@@ -67,6 +67,7 @@ static NSString *MENU_ACTION_CONVERSATION_CELL_IDENTIFIER = @"MenuActionConversa
     if (self) {
         _spaceSettings = spaceSettings;
         _startCellAnimation = NO;
+        _sendAllowed = sendAllowed;
         [self initViews];
     }
     return self;
@@ -77,13 +78,13 @@ static NSString *MENU_ACTION_CONVERSATION_CELL_IDENTIFIER = @"MenuActionConversa
     
     self.actions = [[NSMutableArray alloc]init];
     
-    [self.actions addObject:[[UIActionConversation alloc]initWithConversationActionType:ConversationActionTypeCamera spaceSettings:self.spaceSettings]];
-    [self.actions addObject:[[UIActionConversation alloc]initWithConversationActionType:ConversationActionTypeGallery spaceSettings:self.spaceSettings]];
-    [self.actions addObject:[[UIActionConversation alloc]initWithConversationActionType:ConversationActionTypeFile spaceSettings:self.spaceSettings]];
-    [self.actions addObject:[[UIActionConversation alloc]initWithConversationActionType:ConversationActionTypeLocation spaceSettings:self.spaceSettings]];
-    [self.actions addObject:[[UIActionConversation alloc]initWithConversationActionType:ConversationActionTypeMediasAndFiles spaceSettings:self.spaceSettings]];
-    [self.actions addObject:[[UIActionConversation alloc]initWithConversationActionType:ConversationActionTypeManageConversation spaceSettings:self.spaceSettings]];
-    [self.actions addObject:[[UIActionConversation alloc]initWithConversationActionType:ConversationActionTypeReset spaceSettings:self.spaceSettings]];
+    [self.actions addObject:[[UIActionConversation alloc]initWithConversationActionType:ConversationActionTypeCamera spaceSettings:self.spaceSettings enabled:self.sendAllowed]];
+    [self.actions addObject:[[UIActionConversation alloc]initWithConversationActionType:ConversationActionTypeGallery spaceSettings:self.spaceSettings enabled:self.sendAllowed]];
+    [self.actions addObject:[[UIActionConversation alloc]initWithConversationActionType:ConversationActionTypeFile spaceSettings:self.spaceSettings enabled:self.sendAllowed]];
+    [self.actions addObject:[[UIActionConversation alloc]initWithConversationActionType:ConversationActionTypeLocation spaceSettings:self.spaceSettings enabled:self.sendAllowed]];
+    [self.actions addObject:[[UIActionConversation alloc]initWithConversationActionType:ConversationActionTypeMediasAndFiles spaceSettings:self.spaceSettings enabled:YES]];
+    [self.actions addObject:[[UIActionConversation alloc]initWithConversationActionType:ConversationActionTypeManageConversation spaceSettings:self.spaceSettings enabled:YES]];
+    [self.actions addObject:[[UIActionConversation alloc]initWithConversationActionType:ConversationActionTypeReset spaceSettings:self.spaceSettings enabled:YES]];
 }
 
 - (void)openMenu {

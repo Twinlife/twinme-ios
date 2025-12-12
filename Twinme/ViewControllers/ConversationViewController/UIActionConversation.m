@@ -24,13 +24,14 @@
 
 @implementation UIActionConversation
 
-- (nonnull instancetype)initWithConversationActionType:(ConversationActionType)conversationActionType spaceSettings:(nullable TLSpaceSettings *)spaceSettings {
+- (nonnull instancetype)initWithConversationActionType:(ConversationActionType)conversationActionType spaceSettings:(nullable TLSpaceSettings *)spaceSettings enabled:(BOOL)enabled {
     
     self = [super init];
     
     if (self) {
         _conversationActionType = conversationActionType;
         _spaceSettings = spaceSettings;
+        _enabled = enabled;
         [self initAction];
     }
     return self;
