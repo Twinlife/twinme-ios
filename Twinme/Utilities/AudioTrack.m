@@ -23,6 +23,8 @@ static const int ddLogLevel = DDLogLevelVerbose;
 static const int ddLogLevel = DDLogLevelWarning;
 #endif
 
+static const NSString * VERSION_SEPARTOR = @"\n";
+
 //
 // Interface: AudioTrack ()
 //
@@ -46,19 +48,24 @@ static const int ddLogLevel = DDLogLevelWarning;
     DDLogVerbose(@"%@ initWithURL: %@ nbLines: %d save: %d", LOG_TAG, urlAsset, nbLines, save);
     
     self = [super init];
+    
     if (self) {
         NSFileManager *fileManager = [NSFileManager defaultManager];
         NSString *dataFilePath = [NSString stringWithCString:urlAsset.fileSystemRepresentation encoding:NSUTF8StringEncoding];
         dataFilePath = [dataFilePath stringByDeletingPathExtension];
         dataFilePath = [dataFilePath stringByAppendingPathExtension:@"dat"];
-
+        
         if ([fileManager fileExistsAtPath:dataFilePath]) {
-            _trackData = [NSData dataWithContentsOfFile:dataFilePath];
+            _trackData = [AudioTrack readTrackFromFile:dataFilePath];
+            if (!_trackData) {
+                [fileManager removeItemAtPath:dataFilePath error:nil];
+                _trackData = [AudioTrack readTrack:urlAsset nbLines:nbLines save:YES];
+            }
         } else {
             _trackData = [AudioTrack readTrack:urlAsset nbLines:nbLines save:save];
         }
     }
-
+    
     return self;
 }
 
@@ -107,10 +114,9 @@ static const int ddLogLevel = DDLogLevelWarning;
         float maxSample = 0;
         float countSample = 0;
         NSMutableArray *dataSamples = [[NSMutableArray alloc] initWithCapacity:nbLines];
-        float durationInSeconds = (assetReader.asset.duration.value / assetReader.asset.duration.timescale);
-        UInt64 samplesPerLine = (durationInSeconds * sampleRate) / nbLines;
+        float totalSample = [AudioTrack countSample:soundTrackAsset];
+        UInt64 samplesPerLine = totalSample / nbLines;        
         [assetReader startReading];
-        
         while (assetReader.status == AVAssetReaderStatusReading) {
             AVAssetReaderTrackOutput *trackOutput = (AVAssetReaderTrackOutput *)[assetReader.outputs objectAtIndex:0];
             CMSampleBufferRef sampleBufferRef = [trackOutput copyNextSampleBuffer];
@@ -139,7 +145,6 @@ static const int ddLogLevel = DDLogLevelWarning;
                     }
                     
                     countSample++;
-                    
                     if (countSample > samplesPerLine) {
                         [dataSamples addObject:[NSNumber numberWithFloat:(float)maxSample]];
                         maxSample = 0;
@@ -152,23 +157,38 @@ static const int ddLogLevel = DDLogLevelWarning;
             }
         }
         
+        if (countSample > 0 && dataSamples.count < nbLines) {
+            [dataSamples addObject:[NSNumber numberWithFloat:(float)maxSample]];
+        }
+        
         NSMutableData *trackData = [[NSMutableData alloc] init];
         for (NSNumber *dataSample in dataSamples) {
             float value = [dataSample floatValue] / maxAmplitude;
             [trackData appendBytes:&value length:sizeof(float)];
         }
-
+        
         // Return what we have without saving.
         if (!save) {
             return trackData;
         }
-
+        
         if (assetReader.status == AVAssetReaderStatusCompleted) {
             NSString *dataFilePath = [urlAsset.URLByDeletingPathExtension absoluteString];
             dataFilePath = [dataFilePath stringByAppendingPathExtension:@"dat"];
             NSURL *urlToSave = [NSURL URLWithString:dataFilePath];
             NSError *error;
-            BOOL success = [trackData writeToURL:urlToSave options:NSDataWritingAtomic error:&error];
+            
+            NSString *version = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
+            NSString *appVersion = [NSString stringWithFormat:@"v%@", version];
+            NSData *versionData = [appVersion dataUsingEncoding:NSUTF8StringEncoding];
+            NSData *separtorData = [VERSION_SEPARTOR dataUsingEncoding:NSUTF8StringEncoding];
+            
+            NSMutableData *fileData = [NSMutableData data];
+            [fileData appendData:versionData];
+            [fileData appendData:separtorData];
+            [fileData appendData:trackData];
+            
+            BOOL success = [fileData writeToURL:urlToSave options:NSDataWritingAtomic error:&error];
             if (success) {
                 return trackData;
             }
@@ -176,6 +196,64 @@ static const int ddLogLevel = DDLogLevelWarning;
     }
     
     return nil;
+}
+
++ (CGFloat)countSample:(AVURLAsset *)soundTrackAsset {
+    
+    UInt64 totalSample = 0;
+    AVAssetReader *assetReader = [[AVAssetReader alloc]initWithAsset:soundTrackAsset error:nil];
+    AVAssetTrack *assetTrack = assetReader.asset.tracks.firstObject;
+    NSDictionary *outputSettings = [[NSDictionary alloc] initWithObjectsAndKeys:
+                                    [NSNumber numberWithInt:kAudioFormatLinearPCM],AVFormatIDKey,
+                                    [NSNumber numberWithInt:16],AVLinearPCMBitDepthKey,
+                                    [NSNumber numberWithBool:NO],AVLinearPCMIsBigEndianKey,
+                                    [NSNumber numberWithBool:NO],AVLinearPCMIsFloatKey,
+                                    [NSNumber numberWithBool:NO],AVLinearPCMIsNonInterleaved,
+                                    nil];
+    
+    if (assetTrack) {
+        AVAssetReaderTrackOutput *trackOutput = [[AVAssetReaderTrackOutput alloc] initWithTrack:assetTrack outputSettings:outputSettings];
+        [assetReader addOutput:trackOutput];
+        [assetReader startReading];
+        while (assetReader.status == AVAssetReaderStatusReading) {
+            AVAssetReaderTrackOutput *trackOutput = (AVAssetReaderTrackOutput *)[assetReader.outputs objectAtIndex:0];
+            CMSampleBufferRef sampleBufferRef = [trackOutput copyNextSampleBuffer];
+            
+            if (sampleBufferRef) {
+                CMItemCount numSamples = CMSampleBufferGetNumSamples(sampleBufferRef);
+                totalSample += numSamples;
+                CMSampleBufferInvalidate(sampleBufferRef);
+                CFRelease(sampleBufferRef);
+            }
+        }
+    }
+    
+    return totalSample;
+}
+
++ (nullable NSData *)readTrackFromFile:(nonnull NSString *)filePath {
+ 
+    NSData *data = [NSData dataWithContentsOfFile:filePath];
+    if (!data) {
+        return nil;
+    }
+    
+    NSData *separatorData = [VERSION_SEPARTOR dataUsingEncoding:NSUTF8StringEncoding];
+    NSRange separatorRange = [data rangeOfData:separatorData options:0 range:NSMakeRange(0, data.length)];
+
+    if (separatorRange.location == NSNotFound) {
+        return nil;
+    }
+    
+    NSData *versionData = [data subdataWithRange:NSMakeRange(0, separatorRange.location)];
+    NSString *version = [[NSString alloc] initWithData:versionData encoding:NSUTF8StringEncoding];
+    
+    if (!version || ![version hasPrefix:@"v"]) {
+        return nil;
+    }
+    
+    NSUInteger trackStart = separatorRange.location + separatorRange.length;
+    return [data subdataWithRange:NSMakeRange(trackStart, data.length - trackStart)];
 }
 
 @end

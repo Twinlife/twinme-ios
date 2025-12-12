@@ -24,7 +24,7 @@
     
     if (self) {
         _videoDescriptor = videoDescriptor;
-        self.copyAllowed = YES;
+        self.copyAllowed = videoDescriptor.copyAllowed;
     }
     return self;
 }

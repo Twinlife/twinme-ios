@@ -15,9 +15,6 @@
 #import <TwinmeCommon/AudioTrack.h>
 #import "ConversationViewController.h"
 
-static CGFloat DESIGN_LINE_SPACE = 2;
-static CGFloat DESIGN_LINE_WIDTH = 1;
-
 //
 // Interface: AudioTrackView
 //
@@ -129,24 +126,25 @@ static CGFloat DESIGN_LINE_WIDTH = 1;
         
         [self addSubview:self.trackView];
         [self addSubview:self.progressView];
+                
+        const float *samples = (const float *)self.trackData.bytes;
+        NSInteger sampleCount = self.trackData.length / sizeof(float);
+        float startX = AUDIO_TRACK_LINE_WIDTH * 0.5;
         
-        float *samples = (float *)self.trackData.bytes;
-        NSInteger sampleCount = (self.trackData.length - sizeof(float)) / sizeof(float);
-        float startX = 1;
-        
+        CGFloat originalHeight = self.frame.size.height - AUDIO_TRACK_LINE_WIDTH;
         UIBezierPath *lineBezierPath = [UIBezierPath bezierPath];
         for (int sample = 0; sample < sampleCount; sample++) {
-            float lineHeight = self.frame.size.height * samples[sample];
+            float lineHeight = originalHeight * samples[sample];
             float startY = (self.frame.size.height - fabs(lineHeight)) / 2;
             [lineBezierPath moveToPoint:CGPointMake(startX, startY)];
             [lineBezierPath addLineToPoint:CGPointMake(startX, startY + lineHeight)];
             
-            startX += DESIGN_LINE_SPACE;
+            startX += AUDIO_TRACK_LINE_SPACE;
         }
         
         CAShapeLayer *sampleLayer = [CAShapeLayer layer];
         sampleLayer.path = lineBezierPath.CGPath;
-        sampleLayer.lineWidth = DESIGN_LINE_WIDTH;
+        sampleLayer.lineWidth = AUDIO_TRACK_LINE_WIDTH;
         sampleLayer.lineJoin = kCALineJoinRound;
         sampleLayer.lineCap = kCALineCapRound;
         sampleLayer.fillColor = self.lineColor.CGColor;
@@ -155,7 +153,7 @@ static CGFloat DESIGN_LINE_WIDTH = 1;
         
         CAShapeLayer *sampleProgressLayer = [CAShapeLayer layer];
         sampleProgressLayer.path = lineBezierPath.CGPath;
-        sampleProgressLayer.lineWidth = DESIGN_LINE_WIDTH;
+        sampleProgressLayer.lineWidth = AUDIO_TRACK_LINE_WIDTH;
         sampleProgressLayer.lineJoin = kCALineJoinRound;
         sampleProgressLayer.lineCap = kCALineCapRound;
         sampleProgressLayer.fillColor = self.progressColor.CGColor;

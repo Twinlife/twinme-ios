@@ -20,12 +20,13 @@
 
 @implementation UIActionConversation
 
-- (nonnull instancetype)initWithConversationActionType:(ConversationActionType)conversationActionType {
+- (nonnull instancetype)initWithConversationActionType:(ConversationActionType)conversationActionType enabled:(BOOL)enabled {
     
     self = [super init];
     
     if (self) {
         _conversationActionType = conversationActionType;
+        _enabled = enabled;
         [self initAction];
     }
     return self;

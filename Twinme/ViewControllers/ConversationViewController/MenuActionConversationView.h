@@ -27,6 +27,9 @@
 @interface MenuActionConversationView : UIView
 
 @property (weak, nonatomic) id<MenuActionConversationDelegate> menuActionConversationDelegate;
+@property (nonatomic) BOOL sendAllowed;
+
+- (instancetype)init:(BOOL)sendAllowed;
 
 - (void)openMenu;
 

@@ -363,6 +363,8 @@ typedef enum {
 @property (nonatomic) BOOL errorMediaPicking;
 
 @property (nonatomic) BOOL editingMessage;
+@property (nonatomic) BOOL sendAllowed;
+
 @property (nonatomic) CGFloat textInputBarHeight;
 
 @end
@@ -409,6 +411,7 @@ typedef enum {
         _selectItemMode = NO;
         _menuSendOptionsOpen = NO;
         _editingMessage = NO;
+        _sendAllowed = YES;
         _messageFont = Design.FONT_REGULAR32;
         _scaleFont = 1.0;
         _scrollIndicatorCount = 0;
@@ -911,15 +914,8 @@ typedef enum {
         self.navigationItem.titleView.frame = CGRectMake(0, 0, profileViewWidth, Design.STANDARD_NAVIGATION_BAR_HEIGHT);
     }
     
-    if (![self.groupConversation hasPermissionWithPermission:TLPermissionTypeSendMessage]) {
-        self.textView.editable = NO;
-        self.sendButtonView.hidden = YES;
-        self.textView.placeholder = TwinmeLocalizedString(@"conversation_view_controller_group_not_allowed_post_message", nil);
-    } else {
-        self.textView.editable = YES;
-        self.sendButtonView.hidden = NO;
-        self.textView.placeholder = TwinmeLocalizedString(@"conversation_view_controller_message", nil);
-    }
+    self.sendAllowed = [self.groupConversation hasPermissionWithPermission:TLPermissionTypeSendMessage];
+    [self updateGroupPermissions];
     
     [self updateInCall];
 }
@@ -1788,15 +1784,8 @@ typedef enum {
             self.navigationItem.titleView.frame = CGRectMake(0, 0, profileViewWidth, Design.STANDARD_NAVIGATION_BAR_HEIGHT);
         }
         
-        if (![conversation hasPermissionWithPermission:TLPermissionTypeSendMessage]) {
-            self.textView.editable = NO;
-            self.sendButtonView.hidden = YES;
-            self.textView.placeholder = TwinmeLocalizedString(@"conversation_view_controller_group_not_allowed_post_message", nil);
-        } else {
-            self.textView.editable = YES;
-            self.sendButtonView.hidden = NO;
-            self.textView.placeholder = TwinmeLocalizedString(@"conversation_view_controller_message", nil);
-        }
+        self.sendAllowed = [conversation hasPermissionWithPermission:TLPermissionTypeSendMessage];
+        [self updateGroupPermissions];
     }
 }
 
@@ -2243,7 +2232,7 @@ typedef enum {
         [self dismissKeyboard:YES];
         
         if (!self.menuActionConversationView) {
-            self.menuActionConversationView = [[MenuActionConversationView alloc]init];
+            self.menuActionConversationView = [[MenuActionConversationView alloc]init:self.sendAllowed];
             self.menuActionConversationView.menuActionConversationDelegate = self;
             [self.navigationController.view addSubview:self.menuActionConversationView];
         }
@@ -2277,6 +2266,7 @@ typedef enum {
     
     if (recognizer.state == UIGestureRecognizerStateEnded) {
         [self hapticFeedback];
+        
         [self dismissKeyboard:YES];
         [self openCamera];
     }
@@ -2287,6 +2277,13 @@ typedef enum {
     
     if (recognizer.state == UIGestureRecognizerStateEnded) {
         [self hapticFeedback];
+        
+        if (!self.sendAllowed) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [[UIApplication sharedApplication].keyWindow makeToast:TwinmeLocalizedString(@"conversation_view_controller_group_not_allowed_post_message", nil)];
+            });
+            return;
+        }
         
         AVAudioSessionRecordPermission audioSessionRecordPermission = [DeviceAuthorization deviceMicrophonePermissionStatus];
         switch (audioSessionRecordPermission) {
@@ -2352,6 +2349,13 @@ typedef enum {
     DDLogVerbose(@"%@ didPressRightButton", LOG_TAG);
     
     [self hapticFeedback];
+    
+    if (!self.sendAllowed) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [[UIApplication sharedApplication].keyWindow makeToast:TwinmeLocalizedString(@"conversation_view_controller_group_not_allowed_post_message", nil)];
+        });
+        return;
+    }
     
     BOOL sentSomething = NO;
     BOOL allowCopyText = self.twinmeApplication.allowCopyText;
@@ -3509,7 +3513,7 @@ typedef enum {
         BOOL isFileToSend = NO;
         BOOL isTextToSend = NO;
         
-        if ([self.selectedMedias count] > 0 || [self.self.selectedFiles count] > 0) {
+        if ([self.selectedMedias count] > 0 || [self.selectedFiles count] > 0 || (self.voiceMessageRecorderView && [self.voiceMessageRecorderView isVoiceMessageToSend])) {
             isFileToSend = YES;
         }
         if ([self.textView.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]].length > 0) {
@@ -5184,7 +5188,7 @@ typedef enum {
     DDLogVerbose(@"%@ addTransientObjectDescriptor: %@", LOG_TAG, transientObjectDescriptor);
     
     NSObject *object = transientObjectDescriptor.object;
-    
+
     if ([object isKindOfClass:[TLTyping class]]) {
         TLTyping *typing = (TLTyping *)object;
         NSUUID *twincodeOutboundId = transientObjectDescriptor.descriptorId.twincodeOutboundId;
@@ -6044,6 +6048,13 @@ typedef enum {
 - (void)openCamera {
     DDLogVerbose(@"%@ openCamera", LOG_TAG);
     
+    if (!self.sendAllowed) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [[UIApplication sharedApplication].keyWindow makeToast:TwinmeLocalizedString(@"conversation_view_controller_group_not_allowed_post_message", nil)];
+        });
+        return;
+    }
+    
     AVAuthorizationStatus cameraAuthorizationStatus = [DeviceAuthorization deviceCameraAuthorizationStatus];
     switch (cameraAuthorizationStatus) {
         case AVAuthorizationStatusNotDetermined: {
@@ -6085,6 +6096,13 @@ typedef enum {
 - (void)openGallery {
     DDLogVerbose(@"%@ openGallery", LOG_TAG);
     
+    if (!self.sendAllowed) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [[UIApplication sharedApplication].keyWindow makeToast:TwinmeLocalizedString(@"conversation_view_controller_group_not_allowed_post_message", nil)];
+        });
+        return;
+    }
+    
     if (@available(iOS 14, *)) {
         PHPickerConfiguration *config = [[PHPickerConfiguration alloc] init];
         config.selectionLimit = 10;
@@ -6105,6 +6123,13 @@ typedef enum {
 
 - (void)openFile {
     DDLogVerbose(@"%@ openFile", LOG_TAG);
+    
+    if (!self.sendAllowed) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [[UIApplication sharedApplication].keyWindow makeToast:TwinmeLocalizedString(@"conversation_view_controller_group_not_allowed_post_message", nil)];
+        });
+        return;
+    }
     
     UIDocumentPickerViewController *documentPicker = [[UIDocumentPickerViewController alloc] initWithDocumentTypes:@[(__bridge NSString*)(kUTTypeData),(__bridge NSString*)(kUTTypeContent)] inMode:UIDocumentPickerModeImport];
     documentPicker.delegate = self;
@@ -6345,6 +6370,30 @@ typedef enum {
     } else {
         self.scrollIndicatorCountLabel.hidden = NO;
         self.scrollIndicatorViewWidthConstraint.constant = DESIGN_SCROLL_INDICATOR_WIDTH * Design.WIDTH_RATIO;
+    }
+}
+
+- (void)updateGroupPermissions {
+    DDLogVerbose(@"%@ updateGroupPermissions", LOG_TAG);
+    
+    if (!self.sendAllowed) {
+        self.sendButtonView.alpha = 0.5f;
+        self.textView.editable = NO;
+        self.textView.placeholder = TwinmeLocalizedString(@"conversation_view_controller_group_not_allowed_post_message", nil);
+        
+        if (self.textViewRightView) {
+            self.textViewRightView.cameraView.alpha = 0.5f;
+            self.textViewRightView.microView.alpha = 0.5f;
+        }
+    } else {
+        self.textView.editable = YES;
+        self.sendButtonView.alpha = 1.0f;
+        self.textView.placeholder = TwinmeLocalizedString(@"conversation_view_controller_message", nil);
+        
+        if (self.textViewRightView) {
+            self.textViewRightView.cameraView.alpha = 1.0f;
+            self.textViewRightView.microView.alpha = 1.0f;
+        }
     }
 }
 

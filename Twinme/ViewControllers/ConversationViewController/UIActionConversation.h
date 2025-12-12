@@ -25,7 +25,8 @@ typedef enum {
 @property (nonatomic, nonnull) NSString *title;
 @property (nonatomic, nonnull) UIImage *icon;
 @property (nonatomic, nonnull) UIColor *iconColor;
+@property (nonatomic,) BOOL enabled;
 
-- (nonnull instancetype)initWithConversationActionType:(ConversationActionType)conversationActionType;
+- (nonnull instancetype)initWithConversationActionType:(ConversationActionType)conversationActionType enabled:(BOOL)enabled;
 
 @end

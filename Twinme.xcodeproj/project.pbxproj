@@ -925,6 +925,10 @@
 		5739B1402B5FA78700B15E26 /* OnboardingSpaceFirstPartCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 5739B1382B5FA78700B15E26 /* OnboardingSpaceFirstPartCell.m */; };
 		5739B1412B5FA78700B15E26 /* OnboardingSpaceSecondPartCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 5739B13A2B5FA78700B15E26 /* OnboardingSpaceSecondPartCell.m */; };
 		5739B1422B5FA78700B15E26 /* OnboardingSpaceFirstPartCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5739B13B2B5FA78700B15E26 /* OnboardingSpaceFirstPartCell.xib */; };
+		5746E8F22EEC005700FC36DE /* TwinmeSlider.m in Sources */ = {isa = PBXBuildFile; fileRef = 5746E8F12EEC005700FC36DE /* TwinmeSlider.m */; };
+		5746E8F32EEC005700FC36DE /* TwinmeSlider.m in Sources */ = {isa = PBXBuildFile; fileRef = 5746E8F12EEC005700FC36DE /* TwinmeSlider.m */; };
+		5746E8F62EEC07F100FC36DE /* FullScreenMediaCollectionView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5746E8F52EEC07F100FC36DE /* FullScreenMediaCollectionView.m */; };
+		5746E8F72EEC07F100FC36DE /* FullScreenMediaCollectionView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5746E8F52EEC07F100FC36DE /* FullScreenMediaCollectionView.m */; };
 		574769312DE6E5270043C66F /* EditMessageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 574769302DE6E5270043C66F /* EditMessageView.m */; };
 		574769352DE6E54D0043C66F /* EditMessageView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 574769342DE6E54D0043C66F /* EditMessageView.xib */; };
 		574DB1142EBE3873000E1F90 /* PaddingLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 574DB1132EBE3873000E1F90 /* PaddingLabel.m */; };
@@ -2084,6 +2088,10 @@
 		5739B1392B5FA78700B15E26 /* OnboardingSpaceViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OnboardingSpaceViewController.h; sourceTree = "<group>"; };
 		5739B13A2B5FA78700B15E26 /* OnboardingSpaceSecondPartCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OnboardingSpaceSecondPartCell.m; sourceTree = "<group>"; };
 		5739B13B2B5FA78700B15E26 /* OnboardingSpaceFirstPartCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = OnboardingSpaceFirstPartCell.xib; sourceTree = "<group>"; };
+		5746E8F02EEC005700FC36DE /* TwinmeSlider.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = TwinmeSlider.h; path = Utilities/TwinmeSlider.h; sourceTree = "<group>"; };
+		5746E8F12EEC005700FC36DE /* TwinmeSlider.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = TwinmeSlider.m; path = Utilities/TwinmeSlider.m; sourceTree = "<group>"; };
+		5746E8F42EEC07F100FC36DE /* FullScreenMediaCollectionView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FullScreenMediaCollectionView.h; sourceTree = "<group>"; };
+		5746E8F52EEC07F100FC36DE /* FullScreenMediaCollectionView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FullScreenMediaCollectionView.m; sourceTree = "<group>"; };
 		5747692F2DE6E5270043C66F /* EditMessageView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = EditMessageView.h; path = ViewControllers/ConversationViewController/EditMessageView.h; sourceTree = "<group>"; };
 		574769302DE6E5270043C66F /* EditMessageView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = EditMessageView.m; path = ViewControllers/ConversationViewController/EditMessageView.m; sourceTree = "<group>"; };
 		574769342DE6E54D0043C66F /* EditMessageView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = EditMessageView.xib; path = ViewControllers/ConversationViewController/EditMessageView.xib; sourceTree = "<group>"; };
@@ -3087,6 +3095,8 @@
 				01C3DDBC2A657AEC001077B5 /* FullScreenImageCell.xib */,
 				01C3DDAF2A657AA2001077B5 /* FullScreenMediaViewController.h */,
 				01C3DDB02A657AA2001077B5 /* FullScreenMediaViewController.m */,
+				5746E8F42EEC07F100FC36DE /* FullScreenMediaCollectionView.h */,
+				5746E8F52EEC07F100FC36DE /* FullScreenMediaCollectionView.m */,
 				01C3DDBF2A657AFD001077B5 /* FullScreenVideoCell.h */,
 				01C3DDC02A657AFD001077B5 /* FullScreenVideoCell.m */,
 				01C3DDC12A657AFD001077B5 /* FullScreenVideoCell.xib */,
@@ -3507,6 +3517,8 @@
 				5781FC982EB4D1570057324F /* TwinmeSearchController.m */,
 				0120D5D0279B0C21006876AC /* TwinmeTextField.h */,
 				0120D5D1279B0C21006876AC /* TwinmeTextField.m */,
+				5746E8F02EEC005700FC36DE /* TwinmeSlider.h */,
+				5746E8F12EEC005700FC36DE /* TwinmeSlider.m */,
 				5777AA642C11E74F003130CD /* UIAppInfo.h */,
 				5777AA652C11E74F003130CD /* UIAppInfo.m */,
 				011EB9C927B5579D00B01B3E /* Update */,
@@ -5679,6 +5691,7 @@
 				83CE1A8A264EB641008A1E3A /* MenuItemCell.m in Sources */,
 				8333922F1DE4E2050043679C /* AlertView.m in Sources */,
 				5703C14B2BFDC333001E3C65 /* SettingsGroupViewController.m in Sources */,
+				5746E8F72EEC07F100FC36DE /* FullScreenMediaCollectionView.m in Sources */,
 				837481AC216FCC6D00B51687 /* ShowGroupViewController.m in Sources */,
 				01BC486E2A9DF90C00366A98 /* TransferCallViewController.m in Sources */,
 				837481A6216FCC6D00B51687 /* CreateGroupViewController.m in Sources */,
@@ -5873,6 +5886,7 @@
 				8372CCF4242355BB009D4264 /* UIProfile.m in Sources */,
 				5765D59C2D5B4E570061DD3B /* BottomConversationView.m in Sources */,
 				8348E9E5249BC5B900AB33DA /* TabBarViewController.m in Sources */,
+				5746E8F22EEC005700FC36DE /* TwinmeSlider.m in Sources */,
 				019D5064286B35940032EF84 /* CallParticipantLocaleView.m in Sources */,
 				01D932BA29F0376100175376 /* InvitationExternalCallViewController.m in Sources */,
 				836600F424782C3A008C3141 /* PeerInvitationContactItemCell.m in Sources */,
@@ -6048,6 +6062,7 @@
 				47CD184E2E9CF7DB00F0E361 /* MenuItemCell.m in Sources */,
 				47CD184F2E9CF7DB00F0E361 /* AlertView.m in Sources */,
 				47CD18502E9CF7DB00F0E361 /* SettingsGroupViewController.m in Sources */,
+				5746E8F62EEC07F100FC36DE /* FullScreenMediaCollectionView.m in Sources */,
 				47CD18512E9CF7DB00F0E361 /* ShowGroupViewController.m in Sources */,
 				47CD18522E9CF7DB00F0E361 /* TransferCallViewController.m in Sources */,
 				47CD18532E9CF7DB00F0E361 /* CreateGroupViewController.m in Sources */,
@@ -6242,6 +6257,7 @@
 				47CD190D2E9CF7DB00F0E361 /* UIProfile.m in Sources */,
 				47CD190E2E9CF7DB00F0E361 /* BottomConversationView.m in Sources */,
 				47CD190F2E9CF7DB00F0E361 /* TabBarViewController.m in Sources */,
+				5746E8F32EEC005700FC36DE /* TwinmeSlider.m in Sources */,
 				47CD19102E9CF7DB00F0E361 /* CallParticipantLocaleView.m in Sources */,
 				47CD19112E9CF7DB00F0E361 /* InvitationExternalCallViewController.m in Sources */,
 				47CD19122E9CF7DB00F0E361 /* PeerInvitationContactItemCell.m in Sources */,

@@ -27,9 +27,6 @@
 #import <TwinmeCommon/TwinmeApplication.h>
 #import <TwinmeCommon/Utils.h>
 
-static CGFloat DESIGN_LINE_SPACE = 2;
-static CGFloat DESIGN_LINE_WIDTH = 1;
-
 static CGFloat DESIGN_AUDIO_TRACK_INITIAL_LEADING = 10;
 
 static CGFloat MIN_DECIBEL = 45;
@@ -154,7 +151,7 @@ static CGFloat MIN_DECIBEL = 45;
         self.recorder.meteringEnabled = YES;
         [self.recorder prepareToRecord];
         [self.recorder record];
-        self.timer = [NSTimer scheduledTimerWithTimeInterval:0.05 target:self selector:@selector(updateTime) userInfo:nil repeats:YES];
+        self.timer = [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(updateTime) userInfo:nil repeats:YES];
         
         self.pauseRecordView.hidden = NO;
         self.trashView.hidden = NO;
@@ -299,9 +296,9 @@ static CGFloat MIN_DECIBEL = 45;
 }
 
 - (void)resetViews {
-        
+
     [self stopRecording];
-    self.startLine = 0;
+    self.startLine = AUDIO_TRACK_LINE_WIDTH * 0.5;
     self.recorderTime = 0;
     
     if (self.trackView) {
@@ -625,23 +622,27 @@ static CGFloat MIN_DECIBEL = 45;
 
 - (void)drawLine:(float)power {
     
-    float scaleFactor = self.trackView.frame.size.height / MIN_DECIBEL;
+    float scaleFactor = (self.trackView.frame.size.height - AUDIO_TRACK_LINE_WIDTH) / MIN_DECIBEL;
     float lineHeight = (MIN_DECIBEL - fabsf(power)) * scaleFactor;
     float startY = (self.trackView.frame.size.height - lineHeight) / 2;
+    
+    if (self.startLine == 0) {
+        self.startLine = AUDIO_TRACK_LINE_WIDTH * 0.5;
+    }
     
     CAShapeLayer *lineLayer = [CAShapeLayer layer];
     UIBezierPath *lineBezierPath = [UIBezierPath bezierPath];
     [lineBezierPath moveToPoint:CGPointMake(self.startLine, startY)];
     [lineBezierPath addLineToPoint:CGPointMake(self.startLine, startY + lineHeight)];
     lineLayer.path = lineBezierPath.CGPath;
-    lineLayer.lineWidth = DESIGN_LINE_WIDTH;
+    lineLayer.lineWidth = AUDIO_TRACK_LINE_WIDTH;
     lineLayer.lineJoin = kCALineJoinRound;
     lineLayer.lineCap = kCALineCapRound;
     lineLayer.fillColor = [UIColor whiteColor].CGColor;
     lineLayer.strokeColor = [UIColor whiteColor].CGColor;
     [self.trackView.layer addSublayer:lineLayer];
     
-    self.startLine += DESIGN_LINE_SPACE;
+    self.startLine += AUDIO_TRACK_LINE_SPACE;
     
     [self.trackView setFrame:CGRectMake(0, 0, self.startLine, self.trackView.frame.size.height)];
     [self.trackScrollView setContentSize:CGSizeMake(self.trackView.frame.size.width, self.trackScrollView.frame.size.height)];

@@ -12,8 +12,8 @@
 #include? "Pods/Target Support Files/Pods-twinme/Pods-twinme.debug.xcconfig"
 #include? "Pods/Target Support Files/Pods-twinme-plus/Pods-twinme-plus.debug.xcconfig"
 
-VERSION_NUMBER=31.6
+VERSION_NUMBER=31.7
 
-BUILD_NUMBER=346
+BUILD_NUMBER=347
 
 GCC_PREPROCESSOR_DEFINITIONS=$(inherited) TWINME

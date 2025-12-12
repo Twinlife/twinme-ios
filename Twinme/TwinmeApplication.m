@@ -73,8 +73,14 @@ static const int ddLogLevel = DDLogLevelWarning;
 #define DISPLAY_CALLS_MODE @"DisplayCallsMode"
 #define PROFILE_UPDATE_MODE @"ProfileUpdateMode"
 #define SHOW_GROUP_CALL_ANIMATION @"DefaultShowGroupCallAnimation"
+#define AUDIO_ITEM_RATE @"AudioItemRate"
 
 #define DEFAULT_COLOR @"#00AEFF"
+
+#define AUDIO_PLAYER_RATE_SLOW 0.5f
+#define AUDIO_PLAYER_RATE_NORMAL 1.0f
+#define AUDIO_PLAYER_RATE_FAST   1.5f
+#define AUDIO_PLAYER_RATE_VERY_FAST 2.0f
 
 static const int64_t CALL_QUALITY_MIN_DURATION = 5 * 60;
 static const int64_t CALL_QUALITY_ASK_FREQUENCY = 10;
@@ -127,6 +133,7 @@ static TLBooleanConfigIdentifier *showOnboardingTransferCall;
 static TLBooleanConfigIdentifier *showOnboardingProxy;
 static TLBooleanConfigIdentifier *showWarningEditMessage;
 static TLFloatConfigIdentifier *keyboardHeightConfig;
+static TLFloatConfigIdentifier *audioItemRateConfig;
 
 
 //
@@ -197,6 +204,7 @@ static TLFloatConfigIdentifier *keyboardHeightConfig;
         // Configurations not migrated between devices.
         firstInstallationConfig = [TLIntegerConfigIdentifier defineWithName:FIRST_INSTALLATION defaultValue:0];
         keyboardHeightConfig = [TLFloatConfigIdentifier defineWithName:DEFAULT_KEYBOARD_HEIGHT defaultValue:0];
+        audioItemRateConfig = [TLFloatConfigIdentifier defineWithName:AUDIO_ITEM_RATE defaultValue:AUDIO_PLAYER_RATE_NORMAL];
 
         firstShowUpgradeScreenConfig = [TLIntegerConfigIdentifier defineWithName:FIRST_SHOW_UPGRADE_SCREEN defaultValue:0];
         
@@ -384,6 +392,28 @@ static TLFloatConfigIdentifier *keyboardHeightConfig;
     }
     
     keyboardHeightConfig.floatValue = keyboardHeight;
+}
+
+//
+// Audio Player
+//
+
+- (CGFloat)getAudioPlayerRate {
+    
+    return audioItemRateConfig.floatValue;
+}
+
+- (void)updateAudioPlayerRate {
+    
+    if (audioItemRateConfig.floatValue == AUDIO_PLAYER_RATE_NORMAL) {
+        audioItemRateConfig.floatValue = AUDIO_PLAYER_RATE_FAST;
+    } else if (audioItemRateConfig.floatValue == AUDIO_PLAYER_RATE_FAST) {
+        audioItemRateConfig.floatValue = AUDIO_PLAYER_RATE_VERY_FAST;
+    } else if (audioItemRateConfig.floatValue == AUDIO_PLAYER_RATE_VERY_FAST) {
+        audioItemRateConfig.floatValue = AUDIO_PLAYER_RATE_SLOW;
+    } else {
+        audioItemRateConfig.floatValue = AUDIO_PLAYER_RATE_NORMAL;
+    }
 }
 
 - (DisplayMode)displayMode {

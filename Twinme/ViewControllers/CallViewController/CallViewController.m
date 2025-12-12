@@ -98,7 +98,6 @@ static const CGFloat DESIGN_PARTICIPANTS_BOTTOM_LARGE_MARGIN = 228;
 static UIColor *DESIGN_MENU_COLOR;
 static UIColor *DESIGN_OVERLAY_COLOR;
 
-static NSInteger PREMIUM_ALERT_VIEW_TAG = 1;
 static NSInteger TERMINATE_ALERT_VIEW_TAG = 2;
 
 static NSInteger CONTROL_CAMERA_ASK_TAG = 1;
@@ -224,6 +223,7 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
 @property (nonatomic) CallParticipant *participant;
 @property (nonatomic, nullable) AlertView *networkAlertView;
 @property (nonatomic) BOOL isSpeakerOnBeforeProximityUpdate;
+@property (nonatomic) BOOL enableSpeakerAfterProximityUpdate;
 @property (nonatomic) BOOL showCallQuality;
 @property (nonatomic) BOOL showCallGroupAnimation;
 @property (nonatomic) BOOL showTerminateReason;
@@ -298,6 +298,7 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
         _remoteZoom = 1.0;
         _localVideoTrackAdded = NO;
         _isSpeakerOnBeforeProximityUpdate = NO;
+        _enableSpeakerAfterProximityUpdate = NO;
         _isVideoCall = NO;
         _isCallReceiver = NO;
         _reverseVideo = NO;
@@ -428,7 +429,7 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
     // If we are connected, start the animation.
     self.connected = [self.callService isConnected];
     if (!self.connected && !self.networkAlertView) {
-        self.networkAlertView = [[AlertView alloc] initNetWorkAlertWithTitle:TwinmeLocalizedString(@"video_call_view_controller_cannot_call", nil) alertViewDelegate:self twinmeContext:self.twinmeContext viewController:self];
+        self.networkAlertView = [[AlertView alloc] initNetWorkAlertWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) alertViewDelegate:self twinmeContext:self.twinmeContext viewController:self];
         [self.networkAlertView showNetworkAlertView];
     }
 }
@@ -725,6 +726,7 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
     } else if (![[UIDevice currentDevice] proximityState]) {
         if (self.isSpeakerOnBeforeProximityUpdate) {
             self.isSpeakerOnBeforeProximityUpdate = NO;
+            self.enableSpeakerAfterProximityUpdate = YES;
             [self.callService setSpeaker:YES];
             [self updateView:[self.callService callStatus]];
         }
@@ -785,7 +787,13 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
         return;
     }
     
-    if (self.uiInitialized && !self.networkAlertView) {
+    if (self.uiInitialized) {
+        
+        // Hide and shutdown the network alert timer.
+        if (self.networkAlertView) {
+            [self.networkAlertView dispose];
+            self.networkAlertView = nil;
+        }
         
         AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
         alertMessageView.tag = TERMINATE_ALERT_VIEW_TAG;
@@ -1091,7 +1099,12 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
     }
         
     self.currentAudioDeviceType = [self.callService getCurrentAudioDevice].type;
-        
+    
+    if (self.enableSpeakerAfterProximityUpdate) {
+        self.enableSpeakerAfterProximityUpdate = NO;
+        return;
+    }
+    
     NSString *updateAudioMessage = @"";
     
     switch (self.currentAudioDeviceType) {
@@ -1172,7 +1185,14 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
     } else if (message.terminateReason == TLPeerConnectionServiceTerminateReasonTransferDone) {
         [self callIsTransfered];
         self.terminateTimer = [NSTimer scheduledTimerWithTimeInterval:CLOSE_DELAY target:self selector:@selector(terminateFire:) userInfo:nil repeats:NO];
-    } else if (!self.networkAlertView) {
+    } else {
+        
+        // Hide and shutdown the network alert timer.
+        if (self.networkAlertView) {
+            [self.networkAlertView dispose];
+            self.networkAlertView = nil;
+        }
+        
         self.showTerminateReason = YES;
         self.terminatedLabel.text = @"";
         
@@ -1277,27 +1297,16 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
 - (void)handleAcceptButtonClick:(AlertView *)alertView {
     DDLogVerbose(@"%@ handleAcceptButtonClick: %@", LOG_TAG, alertView);
     
-    if (alertView.view.tag == PREMIUM_ALERT_VIEW_TAG) {
-        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:TwinmeLocalizedString(@"twinme_plus_link", nil)] options:@{} completionHandler:nil];
-    }
 }
 
 - (void)handleCancelButtonClick:(AlertView *)alertView {
     DDLogVerbose(@"%@ handleCancelButtonClick: %@", LOG_TAG, alertView);
     
-    if (self.networkAlertView) {
-        [self.callService terminateCallWithTerminateReason:TLPeerConnectionServiceTerminateReasonConnectivityError];
-        [self finish];
-    }
 }
 
 - (void)handleCloseButtonClick:(AlertView *)alertView {
     DDLogVerbose(@"%@ handleCloseButtonClick: %@", LOG_TAG, alertView);
     
-    if (self.networkAlertView) {
-        [self.callService terminateCallWithTerminateReason:TLPeerConnectionServiceTerminateReasonConnectivityError];
-        [self finish];
-    }
 }
 
 #pragma mark - AlertMessageViewDelegate

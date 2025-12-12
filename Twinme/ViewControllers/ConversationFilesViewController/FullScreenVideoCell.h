@@ -30,4 +30,6 @@
 
 - (BOOL)isVideoFormatSupported;
 
+- (BOOL)isPlayerControlVisible;
+
 @end

@@ -55,7 +55,7 @@ static NSString *MENU_ACTION_CONVERSATION_CELL_IDENTIFIER = @"MenuActionConversa
 
 #pragma mark - UIView
 
-- (instancetype)init {
+- (instancetype)init:(BOOL)sendAllowed {
     DDLogVerbose(@"%@ init", LOG_TAG);
     
     NSArray *objects = [[NSBundle mainBundle] loadNibNamed:@"MenuActionConversationView" owner:self options:nil];
@@ -65,6 +65,7 @@ static NSString *MENU_ACTION_CONVERSATION_CELL_IDENTIFIER = @"MenuActionConversa
     
     if (self) {
         _startCellAnimation = NO;
+        _sendAllowed = sendAllowed;
         [self initViews];
     }
     return self;
@@ -75,12 +76,12 @@ static NSString *MENU_ACTION_CONVERSATION_CELL_IDENTIFIER = @"MenuActionConversa
     
     self.actions = [[NSMutableArray alloc]init];
     
-    [self.actions addObject:[[UIActionConversation alloc]initWithConversationActionType:ConversationActionTypeCamera]];
-    [self.actions addObject:[[UIActionConversation alloc]initWithConversationActionType:ConversationActionTypeGallery]];
-    [self.actions addObject:[[UIActionConversation alloc]initWithConversationActionType:ConversationActionTypeFile]];
-    [self.actions addObject:[[UIActionConversation alloc]initWithConversationActionType:ConversationActionTypeMediasAndFiles]];
-    [self.actions addObject:[[UIActionConversation alloc]initWithConversationActionType:ConversationActionTypeManageConversation]];
-    [self.actions addObject:[[UIActionConversation alloc]initWithConversationActionType:ConversationActionTypeReset]];
+    [self.actions addObject:[[UIActionConversation alloc]initWithConversationActionType:ConversationActionTypeCamera enabled:self.sendAllowed]];
+    [self.actions addObject:[[UIActionConversation alloc]initWithConversationActionType:ConversationActionTypeGallery enabled:self.sendAllowed]];
+    [self.actions addObject:[[UIActionConversation alloc]initWithConversationActionType:ConversationActionTypeFile enabled:self.sendAllowed]];
+    [self.actions addObject:[[UIActionConversation alloc]initWithConversationActionType:ConversationActionTypeMediasAndFiles enabled:YES]];
+    [self.actions addObject:[[UIActionConversation alloc]initWithConversationActionType:ConversationActionTypeManageConversation enabled:YES]];
+    [self.actions addObject:[[UIActionConversation alloc]initWithConversationActionType:ConversationActionTypeReset enabled:YES]];
 }
 
 - (void)openMenu {
