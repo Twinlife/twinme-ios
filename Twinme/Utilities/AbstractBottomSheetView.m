@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2024 twinlife SA.
+ *  Copyright (c) 2024-2025 twinlife SA.
  *  SPDX-License-Identifier: AGPL-3.0-only
  *
  *  Contributors:
@@ -10,7 +10,7 @@
 
 #import <Twinme/TLTwinmeAttributes.h>
 
-#import "AbstractConfirmView.h"
+#import "AbstractBottomSheetView.h"
 
 #import <TwinmeCommon/Design.h>
 #import <Utils/NSString+Utils.h>
@@ -22,10 +22,10 @@ static const int ddLogLevel = DDLogLevelWarning;
 #endif
 
 //
-// Interface: AbstractConfirmView ()
+// Interface: AbstractBottomSheetView ()
 //
 
-@interface AbstractConfirmView ()<CAAnimationDelegate>
+@interface AbstractBottomSheetView ()<CAAnimationDelegate>
 
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *actionViewTopConstraint;
 @property (weak, nonatomic) IBOutlet UIView *actionView;
@@ -52,13 +52,13 @@ static const int ddLogLevel = DDLogLevelWarning;
 @end
 
 //
-// Implementation: AbstractConfirmView
+// Implementation: AbstractBottomSheetView
 //
 
 #undef LOG_TAG
-#define LOG_TAG @"AbstractConfirmView"
+#define LOG_TAG @"AbstractBottomSheetView"
 
-@implementation AbstractConfirmView
+@implementation AbstractBottomSheetView
 
 #pragma mark - Public methods
 
@@ -140,8 +140,8 @@ static const int ddLogLevel = DDLogLevelWarning;
                      completion:^(BOOL finished) {
         [self finish];
         
-        if ([self.confirmViewDelegate respondsToSelector:@selector(didFinishCloseAnimation:)]) {
-            [self.confirmViewDelegate didFinishCloseAnimation:self];
+        if ([self.bottomSheetViewDelegate respondsToSelector:@selector(didFinishCloseAnimation:)]) {
+            [self.bottomSheetViewDelegate didFinishCloseAnimation:self];
         }
     }];
 }
@@ -150,8 +150,8 @@ static const int ddLogLevel = DDLogLevelWarning;
     DDLogVerbose(@"%@ handleConfirmTapGesture: %@", LOG_TAG, sender);
     
     if (sender.state == UIGestureRecognizerStateEnded) {
-        if ([self.confirmViewDelegate respondsToSelector:@selector(didTapConfirm:)]) {
-            [self.confirmViewDelegate didTapConfirm:self];
+        if ([self.bottomSheetViewDelegate respondsToSelector:@selector(didTapConfirm:)]) {
+            [self.bottomSheetViewDelegate didTapConfirm:self];
         }
     }
 }
@@ -286,8 +286,8 @@ static const int ddLogLevel = DDLogLevelWarning;
     DDLogVerbose(@"%@ handleCancelTapGesture: %@", LOG_TAG, sender);
     
     if (sender.state == UIGestureRecognizerStateEnded) {
-        if ([self.confirmViewDelegate respondsToSelector:@selector(didTapCancel:)]) {
-            [self.confirmViewDelegate didTapCancel:self];
+        if ([self.bottomSheetViewDelegate respondsToSelector:@selector(didTapCancel:)]) {
+            [self.bottomSheetViewDelegate didTapCancel:self];
         }
     }
 }
@@ -296,8 +296,8 @@ static const int ddLogLevel = DDLogLevelWarning;
     DDLogVerbose(@"%@ handleCloseConfirmView: %@", LOG_TAG, sender);
     
     if (sender.state == UIGestureRecognizerStateEnded) {
-        if ([self.confirmViewDelegate respondsToSelector:@selector(didClose:)]) {
-            [self.confirmViewDelegate didClose:self];
+        if ([self.bottomSheetViewDelegate respondsToSelector:@selector(didClose:)]) {
+            [self.bottomSheetViewDelegate didClose:self];
         }
     }
 }

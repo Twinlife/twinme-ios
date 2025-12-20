@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2024 twinlife SA.
+ *  Copyright (c) 2024-2025 twinlife SA.
  *  SPDX-License-Identifier: AGPL-3.0-only
  *
  *  Contributors:
@@ -7,26 +7,26 @@
  */
 
 //
-// Protocol: ConfirmViewDelegate
+// Protocol: BottomSheetViewDelegate
 //
 
-@class AbstractConfirmView;
+@class AbstractBottomSheetView;
 
-@protocol ConfirmViewDelegate <NSObject>
+@protocol BottomSheetViewDelegate <NSObject>
 
-- (void)didTapConfirm:(nonnull AbstractConfirmView *)abstractConfirmView;
+- (void)didTapConfirm:(nonnull AbstractBottomSheetView *)abstractConfirmView;
 
-- (void)didTapCancel:(nonnull AbstractConfirmView *)abstractConfirmView;
+- (void)didTapCancel:(nonnull AbstractBottomSheetView *)abstractConfirmView;
 
-- (void)didClose:(nonnull AbstractConfirmView *)abstractConfirmView;
+- (void)didClose:(nonnull AbstractBottomSheetView *)abstractConfirmView;
 
-- (void)didFinishCloseAnimation:(nonnull AbstractConfirmView *)abstractConfirmView;
+- (void)didFinishCloseAnimation:(nonnull AbstractBottomSheetView *)abstractConfirmView;
 
 @end
 
-@interface AbstractConfirmView : UIView
+@interface AbstractBottomSheetView : UIView
 
-@property (weak, nonatomic) id<ConfirmViewDelegate> confirmViewDelegate;
+@property (weak, nonatomic) id<BottomSheetViewDelegate> bottomSheetViewDelegate;
 
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *actionViewBottomConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *avatarContainerViewHeightConstraint;

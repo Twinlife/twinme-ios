@@ -73970,7 +73970,7 @@
         }
       }
     },
-    "fatal_error_view_controller_error_code_message %@" : {
+    "fatal_error_view_controller_error_code_message" : {
       "comment" : "FatalErrorViewController",
       "extractionState" : "manual",
       "localizations" : {

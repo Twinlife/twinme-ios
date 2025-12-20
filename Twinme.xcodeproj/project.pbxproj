@@ -309,7 +309,6 @@
 		47CD18642E9CF7DB00F0E361 /* CallNameCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 576A9AAE2B7D5C2500A1FC65 /* CallNameCell.m */; };
 		47CD18652E9CF7DB00F0E361 /* CoachMarkViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 01EC60F3294D127700A0705B /* CoachMarkViewController.m */; };
 		47CD18662E9CF7DB00F0E361 /* ExpirationDateCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 01045B9B29A4CD1D00769703 /* ExpirationDateCell.m */; };
-		47CD18672E9CF7DB00F0E361 /* OnboardingProfileViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 572FF6F62AFBEF2100432C71 /* OnboardingProfileViewController.m */; };
 		47CD18682E9CF7DB00F0E361 /* MessageItemCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 837A53F01DCE51C700831777 /* MessageItemCell.m */; };
 		47CD18692E9CF7DB00F0E361 /* ConversationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 834FE7C41E8DA384009E8E54 /* ConversationViewController.m */; };
 		47CD186A2E9CF7DB00F0E361 /* AlertMessageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5725B9562D37B6AB00F2E04F /* AlertMessageView.m */; };
@@ -544,7 +543,7 @@
 		47CD19512E9CF7DB00F0E361 /* AbstractCallParticipantView.m in Sources */ = {isa = PBXBuildFile; fileRef = 01131B75285A0405004F4D49 /* AbstractCallParticipantView.m */; };
 		47CD19522E9CF7DB00F0E361 /* AnnotationCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 01B90D662976ED000000A168 /* AnnotationCell.m */; };
 		47CD19532E9CF7DB00F0E361 /* PreviewThumbnailCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 57BB6DC92D91CBA200274A48 /* PreviewThumbnailCell.m */; };
-		47CD19542E9CF7DB00F0E361 /* AbstractConfirmView.m in Sources */ = {isa = PBXBuildFile; fileRef = 57BF120E2D01EE69001459CA /* AbstractConfirmView.m */; };
+		47CD19542E9CF7DB00F0E361 /* AbstractBottomSheetView.m in Sources */ = {isa = PBXBuildFile; fileRef = 57BF120E2D01EE69001459CA /* AbstractBottomSheetView.m */; };
 		47CD19552E9CF7DB00F0E361 /* VideoItemCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 83EF7F9520CA85B7002A7224 /* VideoItemCell.m */; };
 		47CD19562E9CF7DB00F0E361 /* AboutCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 839B5BF42702ED6800FCF22F /* AboutCell.m */; };
 		47CD19572E9CF7DB00F0E361 /* TypingAvatarCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 832FE7352260CBE500615897 /* TypingAvatarCell.m */; };
@@ -910,7 +909,6 @@
 		5725B9572D37B6AB00F2E04F /* AlertMessageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5725B9562D37B6AB00F2E04F /* AlertMessageView.m */; };
 		5725B9592D37B6E600F2E04F /* AlertMessageView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5725B9582D37B6E500F2E04F /* AlertMessageView.xib */; };
 		5725B95A2D37B6E600F2E04F /* AlertMessageView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5725B9582D37B6E500F2E04F /* AlertMessageView.xib */; };
-		572FF6F82AFBEF2100432C71 /* OnboardingProfileViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 572FF6F62AFBEF2100432C71 /* OnboardingProfileViewController.m */; };
 		573184832C8B24F8001F484A /* CallCertifyView.m in Sources */ = {isa = PBXBuildFile; fileRef = 573184822C8B24F8001F484A /* CallCertifyView.m */; };
 		573184852C8B2506001F484A /* CallCertifyView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 573184842C8B2506001F484A /* CallCertifyView.xib */; };
 		573184882C8B2542001F484A /* MenuCertifyView.m in Sources */ = {isa = PBXBuildFile; fileRef = 573184872C8B2542001F484A /* MenuCertifyView.m */; };
@@ -1022,7 +1020,7 @@
 		57BCE3172E709CE10049CC31 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 57BCE3162E709CE00049CC31 /* Localizable.xcstrings */; };
 		57BCE3182E709CE10049CC31 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 57BCE3162E709CE00049CC31 /* Localizable.xcstrings */; };
 		57BCE3192E709CE10049CC31 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 57BCE3162E709CE00049CC31 /* Localizable.xcstrings */; };
-		57BF120F2D01EE69001459CA /* AbstractConfirmView.m in Sources */ = {isa = PBXBuildFile; fileRef = 57BF120E2D01EE69001459CA /* AbstractConfirmView.m */; };
+		57BF120F2D01EE69001459CA /* AbstractBottomSheetView.m in Sources */ = {isa = PBXBuildFile; fileRef = 57BF120E2D01EE69001459CA /* AbstractBottomSheetView.m */; };
 		57BF12132D01EE9C001459CA /* ResetConversationConfirmView.m in Sources */ = {isa = PBXBuildFile; fileRef = 57BF12112D01EE9C001459CA /* ResetConversationConfirmView.m */; };
 		57BF12142D01EE9C001459CA /* ResetConversationConfirmView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 57BF12122D01EE9C001459CA /* ResetConversationConfirmView.xib */; };
 		57BF122C2D01EF70001459CA /* DeleteConfirmView.m in Sources */ = {isa = PBXBuildFile; fileRef = 57BF122A2D01EF70001459CA /* DeleteConfirmView.m */; };
@@ -2064,8 +2062,6 @@
 		5725B9552D37B6AB00F2E04F /* AlertMessageView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AlertMessageView.h; path = Utilities/AlertMessageView.h; sourceTree = "<group>"; };
 		5725B9562D37B6AB00F2E04F /* AlertMessageView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = AlertMessageView.m; path = Utilities/AlertMessageView.m; sourceTree = "<group>"; };
 		5725B9582D37B6E500F2E04F /* AlertMessageView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = AlertMessageView.xib; path = Utilities/AlertMessageView.xib; sourceTree = "<group>"; };
-		572FF6F62AFBEF2100432C71 /* OnboardingProfileViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OnboardingProfileViewController.m; sourceTree = "<group>"; };
-		572FF6F72AFBEF2100432C71 /* OnboardingProfileViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OnboardingProfileViewController.h; sourceTree = "<group>"; };
 		573184812C8B24F8001F484A /* CallCertifyView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CallCertifyView.h; sourceTree = "<group>"; };
 		573184822C8B24F8001F484A /* CallCertifyView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CallCertifyView.m; sourceTree = "<group>"; };
 		573184842C8B2506001F484A /* CallCertifyView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CallCertifyView.xib; sourceTree = "<group>"; };
@@ -2216,8 +2212,8 @@
 		57BB6DCD2D91CBBC00274A48 /* UIPreviewMedia.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = UIPreviewMedia.h; path = ViewControllers/ConversationViewController/UIPreviewMedia.h; sourceTree = "<group>"; };
 		57BB6DCE2D91CBBC00274A48 /* UIPreviewMedia.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = UIPreviewMedia.m; path = ViewControllers/ConversationViewController/UIPreviewMedia.m; sourceTree = "<group>"; };
 		57BCE3162E709CE00049CC31 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
-		57BF120D2D01EE69001459CA /* AbstractConfirmView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AbstractConfirmView.h; path = Utilities/AbstractConfirmView.h; sourceTree = "<group>"; };
-		57BF120E2D01EE69001459CA /* AbstractConfirmView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = AbstractConfirmView.m; path = Utilities/AbstractConfirmView.m; sourceTree = "<group>"; };
+		57BF120D2D01EE69001459CA /* AbstractBottomSheetView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AbstractBottomSheetView.h; path = Utilities/AbstractBottomSheetView.h; sourceTree = "<group>"; };
+		57BF120E2D01EE69001459CA /* AbstractBottomSheetView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = AbstractBottomSheetView.m; path = Utilities/AbstractBottomSheetView.m; sourceTree = "<group>"; };
 		57BF12102D01EE9C001459CA /* ResetConversationConfirmView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ResetConversationConfirmView.h; path = ViewControllers/ConversationViewController/ResetConversationConfirmView.h; sourceTree = "<group>"; };
 		57BF12112D01EE9C001459CA /* ResetConversationConfirmView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = ResetConversationConfirmView.m; path = ViewControllers/ConversationViewController/ResetConversationConfirmView.m; sourceTree = "<group>"; };
 		57BF12122D01EE9C001459CA /* ResetConversationConfirmView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = ResetConversationConfirmView.xib; path = ViewControllers/ConversationViewController/ResetConversationConfirmView.xib; sourceTree = "<group>"; };
@@ -3441,8 +3437,8 @@
 		47BE16DF1935F7E600440069 /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
-				57BF120D2D01EE69001459CA /* AbstractConfirmView.h */,
-				57BF120E2D01EE69001459CA /* AbstractConfirmView.m */,
+				57BF120D2D01EE69001459CA /* AbstractBottomSheetView.h */,
+				57BF120E2D01EE69001459CA /* AbstractBottomSheetView.m */,
 				5725B9552D37B6AB00F2E04F /* AlertMessageView.h */,
 				5725B9562D37B6AB00F2E04F /* AlertMessageView.m */,
 				5725B9582D37B6E500F2E04F /* AlertMessageView.xib */,
@@ -3636,8 +3632,6 @@
 				8322B0D72451F0F9005B5DC4 /* AddProfileViewController.m */,
 				834FC4E2271FEAC40098B22B /* EditProfileViewController.h */,
 				834FC4E1271FEAC40098B22B /* EditProfileViewController.m */,
-				572FF6F72AFBEF2100432C71 /* OnboardingProfileViewController.h */,
-				572FF6F62AFBEF2100432C71 /* OnboardingProfileViewController.m */,
 				0175C57627E248740097AE47 /* ShowProfileViewController.h */,
 				0175C57727E248740097AE47 /* ShowProfileViewController.m */,
 				57DE12432E43320F00E7106A /* MenuPropagatingProfileView.h */,
@@ -5714,7 +5708,6 @@
 				576A9AB12B7D5C2500A1FC65 /* CallNameCell.m in Sources */,
 				01EC60F4294D127700A0705B /* CoachMarkViewController.m in Sources */,
 				01045BA129A4CD1D00769703 /* ExpirationDateCell.m in Sources */,
-				572FF6F82AFBEF2100432C71 /* OnboardingProfileViewController.m in Sources */,
 				837A53F21DCE51C700831777 /* MessageItemCell.m in Sources */,
 				834FE7C51E8DA384009E8E54 /* ConversationViewController.m in Sources */,
 				5725B9572D37B6AB00F2E04F /* AlertMessageView.m in Sources */,
@@ -5956,7 +5949,7 @@
 				01131B76285A0405004F4D49 /* AbstractCallParticipantView.m in Sources */,
 				01B90D6A2976ED000000A168 /* AnnotationCell.m in Sources */,
 				57BB6DCC2D91CBA200274A48 /* PreviewThumbnailCell.m in Sources */,
-				57BF120F2D01EE69001459CA /* AbstractConfirmView.m in Sources */,
+				57BF120F2D01EE69001459CA /* AbstractBottomSheetView.m in Sources */,
 				83EF7F9920CA85B8002A7224 /* VideoItemCell.m in Sources */,
 				839B5BFF2702ED6800FCF22F /* AboutCell.m in Sources */,
 				832FE73A2260CBE600615897 /* TypingAvatarCell.m in Sources */,
@@ -6085,7 +6078,6 @@
 				47CD18642E9CF7DB00F0E361 /* CallNameCell.m in Sources */,
 				47CD18652E9CF7DB00F0E361 /* CoachMarkViewController.m in Sources */,
 				47CD18662E9CF7DB00F0E361 /* ExpirationDateCell.m in Sources */,
-				47CD18672E9CF7DB00F0E361 /* OnboardingProfileViewController.m in Sources */,
 				47CD18682E9CF7DB00F0E361 /* MessageItemCell.m in Sources */,
 				47CD18692E9CF7DB00F0E361 /* ConversationViewController.m in Sources */,
 				47CD186A2E9CF7DB00F0E361 /* AlertMessageView.m in Sources */,
@@ -6327,7 +6319,7 @@
 				47CD19512E9CF7DB00F0E361 /* AbstractCallParticipantView.m in Sources */,
 				47CD19522E9CF7DB00F0E361 /* AnnotationCell.m in Sources */,
 				47CD19532E9CF7DB00F0E361 /* PreviewThumbnailCell.m in Sources */,
-				47CD19542E9CF7DB00F0E361 /* AbstractConfirmView.m in Sources */,
+				47CD19542E9CF7DB00F0E361 /* AbstractBottomSheetView.m in Sources */,
 				47CD19552E9CF7DB00F0E361 /* VideoItemCell.m in Sources */,
 				47CD19562E9CF7DB00F0E361 /* AboutCell.m in Sources */,
 				47CD19572E9CF7DB00F0E361 /* TypingAvatarCell.m in Sources */,

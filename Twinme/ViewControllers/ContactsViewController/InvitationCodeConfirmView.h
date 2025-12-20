@@ -6,12 +6,12 @@
  *   Fabrice Trescartes (Fabrice.Trescartes@twin.life)
  */
 
-#import "AbstractConfirmView.h"
+#import "AbstractBottomSheetView.h"
 
 //
 // Interface: ResetInvitationConfirmView
 //
 
-@interface InvitationCodeConfirmView : AbstractConfirmView
+@interface InvitationCodeConfirmView : AbstractBottomSheetView
 
 @end

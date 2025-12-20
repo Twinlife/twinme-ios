@@ -66,7 +66,7 @@ static UIColor *DESIGN_PLACEHOLDER_COLOR;
 // Interface: AddContactViewController ()
 //
 
-@interface AddContactViewController () <AVCaptureMetadataOutputObjectsDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, AcceptInvitationDelegate, ShareProfileServiceDelegate, AlertMessageViewDelegate, PHPhotoLibraryChangeObserver, UITextFieldDelegate, ConfirmViewDelegate, CustomTabViewDelegate>
+@interface AddContactViewController () <AVCaptureMetadataOutputObjectsDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, AcceptInvitationDelegate, ShareProfileServiceDelegate, AlertMessageViewDelegate, PHPhotoLibraryChangeObserver, UITextFieldDelegate, BottomSheetViewDelegate, CustomTabViewDelegate>
 
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *customTabViewTopConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *customTabViewHeightConstraint;
@@ -589,9 +589,9 @@ static UIColor *DESIGN_PLACEHOLDER_COLOR;
     [alertMessageView removeFromSuperview];
 }
 
-#pragma mark - ConfirmViewDelegate
+#pragma mark - BottomSheetViewDelegate
 
-- (void)didTapConfirm:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didTapConfirm:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractConfirmView);
     
     if (self.resetInvitationConfirmView) {
@@ -605,7 +605,7 @@ static UIColor *DESIGN_PLACEHOLDER_COLOR;
     }
 }
 
-- (void)didTapCancel:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didTapCancel:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didTapCancel: %@", LOG_TAG, abstractConfirmView);
     
     if ([abstractConfirmView isKindOfClass:[DefaultConfirmView class]]) {
@@ -621,13 +621,13 @@ static UIColor *DESIGN_PLACEHOLDER_COLOR;
     [abstractConfirmView closeConfirmView];
 }
 
-- (void)didClose:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didClose:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didClose: %@", LOG_TAG, abstractConfirmView);
     
     [abstractConfirmView closeConfirmView];
 }
 
-- (void)didFinishCloseAnimation:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didFinishCloseAnimation:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didFinishCloseAnimation: %@", LOG_TAG, abstractConfirmView);
     
     if ([abstractConfirmView isKindOfClass:[SuccessAuthentifiedRelationView class]]) {
@@ -1155,7 +1155,7 @@ static UIColor *DESIGN_PLACEHOLDER_COLOR;
             if (errorCode == TLBaseServiceErrorCodeSuccess) {
                 [self.shareProfileService getImageWithContact:contact withBlock:^(UIImage *image) {
                     SuccessAuthentifiedRelationView *successAuthentifiedRelationView = [[SuccessAuthentifiedRelationView alloc] init];
-                    successAuthentifiedRelationView.confirmViewDelegate = self;
+                    successAuthentifiedRelationView.bottomSheetViewDelegate = self;
                     [successAuthentifiedRelationView initWithTitle:contact.name message:[NSString stringWithFormat:TwinmeLocalizedString(@"authentified_relation_view_controller_certified_message", nil), contact.name] avatar:image icon:nil];
                     [self.navigationController.view addSubview:successAuthentifiedRelationView];
                     [successAuthentifiedRelationView showConfirmView];
@@ -1425,7 +1425,7 @@ static UIColor *DESIGN_PLACEHOLDER_COLOR;
     DDLogVerbose(@"%@ openResetInvitationConfirmView", LOG_TAG);
     
     self.resetInvitationConfirmView = [[ResetInvitationConfirmView alloc] init];
-    self.resetInvitationConfirmView.confirmViewDelegate = self;
+    self.resetInvitationConfirmView.bottomSheetViewDelegate = self;
     [self.resetInvitationConfirmView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:TwinmeLocalizedString(@"fullscreen_qrcode_view_controller_generate_code_message", nil) avatar:avatar icon:[UIImage imageNamed:@"GenerateCode"]];
     [self.tabBarController.view addSubview:self.resetInvitationConfirmView];
     [self.resetInvitationConfirmView showConfirmView];
@@ -1459,7 +1459,7 @@ static UIColor *DESIGN_PLACEHOLDER_COLOR;
     self.proxyToAdd = proxy;
     
     DefaultConfirmView *defaultConfirmView = [[DefaultConfirmView alloc] init];
-    defaultConfirmView.confirmViewDelegate = self;
+    defaultConfirmView.bottomSheetViewDelegate = self;
 
     [defaultConfirmView initWithTitle:TwinmeLocalizedString(@"proxy_view_controller_title", nil) message:TwinmeLocalizedString(@"proxy_view_controller_url", nil) image:[UIImage imageNamed:@"OnboardingProxy"] avatar:nil action: TwinmeLocalizedString(@"proxy_view_controller_enable", nil) actionColor:nil cancel:TwinmeLocalizedString(@"application_cancel", nil)];
 

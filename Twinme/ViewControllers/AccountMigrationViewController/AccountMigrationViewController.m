@@ -35,7 +35,7 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
 // Interface: AccountMigrationViewController ()
 //
 
-@interface AccountMigrationViewController () <AccountMigrationServiceDelegate, AlertMessageViewDelegate, ConfirmViewDelegate>
+@interface AccountMigrationViewController () <AccountMigrationServiceDelegate, AlertMessageViewDelegate, BottomSheetViewDelegate>
 
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *migrationImageViewHeightConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *migrationImageViewTopConstraint;
@@ -333,27 +333,27 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
     [self confirmCancelMigration];
 }
 
-#pragma mark - ConfirmViewDelegate
+#pragma mark - BottomSheetViewDelegate
 
-- (void)didTapConfirm:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didTapConfirm:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractConfirmView);
 
     [abstractConfirmView closeConfirmView];
     [self confirmCancelMigration];
 }
 
-- (void)didTapCancel:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didTapCancel:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didTapCancel: %@", LOG_TAG, abstractConfirmView);
 
     [abstractConfirmView closeConfirmView];
 }
 
-- (void)didClose:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didClose:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didClose: %@", LOG_TAG, abstractConfirmView);
     [abstractConfirmView closeConfirmView];
 }
 
-- (void)didFinishCloseAnimation:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didFinishCloseAnimation:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didFinishCloseAnimation: %@", LOG_TAG, abstractConfirmView);
     
     [abstractConfirmView removeFromSuperview];
@@ -592,7 +592,7 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
     }
     
     DefaultConfirmView *migrationConfirmView = [[DefaultConfirmView alloc] init];
-    migrationConfirmView.confirmViewDelegate = self;
+    migrationConfirmView.bottomSheetViewDelegate = self;
     
     UIImage *image = [self.twinmeApplication darkModeEnable] ? [UIImage imageNamed:@"OnboardingMigrationDark"] : [UIImage imageNamed:@"OnboardingMigration"];
     [migrationConfirmView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:TwinmeLocalizedString(@"account_migration_view_controller_confirm_cancel_message", nil) image:image avatar:nil action:TwinmeLocalizedString(@"account_migration_view_controller_stop", nil) actionColor:Design.DELETE_COLOR_RED cancel:nil];

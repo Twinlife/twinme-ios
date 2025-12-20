@@ -86,7 +86,7 @@ static const int ddLogLevel = DDLogLevelWarning;
         case TLBaseServiceErrorCodeServerError:
         default:
             self.customMessage = YES;
-            self.errorMessage = [NSString stringWithFormat:TwinmeLocalizedString(@"fatal_error_view_controller_error_code_message %@", nil), [NSNumber numberWithInt:errorCode]];
+            self.errorMessage = [NSString stringWithFormat:TwinmeLocalizedString(@"fatal_error_view_controller_error_code_message", nil), errorCode];
             break;
             
         case TLBaseServiceErrorCodeFeatureNotSupportedByPeer:
@@ -100,7 +100,7 @@ static const int ddLogLevel = DDLogLevelWarning;
         case TLBaseServiceErrorCodeDatabaseError:
             if (databaseError) {
                 self.customMessage = YES;
-                self.errorMessage = [NSString stringWithFormat:@"%@\n\n%@", [NSString stringWithFormat:TwinmeLocalizedString(@"fatal_error_view_controller_error_code_message %@", nil), [NSNumber numberWithInt:errorCode]], databaseError.description];
+                self.errorMessage = [NSString stringWithFormat:@"%@\n\n%@", [NSString stringWithFormat:TwinmeLocalizedString(@"fatal_error_view_controller_error_code_message", nil), errorCode], databaseError.description];
             } else {
                 self.errorMessage = TwinmeLocalizedString(@"application_database_error", nil);
             }

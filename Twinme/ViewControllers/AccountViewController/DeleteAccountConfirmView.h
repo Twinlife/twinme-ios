@@ -6,13 +6,13 @@
  *   Fabrice Trescartes (Fabrice.Trescartes@twin.life)
  */
 
-#import "AbstractConfirmView.h"
+#import "AbstractBottomSheetView.h"
 
 //
 // Interface: DeleteAccountConfirmView
 //
 
-@interface DeleteAccountConfirmView : AbstractConfirmView
+@interface DeleteAccountConfirmView : AbstractBottomSheetView
 
 - (void)updateKeyboard:(CGFloat)sizeKeyboard;
 

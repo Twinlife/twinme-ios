@@ -18,7 +18,6 @@
 #import <Utils/NSString+Utils.h>
 
 #import "EditProfileViewController.h"
-#import "OnboardingProfileViewController.h"
 #import "NotificationViewController.h"
 
 #import "AlertMessageView.h"

@@ -43,7 +43,7 @@ static const CGFloat DESIGN_HIGHLIGHT_VIEW_CORNER_RADIUS = 4;
 // Interface: AuthentifiedRelationViewController ()
 //
 
-@interface AuthentifiedRelationViewController () <AVCaptureMetadataOutputObjectsDelegate, ShowContactServiceDelegate, AlertMessageViewDelegate, ConfirmViewDelegate>
+@interface AuthentifiedRelationViewController () <AVCaptureMetadataOutputObjectsDelegate, ShowContactServiceDelegate, AlertMessageViewDelegate, BottomSheetViewDelegate>
 
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *certifiedViewHeightConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *certifiedViewWidthConstraint;
@@ -129,7 +129,7 @@ static const CGFloat DESIGN_HIGHLIGHT_VIEW_CORNER_RADIUS = 4;
     if (!self.showOnboardingView && self.contact.certificationLevel != TLCertificationLevel4 && [self.twinmeApplication startOnboarding:OnboardingTypeCertifiedRelation]) {
         self.showOnboardingView = YES;
         OnboardingConfirmView *onboardingConfirmView = [[OnboardingConfirmView alloc] init];
-        onboardingConfirmView.confirmViewDelegate = self;
+        onboardingConfirmView.bottomSheetViewDelegate = self;
 
         UIImage *image = [self.twinmeApplication darkModeEnable] ? [UIImage imageNamed:@"OnboardingAuthentifiedRelationDark"] : [UIImage imageNamed:@"OnboardingAuthentifiedRelation"];
         NSString *message =  TwinmeLocalizedString(@"authentified_relation_view_controller_onboarding_message", nil);
@@ -254,15 +254,15 @@ static const CGFloat DESIGN_HIGHLIGHT_VIEW_CORNER_RADIUS = 4;
     [self.navigationController popToRootViewControllerAnimated:YES];
 }
 
-#pragma mark - ConfirmViewDelegate
+#pragma mark - BottomSheetViewDelegate
 
-- (void)didTapConfirm:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didTapConfirm:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractConfirmView);
         
     [abstractConfirmView closeConfirmView];
 }
 
-- (void)didTapCancel:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didTapCancel:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didTapCancel: %@", LOG_TAG, abstractConfirmView);
     
     if ([abstractConfirmView isKindOfClass:[OnboardingConfirmView class]]) {
@@ -271,13 +271,13 @@ static const CGFloat DESIGN_HIGHLIGHT_VIEW_CORNER_RADIUS = 4;
     }
 }
 
-- (void)didClose:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didClose:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didClose: %@", LOG_TAG, abstractConfirmView);
     
     [abstractConfirmView closeConfirmView];
 }
 
-- (void)didFinishCloseAnimation:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didFinishCloseAnimation:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didFinishCloseAnimation: %@", LOG_TAG, abstractConfirmView);
     
     [abstractConfirmView removeFromSuperview];
@@ -602,7 +602,7 @@ static const CGFloat DESIGN_HIGHLIGHT_VIEW_CORNER_RADIUS = 4;
     DDLogVerbose(@"%@ showSuccessAuthentification", LOG_TAG);
     
     SuccessAuthentifiedRelationView *successAuthentifiedRelationView = [[SuccessAuthentifiedRelationView alloc] init];
-    successAuthentifiedRelationView.confirmViewDelegate = self;
+    successAuthentifiedRelationView.bottomSheetViewDelegate = self;
     [successAuthentifiedRelationView initWithTitle:self.contact.name message:[NSString stringWithFormat:TwinmeLocalizedString(@"authentified_relation_view_controller_certified_message", nil), self.contact.name] avatar:self.contactAvatar icon:nil];
     [self.navigationController.view addSubview:successAuthentifiedRelationView];
     [successAuthentifiedRelationView showConfirmView];

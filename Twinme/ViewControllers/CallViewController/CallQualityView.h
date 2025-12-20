@@ -6,11 +6,11 @@
  *   Fabrice Trescartes (Fabrice.Trescartes@twin.life)
  */
 
-#import "AbstractConfirmView.h"
+#import "AbstractBottomSheetView.h"
 
 @protocol CallQualityViewDelegate <NSObject>
 
-- (void)didSendCallQuality:(nonnull AbstractConfirmView *)abstractConfirmView quality:(int)quality;
+- (void)didSendCallQuality:(nonnull AbstractBottomSheetView *)abstractConfirmView quality:(int)quality;
 
 @end
 
@@ -18,7 +18,7 @@
 // Interface: CallQualityView
 //
 
-@interface CallQualityView : AbstractConfirmView
+@interface CallQualityView : AbstractBottomSheetView
 
 @property (weak, nonatomic) id<CallQualityViewDelegate> callQualityViewDelegate;
 

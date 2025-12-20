@@ -61,7 +61,7 @@ static NSString *TWINME_SETTINGS_CELL_IDENTIFIER = @"TwinmeSettingsCellIdentifie
 // Interface: PersonalizationViewController ()
 //
 
-@interface PersonalizationViewController () <PersonalizationDelegate, SettingsActionDelegate, DisplayModeDelegate, MenuSelectColorDelegate, ConfirmViewDelegate>
+@interface PersonalizationViewController () <PersonalizationDelegate, SettingsActionDelegate, DisplayModeDelegate, MenuSelectColorDelegate, BottomSheetViewDelegate>
 
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 
@@ -457,7 +457,7 @@ static NSString *TWINME_SETTINGS_CELL_IDENTIFIER = @"TwinmeSettingsCellIdentifie
     DDLogVerbose(@"%@ enterColor", LOG_TAG);
         
     PremiumFeatureConfirmView *premiumFeatureConfirmView = [[PremiumFeatureConfirmView alloc] init];
-    premiumFeatureConfirmView.confirmViewDelegate = self;
+    premiumFeatureConfirmView.bottomSheetViewDelegate = self;
     [premiumFeatureConfirmView initWithPremiumFeature:[[UIPremiumFeature alloc]initWithFeatureType:FeatureTypeSpaces] parentViewController:self.navigationController];
     [self.tabBarController.view addSubview:premiumFeatureConfirmView];
     [premiumFeatureConfirmView showConfirmView];
@@ -490,9 +490,9 @@ static NSString *TWINME_SETTINGS_CELL_IDENTIFIER = @"TwinmeSettingsCellIdentifie
     [self updateColor];
 }
 
-#pragma mark - ConfirmViewDelegate
+#pragma mark - BottomSheetViewDelegate
 
-- (void)didTapConfirm:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didTapConfirm:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractConfirmView);
     
     [[UIApplication sharedApplication] openURL:[NSURL URLWithString:TwinmeLocalizedString(@"twinme_plus_link", nil)] options:@{} completionHandler:nil];
@@ -500,19 +500,19 @@ static NSString *TWINME_SETTINGS_CELL_IDENTIFIER = @"TwinmeSettingsCellIdentifie
     [abstractConfirmView closeConfirmView];
 }
 
-- (void)didTapCancel:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didTapCancel:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didTapCancel: %@", LOG_TAG, abstractConfirmView);
     
     [abstractConfirmView closeConfirmView];
 }
 
-- (void)didClose:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didClose:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didClose: %@", LOG_TAG, abstractConfirmView);
     
     [abstractConfirmView closeConfirmView];
 }
 
-- (void)didFinishCloseAnimation:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didFinishCloseAnimation:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didFinishCloseAnimation: %@", LOG_TAG, abstractConfirmView);
     
     [abstractConfirmView removeFromSuperview];

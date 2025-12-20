@@ -6,13 +6,13 @@
  *   Fabrice Trescartes (Fabrice.Trescartes@twin.life)
  */
 
-#import "AbstractConfirmView.h"
+#import "AbstractBottomSheetView.h"
 
 //
 // Interface: OnboardingConfirmView
 //
 
-@interface OnboardingConfirmView : AbstractConfirmView
+@interface OnboardingConfirmView : AbstractBottomSheetView
 
 - (void)initWithTitle:(NSString *)title message:(NSString *)message image:(UIImage *)image action:(NSString *)action actionColor:(UIColor *)actionColor cancel:(NSString *)cancel;
 

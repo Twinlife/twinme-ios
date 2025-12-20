@@ -64,7 +64,7 @@ static int MAX_GROUP_MEMBER = 5;
 // Interface: ShowGroupViewController ()
 //
 
-@interface ShowGroupViewController () <ShowGroupServiceDelegate, UICollectionViewDataSource, SettingsGroupDelegate, ConfirmViewDelegate, AlertMessageViewDelegate>
+@interface ShowGroupViewController () <ShowGroupServiceDelegate, UICollectionViewDataSource, SettingsGroupDelegate, BottomSheetViewDelegate, AlertMessageViewDelegate>
 
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *avatarPlaceholderImageViewHeightConstraint;
 @property (weak, nonatomic) IBOutlet UIImageView *avatarPlaceholderImageView;
@@ -470,28 +470,28 @@ static int MAX_GROUP_MEMBER = 5;
     [self.showGroupService updatePermissions:allowInvitation allowMessage:allowMessage allowInviteMemberAsContact:allowInviteMemberAsContact];
 }
 
-#pragma mark - ConfirmViewDelegate
+#pragma mark - BottomSheetViewDelegate
 
-- (void)didTapConfirm:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didTapConfirm:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractConfirmView);
     
     [[UIApplication sharedApplication] openURL:[NSURL URLWithString:TwinmeLocalizedString(@"twinme_plus_link", nil)] options:@{} completionHandler:nil];
     [abstractConfirmView closeConfirmView];
 }
 
-- (void)didTapCancel:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didTapCancel:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didTapCancel: %@", LOG_TAG, abstractConfirmView);
     
     [abstractConfirmView closeConfirmView];
 }
 
-- (void)didClose:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didClose:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didClose: %@", LOG_TAG, abstractConfirmView);
     
     [abstractConfirmView closeConfirmView];
 }
 
-- (void)didFinishCloseAnimation:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didFinishCloseAnimation:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didFinishCloseAnimation: %@", LOG_TAG, abstractConfirmView);
     
     [abstractConfirmView removeFromSuperview];
@@ -856,7 +856,7 @@ static int MAX_GROUP_MEMBER = 5;
     DDLogVerbose(@"%@ showPremiumFeatureAlertView", LOG_TAG);
     
     PremiumFeatureConfirmView *premiumFeatureConfirmView = [[PremiumFeatureConfirmView alloc] init];
-    premiumFeatureConfirmView.confirmViewDelegate = self;
+    premiumFeatureConfirmView.bottomSheetViewDelegate = self;
     [premiumFeatureConfirmView initWithPremiumFeature:[[UIPremiumFeature alloc]initWithFeatureType:FeatureTypeGroupCall] parentViewController:self.navigationController];
     [self.navigationController.view addSubview:premiumFeatureConfirmView];
     [premiumFeatureConfirmView showConfirmView];

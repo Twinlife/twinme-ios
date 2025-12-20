@@ -91,7 +91,7 @@ static int LAST_USED_CONVERSATION_COUNT = 99999;
 // Interface: ConversationsViewController
 //
 
-@interface ConversationsViewController () <UITableViewDataSource, UITableViewDelegate, ChatServiceDelegate, UISearchBarDelegate, UISearchControllerDelegate, ConversationsActionDelegate, ConfirmViewDelegate, CustomTabViewDelegate, SearchSectionDelegate, EnableNotificationDelegate>
+@interface ConversationsViewController () <UITableViewDataSource, UITableViewDelegate, ChatServiceDelegate, UISearchBarDelegate, UISearchControllerDelegate, ConversationsActionDelegate, BottomSheetViewDelegate, CustomTabViewDelegate, SearchSectionDelegate, EnableNotificationDelegate>
 
 @property (weak, nonatomic) IBOutlet UITableView *conversationsTableView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *conversationsTableViewBottomConstraint;
@@ -1100,9 +1100,9 @@ static int LAST_USED_CONVERSATION_COUNT = 99999;
     [self.chatService getConversationsWithCallsMode:[self.twinmeApplication displayCallsMode]];
 }
 
-#pragma mark - ConfirmViewDelegate
+#pragma mark - BottomSheetViewDelegate
 
-- (void)didTapConfirm:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didTapConfirm:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractConfirmView);
     
     UIConversation* uiConversation = self.resetConversation;
@@ -1112,7 +1112,7 @@ static int LAST_USED_CONVERSATION_COUNT = 99999;
     [self.resetConversationConfirmView closeConfirmView];
 }
 
-- (void)didTapCancel:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didTapCancel:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didTapCancel: %@", LOG_TAG, abstractConfirmView);
     
     [self.conversationsTableView setEditing:NO];
@@ -1121,7 +1121,7 @@ static int LAST_USED_CONVERSATION_COUNT = 99999;
     [self.resetConversationConfirmView closeConfirmView];
 }
 
-- (void)didClose:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didClose:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didClose: %@", LOG_TAG, abstractConfirmView);
     
     [self.conversationsTableView setEditing:NO];
@@ -1130,7 +1130,7 @@ static int LAST_USED_CONVERSATION_COUNT = 99999;
     [self.resetConversationConfirmView closeConfirmView];
 }
 
-- (void)didFinishCloseAnimation:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didFinishCloseAnimation:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didFinishCloseAnimation: %@", LOG_TAG, abstractConfirmView);
     
     [self.resetConversationConfirmView removeFromSuperview];
@@ -1758,7 +1758,7 @@ static int LAST_USED_CONVERSATION_COUNT = 99999;
     }
     
     self.resetConversationConfirmView = [[ResetConversationConfirmView alloc] init];
-    self.resetConversationConfirmView.confirmViewDelegate = self;
+    self.resetConversationConfirmView.bottomSheetViewDelegate = self;
     [self.resetConversationConfirmView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:alertMessage avatar:avatar icon:[UIImage imageNamed:@"ActionBarDelete"]];
     [self.tabBarController.view addSubview:self.resetConversationConfirmView];
     [self.resetConversationConfirmView showConfirmView];

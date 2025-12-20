@@ -65,7 +65,7 @@ static CGFloat DESIGN_NAME_DEFAULT_WIDTH = 420;
 
 @class ShowContactViewControllerTwinmeContextDelegate;
 
-@interface ShowContactViewController () <ShowContactServiceDelegate, AlertMessageViewDelegate, CoachMarkDelegate, MenuCertifyViewDelegate, ConfirmViewDelegate>
+@interface ShowContactViewController () <ShowContactServiceDelegate, AlertMessageViewDelegate, CoachMarkDelegate, MenuCertifyViewDelegate, BottomSheetViewDelegate>
 
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *nameLabelXConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *certifiedRelationImageViewHeightConstraint;
@@ -441,7 +441,7 @@ static CGFloat DESIGN_NAME_DEFAULT_WIDTH = 420;
     
     if ([self.twinmeApplication startOnboarding:OnboardingTypeCertifiedRelation]) {
         OnboardingConfirmView *onboardingConfirmView = [[OnboardingConfirmView alloc] init];
-        onboardingConfirmView.confirmViewDelegate = self;
+        onboardingConfirmView.bottomSheetViewDelegate = self;
         onboardingConfirmView.tag = OnboardingTypeCertifiedRelation;
         UIImage *image = [self.twinmeApplication darkModeEnable] ? [UIImage imageNamed:@"OnboardingAuthentifiedRelationDark"] : [UIImage imageNamed:@"OnboardingAuthentifiedRelation"];
         NSString *message = [NSString stringWithFormat:@"%@\n\n%@", TwinmeLocalizedString(@"authentified_relation_view_controller_onboarding_message", nil), TwinmeLocalizedString(@"call_view_controller_certify_onboarding_message", nil)];
@@ -475,9 +475,9 @@ static CGFloat DESIGN_NAME_DEFAULT_WIDTH = 420;
     }
 }
 
-#pragma mark - ConfirmViewDelegate
+#pragma mark - BottomSheetViewDelegate
 
-- (void)didTapConfirm:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didTapConfirm:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractConfirmView);
     
     if (abstractConfirmView.tag == OnboardingTypeCertifiedRelation){
@@ -487,7 +487,7 @@ static CGFloat DESIGN_NAME_DEFAULT_WIDTH = 420;
     [abstractConfirmView closeConfirmView];
 }
 
-- (void)didTapCancel:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didTapCancel:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didTapCancel: %@", LOG_TAG, abstractConfirmView);
     
     if (abstractConfirmView.tag == OnboardingTypeCertifiedRelation){
@@ -498,13 +498,13 @@ static CGFloat DESIGN_NAME_DEFAULT_WIDTH = 420;
     [abstractConfirmView closeConfirmView];
 }
 
-- (void)didClose:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didClose:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didClose: %@", LOG_TAG, abstractConfirmView);
     
     [abstractConfirmView closeConfirmView];
 }
 
-- (void)didFinishCloseAnimation:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didFinishCloseAnimation:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didFinishCloseAnimation: %@", LOG_TAG, abstractConfirmView);
     
     [abstractConfirmView removeFromSuperview];
@@ -1026,7 +1026,7 @@ static CGFloat DESIGN_NAME_DEFAULT_WIDTH = 420;
     
     if (sender.state == UIGestureRecognizerStateEnded) {
         OnboardingConfirmView *onboardingConfirmView = [[OnboardingConfirmView alloc] init];
-        onboardingConfirmView.confirmViewDelegate = self;
+        onboardingConfirmView.bottomSheetViewDelegate = self;
         onboardingConfirmView.tag = OnboardingTypeRemoteCameraSettings;
         [onboardingConfirmView initWithTitle:TwinmeLocalizedString(@"call_view_controller_camera_control_needs_help", nil) message: TwinmeLocalizedString(@"contact_capabilities_view_controller_camera_control_onboarding", nil) image:[UIImage imageNamed:@"OnboardingControlCamera"] action:TwinmeLocalizedString(@"application_ok", nil) actionColor:nil cancel:TwinmeLocalizedString(@"application_do_not_display", nil)];
         [onboardingConfirmView hideCancelAction];

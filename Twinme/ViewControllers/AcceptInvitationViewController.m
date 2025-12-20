@@ -55,7 +55,7 @@ static const CGFloat DESIGN_CANCEL_HEIGHT = 140;
 @class AcceptInvitationViewControllerTwinmeContextDelegate;
 @class AcceptInvitationViewControllerTwincodeOutboundServiceDelegate;
 
-@interface AcceptInvitationViewController () <AcceptInvitationServiceDelegate, GroupServiceDelegate, AlertMessageViewDelegate, ConfirmViewDelegate>
+@interface AcceptInvitationViewController () <AcceptInvitationServiceDelegate, GroupServiceDelegate, AlertMessageViewDelegate, BottomSheetViewDelegate>
 
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *actionViewTopConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *actionViewBottomConstraint;
@@ -361,9 +361,9 @@ static const CGFloat DESIGN_CANCEL_HEIGHT = 140;
 
 }
 
-#pragma mark - ConfirmViewDelegate
+#pragma mark - BottomSheetViewDelegate
 
-- (void)didTapConfirm:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didTapConfirm:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractConfirmView);
     
     ApplicationDelegate *delegate = (ApplicationDelegate *)[[UIApplication sharedApplication] delegate];
@@ -378,19 +378,19 @@ static const CGFloat DESIGN_CANCEL_HEIGHT = 140;
     [abstractConfirmView closeConfirmView];
 }
 
-- (void)didTapCancel:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didTapCancel:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didTapCancel: %@", LOG_TAG, abstractConfirmView);
   
     [abstractConfirmView closeConfirmView];
 }
 
-- (void)didClose:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didClose:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didClose: %@", LOG_TAG, abstractConfirmView);
         
     [abstractConfirmView closeConfirmView];
 }
 
-- (void)didFinishCloseAnimation:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didFinishCloseAnimation:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didFinishCloseAnimation: %@", LOG_TAG, abstractConfirmView);
     
     [abstractConfirmView removeFromSuperview];
@@ -602,7 +602,7 @@ static const CGFloat DESIGN_CANCEL_HEIGHT = 140;
         
         if (!self.hasProfile) {
             DefaultConfirmView *defaultConfirmView = [[DefaultConfirmView alloc] init];
-            defaultConfirmView.confirmViewDelegate = self;
+            defaultConfirmView.bottomSheetViewDelegate = self;
 
             UIImage *image = [self.twinmeApplication darkModeEnable] ?  [UIImage imageNamed:@"OnboardingAddProfileDark"] : [UIImage imageNamed:@"OnboardingAddProfile"];
             [defaultConfirmView initWithTitle:TwinmeLocalizedString(@"create_profile_view_controller_title", nil) message:TwinmeLocalizedString(@"application_add_contact_no_profile", nil) image:image avatar:nil action:TwinmeLocalizedString(@"show_profile_view_controller_create_profile", nil) actionColor:nil cancel:nil];

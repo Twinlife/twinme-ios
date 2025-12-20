@@ -90,7 +90,7 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
 // Interface: MainViewController ()
 //
 
-@interface MainViewController () <MainServiceDelegate, SplashScreenDelegate, AlertMessageViewDelegate, ConfirmViewDelegate>
+@interface MainViewController () <MainServiceDelegate, SplashScreenDelegate, AlertMessageViewDelegate, BottomSheetViewDelegate>
 
 @property (weak, nonatomic) IBOutlet UIView *sideMenuContainerView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *sideMenuContainerViewLeadingConstraint;
@@ -478,9 +478,9 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
     }
 }
 
-#pragma mark - ConfirmViewDelegate
+#pragma mark - BottomSheetViewDelegate
 
-- (void)didTapConfirm:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didTapConfirm:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractConfirmView);
     
     if ([abstractConfirmView isKindOfClass:[DefaultConfirmView class]]) {
@@ -494,19 +494,19 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
     [abstractConfirmView closeConfirmView];
 }
 
-- (void)didTapCancel:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didTapCancel:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didTapCancel: %@", LOG_TAG, abstractConfirmView);
     
     [abstractConfirmView closeConfirmView];
 }
 
-- (void)didClose:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didClose:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didClose: %@", LOG_TAG, abstractConfirmView);
     
     [abstractConfirmView closeConfirmView];
 }
 
-- (void)didFinishCloseAnimation:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didFinishCloseAnimation:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didFinishCloseAnimation: %@", LOG_TAG, abstractConfirmView);
     
     [abstractConfirmView removeFromSuperview];
@@ -1072,7 +1072,7 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
             if (errorCode == TLBaseServiceErrorCodeSuccess) {
                 [self.mainService getImageWithContact:contact withBlock:^(UIImage *image) {
                     SuccessAuthentifiedRelationView *successAuthentifiedRelationView = [[SuccessAuthentifiedRelationView alloc] init];
-                    successAuthentifiedRelationView.confirmViewDelegate = self;
+                    successAuthentifiedRelationView.bottomSheetViewDelegate = self;
                     [successAuthentifiedRelationView initWithTitle:contact.name message:[NSString stringWithFormat:TwinmeLocalizedString(@"authentified_relation_view_controller_certified_message", nil), contact.name] avatar:image icon:nil];
                     [self.view addSubview:successAuthentifiedRelationView];
                     [successAuthentifiedRelationView showConfirmView];
@@ -1207,7 +1207,7 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
                 dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(DELAY_NOTIFICATIONS * NSEC_PER_SEC));
                 dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
                     DefaultConfirmView *defaultConfirmView = [[DefaultConfirmView alloc] init];
-                    defaultConfirmView.confirmViewDelegate = self;
+                    defaultConfirmView.bottomSheetViewDelegate = self;
                     UIImage *image = [self.twinmeApplication darkModeEnable] ? [UIImage imageNamed:@"EnableNotificationDark"] : [UIImage imageNamed:@"EnableNotification"];
                     [defaultConfirmView initWithTitle:TwinmeLocalizedString(@"quality_of_services_view_controller_settings", nil) message:TwinmeLocalizedString(@"quality_of_services_view_controller_enable_notifications_warning", nil) image:image avatar:nil action:TwinmeLocalizedString(@"quality_of_services_view_controller_enable_notifications", nil) actionColor:nil cancel:nil];
                     [self.view addSubview:defaultConfirmView];
@@ -1264,7 +1264,7 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
     self.proxyToAdd = proxy;
     
     DefaultConfirmView *defaultConfirmView = [[DefaultConfirmView alloc] init];
-    defaultConfirmView.confirmViewDelegate = self;
+    defaultConfirmView.bottomSheetViewDelegate = self;
 
     [defaultConfirmView initWithTitle:TwinmeLocalizedString(@"proxy_view_controller_title", nil) message:TwinmeLocalizedString(@"proxy_view_controller_url", nil) image:[UIImage imageNamed:@"OnboardingProxy"] avatar:nil action: TwinmeLocalizedString(@"proxy_view_controller_enable", nil) actionColor:nil cancel:TwinmeLocalizedString(@"application_cancel", nil)];
 

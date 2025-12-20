@@ -46,7 +46,7 @@ static NSString *CALL_CELL_IDENTIFIER = @"CallCellIdentifier";
 // Interface: LastCallsViewController
 //
 
-@interface LastCallsViewController ()<UITableViewDataSource, UITableViewDelegate, CallsServiceDelegate, ConfirmViewDelegate>
+@interface LastCallsViewController ()<UITableViewDataSource, UITableViewDelegate, CallsServiceDelegate, BottomSheetViewDelegate>
 
 @property (weak, nonatomic) IBOutlet UITableView *callsTableView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *noCallImageViewHeightConstraint;
@@ -391,7 +391,7 @@ static NSString *CALL_CELL_IDENTIFIER = @"CallCellIdentifier";
     if (!self.isCallReceiver && !self.twinmeApplication.inCall && self.callOriginator) {
         if (self.callOriginator.isGroup) {
             PremiumFeatureConfirmView *premiumFeatureConfirmView = [[PremiumFeatureConfirmView alloc] init];
-            premiumFeatureConfirmView.confirmViewDelegate = self;
+            premiumFeatureConfirmView.bottomSheetViewDelegate = self;
             [premiumFeatureConfirmView initWithPremiumFeature:[[UIPremiumFeature alloc]initWithFeatureType:FeatureTypeGroupCall] parentViewController:self.navigationController];
             [self.navigationController.view addSubview:premiumFeatureConfirmView];
             [premiumFeatureConfirmView showConfirmView];
@@ -403,7 +403,7 @@ static NSString *CALL_CELL_IDENTIFIER = @"CallCellIdentifier";
         if ((!self.callDescriptor.isVideo && self.callOriginator.capabilities.hasAudio) || (self.callDescriptor.isVideo && self.callOriginator.capabilities.hasVideo)) {
             
             CallAgainConfirmView *callAgainConfirmView = [[CallAgainConfirmView alloc] init];
-            callAgainConfirmView.confirmViewDelegate = self;
+            callAgainConfirmView.bottomSheetViewDelegate = self;
             
             NSString *message = TwinmeLocalizedString(@"conversation_view_controller_audio_call", nil);
             UIImage *icon = [UIImage imageNamed:@"AudioCall"];
@@ -420,9 +420,9 @@ static NSString *CALL_CELL_IDENTIFIER = @"CallCellIdentifier";
     }
 }
 
-#pragma mark - ConfirmViewDelegate
+#pragma mark - BottomSheetViewDelegate
 
-- (void)didTapConfirm:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didTapConfirm:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractConfirmView);
     
     if ([abstractConfirmView isKindOfClass:[CallAgainConfirmView class]]) {
@@ -452,21 +452,21 @@ static NSString *CALL_CELL_IDENTIFIER = @"CallCellIdentifier";
     [abstractConfirmView closeConfirmView];
 }
 
-- (void)didTapCancel:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didTapCancel:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didTapCancel: %@", LOG_TAG, abstractConfirmView);
     
     self.callDescriptor = nil;
     [abstractConfirmView closeConfirmView];
 }
 
-- (void)didClose:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didClose:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didClose: %@", LOG_TAG, abstractConfirmView);
     
     self.callDescriptor = nil;
     [abstractConfirmView closeConfirmView];
 }
 
-- (void)didFinishCloseAnimation:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didFinishCloseAnimation:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didFinishCloseAnimation: %@", LOG_TAG, abstractConfirmView);
     
     [abstractConfirmView removeFromSuperview];
@@ -725,7 +725,7 @@ static NSString *CALL_CELL_IDENTIFIER = @"CallCellIdentifier";
     
     if (self.allCalls.count > 0) {
         DeleteConfirmView *deleteConfirmView = [[DeleteConfirmView alloc] init];
-        deleteConfirmView.confirmViewDelegate = self;
+        deleteConfirmView.bottomSheetViewDelegate = self;
         deleteConfirmView.deleteConfirmType = DeleteConfirmTypeHistory;
         
         NSString *message = [NSString stringWithFormat:@"%@\n\n%@", TwinmeLocalizedString(@"application_operation_irreversible", nil), TwinmeLocalizedString(@"history_view_controller_reset", nil)];

@@ -33,7 +33,7 @@ static const int MAX_VISIBLE_LINES = 5;
 // Interface: AbstractPreviewViewController ()
 //
 
-@interface AbstractPreviewViewController ()<UITextViewDelegate, SwitchViewDelegate, ConfirmViewDelegate, MenuSendOptionsDelegate>
+@interface AbstractPreviewViewController ()<UITextViewDelegate, SwitchViewDelegate, BottomSheetViewDelegate, MenuSendOptionsDelegate>
 
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *closeViewHeightConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *closeViewWidthConstraint;
@@ -261,9 +261,9 @@ static const int MAX_VISIBLE_LINES = 5;
     }];
 }
 
-#pragma mark - ConfirmViewDelegate
+#pragma mark - BottomSheetViewDelegate
 
-- (void)didTapConfirm:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didTapConfirm:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractConfirmView);
     
     [[UIApplication sharedApplication] openURL:[NSURL URLWithString:TwinmeLocalizedString(@"twinme_plus_link", nil)] options:@{} completionHandler:nil];
@@ -271,19 +271,19 @@ static const int MAX_VISIBLE_LINES = 5;
     [abstractConfirmView closeConfirmView];
 }
 
-- (void)didTapCancel:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didTapCancel:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didTapCancel: %@", LOG_TAG, abstractConfirmView);
     
     [abstractConfirmView closeConfirmView];
 }
 
-- (void)didClose:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didClose:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didClose: %@", LOG_TAG, abstractConfirmView);
     
     [abstractConfirmView closeConfirmView];
 }
 
-- (void)didFinishCloseAnimation:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didFinishCloseAnimation:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didFinishCloseAnimation: %@", LOG_TAG, abstractConfirmView);
     
     [abstractConfirmView removeFromSuperview];
@@ -420,7 +420,7 @@ static const int MAX_VISIBLE_LINES = 5;
     DDLogVerbose(@"%@ handleEphemeralTapGesture: %@", LOG_TAG, sender);
     
     PremiumFeatureConfirmView *premiumFeatureConfirmView = [[PremiumFeatureConfirmView alloc] init];
-    premiumFeatureConfirmView.confirmViewDelegate = self;
+    premiumFeatureConfirmView.bottomSheetViewDelegate = self;
     premiumFeatureConfirmView.forceDarkMode = YES;
     [premiumFeatureConfirmView initWithPremiumFeature:[[UIPremiumFeature alloc]initWithFeatureType:FeatureTypePrivacy] parentViewController:self];
     [self.view addSubview:premiumFeatureConfirmView];

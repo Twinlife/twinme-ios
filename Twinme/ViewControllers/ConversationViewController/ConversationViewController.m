@@ -233,7 +233,7 @@ typedef enum {
     ModeAudioRecorder
 } Mode;
 
-@interface ConversationViewController () <ConversationServiceDelegate, UITextViewDelegate, AlertMessageViewDelegate, AVAudioRecorderDelegate, AudioActionDelegate, ImageActionDelegate, VideoActionDelegate, FileActionDelegate, DeleteActionDelegate, MenuActionDelegate, GroupActionDelegate, CallActionDelegate, TwincodeActionDelegate, LinkActionDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIDocumentPickerDelegate, UIDocumentInteractionControllerDelegate, GroupInvitationServiceDelegate, GroupServiceDelegate, SwitchViewDelegate, ReplyViewDelegate, SelectItemDelegate, MenuItemDelegate, ReplyItemDelegate, AsyncLoaderDelegate, PreviewViewDelegate, CoachMarkDelegate, MenuReactionDelegate, ItemSelectedActionViewDelegate, ReactionViewDelegate, AnnotationsViewDelegate, ConfirmViewDelegate, MenuActionConversationDelegate, MenuSendOptionsDelegate, MenuManageConversationViewDelegate, UITableViewDataSourcePrefetching, PHPickerViewControllerDelegate>
+@interface ConversationViewController () <ConversationServiceDelegate, UITextViewDelegate, AlertMessageViewDelegate, AVAudioRecorderDelegate, AudioActionDelegate, ImageActionDelegate, VideoActionDelegate, FileActionDelegate, DeleteActionDelegate, MenuActionDelegate, GroupActionDelegate, CallActionDelegate, TwincodeActionDelegate, LinkActionDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIDocumentPickerDelegate, UIDocumentInteractionControllerDelegate, GroupInvitationServiceDelegate, GroupServiceDelegate, SwitchViewDelegate, ReplyViewDelegate, SelectItemDelegate, MenuItemDelegate, ReplyItemDelegate, AsyncLoaderDelegate, PreviewViewDelegate, CoachMarkDelegate, MenuReactionDelegate, ItemSelectedActionViewDelegate, ReactionViewDelegate, AnnotationsViewDelegate, BottomSheetViewDelegate, MenuActionConversationDelegate, MenuSendOptionsDelegate, MenuManageConversationViewDelegate, UITableViewDataSourcePrefetching, PHPickerViewControllerDelegate>
 
 @property (weak, nonatomic) IBOutlet UIView *safeAreaView;
 @property (weak, nonatomic) IBOutlet UIView *headerView;
@@ -2800,9 +2800,9 @@ typedef enum {
     return self;
 }
 
-#pragma mark - ConfirmViewDelegate
+#pragma mark - BottomSheetViewDelegate
 
-- (void)didTapConfirm:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didTapConfirm:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractConfirmView);
     
     if ([abstractConfirmView isKindOfClass:[PremiumFeatureConfirmView class]]) {
@@ -2824,7 +2824,7 @@ typedef enum {
     [abstractConfirmView closeConfirmView];
 }
 
-- (void)didTapCancel:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didTapCancel:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didTapCancel: %@", LOG_TAG, abstractConfirmView);
     
     if([abstractConfirmView isKindOfClass:[DefaultConfirmView class]]) {
@@ -2836,7 +2836,7 @@ typedef enum {
     [abstractConfirmView closeConfirmView];
 }
 
-- (void)didClose:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didClose:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didClose: %@", LOG_TAG, abstractConfirmView);
     
    if ([abstractConfirmView isKindOfClass:[DeleteConfirmView class]]) {
@@ -2846,7 +2846,7 @@ typedef enum {
     [abstractConfirmView closeConfirmView];
 }
 
-- (void)didFinishCloseAnimation:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didFinishCloseAnimation:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didFinishCloseAnimation: %@", LOG_TAG, abstractConfirmView);
     
     [abstractConfirmView removeFromSuperview];
@@ -3219,7 +3219,7 @@ typedef enum {
             self.callAgainDescriptor = callDescriptor;
             
             CallAgainConfirmView *callAgainConfirmView = [[CallAgainConfirmView alloc] init];
-            callAgainConfirmView.confirmViewDelegate = self;
+            callAgainConfirmView.bottomSheetViewDelegate = self;
             
             NSString *message = TwinmeLocalizedString(@"conversation_view_controller_audio_call", nil);
             UIImage *icon = [UIImage imageNamed:@"AudioCall"];
@@ -4163,7 +4163,7 @@ typedef enum {
     DDLogVerbose(@"%@ didTapDeleteAction", LOG_TAG);
     
     DeleteConfirmView *deleteConfirmView = [[DeleteConfirmView alloc] init];
-    deleteConfirmView.confirmViewDelegate = self;
+    deleteConfirmView.bottomSheetViewDelegate = self;
     deleteConfirmView.deleteConfirmType = DeleteConfirmTypeFile;
     [deleteConfirmView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:TwinmeLocalizedString(@"cleanup_view_controller_delete_confirmation_message", nil) avatar:self.contactAvatar icon:[UIImage imageNamed:@"ActionBarDelete"]];
     
@@ -4888,7 +4888,7 @@ typedef enum {
     
     if (self.group) {
         PremiumFeatureConfirmView *premiumFeatureConfirmView = [[PremiumFeatureConfirmView alloc] init];
-        premiumFeatureConfirmView.confirmViewDelegate = self;
+        premiumFeatureConfirmView.bottomSheetViewDelegate = self;
         [premiumFeatureConfirmView initWithPremiumFeature:[[UIPremiumFeature alloc]initWithFeatureType:FeatureTypeGroupCall] parentViewController:self.navigationController];
         [self.navigationController.view addSubview:premiumFeatureConfirmView];
         [premiumFeatureConfirmView showConfirmView];
@@ -4987,7 +4987,7 @@ typedef enum {
     
     if (self.group) {
         PremiumFeatureConfirmView *premiumFeatureConfirmView = [[PremiumFeatureConfirmView alloc] init];
-        premiumFeatureConfirmView.confirmViewDelegate = self;
+        premiumFeatureConfirmView.bottomSheetViewDelegate = self;
         [premiumFeatureConfirmView initWithPremiumFeature:[[UIPremiumFeature alloc]initWithFeatureType:FeatureTypeGroupCall] parentViewController:self.navigationController];
         [self.navigationController.view addSubview:premiumFeatureConfirmView];
         [premiumFeatureConfirmView showConfirmView];
@@ -5012,7 +5012,7 @@ typedef enum {
     }
     
     ResetConversationConfirmView *resetConversationConfirmView = [[ResetConversationConfirmView alloc] init];
-    resetConversationConfirmView.confirmViewDelegate = self;
+    resetConversationConfirmView.bottomSheetViewDelegate = self;
     [resetConversationConfirmView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:alertMessage avatar:self.contactAvatar icon:[UIImage imageNamed:@"ActionBarDelete"]];
     [self.navigationController.view addSubview:resetConversationConfirmView];
     [resetConversationConfirmView showConfirmView];

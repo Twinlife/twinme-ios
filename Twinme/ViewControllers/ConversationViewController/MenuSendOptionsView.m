@@ -40,7 +40,7 @@ typedef enum {
 // Interface: MenuSendOptionsView ()
 //
 
-@interface MenuSendOptionsView ()<UITableViewDelegate, UITableViewDataSource, ConfirmViewDelegate, SettingsActionDelegate>
+@interface MenuSendOptionsView ()<UITableViewDelegate, UITableViewDataSource, BottomSheetViewDelegate, SettingsActionDelegate>
 
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *tableViewTopConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *tableViewHeightConstraint;
@@ -109,7 +109,7 @@ typedef enum {
     
     if (updatedSwitch.tag == TAG_ALLOW_EPHEMERAL) {
         PremiumFeatureConfirmView *premiumFeatureConfirmView = [[PremiumFeatureConfirmView alloc] init];
-        premiumFeatureConfirmView.confirmViewDelegate = self;
+        premiumFeatureConfirmView.bottomSheetViewDelegate = self;
         premiumFeatureConfirmView.forceDarkMode = self.forceDarkMode;
         
         UIViewController *topViewController = [UIViewController topViewController];
@@ -128,9 +128,9 @@ typedef enum {
     }
 }
 
-#pragma mark - ConfirmViewDelegate
+#pragma mark - BottomSheetViewDelegate
 
-- (void)didTapConfirm:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didTapConfirm:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractConfirmView);
     
     [[UIApplication sharedApplication] openURL:[NSURL URLWithString:TwinmeLocalizedString(@"twinme_plus_link", nil)] options:@{} completionHandler:nil];
@@ -138,19 +138,19 @@ typedef enum {
     [abstractConfirmView closeConfirmView];
 }
 
-- (void)didTapCancel:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didTapCancel:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didTapCancel: %@", LOG_TAG, abstractConfirmView);
     
     [abstractConfirmView closeConfirmView];
 }
 
-- (void)didClose:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didClose:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didClose: %@", LOG_TAG, abstractConfirmView);
     
     [abstractConfirmView closeConfirmView];
 }
 
-- (void)didFinishCloseAnimation:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didFinishCloseAnimation:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didFinishCloseAnimation: %@", LOG_TAG, abstractConfirmView);
     
     [abstractConfirmView removeFromSuperview];

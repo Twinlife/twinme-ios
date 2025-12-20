@@ -40,7 +40,7 @@ static NSString *ONBOARDING_CELL_IDENTIFIER = @"OnboardingExternalCallCellIdenti
 //
 // Interface: OnboardingExternalCallViewController ()
 
-@interface OnboardingExternalCallViewController () <OnboardingExternalCallDelegate, UICollectionViewDelegate, UICollectionViewDataSource, ConfirmViewDelegate>
+@interface OnboardingExternalCallViewController () <OnboardingExternalCallDelegate, UICollectionViewDelegate, UICollectionViewDataSource, BottomSheetViewDelegate>
 
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *actionViewTopConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *actionViewBottomConstraint;
@@ -116,9 +116,9 @@ static NSString *ONBOARDING_CELL_IDENTIFIER = @"OnboardingExternalCallCellIdenti
     [self showActionView];
 }
 
-#pragma mark - ConfirmViewDelegate
+#pragma mark - BottomSheetViewDelegate
 
-- (void)didTapConfirm:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didTapConfirm:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractConfirmView);
     
     [[UIApplication sharedApplication] openURL:[NSURL URLWithString:TwinmeLocalizedString(@"twinme_plus_link", nil)] options:@{} completionHandler:nil];
@@ -126,19 +126,19 @@ static NSString *ONBOARDING_CELL_IDENTIFIER = @"OnboardingExternalCallCellIdenti
     [abstractConfirmView closeConfirmView];
 }
 
-- (void)didTapCancel:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didTapCancel:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didTapCancel: %@", LOG_TAG, abstractConfirmView);
     
     [abstractConfirmView closeConfirmView];
 }
 
-- (void)didClose:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didClose:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didClose: %@", LOG_TAG, abstractConfirmView);
     
     [abstractConfirmView closeConfirmView];
 }
 
-- (void)didFinishCloseAnimation:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didFinishCloseAnimation:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didFinishCloseAnimation: %@", LOG_TAG, abstractConfirmView);
     
     [abstractConfirmView removeFromSuperview];

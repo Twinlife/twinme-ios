@@ -22,7 +22,7 @@ static const int ddLogLevel = DDLogLevelWarning;
 
 
 //
-// Interface: AbstractConfirmView ()
+// Interface: InvitationCodeShareView ()
 //
 
 @interface InvitationCodeShareView ()

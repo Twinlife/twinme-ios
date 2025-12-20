@@ -40,7 +40,7 @@ static NSString *TWINME_SETTINGS_CELL_IDENTIFIER = @"TwinmeSettingsCellIdentifie
 // Interface: TypeCleanUpViewController ()
 //
 
-@interface TypeCleanUpViewController ()<UITableViewDelegate, UITableViewDataSource, ResetConversationServiceDelegate, ConfirmViewDelegate>
+@interface TypeCleanUpViewController ()<UITableViewDelegate, UITableViewDataSource, ResetConversationServiceDelegate, BottomSheetViewDelegate>
 
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 @property (nonatomic) ResetConversationConfirmView *resetConversationConfirmView;
@@ -237,28 +237,28 @@ static NSString *TWINME_SETTINGS_CELL_IDENTIFIER = @"TwinmeSettingsCellIdentifie
     }
 }
 
-#pragma mark - ConfirmViewDelegate
+#pragma mark - BottomSheetViewDelegate
 
-- (void)didTapConfirm:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didTapConfirm:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractConfirmView);
     
     [self.resetConversationService resetConversation];
     [self.resetConversationConfirmView closeConfirmView];
 }
 
-- (void)didTapCancel:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didTapCancel:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didTapCancel: %@", LOG_TAG, abstractConfirmView);
     
     [self.resetConversationConfirmView closeConfirmView];
 }
 
-- (void)didClose:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didClose:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didClose: %@", LOG_TAG, abstractConfirmView);
     
     [self.resetConversationConfirmView closeConfirmView];
 }
 
-- (void)didFinishCloseAnimation:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didFinishCloseAnimation:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didFinishCloseAnimation: %@", LOG_TAG, abstractConfirmView);
     
     [self.resetConversationConfirmView removeFromSuperview];
@@ -306,7 +306,7 @@ static NSString *TWINME_SETTINGS_CELL_IDENTIFIER = @"TwinmeSettingsCellIdentifie
         }
     }
     self.resetConversationConfirmView = [[ResetConversationConfirmView alloc] init];
-    self.resetConversationConfirmView.confirmViewDelegate = self;
+    self.resetConversationConfirmView.bottomSheetViewDelegate = self;
     [self.resetConversationConfirmView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:alertMessage avatar:avatar icon:[UIImage imageNamed:@"ActionBarDelete"]];
     [self.tabBarController.view addSubview:self.resetConversationConfirmView];
     [self.resetConversationConfirmView showConfirmView];

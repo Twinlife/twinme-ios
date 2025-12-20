@@ -36,7 +36,7 @@ static NSString * IP_PATTERN = @"^(?:[0-9]{1,3}\\.){3}[0-9]{1,3}$";
 // Interface: AddProxyViewController ()
 //
 
-@interface AddProxyViewController () <UITextFieldDelegate, ConfirmViewDelegate, AlertMessageViewDelegate, ProxyServiceDelegate>
+@interface AddProxyViewController () <UITextFieldDelegate, BottomSheetViewDelegate, AlertMessageViewDelegate, ProxyServiceDelegate>
 
 @property (weak, nonatomic) IBOutlet UIView *containerView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *proxyViewTopConstraint;
@@ -194,28 +194,28 @@ static NSString * IP_PATTERN = @"^(?:[0-9]{1,3}\\.){3}[0-9]{1,3}$";
     [self setUpdated];
 }
 
-#pragma mark - ConfirmViewDelegate
+#pragma mark - BottomSheetViewDelegate
 
-- (void)didTapConfirm:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didTapConfirm:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractConfirmView);
 
     [abstractConfirmView closeConfirmView];
 }
 
-- (void)didTapCancel:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didTapCancel:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didTapCancel: %@", LOG_TAG, abstractConfirmView);
     
     [abstractConfirmView closeConfirmView];
     [self.twinmeApplication setShowOnboardingType:OnboardingTypeProxy state:NO];
 }
 
-- (void)didClose:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didClose:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didClose: %@", LOG_TAG, abstractConfirmView);
     
     [abstractConfirmView closeConfirmView];
 }
 
-- (void)didFinishCloseAnimation:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didFinishCloseAnimation:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didFinishCloseAnimation: %@", LOG_TAG, abstractConfirmView);
     
     if (!self.showOnboardingView) {
@@ -405,7 +405,7 @@ static NSString * IP_PATTERN = @"^(?:[0-9]{1,3}\\.){3}[0-9]{1,3}$";
         }
         
         [self dismissKeyboard];
-        [self.proxyService verifyProxyURI:[NSURL URLWithString:self.proxyTextField.text] proxyDescriptor:self.proxyDescriptor];
+        [self.proxyService verifyProxyURI:self.proxyTextField.text proxyDescriptor:self.proxyDescriptor];
     }
 }
 
@@ -449,7 +449,7 @@ static NSString * IP_PATTERN = @"^(?:[0-9]{1,3}\\.){3}[0-9]{1,3}$";
     DDLogVerbose(@"%@ showOnboarding", LOG_TAG);
     
     OnboardingConfirmView *onboardingConfirmView = [[OnboardingConfirmView alloc] init];
-    onboardingConfirmView.confirmViewDelegate = self;
+    onboardingConfirmView.bottomSheetViewDelegate = self;
     [onboardingConfirmView initWithTitle:TwinmeLocalizedString(@"proxy_view_controller_title", nil) message:TwinmeLocalizedString(@"proxy_view_controller_onboarding", nil) image:[UIImage imageNamed:@"OnboardingProxy"] action:TwinmeLocalizedString(@"application_ok", nil) actionColor:nil cancel:cancelAction ? TwinmeLocalizedString(@"application_do_not_display", nil) : nil];
     
     NSMutableAttributedString *attributedTitle = [[NSMutableAttributedString alloc] initWithString:TwinmeLocalizedString(@"proxy_view_controller_title", nil) attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_BOLD36, NSFontAttributeName, Design.FONT_COLOR_DEFAULT, NSForegroundColorAttributeName, nil]];

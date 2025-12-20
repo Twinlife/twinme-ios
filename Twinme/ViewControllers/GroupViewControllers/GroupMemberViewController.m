@@ -57,7 +57,7 @@ static const int CREATOR_GROUP_VIEW_SECTION = 0;
 static const int MEMBERS_GROUP_VIEW_SECTION = 1;
 static const int INVITATION_GROUP_VIEW_SECTION = 2;
 
-@interface GroupMemberViewController () <GroupServiceDelegate, UITableViewDelegate, UITableViewDataSource, AlertMessageViewDelegate, MenuGroupMemberDelegate, ConfirmViewDelegate>
+@interface GroupMemberViewController () <GroupServiceDelegate, UITableViewDelegate, UITableViewDataSource, AlertMessageViewDelegate, MenuGroupMemberDelegate, BottomSheetViewDelegate>
 
 @property (weak, nonatomic) IBOutlet UITableView *membersTableView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *membersTableViewBottomConstraint;
@@ -491,7 +491,7 @@ static const int INVITATION_GROUP_VIEW_SECTION = 2;
         self.selectedContact = member;
 
         DefaultConfirmView *defaultConfirmView = [[DefaultConfirmView alloc] init];
-        defaultConfirmView.confirmViewDelegate = self;
+        defaultConfirmView.bottomSheetViewDelegate = self;
         [defaultConfirmView initWithTitle:self.selectedContact.name message:[NSString stringWithFormat:TwinmeLocalizedString(@"group_member_view_controller_invitation_message %@", nil), member.name] image:nil avatar:self.selectedContact.avatar action:TwinmeLocalizedString(@"add_contact_view_controller_invite", nil) actionColor:nil cancel:nil];
         [self.tabBarController.view addSubview:defaultConfirmView];
         [defaultConfirmView showConfirmView];
@@ -513,7 +513,7 @@ static const int INVITATION_GROUP_VIEW_SECTION = 2;
         self.selectedContact = uiContact;
                 
         self.deleteConfirmView = [[DeleteConfirmView alloc] init];
-        self.deleteConfirmView.confirmViewDelegate = self;
+        self.deleteConfirmView.bottomSheetViewDelegate = self;
         self.deleteConfirmView.deleteConfirmType = DeleteConfirmTypeGroupMember;
         [self.deleteConfirmView initWithTitle:self.selectedContact.name message:TwinmeLocalizedString(@"group_member_view_controller_remove_message", nil) avatar:self.selectedContact.avatar icon:[UIImage imageNamed:@"ActionBarDelete"]];
        
@@ -537,9 +537,9 @@ static const int INVITATION_GROUP_VIEW_SECTION = 2;
     [menuGroupMemberView removeFromSuperview];
 }
 
-#pragma mark - ConfirmViewDelegate
+#pragma mark - BottomSheetViewDelegate
 
-- (void)didTapConfirm:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didTapConfirm:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractConfirmView);
     
     if ([abstractConfirmView isKindOfClass:[DefaultConfirmView class]]) {
@@ -569,19 +569,19 @@ static const int INVITATION_GROUP_VIEW_SECTION = 2;
     [abstractConfirmView closeConfirmView];
 }
 
-- (void)didTapCancel:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didTapCancel:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didTapCancel: %@", LOG_TAG, abstractConfirmView);
     
     [abstractConfirmView closeConfirmView];
 }
 
-- (void)didClose:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didClose:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didClose: %@", LOG_TAG, abstractConfirmView);
     
     [abstractConfirmView closeConfirmView];
 }
 
-- (void)didFinishCloseAnimation:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didFinishCloseAnimation:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didFinishCloseAnimation: %@", LOG_TAG, abstractConfirmView);
     
     self.selectedContact = nil;

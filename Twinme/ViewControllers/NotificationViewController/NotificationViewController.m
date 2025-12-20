@@ -64,7 +64,7 @@ static NSString *NOTIFICATION_CELL_IDENTIFIER = @"NotificationCellIdentifier";
 
 @class NotificationViewControllerNotificationServiceDelegate;
 
-@interface NotificationViewController () <NotificationServiceDelegate, GroupServiceDelegate, UITableViewDataSource, UITableViewDelegate, UIGestureRecognizerDelegate, ConfirmViewDelegate>
+@interface NotificationViewController () <NotificationServiceDelegate, GroupServiceDelegate, UITableViewDataSource, UITableViewDelegate, UIGestureRecognizerDelegate, BottomSheetViewDelegate>
 
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *noNotificationImageViewHeightConstraint;
@@ -419,9 +419,9 @@ static NSString *NOTIFICATION_CELL_IDENTIFIER = @"NotificationCellIdentifier";
     return swipeActionConfiguration;
 }
 
-#pragma mark - ConfirmViewDelegate
+#pragma mark - BottomSheetViewDelegate
 
-- (void)didTapConfirm:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didTapConfirm:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractConfirmView);
     
     self.resetAllNotification = YES;
@@ -441,19 +441,19 @@ static NSString *NOTIFICATION_CELL_IDENTIFIER = @"NotificationCellIdentifier";
     [abstractConfirmView closeConfirmView];
 }
 
-- (void)didTapCancel:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didTapCancel:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didTapCancel: %@", LOG_TAG, abstractConfirmView);
     
     [abstractConfirmView closeConfirmView];
 }
 
-- (void)didClose:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didClose:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didClose: %@", LOG_TAG, abstractConfirmView);
     
     [abstractConfirmView closeConfirmView];
 }
 
-- (void)didFinishCloseAnimation:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didFinishCloseAnimation:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didFinishCloseAnimation: %@", LOG_TAG, abstractConfirmView);
     
     [abstractConfirmView removeFromSuperview];
@@ -624,7 +624,7 @@ static NSString *NOTIFICATION_CELL_IDENTIFIER = @"NotificationCellIdentifier";
     if (self.notifications.count > 0) {
         [self.notificationService getImageWithProfile:self.currentSpace.profile withBlock:^(UIImage *image) {
             DeleteConfirmView *deleteConfirmView = [[DeleteConfirmView alloc] init];
-            deleteConfirmView.confirmViewDelegate = self;
+            deleteConfirmView.bottomSheetViewDelegate = self;
             deleteConfirmView.deleteConfirmType = DeleteConfirmTypeHistory;
             NSString *message = [NSString stringWithFormat:@"%@\n\n%@", TwinmeLocalizedString(@"application_operation_irreversible", nil), TwinmeLocalizedString(@"notification_view_controller_reset", nil)];
             [deleteConfirmView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:message avatar:image icon:[UIImage imageNamed:@"ActionBarDelete"]];

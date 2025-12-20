@@ -30,7 +30,7 @@ static const int ddLogLevel = DDLogLevelWarning;
 // Interface: PrivacyViewController
 //
 
-@interface PrivacyViewController ()<ConfirmViewDelegate>
+@interface PrivacyViewController ()<BottomSheetViewDelegate>
 
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *lockScreenViewHeightConstraint;
 @property (weak, nonatomic) IBOutlet InsideBorderView *lockScreenView;
@@ -109,9 +109,9 @@ static const int ddLogLevel = DDLogLevelWarning;
     [self.hideRecentCallsView setBorder:Design.SEPARATOR_COLOR_GREY borderWidth:Design.SEPARATOR_HEIGHT width:screenWidth height:self.hideRecentCallsView.frame.size.height left:false right:false top:true bottom:true];
 }
 
-#pragma mark - ConfirmViewDelegate
+#pragma mark - BottomSheetViewDelegate
 
-- (void)didTapConfirm:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didTapConfirm:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractConfirmView);
     
     [[UIApplication sharedApplication] openURL:[NSURL URLWithString:TwinmeLocalizedString(@"twinme_plus_link", nil)] options:@{} completionHandler:nil];
@@ -119,19 +119,19 @@ static const int ddLogLevel = DDLogLevelWarning;
     [abstractConfirmView closeConfirmView];
 }
 
-- (void)didTapCancel:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didTapCancel:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didTapCancel: %@", LOG_TAG, abstractConfirmView);
     
     [abstractConfirmView closeConfirmView];
 }
 
-- (void)didClose:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didClose:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didClose: %@", LOG_TAG, abstractConfirmView);
     
     [abstractConfirmView closeConfirmView];
 }
 
-- (void)didFinishCloseAnimation:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didFinishCloseAnimation:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didFinishCloseAnimation: %@", LOG_TAG, abstractConfirmView);
     
     [abstractConfirmView removeFromSuperview];
@@ -237,7 +237,7 @@ static const int ddLogLevel = DDLogLevelWarning;
     DDLogVerbose(@"%@ handleSwitchTapGesture: %@", LOG_TAG, sender);
     
     PremiumFeatureConfirmView *premiumFeatureConfirmView = [[PremiumFeatureConfirmView alloc] init];
-    premiumFeatureConfirmView.confirmViewDelegate = self;
+    premiumFeatureConfirmView.bottomSheetViewDelegate = self;
     [premiumFeatureConfirmView initWithPremiumFeature:[[UIPremiumFeature alloc]initWithFeatureType:FeatureTypePrivacy] parentViewController:self.navigationController];
     [self.navigationController.view addSubview:premiumFeatureConfirmView];
     [premiumFeatureConfirmView showConfirmView];

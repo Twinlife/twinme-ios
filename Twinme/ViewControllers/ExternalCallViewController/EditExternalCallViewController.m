@@ -33,7 +33,7 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
 // Interface: EditExternalCallViewController ()
 //
 
-@interface EditExternalCallViewController ()<UITextFieldDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate, UITextViewDelegate, ConfirmViewDelegate, CallReceiverServiceDelegate>
+@interface EditExternalCallViewController ()<UITextFieldDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate, UITextViewDelegate, BottomSheetViewDelegate, CallReceiverServiceDelegate>
 
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *nameViewTopConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *nameViewWidthConstraint;
@@ -281,28 +281,28 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     }
 }
 
-#pragma mark - ConfirmViewDelegate
+#pragma mark - BottomSheetViewDelegate
 
-- (void)didTapConfirm:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didTapConfirm:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractConfirmView);
     
     [self.callReceiverService deleteCallReceiverWithCallReceiver:self.callReceiver];
     [abstractConfirmView closeConfirmView];
 }
 
-- (void)didTapCancel:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didTapCancel:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didTapCancel: %@", LOG_TAG, abstractConfirmView);
     
     [abstractConfirmView closeConfirmView];
 }
 
-- (void)didClose:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didClose:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didClose: %@", LOG_TAG, abstractConfirmView);
     
     [abstractConfirmView closeConfirmView];
 }
 
-- (void)didFinishCloseAnimation:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didFinishCloseAnimation:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didFinishCloseAnimation: %@", LOG_TAG, abstractConfirmView);
     
     [abstractConfirmView removeFromSuperview];
@@ -520,7 +520,7 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
         }
         
         DeleteConfirmView *deleteConfirmView = [[DeleteConfirmView alloc] init];
-        deleteConfirmView.confirmViewDelegate = self;
+        deleteConfirmView.bottomSheetViewDelegate = self;
         deleteConfirmView.deleteConfirmType = DeleteConfirmTypeOriginator;
         [deleteConfirmView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:message avatar:self.avatar icon:[UIImage imageNamed:@"ActionBarDelete"]];
         [self.view addSubview:deleteConfirmView];
