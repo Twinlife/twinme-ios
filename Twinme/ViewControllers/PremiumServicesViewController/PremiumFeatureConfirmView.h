@@ -6,7 +6,7 @@
  *   Fabrice Trescartes (Fabrice.Trescartes@twin.life)
  */
 
-#import "AbstractConfirmView.h"
+#import "AbstractBottomSheetView.h"
 
 @class UIPremiumFeature;
 
@@ -14,7 +14,7 @@
 // Interface: PremiumFeatureConfirmView
 //
 
-@interface PremiumFeatureConfirmView : AbstractConfirmView
+@interface PremiumFeatureConfirmView : AbstractBottomSheetView
 
 - (void)initWithPremiumFeature:(nonnull UIPremiumFeature *)premiumFeature parentViewController:(nonnull UIViewController *)parentViewController;
 

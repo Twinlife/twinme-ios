@@ -6,7 +6,7 @@
  *   Fabrice Trescartes (Fabrice.Trescartes@twin.life)
  */
 
-#import "AbstractConfirmView.h"
+#import "AbstractBottomSheetView.h"
 
 typedef enum {
     DeleteConfirmTypeHistory,
@@ -20,7 +20,7 @@ typedef enum {
 // Interface: DeleteConfirmView
 //
 
-@interface DeleteConfirmView : AbstractConfirmView
+@interface DeleteConfirmView : AbstractBottomSheetView
 
 @property (nonatomic) DeleteConfirmType deleteConfirmType;
 

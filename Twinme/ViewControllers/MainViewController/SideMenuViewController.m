@@ -97,7 +97,7 @@ static NSString *SIDE_SPACE_CELL_IDENTIFIER = @"SideSpaceCellIdentifier";
 // Interface: SideMenuViewController ()
 //
 
-@interface SideMenuViewController ()<UITableViewDelegate, UITableViewDataSource, DefaultProfileDelegate, SideSpaceDelegate, CoachMarkDelegate, MenuAddContactViewDelegate, ConfirmViewDelegate>
+@interface SideMenuViewController ()<UITableViewDelegate, UITableViewDataSource, DefaultProfileDelegate, SideSpaceDelegate, CoachMarkDelegate, MenuAddContactViewDelegate, BottomSheetViewDelegate>
 
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *headerSpacesViewHeightConstraint;
@@ -500,9 +500,9 @@ static NSString *SIDE_SPACE_CELL_IDENTIFIER = @"SideSpaceCellIdentifier";
     }
 }
 
-#pragma mark - ConfirmViewDelegate
+#pragma mark - BottomSheetViewDelegate
 
-- (void)didTapConfirm:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didTapConfirm:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractConfirmView);
     
     if ([abstractConfirmView isKindOfClass:[PremiumFeatureConfirmView class]]) {
@@ -520,7 +520,7 @@ static NSString *SIDE_SPACE_CELL_IDENTIFIER = @"SideSpaceCellIdentifier";
     [abstractConfirmView closeConfirmView];
 }
 
-- (void)didTapCancel:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didTapCancel:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didTapCancel: %@", LOG_TAG, abstractConfirmView);
     
     [abstractConfirmView closeConfirmView];
@@ -530,13 +530,13 @@ static NSString *SIDE_SPACE_CELL_IDENTIFIER = @"SideSpaceCellIdentifier";
     }
 }
 
-- (void)didClose:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didClose:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didClose: %@", LOG_TAG, abstractConfirmView);
     
     [abstractConfirmView closeConfirmView];
 }
 
-- (void)didFinishCloseAnimation:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didFinishCloseAnimation:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didFinishCloseAnimation: %@", LOG_TAG, abstractConfirmView);
     
     [abstractConfirmView removeFromSuperview];
@@ -808,7 +808,7 @@ static NSString *SIDE_SPACE_CELL_IDENTIFIER = @"SideSpaceCellIdentifier";
     
     if ([self.twinmeApplication startOnboarding:OnboardingTypeTransferCall] && !self.callReceiver) {
         OnboardingDetailView *onboardingDetailView = [[OnboardingDetailView alloc] init];
-        onboardingDetailView.confirmViewDelegate = self;
+        onboardingDetailView.bottomSheetViewDelegate = self;
         [onboardingDetailView initWithPremiumFeature:[[UIPremiumFeature alloc]initWithFeatureType:FeatureTypeTransfertCall spaceSettings:self.currentSpaceSettings]];
         [twinmeNavigationController.tabBarController.view addSubview:onboardingDetailView];
         [onboardingDetailView showConfirmView];
@@ -826,7 +826,7 @@ static NSString *SIDE_SPACE_CELL_IDENTIFIER = @"SideSpaceCellIdentifier";
     
     if (![delegate.twinmeApplication isSubscribedWithFeature:TLTwinmeApplicationFeatureGroupCall]) {
         PremiumFeatureConfirmView *premiumFeatureConfirmView = [[PremiumFeatureConfirmView alloc] init];
-        premiumFeatureConfirmView.confirmViewDelegate = self;
+        premiumFeatureConfirmView.bottomSheetViewDelegate = self;
         [premiumFeatureConfirmView initWithPremiumFeature:[[UIPremiumFeature alloc]initWithFeatureType:FeatureTypeTransfertCall spaceSettings:self.currentSpaceSettings] parentViewController:twinmeNavigationController.tabBarController];
         [twinmeNavigationController.tabBarController.view addSubview:premiumFeatureConfirmView];
         [premiumFeatureConfirmView showConfirmView];

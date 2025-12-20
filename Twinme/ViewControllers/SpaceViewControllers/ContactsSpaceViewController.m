@@ -40,7 +40,7 @@ static NSString *SELECTED_GROUP_MEMBER_CELL_IDENTIFIER = @"SelectedGroupMemberCe
 static CGFloat DESIGN_COLLECTION_CELL_HEIGHT = 116;
 static CGFloat DESIGN_TABLE_VIEW_BOTTOM = 116;
 
-@interface ContactsSpaceViewController () <UITableViewDelegate, UITableViewDataSource, UICollectionViewDataSource, SpaceServiceDelegate, UISearchBarDelegate, ConfirmViewDelegate>
+@interface ContactsSpaceViewController () <UITableViewDelegate, UITableViewDataSource, UICollectionViewDataSource, SpaceServiceDelegate, UISearchBarDelegate, BottomSheetViewDelegate>
 
 @property (weak, nonatomic) IBOutlet UITableView *contactsTableView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *contactsTableViewTopConstraint;
@@ -247,9 +247,9 @@ static CGFloat DESIGN_TABLE_VIEW_BOTTOM = 116;
     }
 }
 
-#pragma mark - ConfirmViewDelegate
+#pragma mark - BottomSheetViewDelegate
 
-- (void)didTapConfirm:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didTapConfirm:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractConfirmView);
     
     if ([abstractConfirmView isKindOfClass:[SpaceActionConfirmView class]]) {        
@@ -270,19 +270,19 @@ static CGFloat DESIGN_TABLE_VIEW_BOTTOM = 116;
     [abstractConfirmView closeConfirmView];
 }
 
-- (void)didTapCancel:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didTapCancel:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didTapCancel: %@", LOG_TAG, abstractConfirmView);
     
     [abstractConfirmView closeConfirmView];
 }
 
-- (void)didClose:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didClose:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didClose: %@", LOG_TAG, abstractConfirmView);
     
     [abstractConfirmView closeConfirmView];
 }
 
-- (void)didFinishCloseAnimation:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didFinishCloseAnimation:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didFinishCloseAnimation: %@", LOG_TAG, abstractConfirmView);
     
     [abstractConfirmView removeFromSuperview];
@@ -530,7 +530,7 @@ static CGFloat DESIGN_TABLE_VIEW_BOTTOM = 116;
     if (sender.state == UIGestureRecognizerStateEnded) {
         [self.spaceService getImageWithSpace:self.space withBlock:^(UIImage *image) {
             SpaceActionConfirmView *spaceActionConfirmView = [[SpaceActionConfirmView alloc] init];
-            spaceActionConfirmView.confirmViewDelegate = self;
+            spaceActionConfirmView.bottomSheetViewDelegate = self;
             spaceActionConfirmView.spaceActionConfirmType = SpaceActionConfirmTypeMoveContact;
             [spaceActionConfirmView initWithTitle:self.space.settings.name message:TwinmeLocalizedString(@"contacts_space_view_controller_move_message", nil) spaceName:self.space.settings.name spaceStyle:self.space.settings.style avatar:image icon:[UIImage imageNamed:@"TabBarContactsGrey"] confirmTitle:TwinmeLocalizedString(@"create_space_view_controller_contact_list", nil) cancelTitle:TwinmeLocalizedString(@"application_cancel", nil)];
             [self.tabBarController.view addSubview:spaceActionConfirmView];

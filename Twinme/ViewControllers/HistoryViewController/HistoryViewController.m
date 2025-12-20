@@ -81,7 +81,7 @@ static const int NB_CALL_RECEIVER = 3;
 // Interface: HistoryViewController
 //
 
-@interface HistoryViewController () <UITableViewDataSource, UITableViewDelegate, CallsServiceDelegate, SectionCallDelegate, ConfirmViewDelegate, AlertMessageViewDelegate, OnboardingExternalCallDelegate>
+@interface HistoryViewController () <UITableViewDataSource, UITableViewDelegate, CallsServiceDelegate, SectionCallDelegate, BottomSheetViewDelegate, AlertMessageViewDelegate, OnboardingExternalCallDelegate>
 
 @property (weak, nonatomic) IBOutlet UITableView *callsTableView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *noCallImageViewHeightConstraint;
@@ -476,7 +476,7 @@ static const int NB_CALL_RECEIVER = 3;
         ApplicationDelegate *delegate = (ApplicationDelegate *)[[UIApplication sharedApplication] delegate];
         MainViewController *mainViewController = delegate.mainViewController;
         PremiumFeatureConfirmView *premiumFeatureConfirmView = [[PremiumFeatureConfirmView alloc] init];
-        premiumFeatureConfirmView.confirmViewDelegate = self;
+        premiumFeatureConfirmView.bottomSheetViewDelegate = self;
         [premiumFeatureConfirmView initWithPremiumFeature:[[UIPremiumFeature alloc]initWithFeatureType:FeatureTypeClickToCall spaceSettings:self.currentSpaceSettings] parentViewController:mainViewController];
         [mainViewController.view addSubview:premiumFeatureConfirmView];
         [premiumFeatureConfirmView showConfirmView];
@@ -724,9 +724,9 @@ static const int NB_CALL_RECEIVER = 3;
     [self reloadData];
 }
 
-#pragma mark - ConfirmViewDelegate
+#pragma mark - BottomSheetViewDelegate
 
-- (void)didTapConfirm:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didTapConfirm:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractConfirmView);
     
     if ([abstractConfirmView isKindOfClass:[PremiumFeatureConfirmView class]]) {
@@ -763,7 +763,7 @@ static const int NB_CALL_RECEIVER = 3;
     [abstractConfirmView closeConfirmView];
 }
 
-- (void)didTapCancel:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didTapCancel:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didTapCancel: %@", LOG_TAG, abstractConfirmView);
     
     self.callReceiverToDelete = nil;
@@ -771,7 +771,7 @@ static const int NB_CALL_RECEIVER = 3;
     [abstractConfirmView closeConfirmView];
 }
 
-- (void)didClose:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didClose:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didClose: %@", LOG_TAG, abstractConfirmView);
     
     self.callReceiverToDelete = nil;
@@ -779,7 +779,7 @@ static const int NB_CALL_RECEIVER = 3;
     [abstractConfirmView closeConfirmView];
 }
 
-- (void)didFinishCloseAnimation:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didFinishCloseAnimation:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didFinishCloseAnimation: %@", LOG_TAG, abstractConfirmView);
     
     [abstractConfirmView removeFromSuperview];
@@ -805,7 +805,7 @@ static const int NB_CALL_RECEIVER = 3;
     DDLogVerbose(@"%@ didTouchCreateExernalCall", LOG_TAG);
     
     PremiumFeatureConfirmView *premiumFeatureConfirmView = [[PremiumFeatureConfirmView alloc] init];
-    premiumFeatureConfirmView.confirmViewDelegate = self;
+    premiumFeatureConfirmView.bottomSheetViewDelegate = self;
     [premiumFeatureConfirmView initWithPremiumFeature:[[UIPremiumFeature alloc]initWithFeatureType:FeatureTypeClickToCall spaceSettings:self.currentSpaceSettings] parentViewController:self.tabBarController];
     [self.tabBarController.view addSubview:premiumFeatureConfirmView];
     [premiumFeatureConfirmView showConfirmView];
@@ -912,7 +912,7 @@ static const int NB_CALL_RECEIVER = 3;
         NSString *message = [NSString stringWithFormat:@"%@\n%@", TwinmeLocalizedString(@"edit_external_call_view_controller_message", nil), TwinmeLocalizedString(@"edit_external_call_view_controller_confirm_message", nil)];
         
         DeleteConfirmView *deleteConfirmView = [[DeleteConfirmView alloc] init];
-        deleteConfirmView.confirmViewDelegate = self;
+        deleteConfirmView.bottomSheetViewDelegate = self;
         deleteConfirmView.deleteConfirmType = DeleteConfirmTypeOriginator;
         [deleteConfirmView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:message avatar:uiCallReceiver.avatar icon:[UIImage imageNamed:@"ActionBarDelete"]];
         [self.tabBarController.view addSubview:deleteConfirmView];
@@ -1174,7 +1174,7 @@ static const int NB_CALL_RECEIVER = 3;
     if (self.allCalls.count > 0) {
         [self.callsService getImageWithProfile:self.currentSpace.profile withBlock:^(UIImage *image) {
             DeleteConfirmView *deleteConfirmView = [[DeleteConfirmView alloc] init];
-            deleteConfirmView.confirmViewDelegate = self;
+            deleteConfirmView.bottomSheetViewDelegate = self;
             deleteConfirmView.deleteConfirmType = DeleteConfirmTypeHistory;
             NSString *message = [NSString stringWithFormat:@"%@\n\n%@", TwinmeLocalizedString(@"application_operation_irreversible", nil), TwinmeLocalizedString(@"history_view_controller_reset", nil)];
             [deleteConfirmView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:message avatar:image icon:[UIImage imageNamed:@"ActionBarDelete"]];
@@ -1233,7 +1233,7 @@ static const int NB_CALL_RECEIVER = 3;
     ApplicationDelegate *delegate = (ApplicationDelegate *)[[UIApplication sharedApplication] delegate];
     if (self.callOriginator.isGroup && ![delegate.twinmeApplication isSubscribedWithFeature:TLTwinmeApplicationFeatureGroupCall]) {
         PremiumFeatureConfirmView *premiumFeatureConfirmView = [[PremiumFeatureConfirmView alloc] init];
-        premiumFeatureConfirmView.confirmViewDelegate = self;
+        premiumFeatureConfirmView.bottomSheetViewDelegate = self;
         [premiumFeatureConfirmView initWithPremiumFeature:[[UIPremiumFeature alloc]initWithFeatureType:FeatureTypeGroupCall spaceSettings:[self currentSpaceSettings]] parentViewController:self.tabBarController];
         [self.tabBarController.view addSubview:premiumFeatureConfirmView];
         [premiumFeatureConfirmView showConfirmView];
@@ -1259,7 +1259,7 @@ static const int NB_CALL_RECEIVER = 3;
     DDLogVerbose(@"%@ callAgain", LOG_TAG);
     
     CallAgainConfirmView *callAgainConfirmView = [[CallAgainConfirmView alloc] init];
-    callAgainConfirmView.confirmViewDelegate = self;
+    callAgainConfirmView.bottomSheetViewDelegate = self;
     
     NSString *message = TwinmeLocalizedString(@"conversation_view_controller_audio_call", nil);
     UIImage *icon = [UIImage imageNamed:@"AudioCall"];

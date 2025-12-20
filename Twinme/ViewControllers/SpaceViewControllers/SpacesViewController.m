@@ -56,7 +56,7 @@ static const int SPACES_VIEW_SECTION_COUNT = 1;
 // Interface: SpacesViewController ()
 //
 
-@interface SpacesViewController () <UITableViewDataSource, UITableViewDelegate, SpaceServiceDelegate, UISearchBarDelegate, SpaceActionDelegate, ConfirmViewDelegate, AlertMessageViewDelegate>
+@interface SpacesViewController () <UITableViewDataSource, UITableViewDelegate, SpaceServiceDelegate, UISearchBarDelegate, SpaceActionDelegate, BottomSheetViewDelegate, AlertMessageViewDelegate>
 
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *spacesTableViewBottomConstraint;
 @property (weak, nonatomic) IBOutlet UITableView *spacesTableView;
@@ -531,9 +531,9 @@ static const int SPACES_VIEW_SECTION_COUNT = 1;
     [self.spaceService setCurrentSpace:uiSpace.space];
 }
 
-#pragma mark - ConfirmViewDelegate
+#pragma mark - BottomSheetViewDelegate
 
-- (void)didTapConfirm:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didTapConfirm:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractConfirmView);
     
     if ([abstractConfirmView isKindOfClass:[SpaceActionConfirmView class]]) {
@@ -555,19 +555,19 @@ static const int SPACES_VIEW_SECTION_COUNT = 1;
     [abstractConfirmView closeConfirmView];
 }
 
-- (void)didTapCancel:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didTapCancel:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didTapCancel: %@", LOG_TAG, abstractConfirmView);
     
     [abstractConfirmView closeConfirmView];
 }
 
-- (void)didClose:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didClose:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didClose: %@", LOG_TAG, abstractConfirmView);
     
     [abstractConfirmView closeConfirmView];
 }
 
-- (void)didFinishCloseAnimation:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didFinishCloseAnimation:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didFinishCloseAnimation: %@", LOG_TAG, abstractConfirmView);
     
     [abstractConfirmView removeFromSuperview];
@@ -637,7 +637,7 @@ static const int SPACES_VIEW_SECTION_COUNT = 1;
             self.selectedSpace = uiSpace.space;
             
             SpaceActionConfirmView *spaceActionConfirmView = [[SpaceActionConfirmView alloc] init];
-            spaceActionConfirmView.confirmViewDelegate = self;
+            spaceActionConfirmView.bottomSheetViewDelegate = self;
             spaceActionConfirmView.spaceActionConfirmType = SpaceActionConfirmTypeProfile;
             [spaceActionConfirmView initWithTitle:TwinmeLocalizedString(@"show_profile_view_controller_create_profile", nil) message:TwinmeLocalizedString(@"create_space_view_controller_contacts_no_profile", nil) spaceName:self.selectedSpace.settings.name spaceStyle:self.selectedSpace.settings.style avatar:uiSpace.avatarSpace icon:[UIImage imageNamed:@"ActionBarAddContact"] confirmTitle:TwinmeLocalizedString(@"application_now", nil) cancelTitle:TwinmeLocalizedString(@"application_later", nil)];
            
@@ -674,7 +674,7 @@ static const int SPACES_VIEW_SECTION_COUNT = 1;
         } else {
             self.selectedSpace = uiSpace.space;
             SpaceActionConfirmView *spaceActionConfirmView = [[SpaceActionConfirmView alloc] init];
-            spaceActionConfirmView.confirmViewDelegate = self;
+            spaceActionConfirmView.bottomSheetViewDelegate = self;
             spaceActionConfirmView.spaceActionConfirmType = SpaceActionConfirmTypeMoveContact;
             [spaceActionConfirmView initWithTitle:uiSpace.nameSpace message:TwinmeLocalizedString(@"contacts_space_view_controller_move_message", nil) spaceName:uiSpace.nameSpace spaceStyle:uiSpace.space.settings.style avatar:uiSpace.avatarSpace icon:[UIImage imageNamed:@"TabBarContactsGrey"] confirmTitle:TwinmeLocalizedString(@"contacts_space_view_controller_move_title", nil) cancelTitle:TwinmeLocalizedString(@"application_cancel", nil)];
             if (self.pickerMode) {
@@ -688,7 +688,7 @@ static const int SPACES_VIEW_SECTION_COUNT = 1;
     } else if (self.groupToMove) {
         if (!uiSpace.space.profile) {
             SpaceActionConfirmView *spaceActionConfirmView = [[SpaceActionConfirmView alloc] init];
-            spaceActionConfirmView.confirmViewDelegate = self;
+            spaceActionConfirmView.bottomSheetViewDelegate = self;
             spaceActionConfirmView.spaceActionConfirmType = SpaceActionConfirmTypeProfile;
             [spaceActionConfirmView initWithTitle:TwinmeLocalizedString(@"show_profile_view_controller_create_profile", nil) message:TwinmeLocalizedString(@"spaces_view_controller_move_group_no_profile", nil) spaceName:self.selectedSpace.settings.name spaceStyle:self.selectedSpace.settings.style avatar:uiSpace.avatarSpace icon:[UIImage imageNamed:@"ActionBarAddContact"] confirmTitle:TwinmeLocalizedString(@"application_now", nil) cancelTitle:TwinmeLocalizedString(@"application_later", nil)];
            
@@ -726,7 +726,7 @@ static const int SPACES_VIEW_SECTION_COUNT = 1;
             self.selectedSpace = uiSpace.space;
             
             SpaceActionConfirmView *spaceActionConfirmView = [[SpaceActionConfirmView alloc] init];
-            spaceActionConfirmView.confirmViewDelegate = self;
+            spaceActionConfirmView.bottomSheetViewDelegate = self;
             spaceActionConfirmView.spaceActionConfirmType = SpaceActionConfirmTypeMoveContact;
             [spaceActionConfirmView initWithTitle:uiSpace.nameSpace message:TwinmeLocalizedString(@"spaces_view_controller_move_message", nil) spaceName:uiSpace.nameSpace spaceStyle:uiSpace.space.settings.style avatar:uiSpace.avatarSpace icon:[UIImage imageNamed:@"TabBarContactsGrey"] confirmTitle:TwinmeLocalizedString(@"contacts_space_view_controller_move_title", nil) cancelTitle:TwinmeLocalizedString(@"application_cancel", nil)];
             if (self.pickerMode) {
@@ -740,7 +740,7 @@ static const int SPACES_VIEW_SECTION_COUNT = 1;
     } else if (self.spacesPickerDelegate) {
         if (!uiSpace.space.profile) {
             SpaceActionConfirmView *spaceActionConfirmView = [[SpaceActionConfirmView alloc] init];
-            spaceActionConfirmView.confirmViewDelegate = self;
+            spaceActionConfirmView.bottomSheetViewDelegate = self;
             spaceActionConfirmView.spaceActionConfirmType = SpaceActionConfirmTypeProfile;
             [spaceActionConfirmView initWithTitle:TwinmeLocalizedString(@"show_profile_view_controller_create_profile", nil) message:TwinmeLocalizedString(@"create_space_view_controller_contacts_no_profile", nil) spaceName:uiSpace.space.settings.name spaceStyle:uiSpace.space.settings.style avatar:uiSpace.avatarSpace icon:[UIImage imageNamed:@"ActionBarAddContact"] confirmTitle:TwinmeLocalizedString(@"application_now", nil) cancelTitle:TwinmeLocalizedString(@"application_later", nil)];
            

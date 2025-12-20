@@ -95,8 +95,8 @@ static CGFloat DESIGN_TEXTFIELD_HEIGHT = 82;
             self.messageLabel.text = TwinmeLocalizedString(@"delete_account_view_controller_confirm_message", nil);
             self.confirmLabel.text = TwinmeLocalizedString(@"application_confirm_deletion", nil);
         } else if ([self.deleteConfirmTextField.text isEqualToString:@"OK"]) {
-            if ([self.confirmViewDelegate respondsToSelector:@selector(didTapConfirm:)]) {
-                [self.confirmViewDelegate didTapConfirm:self];
+            if ([self.bottomSheetViewDelegate respondsToSelector:@selector(didTapConfirm:)]) {
+                [self.bottomSheetViewDelegate didTapConfirm:self];
             }
         }
     }

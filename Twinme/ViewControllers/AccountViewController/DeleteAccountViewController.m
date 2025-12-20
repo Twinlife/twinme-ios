@@ -29,7 +29,7 @@ static const int ddLogLevel = DDLogLevelWarning;
 // Interface: DeleteAccountViewController ()
 //
 
-@interface DeleteAccountViewController ()<DeleteAccountServiceDelegate, ConfirmViewDelegate>
+@interface DeleteAccountViewController ()<DeleteAccountServiceDelegate, BottomSheetViewDelegate>
 
 @property (weak, nonatomic) IBOutlet UILabel *accountLabel;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *accountLabelTopConstraint;
@@ -147,28 +147,28 @@ static const int ddLogLevel = DDLogLevelWarning;
     delegate.window.rootViewController = deletedAccountViewController;
 }
 
-#pragma mark - ConfirmViewDelegate
+#pragma mark - BottomSheetViewDelegate
 
-- (void)didTapConfirm:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didTapConfirm:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractConfirmView);
     
     [self confirmDeleteAccount];
     [abstractConfirmView closeConfirmView];
 }
 
-- (void)didTapCancel:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didTapCancel:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didTapCancel: %@", LOG_TAG, abstractConfirmView);
     
     [abstractConfirmView closeConfirmView];
 }
 
-- (void)didClose:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didClose:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didClose: %@", LOG_TAG, abstractConfirmView);
     
     [abstractConfirmView closeConfirmView];
 }
 
-- (void)didFinishCloseAnimation:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didFinishCloseAnimation:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didFinishCloseAnimation: %@", LOG_TAG, abstractConfirmView);
     
     [abstractConfirmView removeFromSuperview];
@@ -217,7 +217,7 @@ static const int ddLogLevel = DDLogLevelWarning;
     if (sender.state == UIGestureRecognizerStateEnded) {
         
         self.deleteConfirmView = [[DeleteAccountConfirmView alloc] init];
-        self.deleteConfirmView.confirmViewDelegate = self;
+        self.deleteConfirmView.bottomSheetViewDelegate = self;
         self.deleteConfirmView.spaceSettings = self.currentSpaceSettings;
         NSString *message = [NSString stringWithFormat:@"%@\n%@", TwinmeLocalizedString(@"application_operation_irreversible", nil), TwinmeLocalizedString(@"account_view_controller_delete_account", nil)];
         [ self.deleteConfirmView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:message avatar:nil icon:nil];

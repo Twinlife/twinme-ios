@@ -51,7 +51,7 @@ static NSString *SETTINGS_VALUE_CELL_IDENTIFIER = @"SettingsValueCellIdentifier"
 // Interface: AbstractCapabilitiesViewController ()
 //
 
-@interface AbstractCapabilitiesViewController () <SettingsActionDelegate, EditContactCapabilitiesServiceDelegate, ScheduleDelegate, MenuDateTimeViewDelegate, ConfirmViewDelegate, SettingsSectionHeaderDelegate>
+@interface AbstractCapabilitiesViewController () <SettingsActionDelegate, EditContactCapabilitiesServiceDelegate, ScheduleDelegate, MenuDateTimeViewDelegate, BottomSheetViewDelegate, SettingsSectionHeaderDelegate>
 
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 
@@ -549,9 +549,9 @@ typedef enum {
     [self showOnboarding:YES];
 }
 
-#pragma mark - ConfirmViewDelegate
+#pragma mark - BottomSheetViewDelegate
 
-- (void)didTapConfirm:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didTapConfirm:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractConfirmView);
     
     if ([abstractConfirmView isKindOfClass:[PremiumFeatureConfirmView class]]) {
@@ -572,7 +572,7 @@ typedef enum {
     [abstractConfirmView closeConfirmView];
 }
 
-- (void)didTapCancel:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didTapCancel:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didTapCancel: %@", LOG_TAG, abstractConfirmView);
     
     [abstractConfirmView closeConfirmView];
@@ -582,13 +582,13 @@ typedef enum {
     }
 }
 
-- (void)didClose:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didClose:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didClose: %@", LOG_TAG, abstractConfirmView);
     
     [abstractConfirmView closeConfirmView];
 }
 
-- (void)didFinishCloseAnimation:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didFinishCloseAnimation:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didFinishCloseAnimation: %@", LOG_TAG, abstractConfirmView);
     
     [abstractConfirmView removeFromSuperview];
@@ -670,7 +670,7 @@ typedef enum {
     
     if (hideCancel || [self.twinmeApplication startOnboarding:OnboardingTypeRemoteCameraSettings]) {
         OnboardingConfirmView *onboardingConfirmView = [[OnboardingConfirmView alloc] init];
-        onboardingConfirmView.confirmViewDelegate = self;
+        onboardingConfirmView.bottomSheetViewDelegate = self;
         [onboardingConfirmView initWithTitle:TwinmeLocalizedString(@"call_view_controller_camera_control_needs_help", nil) message: TwinmeLocalizedString(@"contact_capabilities_view_controller_camera_control_onboarding", nil) image:[UIImage imageNamed:@"OnboardingControlCamera"] action:TwinmeLocalizedString(@"application_ok", nil) actionColor:nil cancel:TwinmeLocalizedString(@"application_do_not_display", nil)];
         
         if (hideCancel) {
@@ -693,7 +693,7 @@ typedef enum {
     DDLogVerbose(@"%@ showPremiumFeature", LOG_TAG);
     
     PremiumFeatureConfirmView *premiumFeatureConfirmView = [[PremiumFeatureConfirmView alloc] init];
-    premiumFeatureConfirmView.confirmViewDelegate = self;
+    premiumFeatureConfirmView.bottomSheetViewDelegate = self;
     [premiumFeatureConfirmView initWithPremiumFeature:[[UIPremiumFeature alloc]initWithFeatureType:featureType spaceSettings:self.currentSpaceSettings] parentViewController:self.navigationController];
     [self.navigationController.view addSubview:premiumFeatureConfirmView];
     [premiumFeatureConfirmView showConfirmView];

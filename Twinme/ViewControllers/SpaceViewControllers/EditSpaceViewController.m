@@ -58,7 +58,7 @@ static CGFloat DESIGN_COLLECTION_CELL_WIDTH = 70;
 // Interface: EditSpaceViewController ()
 //
 
-@interface EditSpaceViewController () <UITextFieldDelegate, UITextViewDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, EditSpaceServiceDelegate, UIAdaptivePresentationControllerDelegate, UICollectionViewDelegate, UICollectionViewDataSource, CustomColorDelegate, SpaceSettingsServiceDelegate, MenuPhotoViewDelegate, ConfirmViewDelegate, AlertMessageViewDelegate>
+@interface EditSpaceViewController () <UITextFieldDelegate, UITextViewDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, EditSpaceServiceDelegate, UIAdaptivePresentationControllerDelegate, UICollectionViewDelegate, UICollectionViewDataSource, CustomColorDelegate, SpaceSettingsServiceDelegate, MenuPhotoViewDelegate, BottomSheetViewDelegate, AlertMessageViewDelegate>
 
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *avatarPlaceholderImageViewHeightConstraint;
 @property (weak, nonatomic) IBOutlet UIImageView *avatarPlaceholderImageView;
@@ -508,27 +508,27 @@ static CGFloat DESIGN_COLLECTION_CELL_WIDTH = 70;
     [pickerController dismissViewControllerAnimated:YES completion:nil];
 }
 
-#pragma mark - ConfirmViewDelegate
+#pragma mark - BottomSheetViewDelegate
 
-- (void)didTapConfirm:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didTapConfirm:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractConfirmView);
     
     [self deleteSpace];
 }
 
-- (void)didTapCancel:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didTapCancel:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didTapCancel: %@", LOG_TAG, abstractConfirmView);
     
     [abstractConfirmView closeConfirmView];
 }
 
-- (void)didClose:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didClose:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didClose: %@", LOG_TAG, abstractConfirmView);
     
     [abstractConfirmView closeConfirmView];
 }
 
-- (void)didFinishCloseAnimation:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didFinishCloseAnimation:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didFinishCloseAnimation: %@", LOG_TAG, abstractConfirmView);
     
     [abstractConfirmView removeFromSuperview];
@@ -835,7 +835,7 @@ static CGFloat DESIGN_COLLECTION_CELL_WIDTH = 70;
         [deleteTitle appendString:TwinmeLocalizedString(@"application_operation_irreversible", nil)];
         
         DeleteSpaceConfirmView *deleteSpaceConfirmView = [[DeleteSpaceConfirmView alloc] init];
-        deleteSpaceConfirmView.confirmViewDelegate = self;
+        deleteSpaceConfirmView.bottomSheetViewDelegate = self;
         [deleteSpaceConfirmView initWithTitle:deleteTitle message:TwinmeLocalizedString(@"edit_space_view_controller_delete_message", nil) spaceName:self.space.settings.name spaceStyle:self.space.settings.style avatar:self.avatar icon:[UIImage imageNamed:@"ActionBarDelete"]];
         [self.view addSubview:deleteSpaceConfirmView];
         [deleteSpaceConfirmView showConfirmView];

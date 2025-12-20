@@ -6,13 +6,13 @@
  *   Fabrice Trescartes (Fabrice.Trescartes@twin.life)
  */
 
-#import "AbstractConfirmView.h"
+#import "AbstractBottomSheetView.h"
 
 //
 // Interface: DeleteSpaceConfirmView
 //
 
-@interface DeleteSpaceConfirmView : AbstractConfirmView
+@interface DeleteSpaceConfirmView : AbstractBottomSheetView
 
 - (void)initWithTitle:(nonnull NSString *)title message:(nonnull NSString *)message spaceName:(nonnull NSString *)spaceName spaceStyle:(nullable NSString *)spaceStyle avatar:(nullable UIImage *)avatar icon:(nullable UIImage *)icon;
 

@@ -38,7 +38,7 @@ static const int ddLogLevel = DDLogLevelWarning;
 // Interface: EditContactViewController ()
 //
 
-@interface EditContactViewController () <EditContactServiceDelegate, UITextFieldDelegate, UITextViewDelegate, ConfirmViewDelegate>
+@interface EditContactViewController () <EditContactServiceDelegate, UITextFieldDelegate, UITextViewDelegate, BottomSheetViewDelegate>
 
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *nameViewTopConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *nameViewWidthConstraint;
@@ -272,28 +272,28 @@ static const int ddLogLevel = DDLogLevelWarning;
     [self finish];
 }
 
-#pragma mark - ConfirmViewDelegate
+#pragma mark - BottomSheetViewDelegate
 
-- (void)didTapConfirm:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didTapConfirm:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractConfirmView);
     
     [self.editContactService deleteContact:self.contact];
     [abstractConfirmView closeConfirmView];
 }
 
-- (void)didTapCancel:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didTapCancel:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didTapCancel: %@", LOG_TAG, abstractConfirmView);
     
     [abstractConfirmView closeConfirmView];
 }
 
-- (void)didClose:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didClose:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didClose: %@", LOG_TAG, abstractConfirmView);
     
     [abstractConfirmView closeConfirmView];
 }
 
-- (void)didFinishCloseAnimation:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didFinishCloseAnimation:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didFinishCloseAnimation: %@", LOG_TAG, abstractConfirmView);
     
     [abstractConfirmView removeFromSuperview];
@@ -519,7 +519,7 @@ static const int ddLogLevel = DDLogLevelWarning;
     
     if (sender.state == UIGestureRecognizerStateEnded) {
         DeleteConfirmView *deleteConfirmView = [[DeleteConfirmView alloc] init];
-        deleteConfirmView.confirmViewDelegate = self;
+        deleteConfirmView.bottomSheetViewDelegate = self;
         deleteConfirmView.deleteConfirmType = DeleteConfirmTypeOriginator;
         
         NSString *message = [NSString stringWithFormat:@"%@\n%@", TwinmeLocalizedString(@"edit_contact_view_controller_message", nil), TwinmeLocalizedString(@"edit_contact_view_controller_confirm_message", nil)];

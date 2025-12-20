@@ -72,7 +72,7 @@ static NSString *SETTINGS_ITEM_CELL_IDENTIFIER = @"SettingsCellIdentifier";
 // Interface: CleanUpViewController ()
 //
 
-@interface CleanUpViewController ()<UITableViewDelegate, UITableViewDataSource, ExportActionDelegate, MenuCleanUpExpirationDelegate, CleanUpServiceDelegate, ConfirmViewDelegate, SettingsActionDelegate>
+@interface CleanUpViewController ()<UITableViewDelegate, UITableViewDataSource, ExportActionDelegate, MenuCleanUpExpirationDelegate, CleanUpServiceDelegate, BottomSheetViewDelegate, SettingsActionDelegate>
 
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 
@@ -465,7 +465,7 @@ static NSString *SETTINGS_ITEM_CELL_IDENTIFIER = @"SettingsCellIdentifier";
             }
         } else {
             PremiumFeatureConfirmView *premiumFeatureConfirmView = [[PremiumFeatureConfirmView alloc] init];
-            premiumFeatureConfirmView.confirmViewDelegate = self;
+            premiumFeatureConfirmView.bottomSheetViewDelegate = self;
             [premiumFeatureConfirmView initWithPremiumFeature:[[UIPremiumFeature alloc]initWithFeatureType:FeatureTypeConversation spaceSettings:[self currentSpaceSettings]] parentViewController:self.tabBarController];
             [self.tabBarController.view addSubview:premiumFeatureConfirmView];
             [premiumFeatureConfirmView showConfirmView];
@@ -493,9 +493,9 @@ static NSString *SETTINGS_ITEM_CELL_IDENTIFIER = @"SettingsCellIdentifier";
     self.menuCleanUpExpirationView = nil;
 }
 
-#pragma mark - ConfirmViewDelegate
+#pragma mark - BottomSheetViewDelegate
 
-- (void)didTapConfirm:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didTapConfirm:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractConfirmView);
     
     if ([abstractConfirmView isKindOfClass:[PremiumFeatureConfirmView class]]) {
@@ -522,19 +522,19 @@ static NSString *SETTINGS_ITEM_CELL_IDENTIFIER = @"SettingsCellIdentifier";
     [abstractConfirmView closeConfirmView];
 }
 
-- (void)didTapCancel:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didTapCancel:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didTapCancel: %@", LOG_TAG, abstractConfirmView);
     
     [abstractConfirmView closeConfirmView];
 }
 
-- (void)didClose:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didClose:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didClose: %@", LOG_TAG, abstractConfirmView);
     
     [abstractConfirmView closeConfirmView];
 }
 
-- (void)didFinishCloseAnimation:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didFinishCloseAnimation:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didFinishCloseAnimation: %@", LOG_TAG, abstractConfirmView);
     
     [abstractConfirmView removeFromSuperview];
@@ -692,13 +692,13 @@ static NSString *SETTINGS_ITEM_CELL_IDENTIFIER = @"SettingsCellIdentifier";
     
     if (self.space) {
         DeleteSpaceConfirmView *deleteConfirmView = [[DeleteSpaceConfirmView alloc] init];
-        deleteConfirmView.confirmViewDelegate = self;
+        deleteConfirmView.bottomSheetViewDelegate = self;
         [deleteConfirmView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:TwinmeLocalizedString(@"cleanup_view_controller_delete_confirmation_message", nil) spaceName:self.space.settings.name spaceStyle:self.space.settings.style avatar:avatar icon:[UIImage imageNamed:@"ActionBarDelete"]];
         [self.tabBarController.view addSubview:deleteConfirmView];
         [deleteConfirmView showConfirmView];
     } else {
         DeleteConfirmView *deleteConfirmView = [[DeleteConfirmView alloc] init];
-        deleteConfirmView.confirmViewDelegate = self;
+        deleteConfirmView.bottomSheetViewDelegate = self;
         deleteConfirmView.deleteConfirmType = DeleteConfirmTypeFile;
         [deleteConfirmView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:TwinmeLocalizedString(@"cleanup_view_controller_delete_confirmation_message", nil) avatar:avatar icon:[UIImage imageNamed:@"ActionBarDelete"]];
         

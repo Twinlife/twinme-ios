@@ -31,7 +31,7 @@ static const CGFloat DESIGN_TEXTFIELD_MARGIN = 20;
 // Interface: EnterInvitationCodeViewController
 //
 
-@interface EnterInvitationCodeViewController () <UITextFieldDelegate, ConfirmViewDelegate, InvitationCodeServiceDelegate, AlertMessageViewDelegate>
+@interface EnterInvitationCodeViewController () <UITextFieldDelegate, BottomSheetViewDelegate, InvitationCodeServiceDelegate, AlertMessageViewDelegate>
 
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *enterCodeViewTopConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *enterCodeViewHeightConstraint;
@@ -355,9 +355,9 @@ static const CGFloat DESIGN_TEXTFIELD_MARGIN = 20;
     [self updateViews];
 }
 
-#pragma mark - ConfirmViewDelegate
+#pragma mark - BottomSheetViewDelegate
 
-- (void)didTapConfirm:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didTapConfirm:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractConfirmView);
     
     [abstractConfirmView closeConfirmView];
@@ -367,7 +367,7 @@ static const CGFloat DESIGN_TEXTFIELD_MARGIN = 20;
     }
 }
 
-- (void)didTapCancel:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didTapCancel:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didTapCancel: %@", LOG_TAG, abstractConfirmView);
     
     [abstractConfirmView closeConfirmView];
@@ -377,13 +377,13 @@ static const CGFloat DESIGN_TEXTFIELD_MARGIN = 20;
     }
 }
 
-- (void)didClose:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didClose:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didClose: %@", LOG_TAG, abstractConfirmView);
     
     [abstractConfirmView closeConfirmView];
 }
 
-- (void)didFinishCloseAnimation:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didFinishCloseAnimation:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didFinishCloseAnimation: %@", LOG_TAG, abstractConfirmView);
     
     if ([abstractConfirmView isKindOfClass:[DefaultConfirmView class]]) {
@@ -614,7 +614,7 @@ static const CGFloat DESIGN_TEXTFIELD_MARGIN = 20;
     [self dismissKeyboard];
     
     DefaultConfirmView *defaultConfirmView = [[DefaultConfirmView alloc] init];
-    defaultConfirmView.confirmViewDelegate = self;
+    defaultConfirmView.bottomSheetViewDelegate = self;
     
     NSMutableString *message = [[NSMutableString alloc] initWithString: TwinmeLocalizedString(@"enter_invitation_code_view_controller_onboarding_message", nil)];
     [message appendString:@"\n\n"];
@@ -635,7 +635,7 @@ static const CGFloat DESIGN_TEXTFIELD_MARGIN = 20;
     DDLogVerbose(@"%@ showInvitationCodeConfirmView: %@", LOG_TAG, twincodeOutbound);
     
     InvitationCodeConfirmView *invitationCodeConfirmView = [[InvitationCodeConfirmView alloc] init];
-    invitationCodeConfirmView.confirmViewDelegate = self;
+    invitationCodeConfirmView.bottomSheetViewDelegate = self;
     
     NSMutableString *message = [[NSMutableString alloc] initWithString:[NSString stringWithFormat:TwinmeLocalizedString(@"accept_invitation_view_controller_message %@", nil), twincodeOutbound.name]];
     [message appendString:@"\n\n"];

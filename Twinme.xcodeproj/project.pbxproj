@@ -253,7 +253,7 @@
 		572176692EC61CF4002DB76E /* ProxyView.m in Sources */ = {isa = PBXBuildFile; fileRef = 572176652EC61CF4002DB76E /* ProxyView.m */; };
 		5725B9972D37F87500F2E04F /* AlertMessageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5725B9952D37F87500F2E04F /* AlertMessageView.m */; };
 		5725B9982D37F87500F2E04F /* AlertMessageView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5725B9962D37F87500F2E04F /* AlertMessageView.xib */; };
-		5725BAA82D39553D00F2E04F /* AbstractConfirmView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5725BAA72D39553D00F2E04F /* AbstractConfirmView.m */; };
+		5725BAA82D39553D00F2E04F /* AbstractBottomSheetView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5725BAA72D39553D00F2E04F /* AbstractBottomSheetView.m */; };
 		5725BAAC2D39554B00F2E04F /* DefaultConfirmView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5725BAAB2D39554B00F2E04F /* DefaultConfirmView.xib */; };
 		5725BAAD2D39554B00F2E04F /* DefaultConfirmView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5725BAAA2D39554B00F2E04F /* DefaultConfirmView.m */; };
 		573185A02C90A6FB001F484A /* MenuCertifyView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5731859D2C90A6FB001F484A /* MenuCertifyView.xib */; };
@@ -360,7 +360,6 @@
 		57BD5B052AFBE87600779B40 /* OnboardingSpaceSecondPartCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 57BD5AFE2AFBE87600779B40 /* OnboardingSpaceSecondPartCell.m */; };
 		57BD5B062AFBE87600779B40 /* OnboardingSpaceThirdPartCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 57BD5B002AFBE87600779B40 /* OnboardingSpaceThirdPartCell.m */; };
 		57BD5B072AFBE87600779B40 /* OnboardingSpaceThirdPartCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 57BD5B012AFBE87600779B40 /* OnboardingSpaceThirdPartCell.xib */; };
-		57BD5B0A2AFBE93500779B40 /* OnboardingProfileViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 57BD5B082AFBE93500779B40 /* OnboardingProfileViewController.m */; };
 		57BF13742D0213EB001459CA /* ResetConversationConfirmView.m in Sources */ = {isa = PBXBuildFile; fileRef = 57BF13722D0213EB001459CA /* ResetConversationConfirmView.m */; };
 		57BF13752D0213EB001459CA /* ResetConversationConfirmView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 57BF13732D0213EB001459CA /* ResetConversationConfirmView.xib */; };
 		57BF138B2D021B08001459CA /* DeleteConfirmView.m in Sources */ = {isa = PBXBuildFile; fileRef = 57BF13892D021B08001459CA /* DeleteConfirmView.m */; };
@@ -1328,8 +1327,8 @@
 		5725B9942D37F87500F2E04F /* AlertMessageView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AlertMessageView.h; path = Utilities/AlertMessageView.h; sourceTree = "<group>"; };
 		5725B9952D37F87500F2E04F /* AlertMessageView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = AlertMessageView.m; path = Utilities/AlertMessageView.m; sourceTree = "<group>"; };
 		5725B9962D37F87500F2E04F /* AlertMessageView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = AlertMessageView.xib; path = Utilities/AlertMessageView.xib; sourceTree = "<group>"; };
-		5725BAA62D39553D00F2E04F /* AbstractConfirmView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AbstractConfirmView.h; path = Utilities/AbstractConfirmView.h; sourceTree = "<group>"; };
-		5725BAA72D39553D00F2E04F /* AbstractConfirmView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = AbstractConfirmView.m; path = Utilities/AbstractConfirmView.m; sourceTree = "<group>"; };
+		5725BAA62D39553D00F2E04F /* AbstractBottomSheetView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AbstractBottomSheetView.h; path = Utilities/AbstractBottomSheetView.h; sourceTree = "<group>"; };
+		5725BAA72D39553D00F2E04F /* AbstractBottomSheetView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = AbstractBottomSheetView.m; path = Utilities/AbstractBottomSheetView.m; sourceTree = "<group>"; };
 		5725BAA92D39554B00F2E04F /* DefaultConfirmView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = DefaultConfirmView.h; path = Utilities/DefaultConfirmView.h; sourceTree = "<group>"; };
 		5725BAAA2D39554B00F2E04F /* DefaultConfirmView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = DefaultConfirmView.m; path = Utilities/DefaultConfirmView.m; sourceTree = "<group>"; };
 		5725BAAB2D39554B00F2E04F /* DefaultConfirmView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = DefaultConfirmView.xib; path = Utilities/DefaultConfirmView.xib; sourceTree = "<group>"; };
@@ -1496,8 +1495,6 @@
 		57BD5AFF2AFBE87600779B40 /* OnboardingSpaceFirstPartCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OnboardingSpaceFirstPartCell.h; sourceTree = "<group>"; };
 		57BD5B002AFBE87600779B40 /* OnboardingSpaceThirdPartCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OnboardingSpaceThirdPartCell.m; sourceTree = "<group>"; };
 		57BD5B012AFBE87600779B40 /* OnboardingSpaceThirdPartCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = OnboardingSpaceThirdPartCell.xib; sourceTree = "<group>"; };
-		57BD5B082AFBE93500779B40 /* OnboardingProfileViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OnboardingProfileViewController.m; sourceTree = "<group>"; };
-		57BD5B092AFBE93500779B40 /* OnboardingProfileViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OnboardingProfileViewController.h; sourceTree = "<group>"; };
 		57BF13712D0213EB001459CA /* ResetConversationConfirmView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ResetConversationConfirmView.h; path = ViewControllers/ConversationViewController/ResetConversationConfirmView.h; sourceTree = "<group>"; };
 		57BF13722D0213EB001459CA /* ResetConversationConfirmView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = ResetConversationConfirmView.m; path = ViewControllers/ConversationViewController/ResetConversationConfirmView.m; sourceTree = "<group>"; };
 		57BF13732D0213EB001459CA /* ResetConversationConfirmView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = ResetConversationConfirmView.xib; path = ViewControllers/ConversationViewController/ResetConversationConfirmView.xib; sourceTree = "<group>"; };
@@ -2671,8 +2668,8 @@
 		47BE16DF1935F7E600440069 /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
-				5725BAA62D39553D00F2E04F /* AbstractConfirmView.h */,
-				5725BAA72D39553D00F2E04F /* AbstractConfirmView.m */,
+				5725BAA62D39553D00F2E04F /* AbstractBottomSheetView.h */,
+				5725BAA72D39553D00F2E04F /* AbstractBottomSheetView.m */,
 				5725B9942D37F87500F2E04F /* AlertMessageView.h */,
 				5725B9952D37F87500F2E04F /* AlertMessageView.m */,
 				5725B9962D37F87500F2E04F /* AlertMessageView.xib */,
@@ -2948,8 +2945,6 @@
 				83B19D621CC5294000D546F7 /* AddProfileViewController.m */,
 				83237C94278C380500FCE0E7 /* EditProfileViewController.h */,
 				83237C95278C380500FCE0E7 /* EditProfileViewController.m */,
-				57BD5B092AFBE93500779B40 /* OnboardingProfileViewController.h */,
-				57BD5B082AFBE93500779B40 /* OnboardingProfileViewController.m */,
 				0163226727C3F6E40047DD6C /* ShowProfileViewController.h */,
 				0163226827C3F6E40047DD6C /* ShowProfileViewController.m */,
 			);
@@ -4368,7 +4363,7 @@
 				83FEE2BF261748300007C1F1 /* MenuItemView.m in Sources */,
 				83FEE0EE261745180007C1F1 /* UIView+DropShadow.m in Sources */,
 				83FEE40426174E710007C1F1 /* ShareViewController.m in Sources */,
-				5725BAA82D39553D00F2E04F /* AbstractConfirmView.m in Sources */,
+				5725BAA82D39553D00F2E04F /* AbstractBottomSheetView.m in Sources */,
 				575B02382B84DA5D00D15880 /* CallHoldView.m in Sources */,
 				57BB6E742D91F0EB00274A48 /* PreviewAddCell.m in Sources */,
 				01045BD429A4CE8800769703 /* MenuCleanUpExpirationView.m in Sources */,
@@ -4574,7 +4569,6 @@
 				83FEE2EC261748900007C1F1 /* GroupMemberSectionHeaderCell.m in Sources */,
 				83A6C58426C6920C00997FE0 /* DefaultTabCell.m in Sources */,
 				01045BD329A4CE8800769703 /* UICleanUpExpiration.m in Sources */,
-				57BD5B0A2AFBE93500779B40 /* OnboardingProfileViewController.m in Sources */,
 				019A09C22AB88CB1002B0033 /* SideSpaceCell.m in Sources */,
 				0163226927C3F6E40047DD6C /* ShowProfileViewController.m in Sources */,
 				019A09C02AB88CB1002B0033 /* UISelectableContact.m in Sources */,

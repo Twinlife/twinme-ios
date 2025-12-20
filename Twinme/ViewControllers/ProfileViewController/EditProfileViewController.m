@@ -18,16 +18,16 @@
 #import <Utils/NSString+Utils.h>
 
 #import "EditProfileViewController.h"
-#import "OnboardingProfileViewController.h"
 #import "NotificationViewController.h"
 
-#import "AlertMessageView.h"
 #import "DeviceAuthorization.h"
 #import "MenuSelectValueView.h"
 #import "MenuPhotoView.h"
 #import "UITemplateSpace.h"
 #import "UIViewController+ProgressIndicator.h"
 #import "ApplicationAssertion.h"
+#import "DefaultConfirmView.h"
+#import "OnboardingConfirmView.h"
 
 #import <TwinmeCommon/Design.h>
 #import <TwinmeCommon/EditIdentityService.h>
@@ -46,11 +46,17 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
 // Interface: EditProfileViewController ()
 //
 
-@interface EditProfileViewController () <EditIdentityServiceDelegate, UITextFieldDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate, UITextViewDelegate, UIAdaptivePresentationControllerDelegate, MenuSelectValueDelegate, MenuPhotoViewDelegate, AlertMessageViewDelegate>
+@interface EditProfileViewController () <EditIdentityServiceDelegate, UITextFieldDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate, UITextViewDelegate, UIAdaptivePresentationControllerDelegate, MenuSelectValueDelegate, MenuPhotoViewDelegate, BottomSheetViewDelegate>
 
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *avatarPlaceholderImageViewHeightConstraint;
 @property (weak, nonatomic) IBOutlet UIImageView *avatarPlaceholderImageView;
 @property (weak, nonatomic) IBOutlet UIView *editAvatarView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *infoViewWidthConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *infoViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *infoViewTrailingConstraint;
+@property (weak, nonatomic) IBOutlet UIView *infoView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *infoImageViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet UIImageView *infoImageView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *nameViewTopConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *nameViewWidthConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *nameViewHeightConstraint;
@@ -183,10 +189,7 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     
     if (!self.profile && !self.showOnboarding && [self.twinmeApplication startOnboarding:OnboardingTypeProfile]) {
         self.showOnboarding = YES;
-        OnboardingProfileViewController *onboardingProfileViewController = [[UIStoryboard storyboardWithName:@"iPhone" bundle:nil] instantiateViewControllerWithIdentifier:@"OnboardingProfileViewController"];
-        ApplicationDelegate *delegate = (ApplicationDelegate *)[[UIApplication sharedApplication] delegate];
-        MainViewController *mainViewController = delegate.mainViewController;
-        [onboardingProfileViewController showInView:mainViewController];
+        [self showOnboarding:NO];
     }
 }
 
@@ -297,20 +300,6 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     
     self.navigationController.navigationBarHidden = YES;
     [pickerController dismissViewControllerAnimated:YES completion:nil];
-}
-
-#pragma mark - AlertMessageViewDelegate
-
-- (void)didCloseAlertMessage:(nonnull AlertMessageView *)alertMessageView {
-    DDLogVerbose(@"%@ didCloseAlertMessage: %@", LOG_TAG, alertMessageView);
-    
-    [alertMessageView closeAlertView];
-}
-
-- (void)didFinishCloseAlertMessageAnimation:(nonnull AlertMessageView *)alertMessageView {
-    DDLogVerbose(@"%@ didFinishCloseAlertMessageAnimation: %@", LOG_TAG, alertMessageView);
-    
-    [alertMessageView removeFromSuperview];
 }
 
 #pragma mark - EditIdentityServiceDelegate
@@ -450,6 +439,37 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     [menuPhotoView removeFromSuperview];
 }
 
+
+#pragma mark - BottomSheetViewDelegate
+
+- (void)didTapConfirm:(nonnull AbstractBottomSheetView *)abstractBottomSheetView {
+    DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractBottomSheetView);
+
+    [abstractBottomSheetView closeConfirmView];
+}
+
+- (void)didTapCancel:(nonnull AbstractBottomSheetView *)abstractBottomSheetView {
+    DDLogVerbose(@"%@ didTapCancel: %@", LOG_TAG, abstractBottomSheetView);
+    
+    [abstractBottomSheetView closeConfirmView];
+}
+
+- (void)didClose:(nonnull AbstractBottomSheetView *)abstractBottomSheetView {
+    DDLogVerbose(@"%@ didClose: %@", LOG_TAG, abstractBottomSheetView);
+    
+    [abstractBottomSheetView closeConfirmView];
+}
+
+- (void)didFinishCloseAnimation:(nonnull AbstractBottomSheetView *)abstractBottomSheetView {
+    DDLogVerbose(@"%@ didFinishCloseAnimation: %@", LOG_TAG, abstractBottomSheetView);
+    
+    if ([abstractBottomSheetView isKindOfClass:[DefaultConfirmView class]]) {
+        [self.nameTextField becomeFirstResponder];
+    }
+    
+    [abstractBottomSheetView removeFromSuperview];
+}
+
 #pragma mark - Private methods
 
 - (void)initViews {
@@ -466,6 +486,16 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     self.avatarView.backgroundColor = DESIGN_AVATAR_PLACEHOLDER_COLOR;
     
     self.avatarPlaceholderImageViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    
+    self.infoViewWidthConstraint.constant *= Design.WIDTH_RATIO;
+    self.infoViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    self.infoViewTrailingConstraint.constant *= Design.WIDTH_RATIO;
+    
+    self.infoView.userInteractionEnabled = YES;
+    [self.infoView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleInfoTapGesture:)]];
+    
+    self.infoImageViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    self.infoImageView.tintColor = Design.BLACK_COLOR;
     
     self.nameLabel.text = TwinmeLocalizedString(@"application_profile", nil);
     
@@ -674,11 +704,7 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     
     if (!self.profile) {
         if ([self.nameTextField.text length] == 0) {
-            AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
-            alertMessageView.alertMessageViewDelegate = self;
-            [alertMessageView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:TwinmeLocalizedString(@"application_profile_name_not_defined", nil)];
-            [self.tabBarController.view addSubview:alertMessageView];
-            [alertMessageView showAlertView];
+            [self showOnboarding:YES];
             return;
         } else if (!self.updatedIdentityAvatar) {
             [self openMenuPhoto];
@@ -714,6 +740,40 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
             [self.editIdentityService createProfile:updatedIdentityName identityDescription:updatedIdentityDescription identityAvatar:avatar identityLargeAvatar:self.updatedIdentityLargeAvatar space:self.space];
         }
     }
+}
+
+- (void)handleInfoTapGesture:(UITapGestureRecognizer *)sender {
+    DDLogVerbose(@"%@ handleInfoTapGesture ", LOG_TAG);
+        
+    [self dismissKeyboard];
+    
+    OnboardingConfirmView *onboardingConfirmView = [[OnboardingConfirmView alloc] init];
+    onboardingConfirmView.bottomSheetViewDelegate = self;
+
+    NSString *message;
+    
+    NSString *title =  TwinmeLocalizedString(@"application_profile", nil);
+    
+    NSMutableString *mutableString = [[NSMutableString alloc] initWithString:TwinmeLocalizedString(@"create_profile_view_controller_onboarding_message_part_1", nil)];
+    [mutableString appendString:@"\n\n"];
+    [mutableString appendString:TwinmeLocalizedString(@"create_profile_view_controller_onboarding_message_part_2", nil)];
+    [mutableString appendString:@"\n\n"];
+    [mutableString appendString:TwinmeLocalizedString(@"create_profile_view_controller_onboarding_message_part_3", nil)];
+    [mutableString appendString:@"\n\n"];
+    [mutableString appendString:TwinmeLocalizedString(@"create_profile_view_controller_onboarding_message_part_4", nil)];
+    
+    message = mutableString;
+    
+    UIImage *image = [self.twinmeApplication darkModeEnable:[self currentSpaceSettings]] ? [UIImage imageNamed:@"OnboardingAddProfileDark"] : [UIImage imageNamed:@"OnboardingAddProfile"];
+    
+    [onboardingConfirmView initWithTitle:title message:message image:image action:TwinmeLocalizedString(@"application_ok", nil) actionColor:nil cancel:nil];
+    
+    NSMutableAttributedString *attributedTitle = [[NSMutableAttributedString alloc] initWithString:TwinmeLocalizedString(@"application_profile", nil) attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_BOLD36, NSFontAttributeName, Design.FONT_COLOR_DEFAULT, NSForegroundColorAttributeName, nil]];
+    [onboardingConfirmView updateTitle:attributedTitle];
+    
+    [onboardingConfirmView hideCancelAction];
+    [self.navigationController.view addSubview:onboardingConfirmView];
+    [onboardingConfirmView showConfirmView];
 }
 
 - (void)takePhoto {
@@ -877,6 +937,22 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     }
 }
 
+- (void)showOnboarding:(BOOL)incompleteProfile {
+    DDLogVerbose(@"%@ showOnboarding", LOG_TAG);
+    
+    DefaultConfirmView *defaultConfirmView = [[DefaultConfirmView alloc] init];
+    defaultConfirmView.bottomSheetViewDelegate = self;
+
+    UIImage *image =  [self.twinmeApplication darkModeEnable:[self currentSpaceSettings]] ? [UIImage imageNamed:@"OnboardingAddProfileDark"] : [UIImage imageNamed:@"OnboardingAddProfile"];
+    
+    NSString *confirmTitle = incompleteProfile ? TwinmeLocalizedString(@"application_ok", nil) : TwinmeLocalizedString(@"show_profile_view_controller_create_profile", nil);
+
+    [defaultConfirmView initWithTitle:nil message:TwinmeLocalizedString(@"create_profile_view_controller_incomplete_profile_message", nil) image:image avatar:nil action:confirmTitle actionColor:nil cancel:nil];
+    [defaultConfirmView hideCancelAction];
+    [self.tabBarController.view addSubview:defaultConfirmView];
+    [defaultConfirmView showConfirmView];
+}
+
 - (void)updateFont {
     DDLogVerbose(@"%@ updateFont", LOG_TAG);
     
@@ -895,6 +971,7 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     
     [super updateColor];
     
+    self.infoImageView.tintColor = Design.BLACK_COLOR;
     self.nameView.backgroundColor = Design.TEXTFIELD_BACKGROUND_COLOR;
     self.descriptionView.backgroundColor = Design.TEXTFIELD_BACKGROUND_COLOR;
     self.nameTextField.textColor = Design.FONT_COLOR_DEFAULT;

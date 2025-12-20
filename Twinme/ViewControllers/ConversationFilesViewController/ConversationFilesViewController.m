@@ -71,7 +71,7 @@ typedef enum {
 // Interface: ConversationFilesViewController ()
 //
 
-@interface ConversationFilesViewController ()<ConversationFilesServiceDelegate, UICollectionViewDelegate, UICollectionViewDataSource, AsyncLoaderDelegate, CustomTabViewDelegate, ItemSelectedActionViewDelegate, ConfirmViewDelegate>
+@interface ConversationFilesViewController ()<ConversationFilesServiceDelegate, UICollectionViewDelegate, UICollectionViewDataSource, AsyncLoaderDelegate, CustomTabViewDelegate, ItemSelectedActionViewDelegate, BottomSheetViewDelegate>
 
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *filesCollectionViewBottomConstraint;
 @property (weak, nonatomic) IBOutlet UICollectionView *filesCollectionView;
@@ -595,7 +595,7 @@ typedef enum {
     
     [self.conversationFileService getImageWithImageId:self.originator.avatarId withBlock:^(UIImage *image) {
         DeleteConfirmView *deleteConfirmView = [[DeleteConfirmView alloc] init];
-        deleteConfirmView.confirmViewDelegate = self;
+        deleteConfirmView.bottomSheetViewDelegate = self;
         deleteConfirmView.deleteConfirmType = DeleteConfirmTypeFile;
         [deleteConfirmView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:TwinmeLocalizedString(@"cleanup_view_controller_delete_confirmation_message", nil) avatar:image icon:[UIImage imageNamed:@"ActionBarDelete"]];
        
@@ -604,9 +604,9 @@ typedef enum {
     }];
 }
 
-#pragma mark - ConfirmViewDelegate
+#pragma mark - BottomSheetViewDelegate
 
-- (void)didTapConfirm:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didTapConfirm:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractConfirmView);
     
     for (Item *item in self.selectedItems) {
@@ -620,19 +620,19 @@ typedef enum {
     [abstractConfirmView closeConfirmView];
 }
 
-- (void)didTapCancel:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didTapCancel:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didTapCancel: %@", LOG_TAG, abstractConfirmView);
     
     [abstractConfirmView closeConfirmView];
 }
 
-- (void)didClose:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didClose:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didClose: %@", LOG_TAG, abstractConfirmView);
     
     [abstractConfirmView closeConfirmView];
 }
 
-- (void)didFinishCloseAnimation:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didFinishCloseAnimation:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didFinishCloseAnimation: %@", LOG_TAG, abstractConfirmView);
     
     [abstractConfirmView removeFromSuperview];

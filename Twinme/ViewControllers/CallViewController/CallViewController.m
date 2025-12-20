@@ -118,7 +118,7 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
 // Interface: CallViewController ()
 //
 
-@interface CallViewController () <RTC_OBJC_TYPE(RTCVideoViewDelegate), VideoZoomDelegate, CAAnimationDelegate, AbstractTwinmeDelegate, AlertViewDelegate, CallQualityViewDelegate, AddCallParticipantDelegate, CallParticipantViewDelegate, CallParticipantDelegate, InAppSubscriptionViewControllerDelegate, CoachMarkDelegate, PlayerStreamingAudioViewDelegate, CallConversationDelegate, CallMenuDelegate, CallHoldDelegate, CallMapDelegate, CallCertifyViewDelegate, AlertMessageViewDelegate, ConfirmViewDelegate>
+@interface CallViewController () <RTC_OBJC_TYPE(RTCVideoViewDelegate), VideoZoomDelegate, CAAnimationDelegate, AbstractTwinmeDelegate, AlertViewDelegate, CallQualityViewDelegate, AddCallParticipantDelegate, CallParticipantViewDelegate, CallParticipantDelegate, InAppSubscriptionViewControllerDelegate, CoachMarkDelegate, PlayerStreamingAudioViewDelegate, CallConversationDelegate, CallMenuDelegate, CallHoldDelegate, CallMapDelegate, CallCertifyViewDelegate, AlertMessageViewDelegate, BottomSheetViewDelegate>
 
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *backImageViewWidthConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *backImageViewLeadingConstraint;
@@ -596,7 +596,7 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
     
     if ([self.participant isRemoteCameraControl] && self.participant.remoteActiveCamera == 0) {
         DefaultConfirmView *defaultConfirmView = [[DefaultConfirmView alloc] init];
-        defaultConfirmView.confirmViewDelegate = self;
+        defaultConfirmView.bottomSheetViewDelegate = self;
         defaultConfirmView.forceDarkMode = YES;
         defaultConfirmView.tag = CONTROL_CAMERA_STOP_TAG;
         NSString *message = [NSString stringWithFormat:TwinmeLocalizedString(@"call_view_controller_camera_control_remotely", nil), self.originator.name];
@@ -656,7 +656,7 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
             
     if ([self isRemoteCameraControl]) {
         DefaultConfirmView *defaultConfirmView = [[DefaultConfirmView alloc] init];
-        defaultConfirmView.confirmViewDelegate = self;
+        defaultConfirmView.bottomSheetViewDelegate = self;
         defaultConfirmView.forceDarkMode = YES;
         defaultConfirmView.tag = CONTROL_CAMERA_STOP_TAG;
         
@@ -679,7 +679,7 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
                 }
                 
                 DefaultConfirmView *defaultConfirmView = [[DefaultConfirmView alloc] init];
-                defaultConfirmView.confirmViewDelegate = self;
+                defaultConfirmView.bottomSheetViewDelegate = self;
                 defaultConfirmView.forceDarkMode = YES;
                 defaultConfirmView.tag = CONTROL_CAMERA_ASK_TAG;
                 NSString *message = [NSString stringWithFormat:TwinmeLocalizedString(@"call_view_controller_camera_control_ask_message", nil), self.originator.name];
@@ -763,7 +763,7 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
     
     [self.twinmeService getImageWithProfile:self.currentSpace.profile withBlock:^(UIImage *image) {
         InvitationCodeConfirmView *invitationCodeConfirmView = [[InvitationCodeConfirmView alloc] init];
-        invitationCodeConfirmView.confirmViewDelegate = self;
+        invitationCodeConfirmView.bottomSheetViewDelegate = self;
         invitationCodeConfirmView.forceDarkMode = YES;
         [invitationCodeConfirmView initWithTitle:self.currentSpace.profile.name message:TwinmeLocalizedString(@"group_member_view_controller_invite_personnal_relation", nil) avatar:image icon:[UIImage imageNamed:@"ActionBarAddContact"]];
         [invitationCodeConfirmView setConfirmTitle:TwinmeLocalizedString(@"add_contact_view_controller_invite", nil)];
@@ -1248,7 +1248,7 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
             
             [self.view setNeedsLayout];
             [self.view layoutIfNeeded];
-            
+        } completion:^(BOOL finished) {
             if (self.participantsViewInitialized) {
                 [self updateParticipantsView];
             }
@@ -1713,16 +1713,16 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
     }
 }
 
-#pragma mark - ConfirmViewDelegate
+#pragma mark - BottomSheetViewDelegate
 
-- (void)didSendCallQuality:(AbstractConfirmView *)abstractConfirmView quality:(int)quality {
+- (void)didSendCallQuality:(AbstractBottomSheetView *)abstractConfirmView quality:(int)quality {
     DDLogVerbose(@"%@ didSendCallQuality: %@ quality:%d", LOG_TAG, abstractConfirmView, quality);
     
     [self.callService sendCallQuality:quality];
     [abstractConfirmView closeConfirmView];
 }
 
-- (void)didTapConfirm:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didTapConfirm:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractConfirmView);
     
     if ([abstractConfirmView isKindOfClass:[InvitationCodeConfirmView class]]) {
@@ -1762,7 +1762,7 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
     [abstractConfirmView closeConfirmView];
 }
 
-- (void)didTapCancel:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didTapCancel:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didTapCancel: %@", LOG_TAG, abstractConfirmView);
     
     [abstractConfirmView closeConfirmView];
@@ -1779,13 +1779,13 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
     }
 }
 
-- (void)didClose:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didClose:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didClose: %@", LOG_TAG, abstractConfirmView);
     
     [abstractConfirmView closeConfirmView];
 }
 
-- (void)didFinishCloseAnimation:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didFinishCloseAnimation:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didFinishCloseAnimation: %@", LOG_TAG, abstractConfirmView);
 
     [abstractConfirmView removeFromSuperview];
@@ -2061,7 +2061,7 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
     if (!callParticipantView.isRemoteParticipant) {
         if ([self.participant isRemoteCameraControl] && self.participant.remoteActiveCamera == 0) {
             DefaultConfirmView *defaultConfirmView = [[DefaultConfirmView alloc] init];
-            defaultConfirmView.confirmViewDelegate = self;
+            defaultConfirmView.bottomSheetViewDelegate = self;
             defaultConfirmView.forceDarkMode = YES;
             defaultConfirmView.tag = CONTROL_CAMERA_STOP_TAG;
             NSString *message = [NSString stringWithFormat:TwinmeLocalizedString(@"call_view_controller_camera_control_remotely", nil), self.originator.name];
@@ -2259,7 +2259,7 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
     DDLogVerbose(@"%@ showBackgroundAlert", LOG_TAG);
         
     DefaultConfirmView *defaultConfirmView = [[DefaultConfirmView alloc] init];
-    defaultConfirmView.confirmViewDelegate = self;
+    defaultConfirmView.bottomSheetViewDelegate = self;
     [defaultConfirmView initWithTitle:TwinmeLocalizedString(@"call_view_controller_location_share", nil) message:TwinmeLocalizedString(@"call_view_controller_location_background_warning", nil) image:nil avatar:nil  action:TwinmeLocalizedString(@"application_authorization_go_settings", nil) actionColor:nil cancel:nil];
     [self.view addSubview:defaultConfirmView];
     [defaultConfirmView showConfirmView];
@@ -2269,7 +2269,7 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
     DDLogVerbose(@"%@ showExactLocationAlert", LOG_TAG);
         
     DefaultConfirmView *defaultConfirmView = [[DefaultConfirmView alloc] init];
-    defaultConfirmView.confirmViewDelegate = self;
+    defaultConfirmView.bottomSheetViewDelegate = self;
     [defaultConfirmView initWithTitle:TwinmeLocalizedString(@"call_view_controller_location_share", nil) message:TwinmeLocalizedString(@"call_view_controller_location_exact_warning", nil) image:nil avatar:nil  action:TwinmeLocalizedString(@"application_authorization_go_settings", nil) actionColor:nil cancel:nil];
     [self.view addSubview:defaultConfirmView];
     [defaultConfirmView showConfirmView];
@@ -2761,6 +2761,7 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
     }
     
     if (needsUpdateParticipants) {
+        
         [UIView animateWithDuration:0.5 animations:^{
             if (self.streamPlayer) {
                 self.playerStreamingAudioView.hidden = NO;
@@ -2773,7 +2774,7 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
             
             [self.view setNeedsLayout];
             [self.view layoutIfNeeded];
-            
+        } completion:^(BOOL finished) {
             if (self.participantsViewInitialized) {
                 [self updateParticipantsView];
             }
@@ -2939,7 +2940,7 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
             return;
         }
         DefaultConfirmView *defaultConfirmView = [[DefaultConfirmView alloc] init];
-        defaultConfirmView.confirmViewDelegate = self;
+        defaultConfirmView.bottomSheetViewDelegate = self;
         defaultConfirmView.forceDarkMode = YES;
         defaultConfirmView.tag = CONTROL_CAMERA_ANSWER_TAG;
         NSString *message = [NSString stringWithFormat:TwinmeLocalizedString(@"call_view_controller_camera_control_confirm_message", nil), self.originator.name];
@@ -3520,7 +3521,7 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
     if (!self.isCallReceiver) {
         
         OnboardingConfirmView *onboardingConfirmView = [[OnboardingConfirmView alloc] init];
-        onboardingConfirmView.confirmViewDelegate = self;
+        onboardingConfirmView.bottomSheetViewDelegate = self;
         onboardingConfirmView.forceDarkMode = YES;
         
         UIImage *image = [self.twinmeApplication darkModeEnable:[self currentSpaceSettings]] ? [UIImage imageNamed:@"OnboardingAuthentifiedRelationDark"] : [UIImage imageNamed:@"OnboardingAuthentifiedRelation"];
@@ -3541,7 +3542,7 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
     
     CallQualityView *callQualityView = [[CallQualityView alloc] init];
     callQualityView.callQualityViewDelegate = self;
-    callQualityView.confirmViewDelegate = self;
+    callQualityView.bottomSheetViewDelegate = self;
     callQualityView.forceDarkMode = YES;
     [self.view addSubview:callQualityView];
     [callQualityView showConfirmView];
@@ -3843,7 +3844,7 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
     DDLogVerbose(@"%@ showPremiumFeature: %d", LOG_TAG, featureType);
     
     PremiumFeatureConfirmView *premiumFeatureConfirmView = [[PremiumFeatureConfirmView alloc] init];
-    premiumFeatureConfirmView.confirmViewDelegate = self;
+    premiumFeatureConfirmView.bottomSheetViewDelegate = self;
     premiumFeatureConfirmView.forceDarkMode = YES;
     [premiumFeatureConfirmView initWithPremiumFeature:[[UIPremiumFeature alloc]initWithFeatureType:featureType spaceSettings:self.currentSpaceSettings] parentViewController:self];
     [self.view addSubview:premiumFeatureConfirmView];
@@ -3856,7 +3857,7 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
     self.showRemoteCameraOnboarding = YES;
     
     OnboardingConfirmView *onboardingConfirmView = [[OnboardingConfirmView alloc] init];
-    onboardingConfirmView.confirmViewDelegate = self;
+    onboardingConfirmView.bottomSheetViewDelegate = self;
     onboardingConfirmView.tag = ONBOARDING_REMOTE_CAMERA;
     onboardingConfirmView.forceDarkMode = YES;
     [onboardingConfirmView initWithTitle:TwinmeLocalizedString(@"call_view_controller_camera_control_needs_help", nil) message: TwinmeLocalizedString(@"call_view_controller_camera_control_onboarding_part_2", nil) image:[UIImage imageNamed:@"OnboardingControlCamera"] action:TwinmeLocalizedString(@"application_ok", nil) actionColor:nil cancel:TwinmeLocalizedString(@"application_do_not_display", nil)];

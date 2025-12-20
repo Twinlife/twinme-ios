@@ -42,7 +42,7 @@ static const int CONTACTS_VIEW_SECTION_COUNT = 2;
 // Interface: InvitationCodeViewController
 //
 
-@interface InvitationCodeViewController () <UITableViewDataSource, UITableViewDelegate, ConfirmViewDelegate, InvitationCodeServiceDelegate, AlertMessageViewDelegate>
+@interface InvitationCodeViewController () <UITableViewDataSource, UITableViewDelegate, BottomSheetViewDelegate, InvitationCodeServiceDelegate, AlertMessageViewDelegate>
 
 @property (weak, nonatomic) IBOutlet UITableView *invitationCodeTableView;
 
@@ -352,9 +352,9 @@ static const int CONTACTS_VIEW_SECTION_COUNT = 2;
     [alertMessageView removeFromSuperview];
 }
 
-#pragma mark - ConfirmViewDelegate
+#pragma mark - BottomSheetViewDelegate
 
-- (void)didTapConfirm:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didTapConfirm:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractConfirmView);
 
     [abstractConfirmView closeConfirmView];
@@ -366,7 +366,7 @@ static const int CONTACTS_VIEW_SECTION_COUNT = 2;
    }
 }
 
-- (void)didTapCancel:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didTapCancel:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didTapCancel: %@", LOG_TAG, abstractConfirmView);
     
     [abstractConfirmView closeConfirmView];
@@ -379,7 +379,7 @@ static const int CONTACTS_VIEW_SECTION_COUNT = 2;
     }
 }
 
-- (void)didClose:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didClose:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didClose: %@", LOG_TAG, abstractConfirmView);
     
     [abstractConfirmView closeConfirmView];
@@ -390,7 +390,7 @@ static const int CONTACTS_VIEW_SECTION_COUNT = 2;
    }
 }
 
-- (void)didFinishCloseAnimation:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didFinishCloseAnimation:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didFinishCloseAnimation: %@", LOG_TAG, abstractConfirmView);
     
     [abstractConfirmView removeFromSuperview];
@@ -472,7 +472,7 @@ static const int CONTACTS_VIEW_SECTION_COUNT = 2;
     DDLogVerbose(@"%@ showOnboarding", LOG_TAG);
     
     DefaultConfirmView *defaultConfirmView = [[DefaultConfirmView alloc] init];
-    defaultConfirmView.confirmViewDelegate = self;
+    defaultConfirmView.bottomSheetViewDelegate = self;
     
     NSMutableString *message = [[NSMutableString alloc] initWithString: TwinmeLocalizedString(@"invitation_code_view_controller_onboarding_message", nil)];
     [message appendString:@"\n\n"];
@@ -505,7 +505,7 @@ static const int CONTACTS_VIEW_SECTION_COUNT = 2;
     DDLogVerbose(@"%@ showInvitationCodeShareView: %@", LOG_TAG, invitationCode);
     
     InvitationCodeShareView *invitationCodeShareView = [[InvitationCodeShareView alloc] init];
-    invitationCodeShareView.confirmViewDelegate = self;
+    invitationCodeShareView.bottomSheetViewDelegate = self;
     
     NSMutableString *message = [[NSMutableString alloc] initWithString: TwinmeLocalizedString(@"invitation_code_view_controller_onboarding_message", nil)];
     [message appendString:@"\n\n"];

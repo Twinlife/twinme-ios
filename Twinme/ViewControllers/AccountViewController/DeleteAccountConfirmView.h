@@ -6,7 +6,7 @@
  *   Fabrice Trescartes (Fabrice.Trescartes@twin.life)
  */
 
-#import "AbstractConfirmView.h"
+#import "AbstractBottomSheetView.h"
 
 //
 // Interface: DeleteAccountConfirmView
@@ -14,7 +14,7 @@
 
 @class TLSpaceSettings;
 
-@interface DeleteAccountConfirmView : AbstractConfirmView
+@interface DeleteAccountConfirmView : AbstractBottomSheetView
 
 @property (nonatomic) TLSpaceSettings *spaceSettings;
 

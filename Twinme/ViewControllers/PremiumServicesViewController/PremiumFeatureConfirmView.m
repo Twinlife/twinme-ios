@@ -26,7 +26,7 @@ static const int ddLogLevel = DDLogLevelWarning;
 #endif
 
 //
-// Interface: AbstractConfirmView ()
+// Interface: PremiumFeatureConfirmView ()
 //
 
 @interface PremiumFeatureConfirmView ()

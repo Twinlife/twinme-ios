@@ -6,7 +6,7 @@
  *   Fabrice Trescartes (Fabrice.Trescartes@twin.life)
  */
 
-#import "AbstractConfirmView.h"
+#import "AbstractBottomSheetView.h"
 
 typedef enum {
     SpaceActionConfirmTypeMoveContact,
@@ -18,7 +18,7 @@ typedef enum {
 // Interface: SpaceActionConfirmView
 //
 
-@interface SpaceActionConfirmView : AbstractConfirmView
+@interface SpaceActionConfirmView : AbstractBottomSheetView
 
 @property (nonatomic) SpaceActionConfirmType spaceActionConfirmType;
 

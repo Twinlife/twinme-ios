@@ -18,7 +18,6 @@
 #import "AddContactViewController.h"
 #import "NewConversationViewController.h"
 #import "AcceptInvitationViewController.h"
-#import "OnboardingProfileViewController.h"
 
 #import <TwinmeCommon/ApplicationDelegate.h>
 #import <TwinmeCommon/CreateProfileService.h>
@@ -46,7 +45,7 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
 // Interface: AddProfileViewController ()
 //
 
-@interface AddProfileViewController () <CreateProfileServiceDelegate, UITextFieldDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate, UITextViewDelegate, UIAdaptivePresentationControllerDelegate, MenuPhotoViewDelegate, ConfirmViewDelegate>
+@interface AddProfileViewController () <CreateProfileServiceDelegate, UITextFieldDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate, UITextViewDelegate, UIAdaptivePresentationControllerDelegate, MenuPhotoViewDelegate, BottomSheetViewDelegate>
 
 @property (weak, nonatomic) IBOutlet UIView *containerView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *avatarPlaceholderImageViewHeightConstraint;
@@ -275,27 +274,27 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     [menuPhotoView removeFromSuperview];
 }
 
-#pragma mark - ConfirmViewDelegate
+#pragma mark - BottomSheetViewDelegate
 
-- (void)didTapConfirm:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didTapConfirm:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractConfirmView);
 
     [abstractConfirmView closeConfirmView];
 }
 
-- (void)didTapCancel:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didTapCancel:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didTapCancel: %@", LOG_TAG, abstractConfirmView);
     
     [abstractConfirmView closeConfirmView];
 }
 
-- (void)didClose:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didClose:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didClose: %@", LOG_TAG, abstractConfirmView);
     
     [abstractConfirmView closeConfirmView];
 }
 
-- (void)didFinishCloseAnimation:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didFinishCloseAnimation:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didFinishCloseAnimation: %@", LOG_TAG, abstractConfirmView);
     
     if ([abstractConfirmView isKindOfClass:[DefaultConfirmView class]]) {
@@ -617,7 +616,7 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     [self dismissKeyboard];
     
     OnboardingConfirmView *onboardingConfirmView = [[OnboardingConfirmView alloc] init];
-    onboardingConfirmView.confirmViewDelegate = self;
+    onboardingConfirmView.bottomSheetViewDelegate = self;
 
     NSString *message;
     
@@ -649,7 +648,7 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     DDLogVerbose(@"%@ showOnboarding", LOG_TAG);
     
     DefaultConfirmView *defaultConfirmView = [[DefaultConfirmView alloc] init];
-    defaultConfirmView.confirmViewDelegate = self;
+    defaultConfirmView.bottomSheetViewDelegate = self;
 
     UIImage *image = [self.twinmeApplication darkModeEnable:[self currentSpaceSettings]] ? [UIImage imageNamed:@"OnboardingAddProfileDark"] : [UIImage imageNamed:@"OnboardingAddProfile"];
     

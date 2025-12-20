@@ -63,7 +63,7 @@ static CGFloat DESIGN_PROFILE_AVATAR_HEIGHT = 216;
 // Interface: ShowSpaceViewController ()
 //
 
-@interface ShowSpaceViewController () <ShowSpaceServiceDelegate, AlertMessageViewDelegate, SwitchViewDelegate, MenuSelectValueDelegate, ConfirmViewDelegate>
+@interface ShowSpaceViewController () <ShowSpaceServiceDelegate, AlertMessageViewDelegate, SwitchViewDelegate, MenuSelectValueDelegate, BottomSheetViewDelegate>
 
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *identityAvatarViewTopConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *identityNameViewTopConstraint;
@@ -331,9 +331,9 @@ static CGFloat DESIGN_PROFILE_AVATAR_HEIGHT = 216;
     _space = space;
 }
 
-#pragma mark - ConfirmViewDelegate
+#pragma mark - BottomSheetViewDelegate
 
-- (void)didTapConfirm:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didTapConfirm:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractConfirmView);
     
     if ([abstractConfirmView isKindOfClass:[SpaceActionConfirmView class]]) {
@@ -351,19 +351,19 @@ static CGFloat DESIGN_PROFILE_AVATAR_HEIGHT = 216;
     [abstractConfirmView closeConfirmView];
 }
 
-- (void)didTapCancel:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didTapCancel:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didTapCancel: %@", LOG_TAG, abstractConfirmView);
     
     [abstractConfirmView closeConfirmView];
 }
 
-- (void)didClose:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didClose:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didClose: %@", LOG_TAG, abstractConfirmView);
     
     [abstractConfirmView closeConfirmView];
 }
 
-- (void)didFinishCloseAnimation:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didFinishCloseAnimation:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didFinishCloseAnimation: %@", LOG_TAG, abstractConfirmView);
     
     [abstractConfirmView removeFromSuperview];
@@ -424,7 +424,7 @@ static CGFloat DESIGN_PROFILE_AVATAR_HEIGHT = 216;
     [message appendString:TwinmeLocalizedString(@"show_space_view_controller_secret_message_confirm", nil)];
     
     SpaceActionConfirmView *spaceActionConfirmView = [[SpaceActionConfirmView alloc] init];
-    spaceActionConfirmView.confirmViewDelegate = self;
+    spaceActionConfirmView.bottomSheetViewDelegate = self;
     spaceActionConfirmView.spaceActionConfirmType = SpaceActionConfirmTypeSecret;
     [spaceActionConfirmView initWithTitle:TwinmeLocalizedString(@"application_are_you_sure", nil) message:message spaceName:self.space.settings.name spaceStyle:self.space.settings.style avatar:self.avatar icon:[UIImage imageNamed:@"PremiumSpaceDarkIcon4"] confirmTitle:TwinmeLocalizedString(@"show_space_view_controller_secret_confirm", nil) cancelTitle:TwinmeLocalizedString(@"application_cancel", nil)];
     [self.view addSubview:spaceActionConfirmView];
@@ -764,7 +764,7 @@ static CGFloat DESIGN_PROFILE_AVATAR_HEIGHT = 216;
             [self.navigationController pushViewController:contactsSpaceViewController animated:YES];
         } else {
             SpaceActionConfirmView *spaceActionConfirmView = [[SpaceActionConfirmView alloc] init];
-            spaceActionConfirmView.confirmViewDelegate = self;
+            spaceActionConfirmView.bottomSheetViewDelegate = self;
             spaceActionConfirmView.spaceActionConfirmType = SpaceActionConfirmTypeProfile;
             [spaceActionConfirmView initWithTitle:TwinmeLocalizedString(@"show_profile_view_controller_create_profile", nil) message:TwinmeLocalizedString(@"create_space_view_controller_contacts_no_profile", nil) spaceName:self.space.settings.name spaceStyle:self.space.settings.style avatar:self.avatar icon:[UIImage imageNamed:@"ActionBarAddContact"] confirmTitle:TwinmeLocalizedString(@"application_now", nil) cancelTitle:TwinmeLocalizedString(@"application_later", nil)];
             [self.view addSubview:spaceActionConfirmView];

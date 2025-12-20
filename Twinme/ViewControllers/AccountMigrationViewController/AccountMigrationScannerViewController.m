@@ -44,7 +44,7 @@ static const CGFloat DESIGN_HIGHLIGHT_VIEW_CORNER_RADIUS = 4;
 // Interface: AccountMigrationScannerViewController ()
 //
 
-@interface AccountMigrationScannerViewController () <AVCaptureMetadataOutputObjectsDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, AlertMessageViewDelegate, ConfirmViewDelegate, AccountMigrationScannerServiceDelegate>
+@interface AccountMigrationScannerViewController () <AVCaptureMetadataOutputObjectsDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, AlertMessageViewDelegate, BottomSheetViewDelegate, AccountMigrationScannerServiceDelegate>
 
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *accountViewHeightConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *accountViewWidthConstraint;
@@ -119,7 +119,7 @@ static const CGFloat DESIGN_HIGHLIGHT_VIEW_CORNER_RADIUS = 4;
         self.showOnboardingView = YES;
         
         OnboardingConfirmView *onboardingConfirmView = [[OnboardingConfirmView alloc] init];
-        onboardingConfirmView.confirmViewDelegate = self;
+        onboardingConfirmView.bottomSheetViewDelegate = self;
 
         UIImage *image = [self.twinmeApplication darkModeEnable:[self currentSpaceSettings]] ? [UIImage imageNamed:@"OnboardingMigrationDark"] : [UIImage imageNamed:@"OnboardingMigration"];
         
@@ -280,9 +280,9 @@ static const CGFloat DESIGN_HIGHLIGHT_VIEW_CORNER_RADIUS = 4;
     [alertMessageView removeFromSuperview];
 }
 
-#pragma mark - ConfirmViewDelegate
+#pragma mark - BottomSheetViewDelegate
 
-- (void)didTapConfirm:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didTapConfirm:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractConfirmView);
     
     if ([abstractConfirmView isKindOfClass:[DefaultConfirmView class]]) {
@@ -294,7 +294,7 @@ static const CGFloat DESIGN_HIGHLIGHT_VIEW_CORNER_RADIUS = 4;
     [abstractConfirmView closeConfirmView];
 }
 
-- (void)didTapCancel:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didTapCancel:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didTapCancel: %@", LOG_TAG, abstractConfirmView);
     
     if ([abstractConfirmView isKindOfClass:[DefaultConfirmView class]]) {
@@ -309,7 +309,7 @@ static const CGFloat DESIGN_HIGHLIGHT_VIEW_CORNER_RADIUS = 4;
     [abstractConfirmView closeConfirmView];
 }
 
-- (void)didClose:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didClose:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didClose: %@", LOG_TAG, abstractConfirmView);
     
     if ([abstractConfirmView isKindOfClass:[OnboardingConfirmView class]]) {
@@ -321,7 +321,7 @@ static const CGFloat DESIGN_HIGHLIGHT_VIEW_CORNER_RADIUS = 4;
     [abstractConfirmView closeConfirmView];
 }
 
-- (void)didFinishCloseAnimation:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didFinishCloseAnimation:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didFinishCloseAnimation: %@", LOG_TAG, abstractConfirmView);
     
     [abstractConfirmView removeFromSuperview];
@@ -583,7 +583,7 @@ static const CGFloat DESIGN_HIGHLIGHT_VIEW_CORNER_RADIUS = 4;
         }
         
         DefaultConfirmView *migrationConfirmView = [[DefaultConfirmView alloc] init];
-        migrationConfirmView.confirmViewDelegate = self;
+        migrationConfirmView.bottomSheetViewDelegate = self;
 
         UIImage *image = [self.twinmeApplication darkModeEnable:[self currentSpaceSettings]] ? [UIImage imageNamed:@"OnboardingMigrationDark"] : [UIImage imageNamed:@"OnboardingMigration"];
         [migrationConfirmView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:message image:image avatar:nil action:TwinmeLocalizedString(@"account_migration_view_controller_start", nil) actionColor:nil cancel:nil];

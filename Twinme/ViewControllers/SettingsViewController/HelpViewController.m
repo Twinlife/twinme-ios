@@ -65,7 +65,7 @@ static const int COACH_MARK_ROW = 9;
 // Interface: HelpViewController
 //
 
-@interface HelpViewController ()<UITableViewDelegate, UITableViewDataSource, SettingsActionDelegate, ConfirmViewDelegate>
+@interface HelpViewController ()<UITableViewDelegate, UITableViewDataSource, SettingsActionDelegate, BottomSheetViewDelegate>
 
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 
@@ -294,27 +294,27 @@ static const int COACH_MARK_ROW = 9;
     }
 }
 
-#pragma mark - ConfirmViewDelegate
+#pragma mark - BottomSheetViewDelegate
 
-- (void)didTapConfirm:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didTapConfirm:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractConfirmView);
     
     [abstractConfirmView closeConfirmView];
 }
 
-- (void)didTapCancel:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didTapCancel:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didTapCancel: %@", LOG_TAG, abstractConfirmView);
     
     [abstractConfirmView closeConfirmView];
 }
 
-- (void)didClose:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didClose:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didClose: %@", LOG_TAG, abstractConfirmView);
     
     [abstractConfirmView closeConfirmView];
 }
 
-- (void)didFinishCloseAnimation:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didFinishCloseAnimation:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didFinishCloseAnimation: %@", LOG_TAG, abstractConfirmView);
         
     [abstractConfirmView removeFromSuperview];
@@ -345,7 +345,7 @@ static const int COACH_MARK_ROW = 9;
     DDLogVerbose(@"%@ startOnboarding: %d", LOG_TAG, row);
     
     OnboardingConfirmView *onboardingConfirmView = [[OnboardingConfirmView alloc] init];
-    onboardingConfirmView.confirmViewDelegate = self;
+    onboardingConfirmView.bottomSheetViewDelegate = self;
     
     UIImage *image;
     NSString *title;

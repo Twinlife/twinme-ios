@@ -53,7 +53,7 @@ static NSInteger ADMIN_ALERT_VIEW_TAG = 2;
 static NSInteger INVITATION_ALERT_VIEW_TAG = 3;
 static NSInteger REMOVE_ADMIN_ALERT_VIEW_TAG = 4;
 
-@interface RoomMembersViewController () <UITableViewDelegate, UITableViewDataSource, AlertMessageViewDelegate, RoomMemberServiceDelegate, MenuRoomMembersDelegate, ConfirmViewDelegate>
+@interface RoomMembersViewController () <UITableViewDelegate, UITableViewDataSource, AlertMessageViewDelegate, RoomMemberServiceDelegate, MenuRoomMembersDelegate, BottomSheetViewDelegate>
 
 @property (weak, nonatomic) IBOutlet UITableView *membersTableView;
 
@@ -317,7 +317,7 @@ static NSInteger REMOVE_ADMIN_ALERT_VIEW_TAG = 4;
     DDLogVerbose(@"%@ changeAdministrator: %@", LOG_TAG, uiMember);
     
     DefaultConfirmView *defaultConfirmView = [[DefaultConfirmView alloc] init];
-    defaultConfirmView.confirmViewDelegate = self;
+    defaultConfirmView.bottomSheetViewDelegate = self;
     defaultConfirmView.tag = ADMIN_ALERT_VIEW_TAG;
     [defaultConfirmView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:TwinmeLocalizedString(@"room_members_view_controller_change_admin_title", nil) image:nil avatar:nil action:TwinmeLocalizedString(@"application_confirm", nil) actionColor:nil cancel:TwinmeLocalizedString(@"application_cancel", nil)];
     [self.navigationController.view addSubview:defaultConfirmView];
@@ -338,7 +338,7 @@ static NSInteger REMOVE_ADMIN_ALERT_VIEW_TAG = 4;
         
     } else {
         DefaultConfirmView *defaultConfirmView = [[DefaultConfirmView alloc] init];
-        defaultConfirmView.confirmViewDelegate = self;
+        defaultConfirmView.bottomSheetViewDelegate = self;
         defaultConfirmView.tag = REMOVE_ADMIN_ALERT_VIEW_TAG;
         [defaultConfirmView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:TwinmeLocalizedString(@"room_members_view_controller_remove_admin_title", nil) image:nil avatar:nil action:TwinmeLocalizedString(@"application_confirm", nil) actionColor:nil cancel:TwinmeLocalizedString(@"application_cancel", nil)];
         [self.navigationController.view addSubview:defaultConfirmView];
@@ -352,7 +352,7 @@ static NSInteger REMOVE_ADMIN_ALERT_VIEW_TAG = 4;
     DDLogVerbose(@"%@ inviteMemberAsContact: %@ canInvite: %d", LOG_TAG, uiMember, canInvite);
     
     DefaultConfirmView *defaultConfirmView = [[DefaultConfirmView alloc] init];
-    defaultConfirmView.confirmViewDelegate = self;
+    defaultConfirmView.bottomSheetViewDelegate = self;
     defaultConfirmView.tag = INVITATION_ALERT_VIEW_TAG;
     [defaultConfirmView initWithTitle:TwinmeLocalizedString(@"group_member_view_controller_invitation_title", nil) message:[NSString stringWithFormat:TwinmeLocalizedString(@"group_member_view_controller_invitation_message %@", nil), uiMember.name] image:nil avatar:nil action:TwinmeLocalizedString(@"application_confirm", nil) actionColor:nil cancel:TwinmeLocalizedString(@"application_cancel", nil)];
     [self.navigationController.view addSubview:defaultConfirmView];
@@ -380,7 +380,7 @@ static NSInteger REMOVE_ADMIN_ALERT_VIEW_TAG = 4;
         [alertMessageView showAlertView];
     } else {
         DefaultConfirmView *defaultConfirmView = [[DefaultConfirmView alloc] init];
-        defaultConfirmView.confirmViewDelegate = self;
+        defaultConfirmView.bottomSheetViewDelegate = self;
         defaultConfirmView.tag = DELETE_ALERT_VIEW_TAG;
         [defaultConfirmView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:TwinmeLocalizedString(@"room_members_view_controller_delete_message", nil) image:nil avatar:nil action:TwinmeLocalizedString(@"application_confirm", nil) actionColor:nil cancel:TwinmeLocalizedString(@"application_cancel", nil)];
         [self.navigationController.view addSubview:defaultConfirmView];
@@ -396,9 +396,9 @@ static NSInteger REMOVE_ADMIN_ALERT_VIEW_TAG = 4;
     [menuRoomMemberView removeFromSuperview];
 }
 
-#pragma mark - ConfirmViewDelegate
+#pragma mark - BottomSheetViewDelegate
 
-- (void)didTapConfirm:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didTapConfirm:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractConfirmView);
     
     if (abstractConfirmView.tag == DELETE_ALERT_VIEW_TAG) {
@@ -414,19 +414,19 @@ static NSInteger REMOVE_ADMIN_ALERT_VIEW_TAG = 4;
     [abstractConfirmView closeConfirmView];
 }
 
-- (void)didTapCancel:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didTapCancel:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didTapCancel: %@", LOG_TAG, abstractConfirmView);
     
     [abstractConfirmView closeConfirmView];
 }
 
-- (void)didClose:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didClose:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didClose: %@", LOG_TAG, abstractConfirmView);
     
     [abstractConfirmView closeConfirmView];
 }
 
-- (void)didFinishCloseAnimation:(nonnull AbstractConfirmView *)abstractConfirmView {
+- (void)didFinishCloseAnimation:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didFinishCloseAnimation: %@", LOG_TAG, abstractConfirmView);
     
     [abstractConfirmView removeFromSuperview];
