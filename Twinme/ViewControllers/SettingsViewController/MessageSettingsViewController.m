@@ -249,7 +249,7 @@ typedef enum {
             break;
             
         case SECTION_CONTENT:
-            numberOfRowsInSection = 3;
+            numberOfRowsInSection = 2;
             break;
             
         case SECTION_LINK:
@@ -303,23 +303,12 @@ typedef enum {
         NSString *value;
         
         if (indexPath.section == SECTION_CONTENT) {
-            if (indexPath.row == 1) {
-                title = TwinmeLocalizedString(@"settings_view_controller_image_title", nil);
-                
-                if ([self.twinmeApplication sendImageSize] == SendImageSizeSmall) {
-                    value = TwinmeLocalizedString(@"conversation_view_controller_reduce_menu_minimal", nil);
-                } else if ([self.twinmeApplication sendImageSize] == SendImageSizeMedium) {
-                    value = TwinmeLocalizedString(@"conversation_view_controller_reduce_menu_lower", nil);
-                } else {
-                    value = TwinmeLocalizedString(@"conversation_view_controller_reduce_menu_original", nil);
-                }
+            if ([self.twinmeApplication qualityMedia] == QualityMediaStandard) {
+                title = TwinmeLocalizedString(@"conversation_view_controller_media_quality_standard", nil);
+                value = TwinmeLocalizedString(@"conversation_view_controller_media_quality_standard_subtitle", nil);
             } else {
-                title = TwinmeLocalizedString(@"show_contact_view_controller_video", nil);
-                if ([self.twinmeApplication sendVideoSize] == SendVideoSizeLower) {
-                    value = TwinmeLocalizedString(@"conversation_view_controller_reduce_menu_minimal", nil);
-                } else {
-                    value = TwinmeLocalizedString(@"conversation_view_controller_reduce_menu_original", nil);
-                }
+                title = TwinmeLocalizedString(@"conversation_view_controller_media_quality_original", nil);
+                value = TwinmeLocalizedString(@"conversation_view_controller_media_quality_original_subtitle", nil);
             }
         } else {
             title = nil;
@@ -437,9 +426,7 @@ typedef enum {
     
     if (indexPath.section == SECTION_CONTENT) {
         if (indexPath.row == 1) {
-            [self openMenuSelectValue:MenuSelectValueTypeImageSize];
-        } else if (indexPath.row == 2) {
-            [self openMenuSelectValue:MenuSelectValueTypeVideoSize];
+            [self openMenuSelectValue:MenuSelectValueTypeQualityMedia];
         }
     } else if (indexPath.section == SECTION_CALLS) {
         [self openMenuSelectValue:MenuSelectValueTypeDisplayCallsMode];
@@ -453,10 +440,8 @@ typedef enum {
 
     [menuSelectValueView removeFromSuperview];
     
-    if (menuSelectValueView.menuSelectValueType == MenuSelectValueTypeImageSize) {
-        [self.twinmeApplication setSendImageSizeWithSize:value];
-    } else if (menuSelectValueView.menuSelectValueType == MenuSelectValueTypeVideoSize) {
-        [self.twinmeApplication setSendVideoSizeWithSize:value];
+    if (menuSelectValueView.menuSelectValueType == MenuSelectValueTypeQualityMedia) {
+        [self.twinmeApplication setQualityMediaWithQuality:value];
     } else {
         [self.twinmeApplication setDisplayCallsModeWithMode:value];
     }

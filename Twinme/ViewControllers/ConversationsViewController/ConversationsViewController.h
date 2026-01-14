@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2019-2020 twinlife SA.
+ *  Copyright (c) 2019-2026 twinlife SA.
  *  SPDX-License-Identifier: AGPL-3.0-only
  *
  *  Contributors:
@@ -20,12 +20,14 @@ typedef enum {
 //
 
 @class UIConversation;
+@class TwinmeNavigationController;
+@protocol TLOriginator;
 
 @protocol ConversationsActionDelegate <NSObject>
 
-- (void)didTapConversation:(UIConversation *)uiConversation;
+- (void)didTapConversation:(nonnull UIConversation *)uiConversation;
 
-- (void)didLongPressConversation:(UIConversation *)uiConversation;
+- (void)didLongPressConversation:(nonnull UIConversation *)uiConversation;
 
 @end
 
@@ -44,5 +46,7 @@ typedef enum {
 //
 
 @interface ConversationsViewController : AbstractTwinmeViewController
+
++ (void)showViewWithSubject:(nonnull id<TLOriginator>)subject navigationController:(nonnull TwinmeNavigationController *)navigationController;
 
 @end

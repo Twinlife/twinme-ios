@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2019-2024 twinlife SA.
+ *  Copyright (c) 2019-2026 twinlife SA.
  *  SPDX-License-Identifier: AGPL-3.0-only
  *
  *  Contributors:
@@ -10,6 +10,7 @@
 #import <CocoaLumberjack.h>
 
 #import <UserNotifications/UserNotifications.h>
+#import <Intents/Intents.h>
 
 #import <Twinlife/TLConnectivityService.h>
 #import <Twinlife/TLProxyDescriptor.h>
@@ -63,6 +64,7 @@
 #import "AlertMessageView.h"
 #import "DefaultConfirmView.h"
 #import <TwinmeCommon/UIViewController+Utils.h>
+#import "ConversationsViewController.h"
 
 #if 0
 static const int ddLogLevel = DDLogLevelVerbose;
@@ -71,6 +73,7 @@ static const int ddLogLevel = DDLogLevelWarning;
 #endif
 
 static CGFloat DELAY_WHATS_NEW = .5f;
+static CGFloat DELAY_DEFERRED_CALL = .5f;
 static CGFloat DELAY_NOTIFICATIONS = 1.f;
 static CGFloat MENU_ANIMATION_DURATION = .25f;
 static CGFloat OVERLAY_OPACITY = .4f;
@@ -179,6 +182,7 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
         _nbContacts = 0;
         _sideMenuOpen = NO;
         _isProfileNotFound = NO;
+        _startVideoCall = NO;
         _connectionStatus = TLConnectionStatusConnected; // Necessary for onConnectionStatusChange
         _uiProfiles = [[NSMutableArray alloc] init];
     }
@@ -543,6 +547,8 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
     
     if (self.shareContentURL) {
         [self handleShareContentURL];
+    } else if (self.inPersonToCall) {
+        [self handleDeferredCall];
     }
 }
 
@@ -941,6 +947,19 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
         }
         [self handleExtensionShareContentURL:url];
     } else if (url) {
+        
+        id<TLOriginator> subject = [self.twinmeContext findSubjectWithHandle:[url absoluteString]];
+        if (subject) {
+            UIViewController *topViewController = self.navigationController.topViewController;
+            
+            if (topViewController.presentedViewController) {
+                [topViewController.presentedViewController dismissViewControllerAnimated:NO completion:^{
+                }];
+            }
+
+            [ConversationsViewController showViewWithSubject:subject navigationController:self.selectedViewController];
+            return;
+        }
         [self.mainService parseUriWithUri:url withBlock:^(TLBaseServiceErrorCode errorCode, TLTwincodeURI *uri) {
             if (errorCode != TLBaseServiceErrorCodeSuccess) {
                 [self incorrectQRCode:errorCode];
@@ -949,6 +968,21 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
             [self didCaptureUrl:url twincodeUri:uri];
         }];
     }
+}
+
+- (void)handleDeferredCall {
+    DDLogVerbose(@"%@ handleDeferredCall", LOG_TAG);
+    
+    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(DELAY_DEFERRED_CALL * NSEC_PER_SEC));
+    dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+        id<TLOriginator> subject = [self.twinmeContext findSubjectWithHandle:self.inPersonToCall.personHandle.value];
+        if (subject) {
+            CallViewController *callViewController = (CallViewController *)[[UIStoryboard storyboardWithName:@"Call" bundle:nil] instantiateViewControllerWithIdentifier:@"CallViewController"];
+            [callViewController startCallWithOriginator:subject videoBell:NO isVideoCall:self.startVideoCall isCertifyCall:NO];
+            [self.selectedViewController pushViewController:callViewController animated:YES];
+            self.inPersonToCall = nil;
+        }
+    });
 }
 
 - (void)handleShareContentURL {

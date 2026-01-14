@@ -17,10 +17,11 @@
 @interface AbstractPreviewViewController : AbstractTwinmeViewController
 
 @property (weak, nonatomic) id<PreviewViewDelegate> previewViewDelegate;
-
 @property (weak, nonatomic) IBOutlet UIView *textContainerView;
 @property (weak, nonatomic) IBOutlet UITextView *messageTextView;
 @property (weak, nonatomic) IBOutlet UIView *sendView;
+@property (nonatomic) BOOL startWithMedia;
+@property (nonatomic) BOOL isQualityMediaOriginal;
 
 - (void)initWithURL:(NSURL *)url;
 
@@ -33,5 +34,7 @@
 - (void)send:(BOOL)allowCopyText allowCopyFile:(BOOL)allowCopyFile;
 
 - (void)close;
+
+- (long long)totalFilesSize;
 
 @end

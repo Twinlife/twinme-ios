@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2022 twinlife SA.
+ *  Copyright (c) 2022-2026 twinlife SA.
  *  SPDX-License-Identifier: AGPL-3.0-only
  *
  *  Contributors:
@@ -80,11 +80,16 @@ static const int ddLogLevel = DDLogLevelWarning;
 - (void)bindWithTitle:(NSString *)title subTitle:(NSString *)subtitle checked:(BOOL)checked hideBorder:(BOOL)hideBorder hideSeparator:(BOOL)hideSeparator {
     DDLogVerbose(@"%@ bindWithTitle: %@ subTitle: %@", LOG_TAG, title, subtitle);
         
-    NSMutableAttributedString *valueAttributedString = [[NSMutableAttributedString alloc] initWithString:title attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_REGULAR34, NSFontAttributeName, Design.FONT_COLOR_DEFAULT, NSForegroundColorAttributeName, nil]];
+    UIColor *titleColor = Design.FONT_COLOR_DEFAULT;
+    if (self.forceDarkMode) {
+        titleColor = [UIColor whiteColor];
+    }
+    
+    NSMutableAttributedString *valueAttributedString = [[NSMutableAttributedString alloc] initWithString:title attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_REGULAR34, NSFontAttributeName, titleColor, NSForegroundColorAttributeName, nil]];
     
     if (![subtitle isEqualToString:@""]) {
         [valueAttributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:@"\n"]];
-        [valueAttributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:subtitle attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_REGULAR34, NSFontAttributeName, Design.FONT_COLOR_GREY, NSForegroundColorAttributeName, nil]]];
+        [valueAttributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:subtitle attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_REGULAR32, NSFontAttributeName, Design.FONT_COLOR_GREY, NSForegroundColorAttributeName, nil]]];
     }
     
     self.valueLabel.attributedText = valueAttributedString;

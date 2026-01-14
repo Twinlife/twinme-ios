@@ -9,8 +9,7 @@
 #import "AbstractMenuView.h"
 
 typedef enum {
-    MenuSelectValueTypeImageSize,
-    MenuSelectValueTypeVideoSize,
+    MenuSelectValueTypeQualityMedia,
     MenuSelectValueTypeDisplayCallsMode,
     MenuSelectValueTypeProfileUpdateMode
 } MenuSelectValueType;

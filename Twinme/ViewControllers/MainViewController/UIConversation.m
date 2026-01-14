@@ -112,8 +112,11 @@
             }
                 
             case TLDescriptorTypeInvitationDescriptor:
-            case TLDescriptorTypeTwincodeDescriptor: {
                 lastMessage = [[NSAttributedString alloc]initWithString:TwinmeLocalizedString(@"notification_center_group_invitation_received", nil)];
+                break;
+                
+            case TLDescriptorTypeTwincodeDescriptor: {
+                lastMessage = [[NSAttributedString alloc]initWithString:TwinmeLocalizedString(@"notification_center_invitation_received", nil)];
                 break;
             }
             default:

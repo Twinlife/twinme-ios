@@ -68,8 +68,7 @@ static const int ddLogLevel = DDLogLevelWarning;
 #define CALL_QUALITY_COUNT @"CallQualityCount"
 #define CALL_QUALITY_LAST_DATE @"CallQualityLastDate"
 #define LAST_UPDATED_VERSION @"LastUpdatedVersion"
-#define SEND_IMAGE_SIZE @"SendImageSize"
-#define SEND_VIDEO_SIZE @"SendVideoSize"
+#define QUALITY_MEDIA @"QualityMedia"
 #define DISPLAY_CALLS_MODE @"DisplayCallsMode"
 #define PROFILE_UPDATE_MODE @"ProfileUpdateMode"
 #define SHOW_GROUP_CALL_ANIMATION @"DefaultShowGroupCallAnimation"
@@ -99,8 +98,7 @@ static TLIntegerConfigIdentifier *fontSizeConfig;
 static TLBooleanConfigIdentifier *showGroupCallAnimationConfig;
 
 // Message settings
-static TLIntegerConfigIdentifier *sendImageSizeConfig;
-static TLIntegerConfigIdentifier *sendVideoSizeConfig;
+static TLIntegerConfigIdentifier *qualityMediaConfig;
 
 // Behavior settings
 static TLIntegerConfigIdentifier *profileUpdateModeConfig;
@@ -188,8 +186,7 @@ static TLFloatConfigIdentifier *audioItemRateConfig;
         
         defaultTabConfig = [TLIntegerConfigIdentifier defineWithName:DEFAULT_TAB uuid:@"AD11179C-1510-4F1A-A4C2-0F29DC989997" defaultValue:DefaultTabConversations];
 
-        sendImageSizeConfig = [TLIntegerConfigIdentifier defineWithName:SEND_IMAGE_SIZE uuid:@"85F98FDE-5C4E-11ED-9B6A-0242AC120002" defaultValue:SendImageSizeOriginal];
-        sendVideoSizeConfig = [TLIntegerConfigIdentifier defineWithName:SEND_VIDEO_SIZE uuid:@"E476F52F-C863-4463-BAB4-B89C875E601F" defaultValue:SendVideoSizeOriginal];
+        qualityMediaConfig = [TLIntegerConfigIdentifier defineWithName:QUALITY_MEDIA uuid:@"85F98FDE-5C4E-11ED-9B6A-0242AC120002" defaultValue:QualityMediaOrginal];
 
         displayCallsModeConfig = [TLIntegerConfigIdentifier defineWithName:DISPLAY_CALLS_MODE uuid:@"FA50C4AC-C196-4F3F-BD68-3DE18D27F44E" defaultValue:TLDisplayCallsModeMissed];
 
@@ -499,24 +496,14 @@ static TLFloatConfigIdentifier *audioItemRateConfig;
     defaultTabConfig.intValue = defaultTab;
 }
 
-- (SendImageSize)sendImageSize {
+- (QualityMedia)qualityMedia {
     
-    return sendImageSizeConfig.intValue;
+    return qualityMediaConfig.intValue;
 }
 
-- (void)setSendImageSizeWithSize:(SendImageSize)sendImageSize {
+- (void)setQualityMediaWithQuality:(QualityMedia)qualityMedia {
     
-    sendImageSizeConfig.intValue = sendImageSize;
-}
-
-- (SendVideoSize)sendVideoSize {
-    
-    return sendVideoSizeConfig.intValue;
-}
-
-- (void)setSendVideoSizeWithSize:(SendVideoSize)sendVideoSize {
-    
-    sendVideoSizeConfig.intValue = sendVideoSize;
+    qualityMediaConfig.intValue = qualityMedia;
 }
 
 - (TLDisplayCallsMode)displayCallsMode {

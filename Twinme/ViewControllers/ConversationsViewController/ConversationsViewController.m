@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2019-2024 twinlife SA.
+ *  Copyright (c) 2019-2026 twinlife SA.
  *  SPDX-License-Identifier: AGPL-3.0-only
  *
  *  Contributors:
@@ -19,6 +19,7 @@
 #import <Twinme/TLInvocation.h>
 #import <Twinme/TLPairInviteInvocation.h>
 #import <Twinme/TLSpace.h>
+#import <Twinme/TLCallReceiver.h>
 
 #import <Utils/NSString+Utils.h>
 
@@ -30,6 +31,7 @@
 #import "ShowContactViewController.h"
 #import "ShowGroupViewController.h"
 #import "ShowRoomViewController.h"
+#import "ShowExternalCallViewController.h"
 #import "QualityOfServicesViewController.h"
 #import "AccountMigrationScannerViewController.h"
 
@@ -1569,24 +1571,38 @@ static int LAST_USED_CONVERSATION_COUNT = 99999;
     }
 }
 
-- (void)showOriginator:(UIConversation *)uiConversation {
-    DDLogVerbose(@"%@ showOriginator: %@", LOG_TAG, uiConversation);
-    
-    if ([uiConversation.uiContact.contact isGroup]) {
++ (void)showViewWithSubject:(nonnull id<TLOriginator>)subject navigationController:(nonnull TwinmeNavigationController *)navigationController {
+    DDLogVerbose(@"%@ showViewWithSubject: %@", LOG_TAG, subject);
+
+    if ([subject isKindOfClass:[TLCallReceiver class]]) {
+        TLCallReceiver *callReceiver = (TLCallReceiver *)subject;
+        ShowExternalCallViewController *showExternalCallViewController = [[UIStoryboard storyboardWithName:@"ExternalCall" bundle:nil] instantiateViewControllerWithIdentifier:@"ShowExternalCallViewController"];
+        [showExternalCallViewController initWithCallReceiver:callReceiver];
+        [navigationController pushViewController:showExternalCallViewController animated:YES];
+    }  else if ([subject isKindOfClass:[TLGroup class]]) {
+        TLGroup * group = (TLGroup *)subject;
         ShowGroupViewController *showGroupViewController = [[UIStoryboard storyboardWithName:@"Group" bundle:nil] instantiateViewControllerWithIdentifier:@"ShowGroupViewController"];
-        [showGroupViewController initWithGroup:(TLGroup*)uiConversation.uiContact.contact];
-        [self.navigationController pushViewController:showGroupViewController animated:YES];
-    } else if (uiConversation.uiContact.contact) {
-        TLContact *contact = (TLContact *)uiConversation.uiContact.contact;
+        [showGroupViewController initWithGroup:group];
+        [navigationController pushViewController:showGroupViewController animated:YES];
+    } else {
+        TLContact *contact = (TLContact *)subject;
         if (contact.isTwinroom) {
             ShowRoomViewController *showRoomViewController = [[UIStoryboard storyboardWithName:@"Room" bundle:nil] instantiateViewControllerWithIdentifier:@"ShowRoomViewController"];
             [showRoomViewController initWithRoom:contact];
-            [self.navigationController pushViewController:showRoomViewController animated:YES];
+            [navigationController pushViewController:showRoomViewController animated:YES];
         } else {
             ShowContactViewController *showContactViewController = [[UIStoryboard storyboardWithName:@"Contact" bundle:nil] instantiateViewControllerWithIdentifier:@"ShowContactViewController"];
             [showContactViewController initWithContact:contact];
-            [self.navigationController pushViewController:showContactViewController animated:YES];
+            [navigationController pushViewController:showContactViewController animated:YES];
         }
+    }
+}
+
+- (void)showOriginator:(UIConversation *)uiConversation {
+    DDLogVerbose(@"%@ showOriginator: %@", LOG_TAG, uiConversation);
+    
+    if (uiConversation.uiContact.contact) {
+        [ConversationsViewController showViewWithSubject:uiConversation.uiContact.contact navigationController:self.navigationController];
     }
 }
 

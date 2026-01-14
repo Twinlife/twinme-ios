@@ -270,7 +270,7 @@ static UIColor *DESIGN_TIME_COLOR;
             break;
             
         case TLNotificationTypeNewContactInvitation:
-            messageType = TwinmeLocalizedString(@"notification_view_controller_item_group_invitation", nil);
+            messageType = TwinmeLocalizedString(@"notification_view_controller_item_invitation", nil);
             self.typeView.image = [UIImage imageNamed:@"NotificationInvitationGroup"];
             break;
             

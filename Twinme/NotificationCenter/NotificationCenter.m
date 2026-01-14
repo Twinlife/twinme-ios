@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2015-2024 twinlife SA.
+ *  Copyright (c) 2015-2026 twinlife SA.
  *  SPDX-License-Identifier: AGPL-3.0-only
  *
  *  Contributors:
@@ -52,6 +52,7 @@
 #import "ShowExternalCallViewController.h"
 #import "AcceptInvitationViewController.h"
 #import "ApplicationAssertion.h"
+#import "ConversationsViewController.h"
 
 #import "NotificationView.h"
 
@@ -623,30 +624,7 @@ typedef enum {
         case TLNotificationTypeUpdatedAvatarContact:
         case TLNotificationTypeDeletedContact: {
             [mainViewController selectTab:2];
-            selectedNavigationController = mainViewController.selectedViewController;
-            if ([(NSObject *)subject isKindOfClass:[TLCallReceiver class]]) {
-                TLCallReceiver *callReceiver = (TLCallReceiver *)subject;
-                ShowExternalCallViewController *showExternalCallViewController = [[UIStoryboard storyboardWithName:@"ExternalCall" bundle:nil] instantiateViewControllerWithIdentifier:@"ShowExternalCallViewController"];
-                [showExternalCallViewController initWithCallReceiver:callReceiver];
-                [selectedNavigationController pushViewController:showExternalCallViewController animated:YES];
-            }  else if ([(NSObject *)subject isKindOfClass:[TLGroup class]]) {
-                TLGroup * group = (TLGroup *)subject;
-                ShowGroupViewController *showGroupViewController = [[UIStoryboard storyboardWithName:@"Group" bundle:nil] instantiateViewControllerWithIdentifier:@"ShowGroupViewController"];
-                [showGroupViewController initWithGroup:group];
-                [selectedNavigationController pushViewController:showGroupViewController animated:YES];
-            } else {
-                TLContact *contact = (TLContact *)subject;
-                if (contact.isTwinroom) {
-                    ShowRoomViewController *showRoomViewController = [[UIStoryboard storyboardWithName:@"Room" bundle:nil] instantiateViewControllerWithIdentifier:@"ShowRoomViewController"];
-                    [showRoomViewController initWithRoom:contact];
-                    [selectedNavigationController pushViewController:showRoomViewController animated:YES];
-                } else {
-                    ShowContactViewController *showContactViewController = [[UIStoryboard storyboardWithName:@"Contact" bundle:nil] instantiateViewControllerWithIdentifier:@"ShowContactViewController"];
-                    [showContactViewController initWithContact:contact];
-                    [selectedNavigationController pushViewController:showContactViewController animated:YES];
-                }
-            }
-            
+            [ConversationsViewController showViewWithSubject:(id<TLOriginator>)subject navigationController:mainViewController.selectedViewController];
             break;
         }
             

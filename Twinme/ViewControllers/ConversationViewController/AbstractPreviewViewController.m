@@ -13,6 +13,8 @@
 #import "AbstractPreviewViewController.h"
 #import "MenuSendOptionsView.h"
 #import "PremiumFeatureConfirmView.h"
+#import "DefaultConfirmView.h"
+#import "MenuSelectValueView.h"
 
 #import "UIPremiumFeature.h"
 
@@ -26,29 +28,41 @@ static UIColor *DESIGN_PLACEHOLDER_COLOR;
 static UIColor *DESIGN_TEXTFIELD_CONVERSATION_BACKGROUND_COLOR;
 static UIColor *DESIGN_BORDER_COLOR;
 
+static const int WARNING_ORIGINAL_SIZE_TAG = 1001;
 static const CGFloat DESIGN_HEIGHT_INSET = 24;
 static const int MAX_VISIBLE_LINES = 5;
+static const long long WARNING_ORIGINAL_SIZE = 1024 * 1024 * 10;
 
 //
 // Interface: AbstractPreviewViewController ()
 //
 
-@interface AbstractPreviewViewController ()<UITextViewDelegate, SwitchViewDelegate, BottomSheetViewDelegate, MenuSendOptionsDelegate>
+@interface AbstractPreviewViewController ()<UITextViewDelegate, SwitchViewDelegate, BottomSheetViewDelegate, MenuSendOptionsDelegate, MenuSelectValueDelegate>
 
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *headerViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet UIView *headerView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *closeViewHeightConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *closeViewWidthConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *closeViewLeadingConstraint;
 @property (weak, nonatomic) IBOutlet UIView *closeView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *closeImageViewHeightConstraint;
 @property (weak, nonatomic) IBOutlet UIImageView *closeImageView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *certifiedImageViewHeightConstraint;
 @property (weak, nonatomic) IBOutlet UIImageView *certifiedImageView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *avatarViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *avatarViewLeadingConstraint;
 @property (weak, nonatomic) IBOutlet UIImageView *avatarView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *nameLabelLeadingConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *nameLabelTrailingConstraint;
 @property (weak, nonatomic) IBOutlet UILabel *nameLabel;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *headerViewLeadingConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *headerViewTrailingConstraint;
-@property (weak, nonatomic) IBOutlet UIView *headerView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *nameViewLeadingConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *nameViewTrailingConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *nameViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet UIView *nameView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *qualityViewTrailingConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *qualityViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet UIView *qualityView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *qualityImageViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet UIImageView *qualityImageView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *textContainerViewHeightConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *textContainerLeadingConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *textContainerBottomConstraint;
@@ -99,6 +113,8 @@ static const int MAX_VISIBLE_LINES = 5;
     if (self) {
         _keyboardHidden = YES;
         _menuSendOptionsOpen = NO;
+        _startWithMedia = NO;
+        _isQualityMediaOriginal = self.twinmeApplication.qualityMedia == QualityMediaOrginal;
     }
     return self;
 }
@@ -120,6 +136,7 @@ static const int MAX_VISIBLE_LINES = 5;
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillChangeFrame:) name:UIKeyboardWillChangeFrameNotification object:nil];
     
+    self.qualityView.hidden = !self.startWithMedia;
     self.nameLabel.text = self.contactName;
     self.avatarView.image = self.contactAvatar;
     self.certifiedImageView.hidden = !self.certified;
@@ -140,6 +157,12 @@ static const int MAX_VISIBLE_LINES = 5;
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillHideNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillChangeFrameNotification object:nil];
+}
+
+- (long long)totalFilesSize {
+    DDLogVerbose(@"%@ totalFilesSize", LOG_TAG);
+    
+    return 0;
 }
 
 - (void)initWithURL:(NSURL *)url {
@@ -266,13 +289,25 @@ static const int MAX_VISIBLE_LINES = 5;
 - (void)didTapConfirm:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractConfirmView);
     
-    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:TwinmeLocalizedString(@"twinme_plus_link", nil)] options:@{} completionHandler:nil];
-    
+    if ([abstractConfirmView isKindOfClass:[DefaultConfirmView class]]) {
+        if (abstractConfirmView.tag == WARNING_ORIGINAL_SIZE_TAG) {
+            [self.twinmeApplication setQualityMediaWithQuality:QualityMediaStandard];
+        }
+        
+        [self send];
+    } else {
+        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:TwinmeLocalizedString(@"twinme_plus_link", nil)] options:@{} completionHandler:nil];
+    }
+   
     [abstractConfirmView closeConfirmView];
 }
 
 - (void)didTapCancel:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didTapCancel: %@", LOG_TAG, abstractConfirmView);
+    
+    if (abstractConfirmView.tag == WARNING_ORIGINAL_SIZE_TAG) {
+        [self send];
+    }
     
     [abstractConfirmView closeConfirmView];
 }
@@ -286,6 +321,10 @@ static const int MAX_VISIBLE_LINES = 5;
 - (void)didFinishCloseAnimation:(nonnull AbstractBottomSheetView *)abstractConfirmView {
     DDLogVerbose(@"%@ didFinishCloseAnimation: %@", LOG_TAG, abstractConfirmView);
     
+    if ([abstractConfirmView isKindOfClass:[DefaultConfirmView class]]) {
+        self.menuSendOptionsOpen = NO;
+    }
+
     [abstractConfirmView removeFromSuperview];
 }
 
@@ -303,14 +342,35 @@ static const int MAX_VISIBLE_LINES = 5;
     
     [menuSendOptionsView removeFromSuperview];
     
-    BOOL allowCopyText = self.twinmeApplication.allowCopyText;
-    BOOL allowCopyFile = self.twinmeApplication.allowCopyFile;
-    if (self.menuSendOptionsOpen) {
-        allowCopyText = allowCopy;
-        allowCopyFile = allowCopy;
+    if (!allowCopy && !self.startWithMedia) {
+        self.allowCopy = allowCopy;
+        [self showWarningFile];
+    } else {
+        
+        long long totalSize = [self totalFilesSize];
+        if (totalSize > WARNING_ORIGINAL_SIZE) {
+            [self showWarningOriginalSize:totalSize];
+        } else {
+            [self send:allowCopy allowCopyFile:allowCopy];
+        }
     }
+}
+
+#pragma mark - MenuSelectValueDelegate
+
+- (void)selectValue:(MenuSelectValueView *)menuSelectValueView value:(int)value {
+    DDLogVerbose(@"%@ selectValue: %d", LOG_TAG, value);
+
+    [menuSelectValueView removeFromSuperview];
     
-    [self send:allowCopyText allowCopyFile:allowCopyFile];
+    self.isQualityMediaOriginal = value == QualityMediaOrginal;
+    self.qualityImageView.image = self.isQualityMediaOriginal ? [UIImage imageNamed:@"MediaHDIcon"]: [UIImage imageNamed:@"MediaSDIcon"];
+}
+
+- (void)cancelMenuSelectValue:(MenuSelectValueView *)menuSelectValueView {
+    DDLogVerbose(@"%@ cancelMenuSelectValue: %@", LOG_TAG, menuSelectValueView);
+    
+    [menuSelectValueView removeFromSuperview];
 }
 
 #pragma mark - Private methods
@@ -324,11 +384,15 @@ static const int MAX_VISIBLE_LINES = 5;
     tapGesture.cancelsTouchesInView = NO;
     [self.view addGestureRecognizer:tapGesture];
     
+    self.headerViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    
     self.closeViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
-    self.closeViewWidthConstraint.constant *= Design.WIDTH_RATIO;
     
     self.closeView.userInteractionEnabled = YES;
     self.closeView.isAccessibilityElement = YES;
+    self.closeView.backgroundColor = [UIColor colorWithWhite:0 alpha:0.3];
+    self.closeView.layer.cornerRadius = self.closeViewHeightConstraint.constant * 0.5;
+    self.closeView.clipsToBounds = YES;
     self.closeView.accessibilityLabel = TwinmeLocalizedString(@"application_cancel", nil);
     [self.closeView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleCloseTapGesture:)]];
     
@@ -338,17 +402,37 @@ static const int MAX_VISIBLE_LINES = 5;
     self.certifiedImageViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     
     self.avatarViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    self.avatarViewLeadingConstraint.constant *= Design.WIDTH_RATIO;
     
     self.avatarView.clipsToBounds = YES;
     self.avatarView.layer.cornerRadius = self.avatarViewHeightConstraint.constant * 0.5f;
     
     self.nameLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
+    self.nameLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
     
     self.nameLabel.font = Design.FONT_MEDIUM34;
     self.nameLabel.textColor = [UIColor whiteColor];
     
-    self.headerViewLeadingConstraint.constant *= Design.WIDTH_RATIO;
-    self.headerViewTrailingConstraint.constant *= Design.WIDTH_RATIO;
+    self.nameViewLeadingConstraint.constant *= Design.WIDTH_RATIO;
+    self.nameViewTrailingConstraint.constant *= Design.WIDTH_RATIO;
+    self.nameViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    
+    self.nameView.backgroundColor = [UIColor colorWithWhite:0 alpha:0.3];
+    self.nameView.layer.cornerRadius = self.nameViewHeightConstraint.constant * 0.5;
+    self.nameView.clipsToBounds = YES;
+    
+    self.qualityViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    
+    self.qualityView.userInteractionEnabled = YES;
+    self.qualityView.isAccessibilityElement = YES;
+    self.qualityView.backgroundColor = [UIColor colorWithWhite:0 alpha:0.3];
+    self.qualityView.layer.cornerRadius = self.qualityViewHeightConstraint.constant * 0.5;
+    self.qualityView.clipsToBounds = YES;
+    [self.qualityView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleMediaQualityTapGesture:)]];
+    
+    self.qualityImageViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    
+    self.qualityImageView.image = self.isQualityMediaOriginal ? [UIImage imageNamed:@"MediaHDIcon"]: [UIImage imageNamed:@"MediaSDIcon"];
     
     CGFloat sendViewHeight = Design.FONT_REGULAR32.lineHeight + (DESIGN_HEIGHT_INSET * Design.HEIGHT_RATIO * 2);
     
@@ -427,6 +511,19 @@ static const int MAX_VISIBLE_LINES = 5;
     [premiumFeatureConfirmView showConfirmView];
 }
 
+- (void)handleMediaQualityTapGesture:(UITapGestureRecognizer *)sender {
+    DDLogVerbose(@"%@ handleMediaQualityTapGesture: %@", LOG_TAG, sender);
+    
+    if (sender.state == UIGestureRecognizerStateEnded) {
+        MenuSelectValueView *menuSelectValueView = [[MenuSelectValueView alloc]init];
+        menuSelectValueView.forceDarkMode = YES;
+        menuSelectValueView.menuSelectValueDelegate = self;
+        [self.view addSubview:menuSelectValueView];
+        [menuSelectValueView setMenuSelectValueTypeWithType:MenuSelectValueTypeQualityMedia];
+        [menuSelectValueView openMenu];
+    }
+}
+
 - (void)handleCloseTapGesture:(UITapGestureRecognizer *)sender {
     DDLogVerbose(@"%@ handleCloseTapGesture: %@", LOG_TAG, sender);
     
@@ -440,14 +537,23 @@ static const int MAX_VISIBLE_LINES = 5;
     
     if (sender.state == UIGestureRecognizerStateEnded) {
         
-        BOOL allowCopyText = self.twinmeApplication.allowCopyText;
-        BOOL allowCopyFile = self.twinmeApplication.allowCopyFile;
-        if (self.menuSendOptionsOpen) {
-            allowCopyText = self.allowCopy;
-            allowCopyFile = self.allowCopy;
+        [self hapticFeedBack:UIImpactFeedbackStyleMedium];
+        
+        if (self.startWithMedia && self.isQualityMediaOriginal) {
+            
+            long long totalSize = [self totalFilesSize];
+            if (totalSize > WARNING_ORIGINAL_SIZE) {
+                [self showWarningOriginalSize:totalSize];
+                return;
+            }
         }
         
-        [self send:allowCopyText allowCopyFile:allowCopyFile];
+        BOOL allowCopyFile = self.twinmeApplication.allowCopyFile;
+        if (!allowCopyFile && !self.startWithMedia) {
+            [self showWarningFile];
+        } else {
+            [self send];
+        }
     }
 }
 
@@ -455,6 +561,8 @@ static const int MAX_VISIBLE_LINES = 5;
     DDLogVerbose(@"%@ handleSendLongPress: %@", LOG_TAG, recognizer);
     
     if (!self.menuSendOptionsOpen) {
+        [self hapticFeedBack:UIImpactFeedbackStyleMedium];
+        
         if ([self.messageTextView isFirstResponder]) {
             [self.messageTextView resignFirstResponder];
         }
@@ -489,4 +597,51 @@ static const int MAX_VISIBLE_LINES = 5;
     }
 }
 
+- (void)send {
+    DDLogVerbose(@"%@ send", LOG_TAG);
+    
+    BOOL allowCopyText = self.twinmeApplication.allowCopyText;
+    BOOL allowCopyFile = self.twinmeApplication.allowCopyFile;
+    if (self.menuSendOptionsOpen) {
+        allowCopyText = self.allowCopy;
+        allowCopyFile = self.allowCopy;
+    }
+    
+    [self send:allowCopyText allowCopyFile:allowCopyFile];
+}
+
+- (void)showWarningFile {
+    DDLogVerbose(@"%@ showWarningFile", LOG_TAG);
+    
+    DefaultConfirmView *defaultConfirmView = [[DefaultConfirmView alloc] init];
+    defaultConfirmView.bottomSheetViewDelegate = self;
+    defaultConfirmView.forceDarkMode = YES;
+    
+    [defaultConfirmView initWithTitle:TwinmeLocalizedString(@"account_migration_view_controller_state_send_files", nil) message:TwinmeLocalizedString(@"conversation_view_controller_send_file_warning", nil) image:nil avatar:nil action: TwinmeLocalizedString(@"application_confirm", nil) actionColor:nil cancel:TwinmeLocalizedString(@"application_cancel", nil)];
+
+    [self.view addSubview:defaultConfirmView];
+    [defaultConfirmView showConfirmView];
+}
+
+- (void)showWarningOriginalSize:(long long)size {
+    DDLogVerbose(@"%@ showWarningOriginalSize", LOG_TAG);
+    
+    DefaultConfirmView *defaultConfirmView = [[DefaultConfirmView alloc] init];
+    defaultConfirmView.bottomSheetViewDelegate = self;
+    defaultConfirmView.forceDarkMode = YES;
+    defaultConfirmView.tag = WARNING_ORIGINAL_SIZE_TAG;
+    
+    NSByteCountFormatter *formatter = [[NSByteCountFormatter alloc] init];
+    formatter.countStyle = NSByteCountFormatterCountStyleFile;
+    
+    NSMutableString *message = [[NSMutableString alloc] initWithString:[NSString stringWithFormat: TwinmeLocalizedString(@"conversation_view_controller_send_quality_size", nil), [formatter stringFromByteCount:size]]];
+    [message appendString:@"\n\n"];
+    [message appendString:TwinmeLocalizedString(@"conversation_view_controller_send_quality_warning", nil)];
+    
+    [defaultConfirmView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:message image:nil avatar:nil action: TwinmeLocalizedString(@"conversation_view_controller_send_quality_standard", nil) actionColor:nil cancel:TwinmeLocalizedString(@"conversation_view_controller_media_quality_original", nil)];
+
+    [self.view addSubview:defaultConfirmView];
+    [defaultConfirmView showConfirmView];
+}
+    
 @end

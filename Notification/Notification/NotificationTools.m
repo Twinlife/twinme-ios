@@ -183,16 +183,16 @@ static const BOOL SYSTEM_NOTIFICATION_ON_CONTACT_UPDATE = YES;
             type = TLNotificationTypeNewContactInvitation;
             
             if (displayNotificationSender && displayNotificationContent) {
-                notificationBackgroundMessage = TwinmeLocalizedString(@"notification_center_group_invitation", nil);
+                notificationBackgroundMessage = TwinmeLocalizedString(@"notification_center_invitation", nil);
             } else if (displayNotificationSender && !displayNotificationContent) {
                 notificationBackgroundMessage = TwinmeLocalizedString(@"notification_center_message_received", nil);
             } else if (!displayNotificationSender && displayNotificationContent) {
-                notificationBackgroundMessage = TwinmeLocalizedString(@"notification_center_group_invitation_received", nil);
+                notificationBackgroundMessage = TwinmeLocalizedString(@"notification_center_invitation_received", nil);
             } else {
                 notificationBackgroundMessage = TwinmeLocalizedString(@"notification_center_message_received", nil);
             }
             
-            notificationMessage = TwinmeLocalizedString(@"notification_center_group_invitation", nil);
+            notificationMessage = TwinmeLocalizedString(@"notification_center_invitation", nil);
             
             break;
 

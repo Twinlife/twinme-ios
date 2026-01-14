@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2025 twinlife SA.
+ *  Copyright (c) 2025-2026 twinlife SA.
  *  SPDX-License-Identifier: AGPL-3.0-only
  *
  *  Contributors:
@@ -21,10 +21,19 @@
     if (self) {
         self.url = url;
         self.path = path;
-        self.size = size;
         self.previewType = isVideo ? PreviewTypeVideo : PreviewTypeImage;
+        self.size = size;
+        [self getFileSize];
     }
     return self;
+}
+
+- (void)getFileSize {
+        
+    NSDictionary *attrs = [[NSFileManager defaultManager] attributesOfItemAtPath:self.path error:nil];
+    if (attrs) {
+        self.fileSize = [attrs fileSize];
+    }
 }
 
 @end

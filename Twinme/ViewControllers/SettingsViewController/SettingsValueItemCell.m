@@ -108,7 +108,6 @@ static CGFloat DESIGN_TITLE_LARGE_WIDTH = 620;
         self.valueLabelTrailingConstraint.constant = self.accessoryImageView.frame.size.width +  (self.accessoryImageViewTrailingConstraint.constant * 2);
     }
     
-    [self updateFont];
     [self updateColor];
 }
 
@@ -122,22 +121,14 @@ static CGFloat DESIGN_TITLE_LARGE_WIDTH = 620;
     if (title) {
         NSMutableAttributedString *valueAttributedString = [[NSMutableAttributedString alloc] initWithString:title attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_REGULAR32, NSFontAttributeName, Design.FONT_COLOR_DEFAULT, NSForegroundColorAttributeName, nil]];
         [valueAttributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:@"\n"]];
-        [valueAttributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:value attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_REGULAR32, NSFontAttributeName, Design.FONT_COLOR_GREY, NSForegroundColorAttributeName, nil]]];
+        [valueAttributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:value attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_REGULAR30, NSFontAttributeName, Design.FONT_COLOR_GREY, NSForegroundColorAttributeName, nil]]];
         self.titleLabel.attributedText = valueAttributedString;
     } else {
         NSMutableAttributedString *valueAttributedString = [[NSMutableAttributedString alloc] initWithString:value attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_REGULAR32, NSFontAttributeName, Design.FONT_COLOR_DEFAULT, NSForegroundColorAttributeName, nil]];
         self.titleLabel.attributedText = valueAttributedString;
     }
     
-    [self updateFont];
     [self updateColor];
-}
-
-
-- (void)updateFont {
-    DDLogVerbose(@"%@ updateFont", LOG_TAG);
-    
-    self.titleLabel.font = Design.FONT_REGULAR32;
 }
 
 - (void)updateColor {

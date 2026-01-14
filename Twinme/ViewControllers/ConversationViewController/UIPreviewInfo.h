@@ -21,6 +21,7 @@ typedef enum {
 
 @property (nonatomic, nonnull) NSURL *url;
 @property (nonatomic) PreviewType previewType;
+@property (nonatomic) long long fileSize;
 
 - (BOOL)isMedia;
 
