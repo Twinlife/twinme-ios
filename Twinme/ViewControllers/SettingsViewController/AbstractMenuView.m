@@ -148,7 +148,9 @@ static const int ddLogLevel = DDLogLevelWarning;
 - (void)updateFont {
     DDLogVerbose(@"%@ updateFont", LOG_TAG);
     
-    self.titleLabel.font = Design.FONT_MEDIUM36;
+    if (!self.titleLabel.attributedText) {
+        self.titleLabel.font = Design.FONT_MEDIUM36;
+    }
 }
 
 - (void)updateColor {
@@ -156,10 +158,17 @@ static const int ddLogLevel = DDLogLevelWarning;
     
     if (self.forceDarkMode) {
         self.actionView.backgroundColor = [UIColor colorWithRed:72./255. green:72./255. blue:72./255. alpha:1];
-        self.titleLabel.textColor = [UIColor whiteColor];
+        
+        if (!self.titleLabel.attributedText) {
+            self.titleLabel.textColor = [UIColor whiteColor];
+        }
+        
     } else {
         self.actionView.backgroundColor = Design.POPUP_BACKGROUND_COLOR;
-        self.titleLabel.textColor = Design.FONT_COLOR_DEFAULT;
+        
+        if (!self.titleLabel.attributedText) {
+            self.titleLabel.textColor = Design.FONT_COLOR_DEFAULT;
+        }
     }
 }
 

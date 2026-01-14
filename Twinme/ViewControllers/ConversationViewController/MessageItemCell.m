@@ -156,8 +156,7 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
     
     NSMutableDictionary *mutableLinkAttributes = [NSMutableDictionary dictionary];
     [mutableLinkAttributes setObject:[NSNumber numberWithBool:YES] forKey:(NSString *)kCTUnderlineStyleAttributeName];
-    [mutableLinkAttributes setObject:(__bridge id)[DESIGN_LINK_COLOR CGColor] forKey:(NSString *)kCTForegroundColorAttributeName];
-    [mutableLinkAttributes setObject:[UIFont systemFontOfSize:self.messageFont.pointSize weight:UIFontWeightSemibold] forKey:NSFontAttributeName];
+    [mutableLinkAttributes setObject:(__bridge id)[[UIColor blackColor] CGColor] forKey:(NSString *)kCTForegroundColorAttributeName];
     self.contentLabel.linkAttributes = [NSDictionary dictionaryWithDictionary:mutableLinkAttributes];
     
     UILongPressGestureRecognizer *longPressGesture = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(onLongPressInsideContent:)];
@@ -195,6 +194,7 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
     self.replyLabel.font = self.messageFont;
     self.replyLabel.numberOfLines = 3;
     self.replyLabel.translatesAutoresizingMaskIntoConstraints = NO;
+        
     self.replyLabel.preferredMaxLayoutWidth = Design.MESSAGE_CELL_MAX_WIDTH;
     self.replyLabel.textColor = Design.REPLY_FONT_COLOR;
     [self.replyLabel setPaddingWithTop:heightPadding left:widthPadding bottom:heightPadding right:widthPadding];
@@ -330,12 +330,6 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
         CGFloat heightPadding = Design.TEXT_HEIGHT_PADDING;
         CGFloat widthPadding = Design.TEXT_WIDTH_PADDING;
         [self.contentLabel setPaddingWithTop:heightPadding left:widthPadding bottom:heightPadding right:widthPadding];
-        
-        NSMutableDictionary *mutableLinkAttributes = [NSMutableDictionary dictionary];
-        [mutableLinkAttributes setObject:[NSNumber numberWithBool:YES] forKey:(NSString *)kCTUnderlineStyleAttributeName];
-        [mutableLinkAttributes setObject:(__bridge id)[DESIGN_LINK_COLOR CGColor] forKey:(NSString *)kCTForegroundColorAttributeName];
-        [mutableLinkAttributes setObject:[UIFont systemFontOfSize:self.messageFont.pointSize weight:UIFontWeightSemibold] forKey:NSFontAttributeName];
-        self.contentLabel.linkAttributes = [NSDictionary dictionaryWithDictionary:mutableLinkAttributes];
         
         @try {
             NSAttributedString *attributedString = [NSString formatText:messageItem.content fontSize:self.messageFont.pointSize fontColor:[UIColor whiteColor] fontSearch:nil];

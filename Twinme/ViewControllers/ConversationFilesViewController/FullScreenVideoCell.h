@@ -24,9 +24,11 @@
 
 - (void)bindWithPreviewMedia:(nonnull UIPreviewMedia *)previewMedia;
 
-- (void)playVideoWithAudioSession:(nonnull AudioSessionManager *)audioSession;
+- (void)playVideoWithAudioSession:(nonnull AudioSessionManager *)audioSession isMuted:(BOOL)isMuted;
 
 - (void)stopVideo;
+
+- (void)muteVideo;
 
 - (BOOL)isVideoFormatSupported;
 

@@ -306,6 +306,10 @@ static const int ddLogLevel = DDLogLevelWarning;
         Item *selectedItem = [conversationViewController getSelectedItem];
         if ([selectedItem.descriptorId isEqual:self.item.descriptorId]) {
             [self.contentView bringSubviewToFront:self.contentInvitationView];
+            
+            if ([[[conversationViewController getCustomAppearance] getPeerMessageBackgroundColor] isEqual:[UIColor whiteColor]]) {
+                [self.contentInvitationView setBackgroundColor:Design.GREY_ITEM];
+            }
         }
     } else {
         self.overlayView.hidden = YES;

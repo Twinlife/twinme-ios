@@ -85,7 +85,6 @@ static CGFloat DESIGN_THUMBNAIL_SIZE = 120;
         _endFilePicking = NO;
         _pickMediaError = NO;
         _countFilePicking = 0;
-        _startWithMedia = NO;
         _currentItemIndex = 0;
     }
     return self;
@@ -105,6 +104,17 @@ static CGFloat DESIGN_THUMBNAIL_SIZE = 120;
     if (self.startWithMedia) {
         self.currentItemIndex = [self getCurrentIndex];
     }
+}
+
+- (long long)totalFilesSize {
+    DDLogVerbose(@"%@ totalFilesSize", LOG_TAG);
+    
+    long long totalSize = 0;
+    for (UIPreviewInfo *previewInfo in self.files) {
+        totalSize += previewInfo.fileSize;
+    }
+    
+    return totalSize;
 }
 
 - (void)close {
@@ -133,7 +143,7 @@ static CGFloat DESIGN_THUMBNAIL_SIZE = 120;
         if (previewInfo.previewType == PreviewTypeImage || previewInfo.previewType == PreviewTypeVideo) {
             UIPreviewMedia *previewMedia = (UIPreviewMedia *)previewInfo;
             if (previewMedia.previewType == PreviewTypeVideo) {
-                if (self.twinmeApplication.sendVideoSize == SendVideoSizeOriginal) {
+                if (self.isQualityMediaOriginal) {
                     [self.previewViewDelegate sendVideo:previewMedia.path allowCopyFile:allowCopyFile expireTimeout:timeout];
                     self.countFilePicking--;
                     [self isAllMediaSent:allowCopyText timeout:timeout];
@@ -162,7 +172,7 @@ static CGFloat DESIGN_THUMBNAIL_SIZE = 120;
                     }];
                 }
             } else {
-                if (self.twinmeApplication.sendImageSize == SendImageSizeOriginal) {
+                if (self.isQualityMediaOriginal) {
                     [self.previewViewDelegate sendImage:previewMedia.path allowCopyFile:allowCopyFile expireTimeout:timeout];
                     self.countFilePicking--;
                     [self isAllMediaSent:allowCopyText timeout:timeout];
@@ -715,13 +725,7 @@ static CGFloat DESIGN_THUMBNAIL_SIZE = 120;
     NSString *fileName = [NSString stringWithFormat:@"%@_%@", [[NSProcessInfo processInfo] globallyUniqueString], @".jpg"];
     NSURL *url = [NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingPathComponent:fileName]];
     
-    float maxSize = 0;
-    
-    if (self.twinmeApplication.sendImageSize == SendImageSizeMedium) {
-        maxSize = STANDARD_RESOLUTION;
-    } else {
-        maxSize = MINIMAL_RESOLUTION;
-    }
+    float maxSize = STANDARD_RESOLUTION;
     
     float scale = 1;
     if (previewMedia.size.width > previewMedia.size.height) {
@@ -845,12 +849,12 @@ static CGFloat DESIGN_THUMBNAIL_SIZE = 120;
                 
                 NSError *error = nil;
                 NSNumber *size;
-                int64_t fileSize = 0;
+                long long fileSize = 0;
                 if([url getPromisedItemResourceValue:&size forKey:NSURLFileSizeKey error:&error]) {
-                    fileSize = size.doubleValue;
+                    fileSize = size.longLongValue;
                 }
                 
-                UIPreviewFile *previewFile = [[UIPreviewFile alloc]initWithUrl:url title:fileName extension:fileExtension icon:fileIcon size:fileSize];
+                UIPreviewFile *previewFile = [[UIPreviewFile alloc]initWithUrl:url title:fileName extension:fileExtension icon:fileIcon fileSize:fileSize];
                 [self.files addObject:previewFile];
                 
                 if (fromPicker) {

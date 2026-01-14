@@ -73,6 +73,11 @@ static NSString *FULL_SCREEN_VIDEO_CELL_IDENTIFIER = @"FullScreenVideoCellIdenti
 @property (weak, nonatomic) IBOutlet UIView *saveItemView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *saveItemImageViewHeightConstraint;
 @property (weak, nonatomic) IBOutlet UIView *saveItemImageView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *muteViewWidthConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *muteViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet UIView *muteView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *muteImageViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet UIImageView *muteImageView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *deleteItemViewWidthConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *deleteItemViewHeightConstraint;
 @property (weak, nonatomic) IBOutlet UIView *deleteItemView;
@@ -94,6 +99,7 @@ static NSString *FULL_SCREEN_VIDEO_CELL_IDENTIFIER = @"FullScreenVideoCellIdenti
 @property (nonatomic) AudioSessionManager *audioSessionManager;
 @property (nonatomic) FullScreenVideoCell *videoItem;
 @property (nonatomic) id<TLOriginator> originator;
+@property (nonatomic) BOOL isMuted;
 
 @end
 
@@ -116,6 +122,7 @@ static NSString *FULL_SCREEN_VIDEO_CELL_IDENTIFIER = @"FullScreenVideoCellIdenti
         _hideAction = NO;
         _initScroll = NO;
         _startVideo = NO;
+        _isMuted = YES;
         _currentItemIndex = -1;
         _conversationFileService = [[ConversationFilesService alloc] initWithTwinmeContext:self.twinmeContext delegate:self];
         _audioSessionManager = [[AudioSessionManager alloc] init];
@@ -370,10 +377,13 @@ static NSString *FULL_SCREEN_VIDEO_CELL_IDENTIFIER = @"FullScreenVideoCellIdenti
             FullScreenVideoCell *fullScreenVideoCell = (FullScreenVideoCell *)cell;
             if ([fullScreenVideoCell isKindOfClass:[FullScreenVideoCell class]]) {
                 self.startVideo = NO;
-                [fullScreenVideoCell playVideoWithAudioSession:self.audioSessionManager];
+                [fullScreenVideoCell playVideoWithAudioSession:self.audioSessionManager isMuted:self.isMuted];
                 self.videoItem = fullScreenVideoCell;
                 self.mediaCollectionView.isVideoControlVisible = self.videoItem.isPlayerControlVisible;
             }
+            self.muteView.hidden = NO;
+        } else {
+            self.muteView.hidden = YES;
         }
     }
 }
@@ -537,6 +547,19 @@ static NSString *FULL_SCREEN_VIDEO_CELL_IDENTIFIER = @"FullScreenVideoCellIdenti
     self.saveItemImageViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     self.saveItemImageView.tintColor = [UIColor whiteColor];
     
+    self.muteViewWidthConstraint.constant *= Design.WIDTH_RATIO;
+    self.muteViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    
+    self.muteView.userInteractionEnabled = YES;
+    self.muteView.isAccessibilityElement = YES;
+    
+    UITapGestureRecognizer *tapMuteGesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(handleMuteViewTapGesture:)];
+    [self.muteView addGestureRecognizer:tapMuteGesture];
+    
+    self.muteImageViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    self.muteImageView.image = [UIImage imageNamed:@"LoudSpeakerActionCallOff"];
+    self.muteImageView.tintColor = [UIColor whiteColor];
+    
     self.deleteItemViewWidthConstraint.constant *= Design.WIDTH_RATIO;
     self.deleteItemViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     
@@ -597,11 +620,29 @@ static NSString *FULL_SCREEN_VIDEO_CELL_IDENTIFIER = @"FullScreenVideoCellIdenti
     }
 }
 
+- (void)handleMuteViewTapGesture:(UITapGestureRecognizer *)sender {
+    DDLogVerbose(@"%@ handleMuteViewTapGesture: %@", LOG_TAG, sender);
+    
+    if (sender.state == UIGestureRecognizerStateEnded) {
+        self.isMuted = !self.isMuted;
+        self.muteImageView.image = self.isMuted ? [UIImage imageNamed:@"LoudSpeakerActionCallOff"] : [UIImage imageNamed:@"LoudSpeakerActionCallOn"];
+
+        if (self.currentItem && self.currentItemIndex != -1) {
+            if (self.currentItem.type == ItemTypeVideo || self.currentItem.type == ItemTypePeerVideo) {
+                FullScreenVideoCell *fullScreenVideoCell = (FullScreenVideoCell *)[self.mediaCollectionView cellForItemAtIndexPath:[NSIndexPath indexPathForRow:self.currentItemIndex inSection:0]];
+                if ([fullScreenVideoCell isKindOfClass:[FullScreenVideoCell class]]) {
+                    [fullScreenVideoCell muteVideo];
+                }
+            }
+        }
+    }
+}
+
 - (void)handleShareViewTapGesture:(UITapGestureRecognizer *)sender {
     DDLogVerbose(@"%@ handleShareTapGesture: %@", LOG_TAG, sender);
     
     if (sender.state == UIGestureRecognizerStateEnded) {
-        [self getVisibleItem];
+        [self updateCurrentItem];
         
         if (!self.currentItem) {
             return;
@@ -677,7 +718,7 @@ static NSString *FULL_SCREEN_VIDEO_CELL_IDENTIFIER = @"FullScreenVideoCellIdenti
     DDLogVerbose(@"%@ handleSaveViewTapGesture: %@", LOG_TAG, sender);
     
     if (sender.state == UIGestureRecognizerStateEnded) {
-        [self getVisibleItem];
+        [self updateCurrentItem];
         
         if (!self.currentItem) {
             return;
@@ -850,14 +891,16 @@ static NSString *FULL_SCREEN_VIDEO_CELL_IDENTIFIER = @"FullScreenVideoCellIdenti
             self.mediaCollectionView.isCurrentItemVideo = YES;
             FullScreenVideoCell *fullScreenVideoCell = (FullScreenVideoCell *)[self.mediaCollectionView cellForItemAtIndexPath:[NSIndexPath indexPathForRow:self.currentItemIndex inSection:0]];
             if ([fullScreenVideoCell isKindOfClass:[FullScreenVideoCell class]]) {
-                [fullScreenVideoCell playVideoWithAudioSession:self.audioSessionManager];
+                [fullScreenVideoCell playVideoWithAudioSession:self.audioSessionManager isMuted:self.isMuted];
                 self.videoItem = fullScreenVideoCell;
                 self.mediaCollectionView.isVideoControlVisible = self.videoItem.isPlayerControlVisible;
             } else {
                 self.startVideo = YES;
             }
+            self.muteView.hidden = NO;
         } else {
             self.mediaCollectionView.isCurrentItemVideo = NO;
+            self.muteView.hidden = YES;
         }
     }
 }
@@ -865,7 +908,7 @@ static NSString *FULL_SCREEN_VIDEO_CELL_IDENTIFIER = @"FullScreenVideoCellIdenti
 - (void)openDeleteConfirmView:(UIImage *)avatar {
     DDLogVerbose(@"%@ openDeleteConfirmView", LOG_TAG);
     
-    [self getVisibleItem];
+    [self updateCurrentItem];
     
     if (!self.currentItem) {
         return;
@@ -898,6 +941,7 @@ static NSString *FULL_SCREEN_VIDEO_CELL_IDENTIFIER = @"FullScreenVideoCellIdenti
 
     DeleteConfirmView *deleteConfirmView = [[DeleteConfirmView alloc] init];
     deleteConfirmView.bottomSheetViewDelegate = self;
+    deleteConfirmView.forceDarkMode = YES;
     deleteConfirmView.deleteConfirmType = DeleteConfirmTypeFile;
     [deleteConfirmView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:message avatar:avatar icon:[UIImage imageNamed:@"ActionBarDelete"]];
    

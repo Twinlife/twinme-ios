@@ -159,7 +159,7 @@ static const CGFloat DESIGN_ICON_RESUME_CALL_HEIGHT = 40;
     [self.speakerOnImageView setTintColor:[UIColor blackColor]];
  }
 
-- (void)updateMenu:(BOOL)isInCall isAudioMuted:(BOOL)isAudioMuted isSpeakerOn:(BOOL)isSpeakerOn isCameraMuted:(BOOL)isCameraMuted isLocalVideoTrack:(BOOL)isLocalVideoTrack isVideoAllowed:(BOOL)isVideoAllowed isConversationAllowed:(BOOL)isConversationAllowed isStreamingAudioSupported:(BOOL)isStreamingAudioSupported isShareInvitationAllowed:(BOOL)isShareInvitationAllowed isShareLocationAllowed:(BOOL)isShareLocationAllowed isInPause:(BOOL)isInPause isLocationShared:(BOOL)isLocationShared hideCertify:(BOOL)hideCertify isCertifyRunning:(BOOL)isCertifyRunning audioDevice:(AudioDevice *)audioDevice isHeadSetAvailable:(BOOL)isHeadSetAvailable isCameraControlAllowed:(BOOL)isCameraControlAllowed isRemoteCameraControl:(BOOL)isRemoteCameraControl {
+- (void)updateMenu:(BOOL)isInCall isAudioMuted:(BOOL)isAudioMuted isSpeakerOn:(BOOL)isSpeakerOn isCameraMuted:(BOOL)isCameraMuted isLocalVideoTrack:(BOOL)isLocalVideoTrack isVideoAllowed:(BOOL)isVideoAllowed isConversationAllowed:(BOOL)isConversationAllowed isStreamingAudioSupported:(BOOL)isStreamingAudioSupported isShareInvitationAllowed:(BOOL)isShareInvitationAllowed isShareLocationAllowed:(BOOL)isShareLocationAllowed isInPause:(BOOL)isInPause isLocationShared:(BOOL)isLocationShared hideCertify:(BOOL)hideCertify isCertifyRunning:(BOOL)isCertifyRunning audioDevice:(AudioDevice *)audioDevice isHeadSetAvailable:(BOOL)isHeadSetAvailable isCameraControlAllowed:(BOOL)isCameraControlAllowed isRemoteCameraControl:(BOOL)isRemoteCameraControl isWaitingForCameraControlAnswer:(BOOL)isWaitingForCameraControlAnswer {
     DDLogVerbose(@"%@ updateMenu", LOG_TAG);
     
     if (isInCall) {
@@ -292,6 +292,11 @@ static const CGFloat DESIGN_ICON_RESUME_CALL_HEIGHT = 40;
     if (isCameraControlAllowed) {
         self.cameraControlView.hidden = NO;
         self.cameraControlImageView.tintColor = isRemoteCameraControl ? Design.DELETE_COLOR_RED : [UIColor blackColor];
+        
+        if (isWaitingForCameraControlAnswer) {
+            self.cameraControlView.alpha = 0.5;
+            self.cameraControlButton.enabled = NO;
+        }
     } else {
         self.cameraControlView.hidden = YES;
     }

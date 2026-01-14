@@ -528,6 +528,10 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
             [self.contentView bringSubviewToFront:self.replyToImageContentView];
             [self.contentView bringSubviewToFront:self.contentFileView];
             [self.contentView bringSubviewToFront:self.annotationCollectionView];
+            
+            if ([[[conversationViewController getCustomAppearance] getPeerMessageBackgroundColor] isEqual:[UIColor whiteColor]]) {
+                [self.contentFileView setBackgroundColor:Design.GREY_ITEM];
+            }
         }
     } else {
         self.overlayView.hidden = YES;

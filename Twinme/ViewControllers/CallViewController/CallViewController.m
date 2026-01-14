@@ -653,7 +653,11 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
 
 - (IBAction)cameraControl:(id)sender {
     DDLogVerbose(@"%@ cameraControl: %@", LOG_TAG, sender);
-            
+           
+    if (self.participant.isWaitingForCameraControlAnswer) {
+        return;
+    }
+    
     if ([self isRemoteCameraControl]) {
         DefaultConfirmView *defaultConfirmView = [[DefaultConfirmView alloc] init];
         defaultConfirmView.bottomSheetViewDelegate = self;
@@ -1740,6 +1744,7 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
     } else if ([abstractConfirmView isKindOfClass:[DefaultConfirmView class]]) {
         if (abstractConfirmView.tag == CONTROL_CAMERA_ASK_TAG) {
             [self.participant remoteAskControl];
+            [self updateMenu];
         } else if (abstractConfirmView.tag == CONTROL_CAMERA_STOP_TAG) {
             [self.participant remoteStopControl];
             [self updateView:[self.callService callStatus]];
@@ -2087,6 +2092,7 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
     
     [self hapticFeedBack:UIImpactFeedbackStyleMedium];
     [self.callService addWordCheckResultWithWordIndex:self.wordCheckChallenge.index result:NO];
+    [self.callService stopKeyCheck];
 }
 
 - (void)certifyViewConfirmWord {
@@ -2663,6 +2669,7 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
         case CallParticipantEventWordCheckResultKO:
             [self.callService getKeyCheckPeerError];
             [self.callCertifyView certifyRelationFailed];
+            [self.callService stopKeyCheck];
             break;
             
         case CallParticipantEventTerminateKeyCheck: {
@@ -2950,6 +2957,7 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
     } else if (event == CallParticipantEventCameraControlGranted) {
         self.remoteZoom = 1;
         [callParticipant remoteCameraWithMute:NO];
+        callParticipant.isWaitingForCameraControlAnswer = NO;
     } else if (event == CallParticipantEventCameraControlDenied) {
         AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
         alertMessageView.alertMessageViewDelegate = self;
@@ -2958,6 +2966,7 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
         [alertMessageView initWithTitle:TwinmeLocalizedString(@"call_view_controller_camera_control", nil) message:message];
         [self.view addSubview:alertMessageView];
         [alertMessageView showAlertView];
+        callParticipant.isWaitingForCameraControlAnswer = NO;
     } else if (event == CallParticipantEventCameraControlDone) {
         
     }
@@ -2974,6 +2983,8 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
     BOOL isCameraControlAllowed = isVideoAllowed && [self isZoomableSupported] && self.originator.capabilities.zoomable != TLVideoZoomableNever && self.callParticipantViews.count == 2;
     BOOL isRemoteCameraControl = [self isRemoteCameraControl];
     
+    BOOL isWaitingForCameraControlAnswer = self.participant && self.participant.isWaitingForCameraControlAnswer;
+    
     BOOL isInCall = CALL_IS_ACTIVE(callStatus) && !CALL_IS_ON_HOLD(callStatus);
     BOOL isInPause = CALL_IS_PAUSED(callStatus);
     
@@ -2986,7 +2997,7 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
         }
     }
 
-    [self.menuView updateMenu:isInCall isAudioMuted:[self.callService isAudioMuted] isSpeakerOn:[self.callService isSpeakerOn] isCameraMuted:[self.callService isCameraMuted] isLocalVideoTrack:isLocalVideoTrack isVideoAllowed:isVideoAllowed isConversationAllowed:[self isMessageSupported] isStreamingAudioSupported:[self isStreamingSupported] isShareInvitationAllowed:self.isCallReceiver isShareLocationAllowed:[self isLocationSupported] isInPause:isInPause isLocationShared:[self.callService isLocationStartShared] hideCertify:hideCertify isCertifyRunning:[self.callService isKeyCheckRunning] audioDevice:self.callService.getCurrentAudioDevice isHeadSetAvailable:self.callService.isHeadsetAvailable isCameraControlAllowed:isCameraControlAllowed isRemoteCameraControl:isRemoteCameraControl];
+    [self.menuView updateMenu:isInCall isAudioMuted:[self.callService isAudioMuted] isSpeakerOn:[self.callService isSpeakerOn] isCameraMuted:[self.callService isCameraMuted] isLocalVideoTrack:isLocalVideoTrack isVideoAllowed:isVideoAllowed isConversationAllowed:[self isMessageSupported] isStreamingAudioSupported:[self isStreamingSupported] isShareInvitationAllowed:self.isCallReceiver isShareLocationAllowed:[self isLocationSupported] isInPause:isInPause isLocationShared:[self.callService isLocationStartShared] hideCertify:hideCertify isCertifyRunning:[self.callService isKeyCheckRunning] audioDevice:self.callService.getCurrentAudioDevice isHeadSetAvailable:self.callService.isHeadsetAvailable isCameraControlAllowed:isCameraControlAllowed isRemoteCameraControl:isRemoteCameraControl isWaitingForCameraControlAnswer:isWaitingForCameraControlAnswer];
 }
 
 - (BOOL)isMessageSupported {

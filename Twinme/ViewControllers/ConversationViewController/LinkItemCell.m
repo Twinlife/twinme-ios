@@ -391,13 +391,7 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
     }
     
     self.contentLabel.font = self.messageFont;
-    
-    NSMutableDictionary *mutableLinkAttributes = [NSMutableDictionary dictionary];
-    [mutableLinkAttributes setObject:[NSNumber numberWithBool:YES] forKey:(NSString *)kCTUnderlineStyleAttributeName];
-    [mutableLinkAttributes setObject:(__bridge id)[[UIColor blackColor] CGColor] forKey:(NSString *)kCTForegroundColorAttributeName];
-    [mutableLinkAttributes setObject:[UIFont systemFontOfSize:self.messageFont.pointSize weight:UIFontWeightSemibold] forKey:NSFontAttributeName];
-    self.contentLabel.linkAttributes = [NSDictionary dictionaryWithDictionary:mutableLinkAttributes];
-    
+        
     @try {
         NSAttributedString *attributedString = [NSString formatText:linkItem.content fontSize:self.messageFont.pointSize fontColor:[self.customAppearance getMessageTextColor] fontSearch:nil];
         self.contentLabel.text = attributedString;

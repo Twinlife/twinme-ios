@@ -167,7 +167,6 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
     NSMutableDictionary *mutableLinkAttributes = [NSMutableDictionary dictionary];
     [mutableLinkAttributes setObject:[NSNumber numberWithBool:YES] forKey:(NSString *)kCTUnderlineStyleAttributeName];
     [mutableLinkAttributes setObject:(__bridge id)[Design.FONT_COLOR_DEFAULT CGColor] forKey:(NSString *)kCTForegroundColorAttributeName];
-    [mutableLinkAttributes setObject:[UIFont systemFontOfSize:self.messageFont.pointSize weight:UIFontWeightSemibold] forKey:NSFontAttributeName];
     self.contentLabel.linkAttributes = [NSDictionary dictionaryWithDictionary:mutableLinkAttributes];
     
     UILongPressGestureRecognizer *longPressGesture  = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(onLongPressInsideContent:)];
@@ -331,13 +330,7 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
         CGFloat heightPadding = Design.TEXT_HEIGHT_PADDING;
         CGFloat widthPadding = Design.TEXT_WIDTH_PADDING;
         [self.contentLabel setPaddingWithTop:heightPadding left:widthPadding bottom:heightPadding right:widthPadding];
-        
-        NSMutableDictionary *mutableLinkAttributes = [NSMutableDictionary dictionary];
-        [mutableLinkAttributes setObject:[NSNumber numberWithBool:YES] forKey:(NSString *)kCTUnderlineStyleAttributeName];
-        [mutableLinkAttributes setObject:(__bridge id)[Design.FONT_COLOR_DEFAULT CGColor] forKey:(NSString *)kCTForegroundColorAttributeName];
-        [mutableLinkAttributes setObject:[UIFont systemFontOfSize:self.messageFont.pointSize weight:UIFontWeightSemibold] forKey:NSFontAttributeName];
-        self.contentLabel.linkAttributes = [NSDictionary dictionaryWithDictionary:mutableLinkAttributes];
-        
+                
         @try {
             NSAttributedString *attributedString = [NSString formatText:peerMessageItem.content fontSize:self.messageFont.pointSize fontColor:Design.FONT_COLOR_DEFAULT fontSearch:nil];
             self.contentLabel.text = attributedString;
@@ -543,6 +536,10 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
             [self.contentView bringSubviewToFront:self.contentLabel];
             [self.contentView bringSubviewToFront:self.ephemeralView];
             [self.contentView bringSubviewToFront:self.annotationCollectionView];
+            
+            if ([[[conversationViewController getCustomAppearance] getPeerMessageBackgroundColor] isEqual:[UIColor whiteColor]]) {
+                [self.contentLabel setDecorColor:Design.GREY_ITEM];
+            }
         }
     } else {
         self.overlayView.hidden = YES;
@@ -766,6 +763,7 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
     DDLogVerbose(@"%@ updateColor", LOG_TAG);
     
     self.overlayView.backgroundColor = Design.BACKGROUND_COLOR_WHITE_OPACITY85;
+    [self.contentLabel setNeedsDisplay];
 }
 
 - (int)countEmoji:(NSString *)content {

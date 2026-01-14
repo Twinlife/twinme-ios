@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2025 twinlife SA.
+ *  Copyright (c) 2025-2026 twinlife SA.
  *  SPDX-License-Identifier: AGPL-3.0-only
  *
  *  Contributors:
@@ -14,7 +14,7 @@
 
 @interface UIPreviewFile : UIPreviewInfo
 
-- (nonnull instancetype)initWithUrl:(nonnull NSURL *)url title:(nonnull NSString *)title extension:(nullable NSString *)extension icon:(nonnull UIImage *)icon size:(int64_t)size;
+- (nonnull instancetype)initWithUrl:(nonnull NSURL *)url title:(nonnull NSString *)title extension:(nullable NSString *)extension icon:(nonnull UIImage *)icon fileSize:(long long)fileSize;
 
 @property (nonatomic, nonnull) NSString *title;
 @property (nonatomic, nullable) NSString *extension;

@@ -271,6 +271,14 @@ static const CGFloat DESIGN_ACTION_PREVIEW_HEIGHT = 380;
     [self.audioSessionManager releaseAudioSession];
 }
 
+- (void)muteVideo {
+    DDLogVerbose(@"%@ muteVideo", LOG_TAG);
+    
+    if (self.videoPlayer) {
+        self.videoPlayer.muted = !self.videoPlayer.muted;
+    }
+}
+
 - (BOOL)isVideoFormatSupported {
     DDLogVerbose(@"%@ isVideoFormatSupported", LOG_TAG);
     
@@ -335,10 +343,11 @@ static const CGFloat DESIGN_ACTION_PREVIEW_HEIGHT = 380;
     }
 }
 
-- (void)playVideoWithAudioSession:(nonnull AudioSessionManager *)audioSession {
+- (void)playVideoWithAudioSession:(nonnull AudioSessionManager *)audioSession isMuted:(BOOL)isMuted {
     DDLogVerbose(@"%@ playVideoWithAudioSession: %@", LOG_TAG, audioSession);
     
     self.audioSessionManager = audioSession;
+    self.videoPlayer.muted = isMuted;
     [audioSession startAudioSessionWithCompletion:^{
         [self.videoPlayer play];
     }];

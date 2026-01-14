@@ -68,7 +68,7 @@ static const CGFloat MIN_HEIGHT = 132;
     
     self.frame = CGRectMake(0, 0, Design.DISPLAY_WIDTH, Design.DISPLAY_HEIGHT);
     self.count = 0;
-    self.menuSelectValueType = MenuSelectValueTypeImageSize;
+    self.menuSelectValueType = MenuSelectValueTypeQualityMedia;
     
     if (self) {
         [self initViews];
@@ -123,14 +123,13 @@ static const CGFloat MIN_HEIGHT = 132;
     self.menuSelectValueType = menuSelectValueType;
     
     switch (self.menuSelectValueType) {
-        case MenuSelectValueTypeImageSize:
         case MenuSelectValueTypeDisplayCallsMode:
         case MenuSelectValueTypeProfileUpdateMode:
         case MenuSelectValueTypeCallZoomable:
             self.count = 3;
             break;
             
-        case MenuSelectValueTypeVideoSize:
+        case MenuSelectValueTypeQualityMedia:
         case MenuSelectValueTypeEditSpace:
             self.count = 2;
             break;
@@ -194,22 +193,14 @@ static const CGFloat MIN_HEIGHT = 132;
     NSString *subtitle = @"";
     BOOL checked = self.selectedValue == indexPath.row;
     BOOL hideSeparator = self.count == indexPath.row + 1;
-    if (self.menuSelectValueType == MenuSelectValueTypeImageSize) {
-        if (indexPath.row == SendImageSizeSmall) {
-            title = TwinmeLocalizedString(@"conversation_view_controller_reduce_menu_minimal", nil);
-            subtitle = TwinmeLocalizedString(@"conversation_view_controller_reduce_menu_minimal_size", nil);
-        } else if (indexPath.row == SendImageSizeMedium) {
-            title = TwinmeLocalizedString(@"conversation_view_controller_reduce_menu_lower", nil);
-            subtitle = TwinmeLocalizedString(@"conversation_view_controller_reduce_menu_lower_size", nil);
+
+    if (self.menuSelectValueType == MenuSelectValueTypeQualityMedia) {
+        if (indexPath.row == QualityMediaStandard) {
+            title = TwinmeLocalizedString(@"conversation_view_controller_media_quality_standard", nil);
+            subtitle = TwinmeLocalizedString(@"conversation_view_controller_media_quality_standard_subtitle", nil);
         } else {
-            title = TwinmeLocalizedString(@"conversation_view_controller_reduce_menu_original", nil);
-            subtitle = TwinmeLocalizedString(@"conversation_view_controller_reduce_menu_original_subtitle", nil);
-        }
-    } else if (self.menuSelectValueType == MenuSelectValueTypeVideoSize) {
-        if (indexPath.row == SendVideoSizeLower) {
-            title = TwinmeLocalizedString(@"conversation_view_controller_reduce_menu_minimal", nil);
-        } else {
-            title = TwinmeLocalizedString(@"conversation_view_controller_reduce_menu_original", nil);
+            title = TwinmeLocalizedString(@"conversation_view_controller_media_quality_original", nil);
+            subtitle = TwinmeLocalizedString(@"conversation_view_controller_media_quality_original_subtitle", nil);
         }
     } else if (self.menuSelectValueType == MenuSelectValueTypeDisplayCallsMode) {
         if (indexPath.row == TLDisplayCallsModeNone) {
@@ -293,7 +284,7 @@ static const CGFloat MIN_HEIGHT = 132;
 
 - (void)setupTitle {
     DDLogVerbose(@"%@ setupTitle", LOG_TAG);
-    
+        
     switch (self.menuSelectValueType) {
         case MenuSelectValueTypeDisplayCallsMode:
             self.titleLabel.text = TwinmeLocalizedString(@"settings_view_controller_display_call_title", nil);
@@ -303,13 +294,10 @@ static const CGFloat MIN_HEIGHT = 132;
             self.titleLabel.text = TwinmeLocalizedString(@"application_edit", nil);
             break;
             
-        case MenuSelectValueTypeImageSize:
-            self.titleLabel.text = TwinmeLocalizedString(@"settings_view_controller_image_title", nil);
+        case MenuSelectValueTypeQualityMedia: {
+            self.titleLabel.text = TwinmeLocalizedString(@"conversation_view_controller_media_quality_title", nil);
             break;
-            
-        case MenuSelectValueTypeVideoSize:
-            self.titleLabel.text = TwinmeLocalizedString(@"show_contact_view_controller_video", nil);
-            break;
+        }
             
         case MenuSelectValueTypeProfileUpdateMode:
             self.titleLabel.text = TwinmeLocalizedString(@"edit_profile_view_controller_propagating_profile", nil);
@@ -347,12 +335,8 @@ static const CGFloat MIN_HEIGHT = 132;
             self.selectedValue = -1;
             break;
             
-        case MenuSelectValueTypeImageSize:
-            self.selectedValue = twinmeApplication.sendImageSize;
-            break;
-            
-        case MenuSelectValueTypeVideoSize:
-            self.selectedValue = twinmeApplication.sendVideoSize;;
+        case MenuSelectValueTypeQualityMedia:
+            self.selectedValue = twinmeApplication.qualityMedia;
             break;
             
         case MenuSelectValueTypeProfileUpdateMode:
@@ -383,6 +367,16 @@ static const CGFloat MIN_HEIGHT = 132;
     
     if ([self.menuSelectValueDelegate respondsToSelector:@selector(cancelMenuSelectValue:)]) {
         [self.menuSelectValueDelegate cancelMenuSelectValue:self];
+    }
+}
+
+- (void)updateColor {
+    DDLogVerbose(@"%@ updateColor", LOG_TAG);
+    
+    [super updateColor];
+    
+    if (self.forceDarkMode) {
+        self.titleLabel.textColor = [UIColor whiteColor];
     }
 }
 

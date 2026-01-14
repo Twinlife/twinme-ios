@@ -14,8 +14,6 @@
 
 @interface PreviewFilesViewController : AbstractPreviewViewController
 
-@property (nonatomic) BOOL startWithMedia;
-
 - (void)initWithPreviewMedia:(NSArray *)previewMedias errorPicking:(BOOL)errorPicking;
 
 - (void)initWithImage:(NSURL *)url size:(CGSize)size;

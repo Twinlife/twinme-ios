@@ -11,8 +11,7 @@
 @class UITimeout;
 
 typedef enum {
-    MenuSelectValueTypeImageSize,
-    MenuSelectValueTypeVideoSize,
+    MenuSelectValueTypeQualityMedia,
     MenuSelectValueTypeDisplayCallsMode,
     MenuSelectValueTypeEditSpace,
     MenuSelectValueTypeProfileUpdateMode,

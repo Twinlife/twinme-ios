@@ -385,13 +385,7 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
     self.avatarViewTopConstraint.constant = topMargin;
     self.contentLabelTopConstraint.constant = topMargin;
     self.contentLabelBottomConstraint.constant = -[conversationViewController getBottomMarginWithMask:peerLinkItem.corners & ITEM_BOTTOM_LEFT item:item];
-    
-    NSMutableDictionary *mutableLinkAttributes = [NSMutableDictionary dictionary];
-    [mutableLinkAttributes setObject:[NSNumber numberWithBool:YES] forKey:(NSString *)kCTUnderlineStyleAttributeName];
-    [mutableLinkAttributes setObject:(__bridge id)[Design.FONT_COLOR_DEFAULT CGColor] forKey:(NSString *)kCTForegroundColorAttributeName];
-    [mutableLinkAttributes setObject:[UIFont systemFontOfSize:self.messageFont.pointSize weight:UIFontWeightSemibold] forKey:NSFontAttributeName];
-    self.contentLabel.linkAttributes = [NSDictionary dictionaryWithDictionary:mutableLinkAttributes];
-        
+            
     if (item.likeDescriptorAnnotations.count > 0 || item.forwarded) {
         self.annotationCollectionView.hidden = NO;
         self.annotationCollectionViewWidthConstraint.constant = [self annotationCollectionWidth];
@@ -628,6 +622,10 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
             [self.contentView bringSubviewToFront:self.ephemeralView];
             [self.contentView bringSubviewToFront:self.linkView];
             [self.contentView bringSubviewToFront:self.annotationCollectionView];
+            
+            if ([[[conversationViewController getCustomAppearance] getPeerMessageBackgroundColor] isEqual:[UIColor whiteColor]]) {
+                [self.contentLabel setDecorColor:Design.GREY_ITEM];
+            }
         }
     } else {
         self.overlayView.hidden = YES;
@@ -857,6 +855,7 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
     DDLogVerbose(@"%@ updateColor", LOG_TAG);
     
     self.overlayView.backgroundColor = Design.BACKGROUND_COLOR_WHITE_OPACITY85;
+    [self.contentLabel setNeedsDisplay];
 }
 
 @end

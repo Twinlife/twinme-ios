@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2014-2025 twinlife SA.
+ *  Copyright (c) 2014-2026 twinlife SA.
  *  SPDX-License-Identifier: AGPL-3.0-only
  *
  *  Contributors:
@@ -12,6 +12,7 @@
  */
 
 #import <PushKit/PushKit.h>
+#import <Intents/Intents.h>
 
 #import <CocoaLumberjack.h>
 #import <DDASLLogger.h>
@@ -28,6 +29,7 @@
 
 #import <Twinme/TLTwinmeContext.h>
 #import <Twinme/TLPushNotificationContent.h>
+#import <Twinme/TLOriginator.h>
 #import <UserNotifications/UserNotifications.h>
 #import <Utils/NSString+Utils.h>
 
@@ -43,6 +45,7 @@
 #import <TwinmeCommon/NotificationCenter.h>
 #import <TwinmeCommon/CallService.h>
 #import <TwinmeCommon/AccountMigrationService.h>
+#import <TwinmeCommon/CallViewController.h>
 #import "ApplicationAssertion.h"
 
 #if 0
@@ -61,6 +64,8 @@ static const int ddLogLevel = DDLogLevelWarning;
 @property (nonatomic) BOOL inBackground;
 @property (nonatomic) PKPushRegistry *voipRegistry;
 @property (nonatomic) BOOL allowNotificationsStatus;
+@property (nonatomic) BOOL pushKitReady;
+@property (nonatomic) int pushKitInitCount;
 
 @end
 
@@ -96,6 +101,8 @@ static const int ddLogLevel = DDLogLevelWarning;
         TLSpaceSettings *settings = [_twinmeApplication defaultSpaceSettings];
         [_twinmeContext setDefaultSpaceSettings:settings oldDefaultName:TwinmeLocalizedString(@"application_default", nil)];
         _inBackground = YES;
+        _pushKitReady = NO;
+        _pushKitInitCount = 0;
 
         // Start very early the twinlife library (executes asynchronously).
         [_twinmeContext start];
@@ -113,23 +120,25 @@ static const int ddLogLevel = DDLogLevelWarning;
     RTCSetMinDebugLogLevel(RTCLoggingSeverityWarning);
 #endif
 
-    if (@available(iOS 13.0, *)) {
-        // Use the Apple remote notification for messages, must match NotificationService extension deployment.
-        // This forces us to use CallKit after a PushKit message is received.
-        [application registerForRemoteNotifications];
-    }
-    [self checkAllowNotifications];
-    
-    // Register for VoIP notifications
-    self.voipRegistry = [[PKPushRegistry alloc] initWithQueue:dispatch_get_main_queue()];
-    self.voipRegistry.delegate = self;
-    self.voipRegistry.desiredPushTypes = [NSSet setWithObject:PKPushTypeVoIP];
     return YES;
 }
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     DDLogVerbose(@"%@ application: %@ didFinishLaunchingWithOptions: %@", LOG_TAG, application, launchOptions);
-    
+
+    [self checkAllowNotifications];
+
+    if (@available(iOS 13.0, *)) {
+        // Use the Apple remote notification for messages, must match NotificationService extension deployment.
+        // This forces us to use CallKit after a PushKit message is received.
+        [application registerForRemoteNotifications];
+    }
+
+    // Register for VoIP notifications
+    self.voipRegistry = [[PKPushRegistry alloc] initWithQueue:dispatch_get_main_queue()];
+    self.voipRegistry.delegate = self;
+    self.voipRegistry.desiredPushTypes = [NSSet setWithObject:PKPushTypeVoIP];
+
     [self.window makeKeyAndVisible];
     
     // Preloads keyboard so there's no lag on initial keyboard appearance
@@ -174,7 +183,15 @@ static const int ddLogLevel = DDLogLevelWarning;
     [self.twinmeContext applicationDidBecomeActive:self];
     [self.callService applicationWillEnterForeground:application];
     self.inBackground = NO;
-    
+
+    // If we have not received the pushkit token, force another registration by clearing the desiredPushTypes
+    // and setting them again.
+    if (!self.pushKitReady && self.pushKitInitCount < 5) {
+        self.pushKitInitCount++;
+        self.voipRegistry.desiredPushTypes = [[NSSet alloc] init];
+        self.voipRegistry.desiredPushTypes = [NSSet setWithObject:PKPushTypeVoIP];
+    }
+
     // When we enter the foreground, make visible again the previous view so that viewWillAppear is triggered.
     [self.window.rootViewController beginAppearanceTransition:YES animated:NO];
     [self.window.rootViewController endAppearanceTransition];
@@ -214,7 +231,27 @@ static const int ddLogLevel = DDLogLevelWarning;
         NSURL *url = userActivity.webpageURL;
         return [self.twinmeContext openURL:url options:nil];
     }
-    
+
+    if (@available(iOS 13.0, *)) {
+        BOOL startAudioCall = [userActivity.activityType isEqualToString:INStartAudioCallIntentIdentifier];
+        BOOL startVideoCall = [userActivity.activityType isEqualToString:INStartVideoCallIntentIdentifier];
+        if (startAudioCall || startVideoCall) {
+            INStartCallIntent *intent = (INStartCallIntent *)userActivity.interaction.intent;
+            INPerson *contact = intent.contacts.firstObject;
+            
+            if ([self.mainViewController isInitialized] && ![self.twinmeApplication showLockScreen]) {
+                id<TLOriginator> subject = [self.twinmeContext findSubjectWithHandle:contact.personHandle.value];
+                if (subject) {
+                    CallViewController *callViewController = (CallViewController *)[[UIStoryboard storyboardWithName:@"Call" bundle:nil] instantiateViewControllerWithIdentifier:@"CallViewController"];
+                    [callViewController startCallWithOriginator:subject videoBell:NO isVideoCall:startVideoCall isCertifyCall:NO];
+                    [self.mainViewController.selectedViewController pushViewController:callViewController animated:YES];
+                }
+            } else {
+                self.mainViewController.inPersonToCall = contact;
+                self.mainViewController.startVideoCall = startVideoCall;
+            }
+        }
+    }
     return YES;
 }
 
@@ -231,6 +268,14 @@ static const int ddLogLevel = DDLogLevelWarning;
     BOOL result = [self.twinmeContext openURL:url options:options];
     if (result) {
         return result;
+    }
+
+    // Special action triggered by:
+    // - the ShareExtension to redirect and display the conversation,
+    // - the iOS Social profile link to display the contact or group.
+    if ([url.scheme isEqualToString:[TLTwinmeContext APPLICATION_SCHEME]]) {
+        [self.mainViewController onOpenURL:url];
+        return YES;
     }
 
     if ([url.scheme isEqualToString:@"file"]) {
@@ -252,12 +297,6 @@ static const int ddLogLevel = DDLogLevelWarning;
         }
 
         // This URL is recognized and we handle it.
-        return YES;
-    }
-
-    // Special action triggered by the ShareExtension to redirect and display the conversation.
-    if ([CONVERSATION_ACTION isEqualToString:url.host]) {
-        [self.mainViewController onOpenURL:url];
         return YES;
     }
 
@@ -321,6 +360,8 @@ static const int ddLogLevel = DDLogLevelWarning;
     return UIInterfaceOrientationMaskPortrait;
 }
 
+#pragma mark - PushNotifications
+
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
     DDLogVerbose(@"%@ application: %@ didRegisterForRemoteNotificationsWithDeviceToken: %@", LOG_TAG, application, deviceToken);
     
@@ -348,7 +389,7 @@ static const int ddLogLevel = DDLogLevelWarning;
     // See https://developer.apple.com/library/archive/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/HandlingRemoteNotifications.html
     [self.twinmeContext setPushNotificationWithVariant:TL_MANAGEMENT_SERVICE_PUSH_NOTIFICATION_REMOTE_VARIANT token:TL_MANAGEMENT_SERVICE_PUSH_NOTIFICATION_APNS_ERROR];
     
-    [self.twinmeContext assertionWithAssertPoint:[ApplicationAssertPoint REGISTER_FOR_REMOTE_FAILED], [TLAssertValue initWithNSError:error], nil];
+    TL_ASSERTION(self.twinmeContext, [ApplicationAssertPoint REGISTER_FOR_REMOTE_FAILED], [TLAssertValue initWithNSError:error]);
 }
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandler {
@@ -367,7 +408,12 @@ static const int ddLogLevel = DDLogLevelWarning;
 
 - (void)pushRegistry:(PKPushRegistry *)registry didUpdatePushCredentials:(PKPushCredentials *)credentials forType:(NSString *)type {
     DDLogVerbose(@"%@ pushRegistry: %@ didUpdatePushCredentials: %@ forType: %@", LOG_TAG, registry, credentials, type);
-    
+
+    if (self.pushKitInitCount > 0) {
+        TL_ASSERTION(self.twinmeContext, [ApplicationAssertPoint PUSHKIT_LATE_REGISTER], [TLAssertValue initWithNumber:self.pushKitInitCount]);
+    }
+    self.pushKitReady = YES;
+
     // Callkit is disabled and we cannot use PushKit: invalidate the PushKit token but still set the VoIP variant.
     if (@available(iOS 13.0, *)) {
         if (!self.enableCallkit) {

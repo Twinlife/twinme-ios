@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2022 twinlife SA.
+ *  Copyright (c) 2022-2026 twinlife SA.
  *  SPDX-License-Identifier: AGPL-3.0-only
  *
  *  Contributors:
@@ -91,7 +91,7 @@ static const int ddLogLevel = DDLogLevelWarning;
     
     if (![subtitle isEqualToString:@""]) {
         [valueAttributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:@"\n"]];
-        [valueAttributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:subtitle attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_REGULAR34, NSFontAttributeName, Design.FONT_COLOR_GREY, NSForegroundColorAttributeName, nil]]];
+        [valueAttributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:subtitle attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_REGULAR32, NSFontAttributeName, Design.FONT_COLOR_GREY, NSForegroundColorAttributeName, nil]]];
     }
     
     self.valueLabel.attributedText = valueAttributedString;
@@ -120,10 +120,8 @@ static const int ddLogLevel = DDLogLevelWarning;
     DDLogVerbose(@"%@ updateColor", LOG_TAG);
     
     if (self.forceDarkMode) {
-        self.valueLabel.textColor = [UIColor whiteColor];
         self.separatorView.backgroundColor = [UIColor colorWithRed:199./255. green:199./255. blue:255./255. alpha:0.3];
     } else {
-        self.valueLabel.textColor = Design.FONT_COLOR_DEFAULT;
         self.separatorView.backgroundColor = Design.SEPARATOR_COLOR_GREY;
     }
     
