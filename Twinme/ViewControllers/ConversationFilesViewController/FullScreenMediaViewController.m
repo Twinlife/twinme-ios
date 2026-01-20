@@ -180,7 +180,7 @@ static NSString *FULL_SCREEN_VIDEO_CELL_IDENTIFIER = @"FullScreenVideoCellIdenti
            [self.mediaCollectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UICollectionViewScrollPositionNone animated:NO];
         }
         
-        [self updateCurrentItem];
+        [self updateCurrentItem:NO];
     }
 }
 
@@ -221,30 +221,50 @@ static NSString *FULL_SCREEN_VIDEO_CELL_IDENTIFIER = @"FullScreenVideoCellIdenti
 
 - (void)onMarkDescriptorDeleted:(TLDescriptor *)descriptor {
     DDLogVerbose(@"%@ onMarkDescriptorDeleted: %@", LOG_TAG, descriptor);
-    
+        
+    BOOL needsUpdate = NO;
     TLDescriptorId *descriptorId = descriptor.descriptorId;
+    int indexMedia = 0;
     for (Item *item in self.items) {
         if ([item.descriptorId isEqual:descriptorId]) {
+            needsUpdate = YES;
             [self.items removeObject:item];
+            
+            [self.mediaCollectionView performBatchUpdates:^{
+                NSIndexPath *deletedIndexPath = [NSIndexPath indexPathForItem:indexMedia inSection:0];
+                [self.mediaCollectionView deleteItemsAtIndexPaths:@[deletedIndexPath]];
+            } completion:nil];
+            
             break;
         }
+        indexMedia++;
     }
     
     if (self.items.count == 0) {
         [self finish];
-    } else {
-        [self.mediaCollectionView reloadData];
+    } else if (needsUpdate) {
+        if (self.currentItemIndex >= self.items.count) {
+            self.currentItemIndex = self.items.count - 1;
+        } else if (self.currentItemIndex > 0) {
+            self.currentItemIndex--;
+        }
+        [self.mediaCollectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:self.currentItemIndex inSection:0] atScrollPosition:UICollectionViewScrollPositionNone animated:NO];
+        [self updateCurrentItem:YES];
     }
 }
 
 - (void)onDeleteDescriptors:(NSSet<TLDescriptorId *> *)descriptors {
     DDLogVerbose(@"%@ onDeleteDescriptors: %@", LOG_TAG, descriptors);
         
+    BOOL needsUpdate = NO;
     int countDescriptor = 0;
     for (int i = 0; i < [self.items count]; i++) {
         Item *item = [self.items objectAtIndex:i];
         if ([descriptors containsObject:item.descriptorId]) {
+            needsUpdate = YES;
             [self.items removeObject:item];
+            NSIndexPath *deletedIndexPath = [NSIndexPath indexPathForItem:i inSection:0];
+            [self.mediaCollectionView deleteItemsAtIndexPaths:@[deletedIndexPath]];
             i--;
             countDescriptor++;
             
@@ -256,8 +276,14 @@ static NSString *FULL_SCREEN_VIDEO_CELL_IDENTIFIER = @"FullScreenVideoCellIdenti
     
     if (self.items.count == 0) {
         [self finish];
-    } else {
-        [self.mediaCollectionView reloadData];
+    } else if (needsUpdate) {
+        if (self.currentItemIndex >= self.items.count) {
+            self.currentItemIndex = self.items.count - 1;
+        } else if (self.currentItemIndex > 0) {
+            self.currentItemIndex--;
+        }
+        [self.mediaCollectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:self.currentItemIndex inSection:0] atScrollPosition:UICollectionViewScrollPositionNone animated:NO];
+        [self updateCurrentItem:YES];
     }
 }
 
@@ -342,7 +368,7 @@ static NSString *FULL_SCREEN_VIDEO_CELL_IDENTIFIER = @"FullScreenVideoCellIdenti
 }
 
 - (void)collectionView:(UICollectionView *)collectionView willDisplayCell:(UICollectionViewCell *)cell forItemAtIndexPath:(NSIndexPath *)indexPath {
-            
+                
     if (indexPath.row < [self.items count]) {
         Item *item = [self.items objectAtIndex:indexPath.row];
         
@@ -393,7 +419,7 @@ static NSString *FULL_SCREEN_VIDEO_CELL_IDENTIFIER = @"FullScreenVideoCellIdenti
     DDLogVerbose(@"%@ scrollViewDidEndDecelerating: %@", LOG_TAG, scrollView);
     
     if (scrollView == self.mediaCollectionView) {
-        [self updateCurrentItem];
+        [self updateCurrentItem:NO];
     }
 }
 
@@ -642,7 +668,7 @@ static NSString *FULL_SCREEN_VIDEO_CELL_IDENTIFIER = @"FullScreenVideoCellIdenti
     DDLogVerbose(@"%@ handleShareTapGesture: %@", LOG_TAG, sender);
     
     if (sender.state == UIGestureRecognizerStateEnded) {
-        [self updateCurrentItem];
+        [self updateCurrentItem:NO];
         
         if (!self.currentItem) {
             return;
@@ -718,7 +744,7 @@ static NSString *FULL_SCREEN_VIDEO_CELL_IDENTIFIER = @"FullScreenVideoCellIdenti
     DDLogVerbose(@"%@ handleSaveViewTapGesture: %@", LOG_TAG, sender);
     
     if (sender.state == UIGestureRecognizerStateEnded) {
-        [self updateCurrentItem];
+        [self updateCurrentItem:NO];
         
         if (!self.currentItem) {
             return;
@@ -860,18 +886,17 @@ static NSString *FULL_SCREEN_VIDEO_CELL_IDENTIFIER = @"FullScreenVideoCellIdenti
     
     CGFloat width = self.mediaCollectionView.bounds.size.width;
     CGFloat offset = self.mediaCollectionView.contentOffset.x;
-
+    
     NSInteger index = (NSInteger)lround(offset / width);
     return index;
 }
 
-- (void)updateCurrentItem {
+- (void)updateCurrentItem:(BOOL)forceUpdate {
     DDLogVerbose(@"%@ updateCurrentItem", LOG_TAG);
     
     NSInteger lastIndex = self.currentItemIndex;
     self.currentItemIndex = [self getCurrentIndex];
-    
-    if (lastIndex == self.currentItemIndex) {
+    if (lastIndex == self.currentItemIndex && !forceUpdate) {
         return;
     }
     
@@ -885,7 +910,7 @@ static NSString *FULL_SCREEN_VIDEO_CELL_IDENTIFIER = @"FullScreenVideoCellIdenti
     }
     
     [self getVisibleItem];
-    
+        
     if (self.currentItem) {
         if (self.currentItem.type == ItemTypeVideo || self.currentItem.type == ItemTypePeerVideo) {
             self.mediaCollectionView.isCurrentItemVideo = YES;
@@ -908,7 +933,7 @@ static NSString *FULL_SCREEN_VIDEO_CELL_IDENTIFIER = @"FullScreenVideoCellIdenti
 - (void)openDeleteConfirmView:(UIImage *)avatar {
     DDLogVerbose(@"%@ openDeleteConfirmView", LOG_TAG);
     
-    [self updateCurrentItem];
+    [self updateCurrentItem:NO];
     
     if (!self.currentItem) {
         return;

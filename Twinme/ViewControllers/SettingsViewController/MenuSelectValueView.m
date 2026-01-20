@@ -71,7 +71,7 @@ static const CGFloat MIN_HEIGHT = 132;
     return self;
 }
 
-- (void)setMenuSelectValueTypeWithType:(MenuSelectValueType)menuSelectValueType {
+- (void)setMenuSelectValueTypeWithType:(MenuSelectValueType)menuSelectValueType defaultValue:(int)defaultValue {
     DDLogVerbose(@"%@ setMenuSelectValueTypeWithType", LOG_TAG);
     
     self.menuSelectValueType = menuSelectValueType;
@@ -100,8 +100,7 @@ static const CGFloat MIN_HEIGHT = 132;
     }
     
     [self setupTitle];
-    [self setupSelectedValue];
-        
+    self.selectedValue = defaultValue;
     [self reloadData];
 }
 
@@ -213,30 +212,6 @@ static const CGFloat MIN_HEIGHT = 132;
             
         case MenuSelectValueTypeProfileUpdateMode:
             self.titleLabel.text = TwinmeLocalizedString(@"edit_profile_view_controller_propagating_profile", nil);
-            break;
-            
-        default:
-            break;
-    }
-}
-
-- (void)setupSelectedValue {
-    DDLogVerbose(@"%@ setupSelectedValue", LOG_TAG);
-    
-    ApplicationDelegate *delegate = (ApplicationDelegate *)[[UIApplication sharedApplication] delegate];
-    TwinmeApplication *twinmeApplication = [delegate twinmeApplication];
-    
-    switch (self.menuSelectValueType) {
-        case MenuSelectValueTypeDisplayCallsMode:
-            self.selectedValue = twinmeApplication.displayCallsMode;
-            break;
-            
-        case MenuSelectValueTypeQualityMedia:
-            self.selectedValue = twinmeApplication.qualityMedia;
-            break;
-            
-        case MenuSelectValueTypeProfileUpdateMode:
-            self.selectedValue = twinmeApplication.profileUpdateMode;
             break;
             
         default:

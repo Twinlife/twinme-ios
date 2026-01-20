@@ -427,6 +427,11 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
     }
 }
 
+- (void)startCallFromRecents {
+    DDLogVerbose(@"%@ startCallFromRecents", LOG_TAG);
+    
+}
+
 #pragma mark - SplashScreenDelegate
 
 - (void)animationDidFinish:(BOOL)isMigration {

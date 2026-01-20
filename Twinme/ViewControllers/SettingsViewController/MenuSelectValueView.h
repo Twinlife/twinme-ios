@@ -37,6 +37,6 @@ typedef enum {
 @property (weak, nonatomic) id<MenuSelectValueDelegate> menuSelectValueDelegate;
 @property (nonatomic) MenuSelectValueType menuSelectValueType;
 
-- (void)setMenuSelectValueTypeWithType:(MenuSelectValueType)menuSelectValueType;
+- (void)setMenuSelectValueTypeWithType:(MenuSelectValueType)menuSelectValueType defaultValue:(int)defaultValue;
 
 @end

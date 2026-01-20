@@ -426,10 +426,10 @@ typedef enum {
     
     if (indexPath.section == SECTION_CONTENT) {
         if (indexPath.row == 1) {
-            [self openMenuSelectValue:MenuSelectValueTypeQualityMedia];
+            [self openMenuSelectValue:MenuSelectValueTypeQualityMedia defaultValue:self.twinmeApplication.qualityMedia];
         }
     } else if (indexPath.section == SECTION_CALLS) {
-        [self openMenuSelectValue:MenuSelectValueTypeDisplayCallsMode];
+        [self openMenuSelectValue:MenuSelectValueTypeDisplayCallsMode defaultValue:self.twinmeApplication.displayCallsMode];
     }
 }
 
@@ -502,13 +502,13 @@ typedef enum {
     self.tableView.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
 }
 
-- (void)openMenuSelectValue:(MenuSelectValueType)menuSelectValueType {
+- (void)openMenuSelectValue:(MenuSelectValueType)menuSelectValueType defaultValue:(int)defaultValue {
     DDLogVerbose(@"%@ openMenuSelectValue", LOG_TAG);
     
     MenuSelectValueView *menuSelectValueView = [[MenuSelectValueView alloc]init];
     menuSelectValueView.menuSelectValueDelegate = self;
     [self.tabBarController.view addSubview:menuSelectValueView];
-    [menuSelectValueView setMenuSelectValueTypeWithType:menuSelectValueType];
+    [menuSelectValueView setMenuSelectValueTypeWithType:menuSelectValueType defaultValue:defaultValue];
     [menuSelectValueView openMenu];
 }
 
