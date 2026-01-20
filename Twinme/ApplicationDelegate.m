@@ -45,7 +45,6 @@
 #import <TwinmeCommon/NotificationCenter.h>
 #import <TwinmeCommon/CallService.h>
 #import <TwinmeCommon/AccountMigrationService.h>
-#import <TwinmeCommon/CallViewController.h>
 #import "ApplicationAssertion.h"
 
 #if 0
@@ -238,17 +237,11 @@ static const int ddLogLevel = DDLogLevelWarning;
         if (startAudioCall || startVideoCall) {
             INStartCallIntent *intent = (INStartCallIntent *)userActivity.interaction.intent;
             INPerson *contact = intent.contacts.firstObject;
+            self.mainViewController.inPersonToCall = contact;
+            self.mainViewController.startVideoCall = startVideoCall;
             
             if ([self.mainViewController isInitialized] && ![self.twinmeApplication showLockScreen]) {
-                id<TLOriginator> subject = [self.twinmeContext findSubjectWithHandle:contact.personHandle.value];
-                if (subject) {
-                    CallViewController *callViewController = (CallViewController *)[[UIStoryboard storyboardWithName:@"Call" bundle:nil] instantiateViewControllerWithIdentifier:@"CallViewController"];
-                    [callViewController startCallWithOriginator:subject videoBell:NO isVideoCall:startVideoCall isCertifyCall:NO];
-                    [self.mainViewController.selectedViewController pushViewController:callViewController animated:YES];
-                }
-            } else {
-                self.mainViewController.inPersonToCall = contact;
-                self.mainViewController.startVideoCall = startVideoCall;
+                [self.mainViewController startCallFromRecents];
             }
         }
     }

@@ -48,7 +48,7 @@ typedef enum {
 @property (nonatomic) MenuSelectValueType menuSelectValueType;
 @property (nonatomic, nullable) MenuSendOptionsView *menuSendOptionsView;
 
-- (void)setMenuSelectValueTypeWithType:(MenuSelectValueType)menuSelectValueType;
+- (void)setMenuSelectValueTypeWithType:(MenuSelectValueType)menuSelectValueType defaultValue:(int)defaultValue;
 
 - (void)setSelectedValueWithValue:(int)value;
 

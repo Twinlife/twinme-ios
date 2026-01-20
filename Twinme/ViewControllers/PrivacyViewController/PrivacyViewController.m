@@ -367,7 +367,7 @@ static const CGFloat DESIGN_HIDE_LAST_SCREEN_TOP_MARGIN = 80;
     DDLogVerbose(@"%@ openMenu", LOG_TAG);
     
     MenuSelectValueView *menuTimeoutView = [[MenuSelectValueView alloc] init];
-    [menuTimeoutView setMenuSelectValueTypeWithType:MenuSelectValueTypeTimeoutLockScreen];
+    [menuTimeoutView setMenuSelectValueTypeWithType:MenuSelectValueTypeTimeoutLockScreen defaultValue:-1];
     menuTimeoutView.menuSelectValueDelegate = self;
     [menuTimeoutView setSelectedValueWithValue:[self.twinmeApplication getTimeoutScreenLock]];
     [self.tabBarController.view addSubview:menuTimeoutView];

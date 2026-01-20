@@ -231,16 +231,14 @@ static const int64_t TYPING_RESEND_DELAY = 8;
 static const CGFloat TYPING_TIMER_DURATION = 10.0;
 static const CGFloat TYPING_PEER_TIMER_DURATION = 12.0;
 
-static CGFloat DESIGN_PROFILE_VIEW_WIDTH = 360;
-static CGFloat DESIGN_GROUP_VIEW_WIDTH = 580;
-static CGFloat DESIGN_PROFILE_MARGIN = 10;
+static CGFloat DESIGN_ORIGINATOR_VIEW_WIDTH = 460;
+static CGFloat DESIGN_ORIGINATOR_MARGIN = 10;
 static CGFloat DESIGN_AVATAR_VIEW_HEIGHT = 42;
 static CGFloat DESIGN_EDIT_MESSAGE_VIEW_HEIGHT = 60;
 static CGFloat DESIGN_EDIT_MESSAGE_VIEW_WIDTH = 300;
 
-static CGFloat PROFILE_VIEW_WIDTH;
-static CGFloat GROUP_VIEW_WIDTH;
-static CGFloat PROFILE_MARGIN;
+static CGFloat ORIGINATOR_VIEW_WIDTH;
+static CGFloat ORIGINATOR_MARGIN;
 static CGFloat AVATAR_VIEW_HEIGHT;
 
 //
@@ -411,9 +409,8 @@ typedef enum {
     DESIGN_SHADOW_COLOR = [UIColor colorWithRed:210./255. green:210./255. blue:210./255. alpha:1];
     DESIGN_BORDER_COLOR = [UIColor colorWithRed:78./255. green:78./255. blue:78./255. alpha:1];
     
-    PROFILE_VIEW_WIDTH = DESIGN_PROFILE_VIEW_WIDTH * Design.WIDTH_RATIO;
-    GROUP_VIEW_WIDTH = DESIGN_GROUP_VIEW_WIDTH * Design.WIDTH_RATIO;
-    PROFILE_MARGIN = DESIGN_PROFILE_MARGIN * Design.WIDTH_RATIO;
+    ORIGINATOR_VIEW_WIDTH = DESIGN_ORIGINATOR_VIEW_WIDTH * Design.WIDTH_RATIO;
+    ORIGINATOR_MARGIN = DESIGN_ORIGINATOR_MARGIN * Design.WIDTH_RATIO;
     AVATAR_VIEW_HEIGHT = DESIGN_AVATAR_VIEW_HEIGHT * Design.HEIGHT_RATIO;
 }
 
@@ -1008,12 +1005,8 @@ typedef enum {
     }
     
     if (self.titleLabel) {
-        CGFloat customTitleViewWidth = PROFILE_VIEW_WIDTH;
-        if (self.group) {
-            customTitleViewWidth = GROUP_VIEW_WIDTH;
-        }
-        
-        CGFloat profileViewWidth = AVATAR_VIEW_HEIGHT + PROFILE_MARGIN + self.titleLabel.intrinsicContentSize.width;
+        CGFloat customTitleViewWidth = ORIGINATOR_VIEW_WIDTH;
+        CGFloat profileViewWidth = AVATAR_VIEW_HEIGHT + ORIGINATOR_MARGIN + self.titleLabel.intrinsicContentSize.width;
         if (profileViewWidth > customTitleViewWidth) {
             profileViewWidth = customTitleViewWidth;
         }
@@ -1949,11 +1942,8 @@ typedef enum {
         }
         
         if (self.titleLabel) {
-            CGFloat customTitleViewWidth = PROFILE_VIEW_WIDTH;
-            if (self.group) {
-                customTitleViewWidth = GROUP_VIEW_WIDTH;
-            }
-            CGFloat profileViewWidth = AVATAR_VIEW_HEIGHT + PROFILE_MARGIN + self.titleLabel.intrinsicContentSize.width;
+            CGFloat customTitleViewWidth = ORIGINATOR_VIEW_WIDTH;
+            CGFloat profileViewWidth = AVATAR_VIEW_HEIGHT + ORIGINATOR_MARGIN + self.titleLabel.intrinsicContentSize.width;
             if (profileViewWidth > customTitleViewWidth) {
                 profileViewWidth = customTitleViewWidth;
             }
@@ -3271,19 +3261,18 @@ typedef enum {
     DDLogVerbose(@"%@ setupTitleView", LOG_TAG);
     
     if (!self.titleLabel) {
-        CGFloat customTitleViewWidth = PROFILE_VIEW_WIDTH;
+        CGFloat customTitleViewWidth = ORIGINATOR_VIEW_WIDTH;
         CGFloat customTitleViewHeight = Design.STANDARD_NAVIGATION_BAR_HEIGHT;
         
         CGFloat titleLabelX = (customTitleViewHeight - Design.FONT_BOLD34.lineHeight) * 0.5;
         if (self.group) {
             titleLabelX = (customTitleViewHeight - Design.FONT_BOLD34.lineHeight - Design.FONT_REGULAR34.lineHeight) * 0.5;
-            customTitleViewWidth = GROUP_VIEW_WIDTH;
         }
         
         UIView *customTitleView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, customTitleViewWidth, customTitleViewHeight)];
         customTitleView.backgroundColor = [UIColor clearColor];
         
-        self.titleLabel = [[UILabel alloc]initWithFrame:CGRectMake(AVATAR_VIEW_HEIGHT + PROFILE_MARGIN, titleLabelX, customTitleViewWidth - AVATAR_VIEW_HEIGHT - PROFILE_MARGIN, Design.FONT_BOLD34.lineHeight)];
+        self.titleLabel = [[UILabel alloc]initWithFrame:CGRectMake(AVATAR_VIEW_HEIGHT + ORIGINATOR_MARGIN, titleLabelX, customTitleViewWidth - AVATAR_VIEW_HEIGHT - ORIGINATOR_MARGIN, Design.FONT_BOLD34.lineHeight)];
         self.titleLabel.semanticContentAttribute = UISemanticContentAttributeForceLeftToRight;
         
         self.titleLabel.textAlignment = NSTextAlignmentNatural;
@@ -3292,8 +3281,9 @@ typedef enum {
         self.titleLabel.text = self.contactName;
         self.titleLabel.clipsToBounds = YES;
         self.titleLabel.numberOfLines = 1;
+        self.titleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
         
-        self.subTitleLabel = [[UILabel alloc]initWithFrame:CGRectMake(AVATAR_VIEW_HEIGHT + PROFILE_MARGIN, titleLabelX + Design.FONT_BOLD34.lineHeight, customTitleViewWidth - AVATAR_VIEW_HEIGHT - PROFILE_MARGIN, Design.FONT_REGULAR34.lineHeight)];
+        self.subTitleLabel = [[UILabel alloc]initWithFrame:CGRectMake(AVATAR_VIEW_HEIGHT + ORIGINATOR_MARGIN, titleLabelX + Design.FONT_BOLD34.lineHeight, customTitleViewWidth - AVATAR_VIEW_HEIGHT - ORIGINATOR_MARGIN, Design.FONT_REGULAR34.lineHeight)];
         self.subTitleLabel.semanticContentAttribute = UISemanticContentAttributeForceLeftToRight;
         self.subTitleLabel.textAlignment = NSTextAlignmentNatural;
         self.subTitleLabel.font = Design.FONT_REGULAR24;
@@ -3314,7 +3304,7 @@ typedef enum {
             self.avatarView.tintColor = [UIColor colorWithHexString:Design.DEFAULT_COLOR alpha:1.0];
         }
         
-        CGFloat profileViewWidth = AVATAR_VIEW_HEIGHT + PROFILE_MARGIN + self.titleLabel.intrinsicContentSize.width;
+        CGFloat profileViewWidth = AVATAR_VIEW_HEIGHT + ORIGINATOR_MARGIN + self.titleLabel.intrinsicContentSize.width;
         if (profileViewWidth > customTitleViewWidth) {
             profileViewWidth = customTitleViewWidth;
         }
@@ -3399,9 +3389,12 @@ typedef enum {
     DDLogVerbose(@"%@ deleteItem: %@", LOG_TAG, item);
     
     if (item && [self.items containsObject:item]) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [[UIApplication sharedApplication].keyWindow makeToast:TwinmeLocalizedString(@"conversation_view_controller_delete_message",nil)];
-        });
+        
+        if (!item.isEphemeralItem) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [[UIApplication sharedApplication].keyWindow makeToast:TwinmeLocalizedString(@"conversation_view_controller_delete_message",nil)];
+            });
+        }
         
         [self deleteItemInternal:item];
         
@@ -3813,15 +3806,18 @@ typedef enum {
     [self hapticFeedback];
     
     if (!self.menuSendOptionsOpen && (self.sendButtonView.isEnabled || (self.voiceMessageRecorderView && [self.voiceMessageRecorderView isVoiceMessageToSend]))) {
-        if ([self.textView isFirstResponder]) {
-            [self.textView resignFirstResponder];
+        
+        self.menuSendOptionsOpen = YES;
+        if (self.sendButtonView.isEnabled) {
+            [self setSelectedMode:ModeDefault];
         }
+        
+        [self dismissKeyboard:YES];
         
         MenuSendOptionsView *menuSendOptionsView = [[MenuSendOptionsView alloc] init];
         menuSendOptionsView.menuSendOptionsDelegate = self;
         [self.navigationController.view addSubview:menuSendOptionsView];
         
-        self.menuSendOptionsOpen = YES;
         self.allowCopy = NO;
         
         TLSpaceSettings *spaceSettings = self.space.settings;
@@ -5275,6 +5271,7 @@ typedef enum {
     
     ApplicationDelegate *delegate = (ApplicationDelegate *)[[UIApplication sharedApplication] delegate];        
     if (self.group && ![delegate.twinmeApplication isSubscribedWithFeature:TLTwinmeApplicationFeatureGroupCall]) {
+        [self dismissKeyboard:NO];
         PremiumFeatureConfirmView *premiumFeatureConfirmView = [[PremiumFeatureConfirmView alloc] init];
         premiumFeatureConfirmView.bottomSheetViewDelegate = self;
         
@@ -5389,6 +5386,7 @@ typedef enum {
     
     ApplicationDelegate *delegate = (ApplicationDelegate *)[[UIApplication sharedApplication] delegate];
     if (self.group && ![delegate.twinmeApplication isSubscribedWithFeature:TLTwinmeApplicationFeatureGroupCall]) {
+        [self dismissKeyboard:NO];
         PremiumFeatureConfirmView *premiumFeatureConfirmView = [[PremiumFeatureConfirmView alloc] init];
         premiumFeatureConfirmView.bottomSheetViewDelegate = self;
         

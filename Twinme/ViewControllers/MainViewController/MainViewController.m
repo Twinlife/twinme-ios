@@ -78,6 +78,7 @@
 #import "DefaultConfirmView.h"
 #import <TwinmeCommon/UIViewController+Utils.h>
 #import "ConversationsViewController.h"
+#import "PremiumFeatureConfirmView.h"
 
 #if 0
 static const int ddLogLevel = DDLogLevelVerbose;
@@ -547,6 +548,14 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
     return nil;
 }
 
+- (void)startCallFromRecents {
+    DDLogVerbose(@"%@ startCallFromRecents", LOG_TAG);
+    
+    if (self.inPersonToCall) {
+        [self handleDeferredCall];
+    }
+}
+
 #pragma mark - SplashScreenDelegate
 
 - (void)animationDidFinish:(BOOL)isMigration {
@@ -644,6 +653,10 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
         } else {
             [[UIApplication sharedApplication] openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString] options:@{} completionHandler:nil];
         }
+    } else if ([abstractConfirmView isKindOfClass:[PremiumFeatureConfirmView class]]) {
+        InAppSubscriptionViewController *inAppSubscriptionViewController = [[UIStoryboard storyboardWithName:@"iPhone" bundle:nil] instantiateViewControllerWithIdentifier:@"InAppSubscriptionViewController"];
+        TwinmeNavigationController *navigationController = [[TwinmeNavigationController alloc]initWithRootViewController:inAppSubscriptionViewController];
+        [self.tabBarController presentViewController:navigationController animated:YES completion:nil];
     }
 
     [abstractConfirmView closeConfirmView];
@@ -1343,9 +1356,26 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
     dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
         id<TLOriginator> subject = [self.twinmeContext findSubjectWithHandle:self.inPersonToCall.personHandle.value];
         if (subject) {
-            CallViewController *callViewController = (CallViewController *)[[UIStoryboard storyboardWithName:@"Call" bundle:nil] instantiateViewControllerWithIdentifier:@"CallViewController"];
-            [callViewController startCallWithOriginator:subject videoBell:NO isVideoCall:self.startVideoCall isCertifyCall:NO];
-            [self.selectedViewController pushViewController:callViewController animated:YES];
+            if (subject.isGroup && ![self.twinmeApplication isSubscribedWithFeature:TLTwinmeApplicationFeatureGroupCall]) {
+                PremiumFeatureConfirmView *premiumFeatureConfirmView = [[PremiumFeatureConfirmView alloc] init];
+                premiumFeatureConfirmView.bottomSheetViewDelegate = self;
+                TLSpaceSettings *spaceSettings;
+                if (self.space) {
+                    spaceSettings = self.space.settings;
+                    if ([self.space.settings getBooleanWithName:PROPERTY_DEFAULT_APPEARANCE_SETTINGS defaultValue:YES]) {
+                        spaceSettings = self.twinmeContext.defaultSpaceSettings;
+                    }
+                } else {
+                    spaceSettings = self.twinmeContext.defaultSpaceSettings;
+                }
+                [premiumFeatureConfirmView initWithPremiumFeature:[[UIPremiumFeature alloc]initWithFeatureType:FeatureTypeGroupCall spaceSettings:spaceSettings] parentViewController:self];
+                [self.view addSubview:premiumFeatureConfirmView];
+                [premiumFeatureConfirmView showConfirmView];
+            } else {
+                CallViewController *callViewController = (CallViewController *)[[UIStoryboard storyboardWithName:@"Call" bundle:nil] instantiateViewControllerWithIdentifier:@"CallViewController"];
+                [callViewController startCallWithOriginator:subject videoBell:NO isVideoCall:self.startVideoCall isCertifyCall:NO];
+                [self.selectedViewController pushViewController:callViewController animated:YES];
+            }
             self.inPersonToCall = nil;
         }
     });

@@ -467,7 +467,7 @@ typedef enum {
     MenuSelectValueView *menuSelectValueView = [[MenuSelectValueView alloc]init];
     menuSelectValueView.menuSelectValueDelegate = self;
     [self.tabBarController.view addSubview:menuSelectValueView];
-    [menuSelectValueView setMenuSelectValueTypeWithType:MenuSelectValueTypeTimeoutEphemeralMessage];
+    [menuSelectValueView setMenuSelectValueTypeWithType:MenuSelectValueTypeTimeoutEphemeralMessage defaultValue:-1];
     [menuSelectValueView setSelectedValueWithValue:(int)self.expireTimeout];
     
     [menuSelectValueView openMenu];

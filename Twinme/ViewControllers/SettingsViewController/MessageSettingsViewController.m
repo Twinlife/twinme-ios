@@ -461,13 +461,13 @@ typedef enum {
     
     BOOL allowEphemeral = [self.defaultSpaceSettings getBooleanWithName:PROPERTY_ALLOW_EPHEMERAL_MESSAGE defaultValue:NO];
     if (indexPath.section == SECTION_EPHEMERAL && allowEphemeral && indexPath.row == 2) {
-        [self openMenuSelectValue:MenuSelectValueTypeTimeoutEphemeralMessage];
+        [self openMenuSelectValue:MenuSelectValueTypeTimeoutEphemeralMessage defaultValue:-1];
     } else if (indexPath.section == SECTION_CONTENT) {
         if (indexPath.row == 1) {
-            [self openMenuSelectValue:MenuSelectValueTypeQualityMedia];
+            [self openMenuSelectValue:MenuSelectValueTypeQualityMedia defaultValue:self.twinmeApplication.qualityMedia];
         }
     } else if (indexPath.section == SECTION_CALLS) {
-        [self openMenuSelectValue:MenuSelectValueTypeDisplayCallsMode];
+        [self openMenuSelectValue:MenuSelectValueTypeDisplayCallsMode defaultValue:self.twinmeApplication.displayCallsMode];
     }
 }
 
@@ -534,13 +534,13 @@ typedef enum {
     [self.spaceSettingsService updateDefaultSpaceSettings:self.defaultSpaceSettings];
 }
 
-- (void)openMenuSelectValue:(MenuSelectValueType)menuSelectValueType {
+- (void)openMenuSelectValue:(MenuSelectValueType)menuSelectValueType defaultValue:(int)defaultValue {
     DDLogVerbose(@"%@ openMenuSelectValue", LOG_TAG);
     
     MenuSelectValueView *menuSelectValueView = [[MenuSelectValueView alloc]init];
     menuSelectValueView.menuSelectValueDelegate = self;
     [self.tabBarController.view addSubview:menuSelectValueView];
-    [menuSelectValueView setMenuSelectValueTypeWithType:menuSelectValueType];
+    [menuSelectValueView setMenuSelectValueTypeWithType:menuSelectValueType defaultValue:defaultValue];
     
     if (menuSelectValueType == MenuSelectValueTypeTimeoutEphemeralMessage) {
         NSString *expireTimeoutStringValue = [self.defaultSpaceSettings getStringWithName:PROPERTY_TIMEOUT_EPHEMERAL_MESSAGE defaultValue:[NSString stringWithFormat:@"%d", DEFAULT_TIMEOUT_MESSAGE]];

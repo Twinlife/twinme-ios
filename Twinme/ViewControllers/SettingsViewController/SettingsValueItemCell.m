@@ -95,6 +95,8 @@ static CGFloat DESIGN_TITLE_LARGE_WIDTH = 620;
 - (void)bindWithTitle:(NSString *)title value:(NSString *)value hiddenAccessory:(BOOL)hiddenAccessory {
     DDLogVerbose(@"%@ bindWithTitle: %@ value: %@ hiddenAccessory: %d ", LOG_TAG, title, value, hiddenAccessory);
     
+    self.contentView.backgroundColor = Design.WHITE_COLOR;
+    
     self.titleLabel.text = title;
     self.valueLabel.text = value;
     self.valueLabel.hidden = NO;
@@ -150,7 +152,6 @@ static CGFloat DESIGN_TITLE_LARGE_WIDTH = 620;
             self.titleLabel.textColor = [UIColor whiteColor];
         }
     } else {
-        self.contentView.backgroundColor = Design.WHITE_COLOR;
         self.separatorView.backgroundColor = Design.SEPARATOR_COLOR_GREY;
         self.valueLabel.textColor = Design.FONT_COLOR_DEFAULT;
         

@@ -2522,6 +2522,7 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
     self.terminatedLabelWidthConstraint.constant *= Design.WIDTH_RATIO;
     self.terminatedLabel.font = Design.FONT_REGULAR34;
     self.terminatedLabel.textColor = [UIColor whiteColor];
+    self.terminatedLabel.text = @"";
     
     [self.view bringSubviewToFront:self.menuView];
     [self.view bringSubviewToFront:self.backClickableView];

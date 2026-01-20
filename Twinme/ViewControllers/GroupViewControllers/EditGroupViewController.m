@@ -172,6 +172,12 @@ static const int ddLogLevel = DDLogLevelWarning;
     return NO;
 }
 
+- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
+    DDLogVerbose(@"%@ textView: %@ shouldChangeCharactersInRange: %lu shouldChangeCharactersInRange: %@", LOG_TAG, textField, (unsigned long)range.length, string);
+    
+    return textField.text.length + (string.length - range.length) <= MAX_NAME_LENGTH;
+}
+
 - (void)textFieldDidChange:(UITextField *)textField {
     DDLogVerbose(@"%@ textFieldDidChange: %@", LOG_TAG, textField);
     

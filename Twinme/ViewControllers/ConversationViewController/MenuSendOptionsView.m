@@ -256,7 +256,7 @@ typedef enum {
         MenuSelectValueView *menuTimeoutView = [[MenuSelectValueView alloc] init];
         menuTimeoutView.menuSelectValueDelegate = self;
         menuTimeoutView.forceDarkMode = self.forceDarkMode;
-        [menuTimeoutView setMenuSelectValueTypeWithType:MenuSelectValueTypeTimeoutEphemeralMessage];
+        [menuTimeoutView setMenuSelectValueTypeWithType:MenuSelectValueTypeTimeoutEphemeralMessage defaultValue:-1];
         [menuTimeoutView setSelectedValueWithValue:(int) self.timeout];
         [self addSubview:menuTimeoutView];
         [menuTimeoutView openMenu];

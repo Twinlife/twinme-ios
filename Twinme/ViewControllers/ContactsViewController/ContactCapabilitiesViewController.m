@@ -93,7 +93,7 @@ static const int ddLogLevel = DDLogLevelWarning;
     MenuSelectValueView *menuSelectValueView = [[MenuSelectValueView alloc]init];
     menuSelectValueView.menuSelectValueDelegate = self;
     [self.tabBarController.view addSubview:menuSelectValueView];
-    [menuSelectValueView setMenuSelectValueTypeWithType:MenuSelectValueTypeCallZoomable];
+    [menuSelectValueView setMenuSelectValueTypeWithType:MenuSelectValueTypeCallZoomable defaultValue:-1];
     [menuSelectValueView setSelectedValueWithValue:(int)self.zoomable];
     [menuSelectValueView openMenu];
 }

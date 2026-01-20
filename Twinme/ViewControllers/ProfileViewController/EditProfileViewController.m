@@ -844,7 +844,7 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     MenuSelectValueView *menuSelectValueView = [[MenuSelectValueView alloc]init];
     menuSelectValueView.menuSelectValueDelegate = self;
     [self.tabBarController.view addSubview:menuSelectValueView];
-    [menuSelectValueView setMenuSelectValueTypeWithType:MenuSelectValueTypeProfileUpdateMode];
+    [menuSelectValueView setMenuSelectValueTypeWithType:MenuSelectValueTypeProfileUpdateMode defaultValue:self.twinmeApplication.profileUpdateMode];
     [menuSelectValueView openMenu];
 }
 

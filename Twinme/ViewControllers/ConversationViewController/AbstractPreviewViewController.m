@@ -511,7 +511,7 @@ static const long long WARNING_ORIGINAL_SIZE = 1024 * 1024 * 10;
         menuSelectValueView.forceDarkMode = YES;
         menuSelectValueView.menuSelectValueDelegate = self;
         [self.view addSubview:menuSelectValueView];
-        [menuSelectValueView setMenuSelectValueTypeWithType:MenuSelectValueTypeQualityMedia];
+        [menuSelectValueView setMenuSelectValueTypeWithType:MenuSelectValueTypeQualityMedia defaultValue:self.isQualityMediaOriginal ? QualityMediaOrginal : QualityMediaStandard];
         [menuSelectValueView openMenu];
     }
 }

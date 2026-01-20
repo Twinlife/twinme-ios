@@ -710,7 +710,7 @@ static CGFloat DESIGN_PROFILE_AVATAR_HEIGHT = 216;
     MenuSelectValueView *menuSelectValueView = [[MenuSelectValueView alloc]init];
     menuSelectValueView.menuSelectValueDelegate = self;
     [self.tabBarController.view addSubview:menuSelectValueView];
-    [menuSelectValueView setMenuSelectValueTypeWithType:MenuSelectValueTypeEditSpace];
+    [menuSelectValueView setMenuSelectValueTypeWithType:MenuSelectValueTypeEditSpace defaultValue:-1];
     [menuSelectValueView openMenu];
 }
 
