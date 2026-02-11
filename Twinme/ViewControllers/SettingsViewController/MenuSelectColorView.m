@@ -18,6 +18,8 @@
 #import <TwinmeCommon/Design.h>
 #import <TwinmeCommon/TwinmeApplication.h>
 
+#import <Twinme/TLTwinmeContext.h>
+
 #import "UIContact.h"
 #import "UICustomColor.h"
 #import "UIColor+Hex.h"
@@ -479,7 +481,7 @@ static CGFloat DESIGN_COLLECTION_CELL_WIDTH = 70;
     ApplicationDelegate *delegate = (ApplicationDelegate *)[[UIApplication sharedApplication] delegate];
     TwinmeApplication *twinmeApplication = [delegate twinmeApplication];
     
-    if ([twinmeApplication darkModeEnable]) {
+    if ([twinmeApplication darkModeEnable:[[delegate twinmeContext] defaultSpaceSettings]]) {
         self.enterColorTextField.keyboardAppearance = UIKeyboardAppearanceDark;
     } else {
         self.enterColorTextField.keyboardAppearance = UIKeyboardAppearanceLight;

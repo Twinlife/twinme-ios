@@ -503,7 +503,7 @@ static NSInteger SUBJECT_TEXT_FIELD_TAG = 2;
     self.emailField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:TwinmeLocalizedString(@"feedback_view_controller_email", nil) attributes:[NSDictionary dictionaryWithObject:Design.PLACEHOLDER_COLOR forKey:NSForegroundColorAttributeName]];
     self.subjectField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:TwinmeLocalizedString(@"feedback_view_controller_subject", nil) attributes:[NSDictionary dictionaryWithObject:Design.PLACEHOLDER_COLOR forKey:NSForegroundColorAttributeName]];
     
-    if ([self.twinmeApplication darkModeEnable]) {
+    if ([self.twinmeApplication darkModeEnable:[self currentSpaceSettings]]) {
         self.emailField.keyboardAppearance = UIKeyboardAppearanceDark;
         self.subjectField.keyboardAppearance = UIKeyboardAppearanceDark;
     } else {

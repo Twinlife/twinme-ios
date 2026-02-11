@@ -263,32 +263,32 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
 
 #pragma mark - BottomSheetViewDelegate
 
-- (void)didTapConfirm:(nonnull AbstractBottomSheetView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractConfirmView);
+- (void)didTapConfirm:(nonnull AbstractBottomSheetView *)abstractBottomSheetView {
+    DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractBottomSheetView);
 
-    [abstractConfirmView closeConfirmView];
+    [abstractBottomSheetView closeConfirmView];
 }
 
-- (void)didTapCancel:(nonnull AbstractBottomSheetView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didTapCancel: %@", LOG_TAG, abstractConfirmView);
+- (void)didTapCancel:(nonnull AbstractBottomSheetView *)abstractBottomSheetView {
+    DDLogVerbose(@"%@ didTapCancel: %@", LOG_TAG, abstractBottomSheetView);
     
-    [abstractConfirmView closeConfirmView];
+    [abstractBottomSheetView closeConfirmView];
 }
 
-- (void)didClose:(nonnull AbstractBottomSheetView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didClose: %@", LOG_TAG, abstractConfirmView);
+- (void)didClose:(nonnull AbstractBottomSheetView *)abstractBottomSheetView {
+    DDLogVerbose(@"%@ didClose: %@", LOG_TAG, abstractBottomSheetView);
     
-    [abstractConfirmView closeConfirmView];
+    [abstractBottomSheetView closeConfirmView];
 }
 
-- (void)didFinishCloseAnimation:(nonnull AbstractBottomSheetView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didFinishCloseAnimation: %@", LOG_TAG, abstractConfirmView);
+- (void)didFinishCloseAnimation:(nonnull AbstractBottomSheetView *)abstractBottomSheetView {
+    DDLogVerbose(@"%@ didFinishCloseAnimation: %@", LOG_TAG, abstractBottomSheetView);
     
-    if ([abstractConfirmView isKindOfClass:[DefaultConfirmView class]]) {
+    if ([abstractBottomSheetView isKindOfClass:[DefaultConfirmView class]]) {
         [self.nameTextField becomeFirstResponder];
     }
     
-    [abstractConfirmView removeFromSuperview];
+    [abstractBottomSheetView removeFromSuperview];
 }
 
 #pragma mark - Private methods
@@ -616,7 +616,7 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     
     message = mutableString;
     
-    UIImage *image = [self.twinmeApplication darkModeEnable] ? [UIImage imageNamed:@"OnboardingAddProfileDark"] : [UIImage imageNamed:@"OnboardingAddProfile"];
+    UIImage *image = [self.twinmeApplication darkModeEnable:[self currentSpaceSettings]] ? [UIImage imageNamed:@"OnboardingAddProfileDark"] : [UIImage imageNamed:@"OnboardingAddProfile"];
     
     [onboardingConfirmView initWithTitle:title message:message image:image action:TwinmeLocalizedString(@"application_ok", nil) actionColor:nil cancel:nil];
     
@@ -634,7 +634,7 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     DefaultConfirmView *defaultConfirmView = [[DefaultConfirmView alloc] init];
     defaultConfirmView.bottomSheetViewDelegate = self;
 
-    UIImage *image = [self.twinmeApplication darkModeEnable] ? [UIImage imageNamed:@"OnboardingAddProfileDark"] : [UIImage imageNamed:@"OnboardingAddProfile"];
+    UIImage *image = [self.twinmeApplication darkModeEnable:[self currentSpaceSettings]] ? [UIImage imageNamed:@"OnboardingAddProfileDark"] : [UIImage imageNamed:@"OnboardingAddProfile"];
     
     NSString *confirmTitle = incompleteProfile ? TwinmeLocalizedString(@"application_ok", nil) : TwinmeLocalizedString(@"show_profile_view_controller_create_profile", nil);
 
@@ -666,7 +666,7 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     self.nameTextField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:TwinmeLocalizedString(@"application_name_hint", nil) attributes:[NSDictionary dictionaryWithObject:Design.PLACEHOLDER_COLOR forKey:NSForegroundColorAttributeName]];
     self.counterNameLabel.textColor = Design.FONT_COLOR_DEFAULT;
     
-    if ([self.twinmeApplication darkModeEnable]) {
+    if ([self.twinmeApplication darkModeEnable:[self currentSpaceSettings]]) {
         self.nameTextField.keyboardAppearance = UIKeyboardAppearanceDark;
     } else {
         self.nameTextField.keyboardAppearance = UIKeyboardAppearanceLight;

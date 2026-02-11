@@ -11,12 +11,15 @@
 #import <LocalAuthentication/LocalAuthentication.h>
 
 #import "PrivacyViewController.h"
+#import "MessageSettingsViewController.h"
 
 #import <TwinmeCommon/Design.h>
 #import "InsideBorderView.h"
 #import "SwitchView.h"
 #import "UIPremiumFeature.h"
 #import "PremiumFeatureConfirmView.h"
+#import "SettingsItemCell.h"
+#import "SettingsInformationCell.h"
 
 #import <Utils/NSString+Utils.h>
 
@@ -26,55 +29,16 @@ static const int ddLogLevel = DDLogLevelVerbose;
 static const int ddLogLevel = DDLogLevelWarning;
 #endif
 
+static NSString *SETTINGS_CELL_IDENTIFIER = @"SettingsCellIdentifier";
+static NSString *SETTINGS_INFORMATION_CELL_IDENTIFIER = @"SettingsInformationCellIdentifier";
+
 //
 // Interface: PrivacyViewController
 //
 
-@interface PrivacyViewController ()<BottomSheetViewDelegate>
+@interface PrivacyViewController ()<BottomSheetViewDelegate, SettingsActionDelegate>
 
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *lockScreenViewHeightConstraint;
-@property (weak, nonatomic) IBOutlet InsideBorderView *lockScreenView;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *lockScreenLabelLeadingConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *lockScreenLabelWidthConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *lockScreenLabelTopConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *lockScreenLabelBottomConstraint;
-@property (weak, nonatomic) IBOutlet UILabel *lockScreenLabel;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *lockScreenSwitchTrailingConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *lockScreenSwitchHeightConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *lockScreenSwitchWidthConstraint;
-@property (weak, nonatomic) IBOutlet SwitchView *lockScreenSwitch;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *lockScreenInformationLabelLeadingConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *lockScreenInformationLabelTrailingConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *lockScreenInformationLabelTopConstraint;
-@property (weak, nonatomic) IBOutlet UILabel *lockScreenInformationLabel;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *hideLastScreenViewHeightConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *hideLastScreenViewTopConstraint;
-@property (weak, nonatomic) IBOutlet InsideBorderView *hideLastScreenView;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *hideLastScreenLabelLeadingConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *hideLastScreenLabelWidthConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *hideLastScreenLabelTopConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *hideLastScreenLabelBottomConstraint;
-@property (weak, nonatomic) IBOutlet UILabel *hideLastScreenLabel;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *hideLastScreenSwitchTrailingConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *hideLastScreenSwitchHeightConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *hideLastScreenSwitchWidthConstraint;
-@property (weak, nonatomic) IBOutlet SwitchView *hideLastScreenSwitch;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *hideLastScreenInformationLabelLeadingConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *hideLastScreenInformationLabelTrailingConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *hideLastScreenInformationLabelTopConstraint;
-@property (weak, nonatomic) IBOutlet UILabel *hideLastScreenInformationLabel;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *hideRecentCallsViewHeightConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *hideRecentCallsViewTopConstraint;
-@property (weak, nonatomic) IBOutlet InsideBorderView *hideRecentCallsView;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *hideRecentCallsLabelLeadingConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *hideRecentCallsLabelWidthConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *hideRecentCallsLabelTopConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *hideRecentCallsLabelBottomConstraint;
-@property (weak, nonatomic) IBOutlet UILabel *hideRecentCallsLabel;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *hideRecentCallsSwitchTrailingConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *hideRecentCallsSwitchHeightConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *hideRecentCallsSwitchWidthConstraint;
-@property (weak, nonatomic) IBOutlet SwitchView *hideRecentCallsSwitch;
+@property (weak, nonatomic) IBOutlet UITableView *tableView;
 
 @end
 
@@ -95,46 +59,131 @@ static const int ddLogLevel = DDLogLevelWarning;
     [self initViews];
 }
 
-- (void)viewDidLayoutSubviews {
-    DDLogVerbose(@"%@ viewDidLayoutSubviews", LOG_TAG);
+#pragma mark - SettingsActionDelegate
+
+- (void)switchChangeValue:(SwitchView *)updatedSwitch {
+    DDLogVerbose(@"%@ switchChangeValue: %@", LOG_TAG, updatedSwitch);
     
-    [self.lockScreenView clearBorder];
-    [self.hideLastScreenView clearBorder];
-    [self.hideRecentCallsView clearBorder];
+    PremiumFeatureConfirmView *premiumFeatureConfirmView = [[PremiumFeatureConfirmView alloc] init];
+    premiumFeatureConfirmView.bottomSheetViewDelegate = self;
+    [premiumFeatureConfirmView initWithPremiumFeature:[[UIPremiumFeature alloc]initWithFeatureType:FeatureTypePrivacy spaceSettings:[self currentSpaceSettings]] parentViewController:self.navigationController];
+    [self.navigationController.view addSubview:premiumFeatureConfirmView];
+    [premiumFeatureConfirmView showConfirmView];
+}
+
+#pragma mark - UITableViewDataSource
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+    DDLogVerbose(@"%@ numberOfSectionsInTableView: %@", LOG_TAG, tableView);
     
-    CGFloat screenWidth = [[UIScreen mainScreen] bounds].size.width;
+    return 3;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath  {
+    DDLogVerbose(@"%@ tableView: %@ heightForRowAtIndexPath: %@", LOG_TAG, tableView, indexPath);
     
-    [self.lockScreenView setBorder:Design.SEPARATOR_COLOR_GREY borderWidth:Design.SEPARATOR_HEIGHT width:screenWidth height:self.lockScreenView.frame.size.height left:false right:false top:false bottom:true];
-    [self.hideLastScreenView setBorder:Design.SEPARATOR_COLOR_GREY borderWidth:Design.SEPARATOR_HEIGHT width:screenWidth height:self.hideLastScreenView.frame.size.height left:false right:false top:true bottom:true];
-    [self.hideRecentCallsView setBorder:Design.SEPARATOR_COLOR_GREY borderWidth:Design.SEPARATOR_HEIGHT width:screenWidth height:self.hideRecentCallsView.frame.size.height left:false right:false top:true bottom:true];
+    if (indexPath.row % 2 != 0) {
+        return UITableViewAutomaticDimension;
+    }
+    
+    return Design.SETTING_CELL_HEIGHT;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
+    DDLogVerbose(@"%@ tableView: %@ heightForHeaderInSection: %ld", LOG_TAG, tableView, (long)section);
+    
+    return CGFLOAT_MIN;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section {
+    DDLogVerbose(@"%@ tableView: %@ heightForFooterInSection: %ld", LOG_TAG, tableView, (long)section);
+    
+    return Design.SETTING_CELL_HEIGHT;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    DDLogVerbose(@"%@ tableView: %@ numberOfRowsInSection: %ld", LOG_TAG, tableView, (long)section);
+    
+    return 2;
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    DDLogVerbose(@"%@ tableView: %@ cellForRowAtIndexPath: %@", LOG_TAG, tableView, indexPath);
+    
+    if (indexPath.row % 2 != 0) {
+        SettingsInformationCell *cell = [tableView dequeueReusableCellWithIdentifier:SETTINGS_INFORMATION_CELL_IDENTIFIER];
+        if (!cell) {
+            cell = [[SettingsInformationCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:SETTINGS_INFORMATION_CELL_IDENTIFIER];
+        }
+        
+        NSString *text = @"";
+        if (indexPath.section == 0) {
+            text = TwinmeLocalizedString(@"privacy_view_controller_lock_screen_message", nil);
+        } else if (indexPath.section == 1) {
+            text = TwinmeLocalizedString(@"privacy_view_controller_hide_last_screen_message", nil);
+        } else {
+            text = TwinmeLocalizedString(@"privacy_view_controller_display_recent_call_message", nil);
+        }
+        
+        [cell bindWithText:text];
+        
+        return cell;
+    } else {
+        SettingsItemCell *cell = [tableView dequeueReusableCellWithIdentifier:SETTINGS_CELL_IDENTIFIER];
+        if (!cell) {
+            cell = [[SettingsItemCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:SETTINGS_CELL_IDENTIFIER];
+        }
+                
+        cell.settingsActionDelegate = self;
+        
+        NSString *title = @"";
+        if (indexPath.section == 0) {
+            title = TwinmeLocalizedString(@"privacy_view_controller_lock_screen_title", nil);
+        } else if (indexPath.section == 1) {
+            title = TwinmeLocalizedString(@"privacy_view_controller_hide_last_screen_title", nil);
+        } else {
+            title = TwinmeLocalizedString(@"privacy_view_controller_display_recent_call", nil);
+        }
+        
+        [cell bindWithTitle:title icon:nil stateSwitch:NO tagSwitch:0 hiddenSwitch:NO disableSwitch:YES backgroundColor:Design.WHITE_COLOR hiddenSeparator:NO];
+                
+        return cell;
+    }
+}
+
+#pragma mark - UITableViewDelegate
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    DDLogVerbose(@"%@ tableView: %@ didSelectRowAtIndexPath: %@", LOG_TAG, tableView, indexPath);
+    
 }
 
 #pragma mark - BottomSheetViewDelegate
 
-- (void)didTapConfirm:(nonnull AbstractBottomSheetView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractConfirmView);
+- (void)didTapConfirm:(nonnull AbstractBottomSheetView *)abstractBottomSheetView {
+    DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractBottomSheetView);
     
     [[UIApplication sharedApplication] openURL:[NSURL URLWithString:TwinmeLocalizedString(@"twinme_plus_link", nil)] options:@{} completionHandler:nil];
 
-    [abstractConfirmView closeConfirmView];
+    [abstractBottomSheetView closeConfirmView];
 }
 
-- (void)didTapCancel:(nonnull AbstractBottomSheetView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didTapCancel: %@", LOG_TAG, abstractConfirmView);
+- (void)didTapCancel:(nonnull AbstractBottomSheetView *)abstractBottomSheetView {
+    DDLogVerbose(@"%@ didTapCancel: %@", LOG_TAG, abstractBottomSheetView);
     
-    [abstractConfirmView closeConfirmView];
+    [abstractBottomSheetView closeConfirmView];
 }
 
-- (void)didClose:(nonnull AbstractBottomSheetView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didClose: %@", LOG_TAG, abstractConfirmView);
+- (void)didClose:(nonnull AbstractBottomSheetView *)abstractBottomSheetView {
+    DDLogVerbose(@"%@ didClose: %@", LOG_TAG, abstractBottomSheetView);
     
-    [abstractConfirmView closeConfirmView];
+    [abstractBottomSheetView closeConfirmView];
 }
 
-- (void)didFinishCloseAnimation:(nonnull AbstractBottomSheetView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didFinishCloseAnimation: %@", LOG_TAG, abstractConfirmView);
+- (void)didFinishCloseAnimation:(nonnull AbstractBottomSheetView *)abstractBottomSheetView {
+    DDLogVerbose(@"%@ didFinishCloseAnimation: %@", LOG_TAG, abstractBottomSheetView);
     
-    [abstractConfirmView removeFromSuperview];
+    [abstractBottomSheetView removeFromSuperview];
 }
 
 #pragma mark - Private methods
@@ -146,125 +195,26 @@ static const int ddLogLevel = DDLogLevelWarning;
     
     [self setNavigationTitle:TwinmeLocalizedString(@"privacy_view_controller_title", nil)];
     
-    self.lockScreenViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
-    
-    self.lockScreenView.backgroundColor = Design.WHITE_COLOR;
-    self.lockScreenView.isAccessibilityElement = YES;
-    UITapGestureRecognizer *lockScreenViewTapGesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(handleSwitchTapGesture:)];
-    [self.lockScreenView addGestureRecognizer:lockScreenViewTapGesture];
-    
-    self.lockScreenLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
-    self.lockScreenLabelWidthConstraint.constant *= Design.WIDTH_RATIO;
-    self.lockScreenLabelTopConstraint.constant *= Design.HEIGHT_RATIO;
-    self.lockScreenLabelBottomConstraint.constant *= Design.HEIGHT_RATIO;
-    self.lockScreenLabel.text = TwinmeLocalizedString(@"privacy_view_controller_lock_screen_title", nil);
-    self.lockScreenLabel.font = Design.FONT_REGULAR34;
-    self.lockScreenLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    
-    CGSize switchSize = [Design switchSize];
-    self.lockScreenSwitchTrailingConstraint.constant *= Design.WIDTH_RATIO;
-    self.lockScreenSwitchHeightConstraint.constant = switchSize.height;
-    self.lockScreenSwitchWidthConstraint.constant = switchSize.width;
-    
-    self.lockScreenSwitch.userInteractionEnabled = NO;
-    self.lockScreenSwitch.isEnabled = NO;
-    [self.lockScreenSwitch setOn:NO];
-    
-    self.lockScreenInformationLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
-    self.lockScreenInformationLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
-    self.lockScreenInformationLabelTopConstraint.constant *= Design.HEIGHT_RATIO;
-    self.lockScreenInformationLabel.text = TwinmeLocalizedString(@"privacy_view_controller_lock_screen_message", nil);
-    self.lockScreenInformationLabel.font = Design.FONT_REGULAR28;
-    self.lockScreenInformationLabel.textColor = Design.FONT_COLOR_GREY;
-    
-    self.hideLastScreenViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
-    self.hideLastScreenViewTopConstraint.constant *= Design.HEIGHT_RATIO;
-    
-    self.hideLastScreenView.backgroundColor = Design.WHITE_COLOR;
-    self.hideLastScreenView.isAccessibilityElement = YES;
-    UITapGestureRecognizer *hideLastScreenViewTapGesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(handleSwitchTapGesture:)];
-    [self.hideLastScreenView addGestureRecognizer:hideLastScreenViewTapGesture];
-    
-    self.hideLastScreenLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
-    self.hideLastScreenLabelWidthConstraint.constant *= Design.WIDTH_RATIO;
-    self.hideLastScreenLabelTopConstraint.constant *= Design.HEIGHT_RATIO;
-    self.hideLastScreenLabelBottomConstraint.constant *= Design.HEIGHT_RATIO;
-    self.hideLastScreenLabel.text = TwinmeLocalizedString(@"privacy_view_controller_hide_last_screen_title", nil);
-    self.hideLastScreenLabel.font = Design.FONT_REGULAR34;
-    self.hideLastScreenLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    
-    self.hideLastScreenSwitchTrailingConstraint.constant *= Design.WIDTH_RATIO;
-    self.hideLastScreenSwitchHeightConstraint.constant = switchSize.height;
-    self.hideLastScreenSwitchWidthConstraint.constant = switchSize.width;
-
-    self.hideLastScreenSwitch.userInteractionEnabled = NO;
-    self.hideLastScreenSwitch.isEnabled = NO;
-    [self.hideLastScreenSwitch setOn:NO];
-    
-    self.hideLastScreenInformationLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
-    self.hideLastScreenInformationLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
-    self.hideLastScreenInformationLabelTopConstraint.constant *= Design.HEIGHT_RATIO;
-    self.hideLastScreenInformationLabel.text = TwinmeLocalizedString(@"privacy_view_controller_hide_last_screen_message", nil);
-    self.hideLastScreenInformationLabel.font = Design.FONT_REGULAR28;
-    self.hideLastScreenInformationLabel.textColor = Design.FONT_COLOR_GREY;
-    
-    self.hideRecentCallsViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
-    self.hideRecentCallsViewTopConstraint.constant *= Design.HEIGHT_RATIO;
-    
-    self.hideRecentCallsView.backgroundColor = Design.WHITE_COLOR;
-    self.hideRecentCallsView.isAccessibilityElement = YES;
-    UITapGestureRecognizer *hideRecentCallsViewTapGesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(handleSwitchTapGesture:)];
-    [self.hideRecentCallsView addGestureRecognizer:hideRecentCallsViewTapGesture];
-    
-    self.hideRecentCallsLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
-    self.hideRecentCallsLabelWidthConstraint.constant *= Design.WIDTH_RATIO;
-    self.hideRecentCallsLabelTopConstraint.constant *= Design.HEIGHT_RATIO;
-    self.hideRecentCallsLabelBottomConstraint.constant *= Design.HEIGHT_RATIO;
-    self.hideRecentCallsLabel.text = TwinmeLocalizedString(@"privacy_view_controller_display_recent_call", nil);
-    self.hideRecentCallsLabel.font = Design.FONT_REGULAR34;
-    self.hideRecentCallsLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    
-    self.hideRecentCallsSwitchTrailingConstraint.constant *= Design.WIDTH_RATIO;
-    self.hideRecentCallsSwitchHeightConstraint.constant = switchSize.height;
-    self.hideRecentCallsSwitchWidthConstraint.constant = switchSize.width;
-    
-    self.hideRecentCallsSwitch.userInteractionEnabled = NO;
-    self.hideRecentCallsSwitch.isEnabled = NO;
-    [self.hideRecentCallsSwitch setOn:NO];
-}
-
-- (void)handleSwitchTapGesture:(UITapGestureRecognizer *)sender {
-    DDLogVerbose(@"%@ handleSwitchTapGesture: %@", LOG_TAG, sender);
-    
-    PremiumFeatureConfirmView *premiumFeatureConfirmView = [[PremiumFeatureConfirmView alloc] init];
-    premiumFeatureConfirmView.bottomSheetViewDelegate = self;
-    [premiumFeatureConfirmView initWithPremiumFeature:[[UIPremiumFeature alloc]initWithFeatureType:FeatureTypePrivacy] parentViewController:self.navigationController];
-    [self.navigationController.view addSubview:premiumFeatureConfirmView];
-    [premiumFeatureConfirmView showConfirmView];
+    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+    self.tableView.rowHeight = UITableViewAutomaticDimension;
+    self.tableView.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
+    self.tableView.estimatedRowHeight = Design.SETTING_CELL_HEIGHT * Design.HEIGHT_RATIO;
+    [self.tableView registerNib:[UINib nibWithNibName:@"SettingsItemCell" bundle:nil] forCellReuseIdentifier:SETTINGS_CELL_IDENTIFIER];
+    [self.tableView registerNib:[UINib nibWithNibName:@"SettingsInformationCell" bundle:nil] forCellReuseIdentifier:SETTINGS_INFORMATION_CELL_IDENTIFIER];
 }
 
 - (void)updateFont {
     DDLogVerbose(@"%@ updateFont", LOG_TAG);
     
-    self.lockScreenLabel.font = Design.FONT_REGULAR34;
-    self.hideLastScreenLabel.font = Design.FONT_REGULAR34;
-    self.hideLastScreenInformationLabel.font = Design.FONT_REGULAR28;
-    self.lockScreenInformationLabel.font = Design.FONT_REGULAR28;
-    self.hideRecentCallsLabel.font = Design.FONT_REGULAR34;
+    [self.tableView reloadData];
 }
 
 - (void)updateColor {
     DDLogVerbose(@"%@ updateColor", LOG_TAG);
     
     self.view.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
-    
-    self.lockScreenLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    self.hideLastScreenLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    self.hideRecentCallsLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    self.hideLastScreenInformationLabel.textColor = Design.FONT_COLOR_GREY;
-    self.lockScreenInformationLabel.textColor = Design.FONT_COLOR_GREY;
-    self.lockScreenView.backgroundColor = Design.WHITE_COLOR;
-    self.hideLastScreenView.backgroundColor = Design.WHITE_COLOR;
+    self.tableView.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
+    [self.tableView reloadData];
 }
 
 @end

@@ -350,29 +350,29 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
 
 #pragma mark - BottomSheetViewDelegate
 
-- (void)didTapConfirm:(nonnull AbstractBottomSheetView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractConfirmView);
+- (void)didTapConfirm:(nonnull AbstractBottomSheetView *)abstractBottomSheetView {
+    DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractBottomSheetView);
     
     [self.editRoomService deleteRoom:self.room];
-    [abstractConfirmView closeConfirmView];
+    [abstractBottomSheetView closeConfirmView];
 }
 
-- (void)didTapCancel:(nonnull AbstractBottomSheetView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didTapCancel: %@", LOG_TAG, abstractConfirmView);
+- (void)didTapCancel:(nonnull AbstractBottomSheetView *)abstractBottomSheetView {
+    DDLogVerbose(@"%@ didTapCancel: %@", LOG_TAG, abstractBottomSheetView);
     
-    [abstractConfirmView closeConfirmView];
+    [abstractBottomSheetView closeConfirmView];
 }
 
-- (void)didClose:(nonnull AbstractBottomSheetView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didClose: %@", LOG_TAG, abstractConfirmView);
+- (void)didClose:(nonnull AbstractBottomSheetView *)abstractBottomSheetView {
+    DDLogVerbose(@"%@ didClose: %@", LOG_TAG, abstractBottomSheetView);
     
-    [abstractConfirmView closeConfirmView];
+    [abstractBottomSheetView closeConfirmView];
 }
 
-- (void)didFinishCloseAnimation:(nonnull AbstractBottomSheetView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didFinishCloseAnimation: %@", LOG_TAG, abstractConfirmView);
+- (void)didFinishCloseAnimation:(nonnull AbstractBottomSheetView *)abstractBottomSheetView {
+    DDLogVerbose(@"%@ didFinishCloseAnimation: %@", LOG_TAG, abstractBottomSheetView);
     
-    [abstractConfirmView removeFromSuperview];
+    [abstractBottomSheetView removeFromSuperview];
 }
 
 #pragma mark - MenuPhotoViewDelegate
@@ -846,7 +846,7 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
         self.nameTextField.attributedPlaceholder = [[NSAttributedString alloc]initWithString:self.room.name attributes:[NSDictionary dictionaryWithObject:Design.PLACEHOLDER_COLOR forKey:NSForegroundColorAttributeName]];
     }
     
-    if ([self.twinmeApplication darkModeEnable]) {
+    if ([self.twinmeApplication darkModeEnable:[self currentSpaceSettings]]) {
         self.nameTextField.keyboardAppearance = UIKeyboardAppearanceDark;
         self.descriptionTextView.keyboardAppearance = UIKeyboardAppearanceDark;
     } else {

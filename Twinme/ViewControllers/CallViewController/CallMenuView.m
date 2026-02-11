@@ -154,8 +154,12 @@ static const CGFloat DESIGN_ICON_RESUME_CALL_HEIGHT = 40;
     [self.speakerOnImageView setTintColor:[UIColor blackColor]];
  }
 
-- (void)updateMenu:(BOOL)isInCall isAudioMuted:(BOOL)isAudioMuted isSpeakerOn:(BOOL)isSpeakerOn isCameraMuted:(BOOL)isCameraMuted isLocalVideoTrack:(BOOL)isLocalVideoTrack isVideoAllowed:(BOOL)isVideoAllowed isConversationAllowed:(BOOL)isConversationAllowed isStreamingAudioSupported:(BOOL)isStreamingAudioSupported isShareInvitationAllowed:(BOOL)isShareInvitationAllowed isInPause:(BOOL)isInPause hideCertify:(BOOL)hideCertify isCertifyRunning:(BOOL)isCertifyRunning audioDevice:(AudioDevice *)audioDevice isHeadSetAvailable:(BOOL)isHeadSetAvailable isCameraControlAllowed:(BOOL)isCameraControlAllowed isRemoteCameraControl:(BOOL)isRemoteCameraControl isWaitingForCameraControlAnswer:(BOOL)isWaitingForCameraControlAnswer {
+- (void)updateMenu:(CallStatus)callStatus isAudioMuted:(BOOL)isAudioMuted isSpeakerOn:(BOOL)isSpeakerOn isCameraMuted:(BOOL)isCameraMuted isLocalVideoTrack:(BOOL)isLocalVideoTrack isVideoAllowed:(BOOL)isVideoAllowed isConversationAllowed:(BOOL)isConversationAllowed isStreamingAudioSupported:(BOOL)isStreamingAudioSupported isShareInvitationAllowed:(BOOL)isShareInvitationAllowed hideCertify:(BOOL)hideCertify isCertifyRunning:(BOOL)isCertifyRunning audioDevice:(AudioDevice *)audioDevice isHeadSetAvailable:(BOOL)isHeadSetAvailable isCameraControlAllowed:(BOOL)isCameraControlAllowed isRemoteCameraControl:(BOOL)isRemoteCameraControl isWaitingForCameraControlAnswer:(BOOL)isWaitingForCameraControlAnswer {
     DDLogVerbose(@"%@ updateMenu", LOG_TAG);
+    
+    BOOL isActive = CALL_IS_ACTIVE(callStatus);
+    BOOL isInCall = isActive && !CALL_IS_ON_HOLD(callStatus);
+    BOOL isInPause = CALL_IS_PAUSED(callStatus);
     
     if (isInCall) {
         self.microMuteView.alpha = 1.0;
@@ -224,6 +228,12 @@ static const CGFloat DESIGN_ICON_RESUME_CALL_HEIGHT = 40;
     } else {
         self.pauseImageView.image = [UIImage imageNamed:@"CallPauseIcon"];
         self.pauseImageViewHeightConstraint.constant = DESIGN_ICON_PAUSE_CALL_HEIGHT * Design.HEIGHT_RATIO;
+    }
+    
+    if (!isActive) {
+        self.pauseView.alpha = 0.5;
+    } else {
+        self.pauseView.alpha = 1.0;
     }
         
     if (isVideoAllowed && isInCall) {

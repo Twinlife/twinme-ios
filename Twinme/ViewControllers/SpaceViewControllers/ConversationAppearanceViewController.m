@@ -219,7 +219,7 @@ static CGFloat DESIGN_RESET_HEIGHT = 160;
     if ([self isSelectableRow:indexPath]) {
         PremiumFeatureConfirmView *premiumFeatureConfirmView = [[PremiumFeatureConfirmView alloc] init];
         premiumFeatureConfirmView.bottomSheetViewDelegate = self;
-        [premiumFeatureConfirmView initWithPremiumFeature:[[UIPremiumFeature alloc]initWithFeatureType:FeatureTypeSpaces] parentViewController:self.navigationController];
+        [premiumFeatureConfirmView initWithPremiumFeature:[[UIPremiumFeature alloc]initWithFeatureType:FeatureTypeSpaces spaceSettings:[self currentSpaceSettings]] parentViewController:self.navigationController];
         
         NSMutableAttributedString *attributedTitle = [[NSMutableAttributedString alloc] initWithString:TwinmeLocalizedString(@"personalization_view_controller_title", nil) attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_BOLD44, NSFontAttributeName, Design.FONT_COLOR_DEFAULT, NSForegroundColorAttributeName, nil]];
         [premiumFeatureConfirmView updateTitle:attributedTitle];
@@ -230,30 +230,30 @@ static CGFloat DESIGN_RESET_HEIGHT = 160;
 
 #pragma mark - BottomSheetViewDelegate
 
-- (void)didTapConfirm:(nonnull AbstractBottomSheetView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractConfirmView);
+- (void)didTapConfirm:(nonnull AbstractBottomSheetView *)abstractBottomSheetView {
+    DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractBottomSheetView);
     
     [[UIApplication sharedApplication] openURL:[NSURL URLWithString:TwinmeLocalizedString(@"twinme_plus_link", nil)] options:@{} completionHandler:nil];
 
-    [abstractConfirmView closeConfirmView];
+    [abstractBottomSheetView closeConfirmView];
 }
 
-- (void)didTapCancel:(nonnull AbstractBottomSheetView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didTapCancel: %@", LOG_TAG, abstractConfirmView);
+- (void)didTapCancel:(nonnull AbstractBottomSheetView *)abstractBottomSheetView {
+    DDLogVerbose(@"%@ didTapCancel: %@", LOG_TAG, abstractBottomSheetView);
     
-    [abstractConfirmView closeConfirmView];
+    [abstractBottomSheetView closeConfirmView];
 }
 
-- (void)didClose:(nonnull AbstractBottomSheetView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didClose: %@", LOG_TAG, abstractConfirmView);
+- (void)didClose:(nonnull AbstractBottomSheetView *)abstractBottomSheetView {
+    DDLogVerbose(@"%@ didClose: %@", LOG_TAG, abstractBottomSheetView);
     
-    [abstractConfirmView closeConfirmView];
+    [abstractBottomSheetView closeConfirmView];
 }
 
-- (void)didFinishCloseAnimation:(nonnull AbstractBottomSheetView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didFinishCloseAnimation: %@", LOG_TAG, abstractConfirmView);
+- (void)didFinishCloseAnimation:(nonnull AbstractBottomSheetView *)abstractBottomSheetView {
+    DDLogVerbose(@"%@ didFinishCloseAnimation: %@", LOG_TAG, abstractBottomSheetView);
     
-    [abstractConfirmView removeFromSuperview];
+    [abstractBottomSheetView removeFromSuperview];
 }
 
 #pragma mark - Private methods
@@ -285,7 +285,7 @@ static CGFloat DESIGN_RESET_HEIGHT = 160;
         
         PremiumFeatureConfirmView *premiumFeatureConfirmView = [[PremiumFeatureConfirmView alloc] init];
         premiumFeatureConfirmView.bottomSheetViewDelegate = self;
-        [premiumFeatureConfirmView initWithPremiumFeature:[[UIPremiumFeature alloc]initWithFeatureType:FeatureTypeSpaces] parentViewController:self.navigationController];
+        [premiumFeatureConfirmView initWithPremiumFeature:[[UIPremiumFeature alloc]initWithFeatureType:FeatureTypeSpaces spaceSettings:[self currentSpaceSettings]] parentViewController:self.navigationController];
         [self.navigationController.view addSubview:premiumFeatureConfirmView];
         [premiumFeatureConfirmView showConfirmView];
     }

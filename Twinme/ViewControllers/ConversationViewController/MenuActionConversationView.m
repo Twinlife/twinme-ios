@@ -15,6 +15,7 @@
 #import <TwinmeCommon/ApplicationDelegate.h>
 #import <TwinmeCommon/Design.h>
 #import <TwinmeCommon/TwinmeApplication.h>
+#import <Twinme/TLTwinmeContext.h>
 
 #import "UIView+GradientBackgroundColor.h"
 
@@ -76,12 +77,15 @@ static NSString *MENU_ACTION_CONVERSATION_CELL_IDENTIFIER = @"MenuActionConversa
     
     self.actions = [[NSMutableArray alloc]init];
     
-    [self.actions addObject:[[UIActionConversation alloc]initWithConversationActionType:ConversationActionTypeCamera enabled:self.sendAllowed]];
-    [self.actions addObject:[[UIActionConversation alloc]initWithConversationActionType:ConversationActionTypeGallery enabled:self.sendAllowed]];
-    [self.actions addObject:[[UIActionConversation alloc]initWithConversationActionType:ConversationActionTypeFile enabled:self.sendAllowed]];
-    [self.actions addObject:[[UIActionConversation alloc]initWithConversationActionType:ConversationActionTypeMediasAndFiles enabled:YES]];
-    [self.actions addObject:[[UIActionConversation alloc]initWithConversationActionType:ConversationActionTypeManageConversation enabled:YES]];
-    [self.actions addObject:[[UIActionConversation alloc]initWithConversationActionType:ConversationActionTypeReset enabled:YES]];
+    ApplicationDelegate *delegate = (ApplicationDelegate *)[[UIApplication sharedApplication] delegate];
+    TLTwinmeContext *twinmeContext = [delegate twinmeContext];
+    
+    [self.actions addObject:[[UIActionConversation alloc]initWithConversationActionType:ConversationActionTypeCamera spaceSettings:[twinmeContext defaultSpaceSettings] enabled:self.sendAllowed]];
+    [self.actions addObject:[[UIActionConversation alloc]initWithConversationActionType:ConversationActionTypeGallery spaceSettings:[twinmeContext defaultSpaceSettings] enabled:self.sendAllowed]];
+    [self.actions addObject:[[UIActionConversation alloc]initWithConversationActionType:ConversationActionTypeFile spaceSettings:[twinmeContext defaultSpaceSettings] enabled:self.sendAllowed]];
+    [self.actions addObject:[[UIActionConversation alloc]initWithConversationActionType:ConversationActionTypeMediasAndFiles spaceSettings:[twinmeContext defaultSpaceSettings] enabled:YES]];
+    [self.actions addObject:[[UIActionConversation alloc]initWithConversationActionType:ConversationActionTypeManageConversation spaceSettings:[twinmeContext defaultSpaceSettings] enabled:YES]];
+    [self.actions addObject:[[UIActionConversation alloc]initWithConversationActionType:ConversationActionTypeReset spaceSettings:[twinmeContext defaultSpaceSettings] enabled:YES]];
 }
 
 - (void)openMenu {
@@ -173,8 +177,9 @@ static NSString *MENU_ACTION_CONVERSATION_CELL_IDENTIFIER = @"MenuActionConversa
     
     ApplicationDelegate *delegate = (ApplicationDelegate *)[[UIApplication sharedApplication] delegate];
     TwinmeApplication *twinmeApplication = [delegate twinmeApplication];
+    TLTwinmeContext *twinmeContext = [delegate twinmeContext];
     
-    if ([twinmeApplication darkModeEnable]) {
+    if ([twinmeApplication darkModeEnable:[twinmeContext defaultSpaceSettings]]) {
         blurEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark];
     }
     

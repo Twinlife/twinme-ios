@@ -423,7 +423,7 @@ static TLFloatConfigIdentifier *audioItemRateConfig;
     displayModeConfig.intValue = displayMode;
 }
 
-- (BOOL)darkModeEnable {
+- (BOOL)darkModeEnable:(TLSpaceSettings *)spaceSettings {
     
     BOOL darkMode = NO;
     

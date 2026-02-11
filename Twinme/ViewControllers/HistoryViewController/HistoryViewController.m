@@ -561,7 +561,7 @@ static const int LAST_CALLS_SECTION = 1;
                 if (self.callOriginator.isGroup) {
                     PremiumFeatureConfirmView *premiumFeatureConfirmView = [[PremiumFeatureConfirmView alloc] init];
                     premiumFeatureConfirmView.bottomSheetViewDelegate = self;
-                    [premiumFeatureConfirmView initWithPremiumFeature:[[UIPremiumFeature alloc]initWithFeatureType:FeatureTypeGroupCall] parentViewController:self.tabBarController];
+                    [premiumFeatureConfirmView initWithPremiumFeature:[[UIPremiumFeature alloc]initWithFeatureType:FeatureTypeGroupCall spaceSettings:[self currentSpaceSettings]] parentViewController:self.tabBarController];
                     [self.tabBarController.view addSubview:premiumFeatureConfirmView];
                     [premiumFeatureConfirmView showConfirmView];
                 } else {
@@ -579,7 +579,7 @@ static const int LAST_CALLS_SECTION = 1;
         } else {
             PremiumFeatureConfirmView *premiumFeatureConfirmView = [[PremiumFeatureConfirmView alloc] init];
             premiumFeatureConfirmView.bottomSheetViewDelegate = self;
-            [premiumFeatureConfirmView initWithPremiumFeature:[[UIPremiumFeature alloc]initWithFeatureType:FeatureTypeClickToCall] parentViewController:mainViewController];
+            [premiumFeatureConfirmView initWithPremiumFeature:[[UIPremiumFeature alloc]initWithFeatureType:FeatureTypeClickToCall spaceSettings:self.currentSpaceSettings] parentViewController:mainViewController];
             [mainViewController.view addSubview:premiumFeatureConfirmView];
             [premiumFeatureConfirmView showConfirmView];
         }
@@ -588,10 +588,10 @@ static const int LAST_CALLS_SECTION = 1;
 
 #pragma mark - BottomSheetViewDelegate
 
-- (void)didTapConfirm:(nonnull AbstractBottomSheetView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractConfirmView);
+- (void)didTapConfirm:(nonnull AbstractBottomSheetView *)abstractBottomSheetView {
+    DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractBottomSheetView);
     
-    if ([abstractConfirmView isKindOfClass:[DeleteConfirmView class]]) {
+    if ([abstractBottomSheetView isKindOfClass:[DeleteConfirmView class]]) {
         self.resetAllCalls = YES;
         self.resetCallsBarButtonItem.enabled = NO;
         [self showProgressIndicator];
@@ -601,7 +601,7 @@ static const int LAST_CALLS_SECTION = 1;
             TLCallDescriptor *callDescriptor = self.allCalls[i];
             [self.callsService deleteCallDescriptor:callDescriptor];
         }
-    } else if ([abstractConfirmView isKindOfClass:[CallAgainConfirmView class]]) {
+    } else if ([abstractBottomSheetView isKindOfClass:[CallAgainConfirmView class]]) {
         if (self.callOriginator) {
             if (self.callDescriptor.isVideo) {
                 [self startVideoCallWithPermissionCheck:NO];
@@ -615,27 +615,27 @@ static const int LAST_CALLS_SECTION = 1;
         [[UIApplication sharedApplication] openURL:[NSURL URLWithString:TwinmeLocalizedString(@"twinme_plus_link", nil)] options:@{} completionHandler:nil];
     }
     
-    [abstractConfirmView closeConfirmView];
+    [abstractBottomSheetView closeConfirmView];
 }
 
-- (void)didTapCancel:(nonnull AbstractBottomSheetView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didTapCancel: %@", LOG_TAG, abstractConfirmView);
+- (void)didTapCancel:(nonnull AbstractBottomSheetView *)abstractBottomSheetView {
+    DDLogVerbose(@"%@ didTapCancel: %@", LOG_TAG, abstractBottomSheetView);
     
     self.callDescriptor = nil;
-    [abstractConfirmView closeConfirmView];
+    [abstractBottomSheetView closeConfirmView];
 }
 
-- (void)didClose:(nonnull AbstractBottomSheetView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didClose: %@", LOG_TAG, abstractConfirmView);
+- (void)didClose:(nonnull AbstractBottomSheetView *)abstractBottomSheetView {
+    DDLogVerbose(@"%@ didClose: %@", LOG_TAG, abstractBottomSheetView);
     
     self.callDescriptor = nil;
-    [abstractConfirmView closeConfirmView];
+    [abstractBottomSheetView closeConfirmView];
 }
 
-- (void)didFinishCloseAnimation:(nonnull AbstractBottomSheetView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didFinishCloseAnimation: %@", LOG_TAG, abstractConfirmView);
+- (void)didFinishCloseAnimation:(nonnull AbstractBottomSheetView *)abstractBottomSheetView {
+    DDLogVerbose(@"%@ didFinishCloseAnimation: %@", LOG_TAG, abstractBottomSheetView);
     
-    [abstractConfirmView removeFromSuperview];
+    [abstractBottomSheetView removeFromSuperview];
 }
 
 #pragma mark - OnboardingExternalCallDelegate
@@ -645,7 +645,7 @@ static const int LAST_CALLS_SECTION = 1;
     
     PremiumFeatureConfirmView *premiumFeatureConfirmView = [[PremiumFeatureConfirmView alloc] init];
     premiumFeatureConfirmView.bottomSheetViewDelegate = self;
-    [premiumFeatureConfirmView initWithPremiumFeature:[[UIPremiumFeature alloc]initWithFeatureType:FeatureTypeClickToCall] parentViewController:self.tabBarController];
+    [premiumFeatureConfirmView initWithPremiumFeature:[[UIPremiumFeature alloc]initWithFeatureType:FeatureTypeClickToCall spaceSettings:[self currentSpaceSettings]] parentViewController:self.tabBarController];
     [self.tabBarController.view addSubview:premiumFeatureConfirmView];
     [premiumFeatureConfirmView showConfirmView];
 }

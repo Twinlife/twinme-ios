@@ -276,7 +276,7 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
     if (!self.sideMenuOpen && !self.splashScreenViewController) {
         self.isStatusBarDark = NO;
     } else {        
-        self.isStatusBarDark = ![self.twinmeApplication darkModeEnable];
+        self.isStatusBarDark = ![self.twinmeApplication darkModeEnable:[self.twinmeContext defaultSpaceSettings]];
     }
     
     [UIView animateWithDuration:0.3 delay:0. options: UIViewAnimationOptionCurveEaseIn animations:^{
@@ -489,10 +489,10 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
 
 #pragma mark - BottomSheetViewDelegate
 
-- (void)didTapConfirm:(nonnull AbstractBottomSheetView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractConfirmView);
+- (void)didTapConfirm:(nonnull AbstractBottomSheetView *)abstractBottomSheetView {
+    DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractBottomSheetView);
     
-    if ([abstractConfirmView isKindOfClass:[DefaultConfirmView class]]) {
+    if ([abstractBottomSheetView isKindOfClass:[DefaultConfirmView class]]) {
         if (self.proxyToAdd) {
             [self addProxy];
         } else {
@@ -500,25 +500,25 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
         }
     }
 
-    [abstractConfirmView closeConfirmView];
+    [abstractBottomSheetView closeConfirmView];
 }
 
-- (void)didTapCancel:(nonnull AbstractBottomSheetView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didTapCancel: %@", LOG_TAG, abstractConfirmView);
+- (void)didTapCancel:(nonnull AbstractBottomSheetView *)abstractBottomSheetView {
+    DDLogVerbose(@"%@ didTapCancel: %@", LOG_TAG, abstractBottomSheetView);
     
-    [abstractConfirmView closeConfirmView];
+    [abstractBottomSheetView closeConfirmView];
 }
 
-- (void)didClose:(nonnull AbstractBottomSheetView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didClose: %@", LOG_TAG, abstractConfirmView);
+- (void)didClose:(nonnull AbstractBottomSheetView *)abstractBottomSheetView {
+    DDLogVerbose(@"%@ didClose: %@", LOG_TAG, abstractBottomSheetView);
     
-    [abstractConfirmView closeConfirmView];
+    [abstractBottomSheetView closeConfirmView];
 }
 
-- (void)didFinishCloseAnimation:(nonnull AbstractBottomSheetView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didFinishCloseAnimation: %@", LOG_TAG, abstractConfirmView);
+- (void)didFinishCloseAnimation:(nonnull AbstractBottomSheetView *)abstractBottomSheetView {
+    DDLogVerbose(@"%@ didFinishCloseAnimation: %@", LOG_TAG, abstractBottomSheetView);
     
-    [abstractConfirmView removeFromSuperview];
+    [abstractBottomSheetView removeFromSuperview];
     
     if (self.proxyToAdd) {
         self.proxyToAdd = nil;
@@ -1247,7 +1247,7 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
                 dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
                     DefaultConfirmView *defaultConfirmView = [[DefaultConfirmView alloc] init];
                     defaultConfirmView.bottomSheetViewDelegate = self;
-                    UIImage *image = [self.twinmeApplication darkModeEnable] ? [UIImage imageNamed:@"EnableNotificationDark"] : [UIImage imageNamed:@"EnableNotification"];
+                    UIImage *image = [self.twinmeApplication darkModeEnable:[self.twinmeContext defaultSpaceSettings]] ? [UIImage imageNamed:@"EnableNotificationDark"] : [UIImage imageNamed:@"EnableNotification"];
                     [defaultConfirmView initWithTitle:TwinmeLocalizedString(@"quality_of_services_view_controller_settings", nil) message:TwinmeLocalizedString(@"quality_of_services_view_controller_enable_notifications_warning", nil) image:image avatar:nil action:TwinmeLocalizedString(@"quality_of_services_view_controller_enable_notifications", nil) actionColor:nil cancel:nil];
                     [self.view addSubview:defaultConfirmView];
                     

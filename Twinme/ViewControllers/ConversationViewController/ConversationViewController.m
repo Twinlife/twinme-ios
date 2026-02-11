@@ -2792,54 +2792,54 @@ typedef enum {
 
 #pragma mark - BottomSheetViewDelegate
 
-- (void)didTapConfirm:(nonnull AbstractBottomSheetView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractConfirmView);
+- (void)didTapConfirm:(nonnull AbstractBottomSheetView *)abstractBottomSheetView {
+    DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractBottomSheetView);
     
-    if ([abstractConfirmView isKindOfClass:[PremiumFeatureConfirmView class]]) {
+    if ([abstractBottomSheetView isKindOfClass:[PremiumFeatureConfirmView class]]) {
         [[UIApplication sharedApplication] openURL:[NSURL URLWithString:TwinmeLocalizedString(@"twinme_plus_link", nil)] options:@{} completionHandler:nil];
-    } else if ([abstractConfirmView isKindOfClass:[ResetConversationConfirmView class]]) {
+    } else if ([abstractBottomSheetView isKindOfClass:[ResetConversationConfirmView class]]) {
         [self.conversationService resetConversation];
-    } else if([abstractConfirmView isKindOfClass:[CallAgainConfirmView class]]) {
+    } else if([abstractBottomSheetView isKindOfClass:[CallAgainConfirmView class]]) {
         if (self.callAgainDescriptor.isVideo) {
             [self handleVideoTapGesture:nil];
         } else {
             [self handleAudioTapGesture:nil];
         }
         [self setSelectedMode:ModeDefault];
-    } else if([abstractConfirmView isKindOfClass:[DeleteConfirmView class]]) {
+    } else if([abstractBottomSheetView isKindOfClass:[DeleteConfirmView class]]) {
         [self deleteSelectedItems];
         [self handleCancelSelectModeTapGesture:nil];
     }
     
-    [abstractConfirmView closeConfirmView];
+    [abstractBottomSheetView closeConfirmView];
 }
 
-- (void)didTapCancel:(nonnull AbstractBottomSheetView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didTapCancel: %@", LOG_TAG, abstractConfirmView);
+- (void)didTapCancel:(nonnull AbstractBottomSheetView *)abstractBottomSheetView {
+    DDLogVerbose(@"%@ didTapCancel: %@", LOG_TAG, abstractBottomSheetView);
     
-    if([abstractConfirmView isKindOfClass:[DefaultConfirmView class]]) {
+    if([abstractBottomSheetView isKindOfClass:[DefaultConfirmView class]]) {
         [self.twinmeApplication setShowWarningEditMessageWithState:NO];
-    } else if([abstractConfirmView isKindOfClass:[DeleteConfirmView class]]) {
+    } else if([abstractBottomSheetView isKindOfClass:[DeleteConfirmView class]]) {
         [self handleCancelSelectModeTapGesture:nil];
     }
      
-    [abstractConfirmView closeConfirmView];
+    [abstractBottomSheetView closeConfirmView];
 }
 
-- (void)didClose:(nonnull AbstractBottomSheetView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didClose: %@", LOG_TAG, abstractConfirmView);
+- (void)didClose:(nonnull AbstractBottomSheetView *)abstractBottomSheetView {
+    DDLogVerbose(@"%@ didClose: %@", LOG_TAG, abstractBottomSheetView);
     
-   if ([abstractConfirmView isKindOfClass:[DeleteConfirmView class]]) {
+   if ([abstractBottomSheetView isKindOfClass:[DeleteConfirmView class]]) {
        [self handleCancelSelectModeTapGesture:nil];
    }
     
-    [abstractConfirmView closeConfirmView];
+    [abstractBottomSheetView closeConfirmView];
 }
 
-- (void)didFinishCloseAnimation:(nonnull AbstractBottomSheetView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didFinishCloseAnimation: %@", LOG_TAG, abstractConfirmView);
+- (void)didFinishCloseAnimation:(nonnull AbstractBottomSheetView *)abstractBottomSheetView {
+    DDLogVerbose(@"%@ didFinishCloseAnimation: %@", LOG_TAG, abstractBottomSheetView);
     
-    [abstractConfirmView removeFromSuperview];
+    [abstractBottomSheetView removeFromSuperview];
 }
 
 #pragma mark - ReplyViewDelegate
@@ -4886,7 +4886,7 @@ typedef enum {
         [self dismissKeyboard:NO];
         PremiumFeatureConfirmView *premiumFeatureConfirmView = [[PremiumFeatureConfirmView alloc] init];
         premiumFeatureConfirmView.bottomSheetViewDelegate = self;
-        [premiumFeatureConfirmView initWithPremiumFeature:[[UIPremiumFeature alloc]initWithFeatureType:FeatureTypeGroupCall] parentViewController:self.navigationController];
+        [premiumFeatureConfirmView initWithPremiumFeature:[[UIPremiumFeature alloc]initWithFeatureType:FeatureTypeGroupCall spaceSettings:self.twinmeContext.defaultSpaceSettings] parentViewController:self.navigationController];
         [self.navigationController.view addSubview:premiumFeatureConfirmView];
         [premiumFeatureConfirmView showConfirmView];
         
@@ -4986,7 +4986,7 @@ typedef enum {
         [self dismissKeyboard:NO];
         PremiumFeatureConfirmView *premiumFeatureConfirmView = [[PremiumFeatureConfirmView alloc] init];
         premiumFeatureConfirmView.bottomSheetViewDelegate = self;
-        [premiumFeatureConfirmView initWithPremiumFeature:[[UIPremiumFeature alloc]initWithFeatureType:FeatureTypeGroupCall] parentViewController:self.navigationController];
+        [premiumFeatureConfirmView initWithPremiumFeature:[[UIPremiumFeature alloc]initWithFeatureType:FeatureTypeGroupCall spaceSettings:self.twinmeContext.defaultSpaceSettings] parentViewController:self.navigationController];
         [self.navigationController.view addSubview:premiumFeatureConfirmView];
         [premiumFeatureConfirmView showConfirmView];
         return;
@@ -6253,7 +6253,7 @@ typedef enum {
     TwinmeApplication *twinmeApplication = [delegate twinmeApplication];
     
     CGFloat topEdit = self.textView.frame.origin.y;
-    BOOL darkMode = [twinmeApplication darkModeEnable];
+    BOOL darkMode = [twinmeApplication darkModeEnable:[self.twinmeContext defaultSpaceSettings]];
     if (darkMode) {
         topEdit += 1;
     }
@@ -6475,7 +6475,7 @@ typedef enum {
     self.tableView.backgroundColor = Design.WHITE_COLOR;
     [self.textInputbar setBackgroundColor:Design.WHITE_COLOR];
     
-    if ([self.twinmeApplication darkModeEnable]) {
+    if ([self.twinmeApplication darkModeEnable:[self.twinmeContext defaultSpaceSettings]]) {
         self.textView.layer.borderColor = DESIGN_BORDER_COLOR.CGColor;
         self.textView.layer.borderWidth = 1.0f;
         self.textView.keyboardAppearance = UIKeyboardAppearanceDark;

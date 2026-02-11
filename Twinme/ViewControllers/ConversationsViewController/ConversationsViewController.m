@@ -1104,8 +1104,8 @@ static int LAST_USED_CONVERSATION_COUNT = 99999;
 
 #pragma mark - BottomSheetViewDelegate
 
-- (void)didTapConfirm:(nonnull AbstractBottomSheetView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractConfirmView);
+- (void)didTapConfirm:(nonnull AbstractBottomSheetView *)abstractBottomSheetView {
+    DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractBottomSheetView);
     
     UIConversation* uiConversation = self.resetConversation;
     [self.conversationsTableView setEditing:NO];
@@ -1114,8 +1114,8 @@ static int LAST_USED_CONVERSATION_COUNT = 99999;
     [self.resetConversationConfirmView closeConfirmView];
 }
 
-- (void)didTapCancel:(nonnull AbstractBottomSheetView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didTapCancel: %@", LOG_TAG, abstractConfirmView);
+- (void)didTapCancel:(nonnull AbstractBottomSheetView *)abstractBottomSheetView {
+    DDLogVerbose(@"%@ didTapCancel: %@", LOG_TAG, abstractBottomSheetView);
     
     [self.conversationsTableView setEditing:NO];
     self.resetConversation = nil;
@@ -1123,8 +1123,8 @@ static int LAST_USED_CONVERSATION_COUNT = 99999;
     [self.resetConversationConfirmView closeConfirmView];
 }
 
-- (void)didClose:(nonnull AbstractBottomSheetView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didClose: %@", LOG_TAG, abstractConfirmView);
+- (void)didClose:(nonnull AbstractBottomSheetView *)abstractBottomSheetView {
+    DDLogVerbose(@"%@ didClose: %@", LOG_TAG, abstractBottomSheetView);
     
     [self.conversationsTableView setEditing:NO];
     self.resetConversation = nil;
@@ -1132,8 +1132,8 @@ static int LAST_USED_CONVERSATION_COUNT = 99999;
     [self.resetConversationConfirmView closeConfirmView];
 }
 
-- (void)didFinishCloseAnimation:(nonnull AbstractBottomSheetView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didFinishCloseAnimation: %@", LOG_TAG, abstractConfirmView);
+- (void)didFinishCloseAnimation:(nonnull AbstractBottomSheetView *)abstractBottomSheetView {
+    DDLogVerbose(@"%@ didFinishCloseAnimation: %@", LOG_TAG, abstractBottomSheetView);
     
     [self.resetConversationConfirmView removeFromSuperview];
     self.resetConversationConfirmView = nil;
@@ -1624,7 +1624,7 @@ static int LAST_USED_CONVERSATION_COUNT = 99999;
         self.startConversationView.hidden = YES;
         self.inviteContactView.hidden = NO;
         self.noConversationImageViewHeightConstraint.constant = DESIGN_NO_CONTACT_IMAGE_HEIGHT * Design.HEIGHT_RATIO;
-        self.noConversationImageView.image = [self.twinmeApplication darkModeEnable] ? [UIImage imageNamed:@"OnboardingStep3Dark"] : [UIImage imageNamed:@"OnboardingStep3"];
+        self.noConversationImageView.image = [self.twinmeApplication darkModeEnable:[self currentSpaceSettings]] ? [UIImage imageNamed:@"OnboardingStep3Dark"] : [UIImage imageNamed:@"OnboardingStep3"];
         self.noConversationLabel.text = TwinmeLocalizedString(@"add_contact_view_controller_onboarding_message", nil);
         
         self.navigationItem.titleView = nil;
@@ -1644,7 +1644,7 @@ static int LAST_USED_CONVERSATION_COUNT = 99999;
         self.inviteContactView.hidden = YES;
         self.startConversationView.hidden = NO;
         self.noConversationImageViewHeightConstraint.constant = DESIGN_NO_CONVERSATION_IMAGE_HEIGHT * Design.HEIGHT_RATIO;
-        self.noConversationImageView.image = [self.twinmeApplication darkModeEnable] ? [UIImage imageNamed:@"OnboardingStep2Dark"] : [UIImage imageNamed:@"OnboardingStep2"];
+        self.noConversationImageView.image = [self.twinmeApplication darkModeEnable:[self currentSpaceSettings]] ? [UIImage imageNamed:@"OnboardingStep2Dark"] : [UIImage imageNamed:@"OnboardingStep2"];
         self.noConversationLabel.text = TwinmeLocalizedString(@"conversations_view_controller_no_conversation_message", nil);
         
         self.navigationItem.titleView = nil;
@@ -1835,7 +1835,7 @@ static int LAST_USED_CONVERSATION_COUNT = 99999;
         self.searchController.searchBar.backgroundColor = Design.NAVIGATION_BAR_BACKGROUND_COLOR;
     }
     
-    if ([self.twinmeApplication darkModeEnable]) {
+    if ([self.twinmeApplication darkModeEnable:[self currentSpaceSettings]]) {
         self.searchController.searchBar.keyboardAppearance = UIKeyboardAppearanceDark;
     } else {
         self.searchController.searchBar.keyboardAppearance = UIKeyboardAppearanceLight;

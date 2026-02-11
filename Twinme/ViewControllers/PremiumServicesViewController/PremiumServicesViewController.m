@@ -292,14 +292,14 @@ static CGFloat FEATURE_CELL_HEIGHT;
     DDLogVerbose(@"%@ initFeatures", LOG_TAG);
     
     self.premiumFeatures = [[NSMutableArray alloc]init];
-    [self.premiumFeatures addObject:[[UIPremiumFeature alloc]initWithFeatureType:FeatureTypePrivacy]];
-    [self.premiumFeatures addObject:[[UIPremiumFeature alloc]initWithFeatureType:FeatureTypeSpaces]];
-    [self.premiumFeatures addObject:[[UIPremiumFeature alloc]initWithFeatureType:FeatureTypeGroupCall]];
-    [self.premiumFeatures addObject:[[UIPremiumFeature alloc]initWithFeatureType:FeatureTypeStreaming]];
-    [self.premiumFeatures addObject:[[UIPremiumFeature alloc]initWithFeatureType:FeatureTypeTransfertCall]];
-    [self.premiumFeatures addObject:[[UIPremiumFeature alloc]initWithFeatureType:FeatureTypeClickToCall]];
-    [self.premiumFeatures addObject:[[UIPremiumFeature alloc]initWithFeatureType:FeatureTypeConversation]];
-    [self.premiumFeatures addObject:[[UIPremiumFeature alloc]initWithFeatureType:FeatureTypeRemoteControl]];
+    [self.premiumFeatures addObject:[[UIPremiumFeature alloc]initWithFeatureType:FeatureTypePrivacy spaceSettings:[self currentSpaceSettings]]];
+    [self.premiumFeatures addObject:[[UIPremiumFeature alloc]initWithFeatureType:FeatureTypeSpaces spaceSettings:[self currentSpaceSettings]]];
+    [self.premiumFeatures addObject:[[UIPremiumFeature alloc]initWithFeatureType:FeatureTypeGroupCall spaceSettings:[self currentSpaceSettings]]];
+    [self.premiumFeatures addObject:[[UIPremiumFeature alloc]initWithFeatureType:FeatureTypeStreaming spaceSettings:[self currentSpaceSettings]]];
+    [self.premiumFeatures addObject:[[UIPremiumFeature alloc]initWithFeatureType:FeatureTypeTransfertCall spaceSettings:[self currentSpaceSettings]]];
+    [self.premiumFeatures addObject:[[UIPremiumFeature alloc]initWithFeatureType:FeatureTypeClickToCall spaceSettings:[self currentSpaceSettings]]];
+    [self.premiumFeatures addObject:[[UIPremiumFeature alloc]initWithFeatureType:FeatureTypeConversation spaceSettings:[self currentSpaceSettings]]];
+    [self.premiumFeatures addObject:[[UIPremiumFeature alloc]initWithFeatureType:FeatureTypeRemoteControl spaceSettings:[self currentSpaceSettings]]];
 }
 
 - (void)handleUpdateTapGesture:(UITapGestureRecognizer *)sender {

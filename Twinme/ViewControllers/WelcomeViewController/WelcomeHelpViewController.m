@@ -231,9 +231,9 @@ static NSString *WELCOME_CELL_IDENTIFIER = @"WelcomeCellIdentifier";
     DDLogVerbose(@"%@ initWelcome", LOG_TAG);
     
     self.uiWelcome = [[NSMutableArray alloc]init];
-    [self.uiWelcome addObject:[[UIWelcome alloc]initWithWelcomePart:WelcomePartOne]];
-    [self.uiWelcome addObject:[[UIWelcome alloc]initWithWelcomePart:WelcomePartTwo]];
-    [self.uiWelcome addObject:[[UIWelcome alloc]initWithWelcomePart:WelcomePartThree]];
+    [self.uiWelcome addObject:[[UIWelcome alloc]initWithWelcomePart:WelcomePartOne spaceSettings:[self currentSpaceSettings]]];
+    [self.uiWelcome addObject:[[UIWelcome alloc]initWithWelcomePart:WelcomePartTwo spaceSettings:[self currentSpaceSettings]]];
+    [self.uiWelcome addObject:[[UIWelcome alloc]initWithWelcomePart:WelcomePartThree spaceSettings:[self currentSpaceSettings]]];
     
     self.welcomePageControl.numberOfPages = self.uiWelcome.count;
         

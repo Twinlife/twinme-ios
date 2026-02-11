@@ -20,7 +20,6 @@ static const int ddLogLevel = DDLogLevelVerbose;
 static const int ddLogLevel = DDLogLevelWarning;
 #endif
 
-
 //
 // Interface: InvitationCodeShareView ()
 //

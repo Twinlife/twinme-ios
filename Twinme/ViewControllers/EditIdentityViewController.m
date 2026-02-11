@@ -784,7 +784,7 @@ static const int ddLogLevel = DDLogLevelWarning;
         self.descriptionTextView.textColor = Design.FONT_COLOR_DEFAULT;
     }
     
-    if ([self.twinmeApplication darkModeEnable]) {
+    if ([self.twinmeApplication darkModeEnable:[self currentSpaceSettings]]) {
         self.nameTextField.keyboardAppearance = UIKeyboardAppearanceDark;
         self.descriptionTextView.keyboardAppearance = UIKeyboardAppearanceDark;
     } else {

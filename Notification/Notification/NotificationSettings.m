@@ -152,11 +152,17 @@ static TLStringSharedConfigIdentifier *videoCallSoundConfig;
             return [[NSArray alloc] initWithObjects:
                     [[NotificationSoundSetting alloc] initWithType:NotificationSoundTypeAudioCall name:@"twinme audio call" soundId:0 soundPath:@"twinme_audio_call.caf"],
                     [[NotificationSoundSetting alloc] initWithType:NotificationSoundTypeAudioCall name:@"twinme video call" soundId:0 soundPath:@"twinme_video_call.caf"],
+                    /*[[NotificationSoundSetting alloc] initWithType:NotificationSoundTypeAudioCall name:@"nature audio call" soundId:0 soundPath:@"nature_audio.caf"],
+                    [[NotificationSoundSetting alloc] initWithType:NotificationSoundTypeAudioCall name:@"nature video call" soundId:0 soundPath:@"nature_video.caf"],
+                    [[NotificationSoundSetting alloc] initWithType:NotificationSoundTypeAudioCall name:@"skype" soundId:0 soundPath:@"skype.caf"],*/
                     nil];
         case NotificationSoundTypeVideoCall:
             return [[NSArray alloc] initWithObjects:
                     [[NotificationSoundSetting alloc] initWithType:NotificationSoundTypeVideoCall name:@"twinme audio call" soundId:0 soundPath:@"twinme_audio_call.caf"],
                     [[NotificationSoundSetting alloc] initWithType:NotificationSoundTypeVideoCall name:@"twinme video call" soundId:0 soundPath:@"twinme_video_call.caf"],
+                    /*[[NotificationSoundSetting alloc] initWithType:NotificationSoundTypeAudioCall name:@"nature audio call" soundId:0 soundPath:@"nature_audio.caf"],
+                    [[NotificationSoundSetting alloc] initWithType:NotificationSoundTypeAudioCall name:@"nature video call" soundId:0 soundPath:@"nature_video.caf"],
+                    [[NotificationSoundSetting alloc] initWithType:NotificationSoundTypeAudioCall name:@"skype" soundId:0 soundPath:@"skype.caf"],*/
                     nil];
         
         case NotificationSoundTypeAudioCalling:

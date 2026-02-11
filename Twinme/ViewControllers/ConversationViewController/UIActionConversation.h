@@ -15,6 +15,8 @@ typedef enum {
     ConversationActionTypeReset
 } ConversationActionType;
 
+@class TLSpaceSettings;
+
 //
 // Interface: UIActionConversation
 //
@@ -22,11 +24,12 @@ typedef enum {
 @interface UIActionConversation : NSObject
 
 @property (nonatomic) ConversationActionType conversationActionType;
+@property (nonatomic, nonnull) TLSpaceSettings *spaceSettings;
 @property (nonatomic, nonnull) NSString *title;
 @property (nonatomic, nonnull) UIImage *icon;
 @property (nonatomic, nonnull) UIColor *iconColor;
 @property (nonatomic,) BOOL enabled;
 
-- (nonnull instancetype)initWithConversationActionType:(ConversationActionType)conversationActionType enabled:(BOOL)enabled;
+- (nonnull instancetype)initWithConversationActionType:(ConversationActionType)conversationActionType spaceSettings:(nullable TLSpaceSettings *)spaceSettings enabled:(BOOL)enabled;
 
 @end

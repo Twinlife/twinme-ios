@@ -16,11 +16,14 @@ typedef enum {
 // Interface: UIQuality
 //
 
+@class TLSpaceSettings;
+
 @interface UIQuality : NSObject
 
 @property (nonatomic) QualityOfServicesPart qualityOfServicesPart;
+@property (nonatomic, nonnull) TLSpaceSettings *spaceSettings;
 
-- (nonnull instancetype)initWithQualityOfServicesPart:(QualityOfServicesPart)qualityOfServicesPart;
+- (nonnull instancetype)initWithQualityOfServicesPart:(QualityOfServicesPart)qualityOfServicesPart spaceSettings:(nullable TLSpaceSettings *)spaceSettings;
 
 - (nullable UIImage *)getImage;
 

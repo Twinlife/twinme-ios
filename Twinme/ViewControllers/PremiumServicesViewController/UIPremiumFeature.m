@@ -20,13 +20,14 @@
 
 @implementation UIPremiumFeature
 
-- (nonnull instancetype)initWithFeatureType:(FeatureType)featureType {
+- (nonnull instancetype)initWithFeatureType:(FeatureType)featureType spaceSettings:(nullable TLSpaceSettings *)spaceSettings {
     
     self = [super init];
     
     if (self) {
         _featureType = featureType;
         _featureDetails = [[NSMutableArray alloc]init];
+        _spaceSettings = spaceSettings;
         [self initFeatureDetails];
     }
     return self;
@@ -125,7 +126,7 @@
     ApplicationDelegate *delegate = (ApplicationDelegate *)[[UIApplication sharedApplication] delegate];
     TwinmeApplication *twinmeApplication = [delegate twinmeApplication];
      
-    BOOL darkMode = [twinmeApplication darkModeEnable];
+    BOOL darkMode = [twinmeApplication darkModeEnable:self.spaceSettings];
     
     UIImage *featureImage;
     switch (self.featureType) {
@@ -173,7 +174,7 @@
     ApplicationDelegate *delegate = (ApplicationDelegate *)[[UIApplication sharedApplication] delegate];
     TwinmeApplication *twinmeApplication = [delegate twinmeApplication];
      
-    BOOL darkMode = [twinmeApplication darkModeEnable];
+    BOOL darkMode = [twinmeApplication darkModeEnable:self.spaceSettings];
 
     switch (self.featureType) {
         case FeatureTypeClickToCall:

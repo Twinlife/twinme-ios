@@ -16,6 +16,8 @@
 #import <TwinmeCommon/Design.h>
 #import <TwinmeCommon/TwinmeApplication.h>
 
+#import <Twinme/TLTwinmeContext.h>
+
 #if 0
 static const int ddLogLevel = DDLogLevelVerbose;
 #else
@@ -163,7 +165,7 @@ static CGFloat DESIGN_TEXTFIELD_HEIGHT = 82;
     ApplicationDelegate *delegate = (ApplicationDelegate *)[[UIApplication sharedApplication] delegate];
     TwinmeApplication *twinmeApplication = [delegate twinmeApplication];
     
-    if ([twinmeApplication darkModeEnable]) {
+    if ([twinmeApplication darkModeEnable:[[delegate twinmeContext] defaultSpaceSettings]]) {
         self.deleteConfirmTextField.keyboardAppearance = UIKeyboardAppearanceDark;
     } else {
         self.deleteConfirmTextField.keyboardAppearance = UIKeyboardAppearanceLight;

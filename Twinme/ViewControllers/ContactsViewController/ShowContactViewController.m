@@ -443,7 +443,7 @@ static CGFloat DESIGN_NAME_DEFAULT_WIDTH = 420;
         OnboardingConfirmView *onboardingConfirmView = [[OnboardingConfirmView alloc] init];
         onboardingConfirmView.bottomSheetViewDelegate = self;
         onboardingConfirmView.tag = OnboardingTypeCertifiedRelation;
-        UIImage *image = [self.twinmeApplication darkModeEnable] ? [UIImage imageNamed:@"OnboardingAuthentifiedRelationDark"] : [UIImage imageNamed:@"OnboardingAuthentifiedRelation"];
+        UIImage *image = [self.twinmeApplication darkModeEnable:[self currentSpaceSettings]] ? [UIImage imageNamed:@"OnboardingAuthentifiedRelationDark"] : [UIImage imageNamed:@"OnboardingAuthentifiedRelation"];
         NSString *message = [NSString stringWithFormat:@"%@\n\n%@", TwinmeLocalizedString(@"authentified_relation_view_controller_onboarding_message", nil), TwinmeLocalizedString(@"call_view_controller_certify_onboarding_message", nil)];
         
         NSMutableAttributedString *attributedTitle = [[NSMutableAttributedString alloc] initWithString:TwinmeLocalizedString(@"authentified_relation_view_controller_to_be_certified_title", nil) attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_BOLD36, NSFontAttributeName, Design.FONT_COLOR_DEFAULT, NSForegroundColorAttributeName, nil]];
@@ -477,37 +477,37 @@ static CGFloat DESIGN_NAME_DEFAULT_WIDTH = 420;
 
 #pragma mark - BottomSheetViewDelegate
 
-- (void)didTapConfirm:(nonnull AbstractBottomSheetView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractConfirmView);
+- (void)didTapConfirm:(nonnull AbstractBottomSheetView *)abstractBottomSheetView {
+    DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractBottomSheetView);
     
-    if (abstractConfirmView.tag == OnboardingTypeCertifiedRelation){
+    if (abstractBottomSheetView.tag == OnboardingTypeCertifiedRelation){
         [self startCertifyByVideoCall];
     }
     
-    [abstractConfirmView closeConfirmView];
+    [abstractBottomSheetView closeConfirmView];
 }
 
-- (void)didTapCancel:(nonnull AbstractBottomSheetView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didTapCancel: %@", LOG_TAG, abstractConfirmView);
+- (void)didTapCancel:(nonnull AbstractBottomSheetView *)abstractBottomSheetView {
+    DDLogVerbose(@"%@ didTapCancel: %@", LOG_TAG, abstractBottomSheetView);
     
-    if (abstractConfirmView.tag == OnboardingTypeCertifiedRelation){
+    if (abstractBottomSheetView.tag == OnboardingTypeCertifiedRelation){
         [self.twinmeApplication setShowOnboardingType:OnboardingTypeCertifiedRelation state:NO];
         [self startCertifyByVideoCall];
     }
     
-    [abstractConfirmView closeConfirmView];
+    [abstractBottomSheetView closeConfirmView];
 }
 
-- (void)didClose:(nonnull AbstractBottomSheetView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didClose: %@", LOG_TAG, abstractConfirmView);
+- (void)didClose:(nonnull AbstractBottomSheetView *)abstractBottomSheetView {
+    DDLogVerbose(@"%@ didClose: %@", LOG_TAG, abstractBottomSheetView);
     
-    [abstractConfirmView closeConfirmView];
+    [abstractBottomSheetView closeConfirmView];
 }
 
-- (void)didFinishCloseAnimation:(nonnull AbstractBottomSheetView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didFinishCloseAnimation: %@", LOG_TAG, abstractConfirmView);
+- (void)didFinishCloseAnimation:(nonnull AbstractBottomSheetView *)abstractBottomSheetView {
+    DDLogVerbose(@"%@ didFinishCloseAnimation: %@", LOG_TAG, abstractBottomSheetView);
     
-    [abstractConfirmView removeFromSuperview];
+    [abstractBottomSheetView removeFromSuperview];
 }
 
 #pragma mark - Private methods

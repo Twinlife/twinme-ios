@@ -591,24 +591,24 @@ static UIColor *DESIGN_PLACEHOLDER_COLOR;
 
 #pragma mark - BottomSheetViewDelegate
 
-- (void)didTapConfirm:(nonnull AbstractBottomSheetView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractConfirmView);
+- (void)didTapConfirm:(nonnull AbstractBottomSheetView *)abstractBottomSheetView {
+    DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractBottomSheetView);
     
     if (self.resetInvitationConfirmView) {
         [self.shareProfileService changeProfileTwincode:self.profile];
         [self.resetInvitationConfirmView closeConfirmView];
-    } else if ([abstractConfirmView isKindOfClass:[DefaultConfirmView class]]) {
+    } else if ([abstractBottomSheetView isKindOfClass:[DefaultConfirmView class]]) {
         [self addProxy];
-        [abstractConfirmView closeConfirmView];
-    } else if ([abstractConfirmView isKindOfClass:[SuccessAuthentifiedRelationView class]]) {
-        [abstractConfirmView closeConfirmView];
+        [abstractBottomSheetView closeConfirmView];
+    } else if ([abstractBottomSheetView isKindOfClass:[SuccessAuthentifiedRelationView class]]) {
+        [abstractBottomSheetView closeConfirmView];
     }
 }
 
-- (void)didTapCancel:(nonnull AbstractBottomSheetView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didTapCancel: %@", LOG_TAG, abstractConfirmView);
+- (void)didTapCancel:(nonnull AbstractBottomSheetView *)abstractBottomSheetView {
+    DDLogVerbose(@"%@ didTapCancel: %@", LOG_TAG, abstractBottomSheetView);
     
-    if ([abstractConfirmView isKindOfClass:[DefaultConfirmView class]]) {
+    if ([abstractBottomSheetView isKindOfClass:[DefaultConfirmView class]]) {
         if (self.captureSession) {
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                 [self.captureSession startRunning];
@@ -618,19 +618,19 @@ static UIColor *DESIGN_PLACEHOLDER_COLOR;
         }
     }
     
-    [abstractConfirmView closeConfirmView];
+    [abstractBottomSheetView closeConfirmView];
 }
 
-- (void)didClose:(nonnull AbstractBottomSheetView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didClose: %@", LOG_TAG, abstractConfirmView);
+- (void)didClose:(nonnull AbstractBottomSheetView *)abstractBottomSheetView {
+    DDLogVerbose(@"%@ didClose: %@", LOG_TAG, abstractBottomSheetView);
     
-    [abstractConfirmView closeConfirmView];
+    [abstractBottomSheetView closeConfirmView];
 }
 
-- (void)didFinishCloseAnimation:(nonnull AbstractBottomSheetView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didFinishCloseAnimation: %@", LOG_TAG, abstractConfirmView);
+- (void)didFinishCloseAnimation:(nonnull AbstractBottomSheetView *)abstractBottomSheetView {
+    DDLogVerbose(@"%@ didFinishCloseAnimation: %@", LOG_TAG, abstractBottomSheetView);
     
-    if ([abstractConfirmView isKindOfClass:[SuccessAuthentifiedRelationView class]]) {
+    if ([abstractBottomSheetView isKindOfClass:[SuccessAuthentifiedRelationView class]]) {
         if (self.captureSession) {
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                 [self.captureSession startRunning];
@@ -640,7 +640,7 @@ static UIColor *DESIGN_PLACEHOLDER_COLOR;
         }
     }
     
-    [abstractConfirmView removeFromSuperview];
+    [abstractBottomSheetView removeFromSuperview];
     
     if (self.proxyToAdd) {
         self.proxyToAdd = nil;
@@ -1639,7 +1639,7 @@ static UIColor *DESIGN_PLACEHOLDER_COLOR;
     
     self.twincodeTextField.attributedPlaceholder = [[NSAttributedString alloc]initWithString:TwinmeLocalizedString(@"scan_view_controller_paste_code", nil) attributes:[NSDictionary dictionaryWithObject:Design.PLACEHOLDER_COLOR forKey:NSForegroundColorAttributeName]];
     
-    if ([self.twinmeApplication darkModeEnable]) {
+    if ([self.twinmeApplication darkModeEnable:[self currentSpaceSettings]]) {
         self.twincodeTextField.keyboardAppearance = UIKeyboardAppearanceDark;
     } else {
         self.twincodeTextField.keyboardAppearance = UIKeyboardAppearanceLight;

@@ -72,10 +72,11 @@ static const int ddLogLevel = DDLogLevelWarning;
     [self setupTitle];
 }
 
-- (void)openMenu:(NSDate *)minimumDate {
+- (void)openMenu:(NSDate *)minimumDate date:(NSDate *)date {
     DDLogVerbose(@"%@ openMenu", LOG_TAG);
-        
+    
     self.datePicker.minimumDate = minimumDate;
+    self.datePicker.date = date;
    
     [self openMenu];
 }

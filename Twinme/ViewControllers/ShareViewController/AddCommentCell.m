@@ -119,7 +119,7 @@ static const int ddLogLevel = DDLogLevelWarning;
     ApplicationDelegate *delegate = (ApplicationDelegate *)[[UIApplication sharedApplication] delegate];
     TwinmeApplication *twinmeApplication = [delegate twinmeApplication];
     
-    if ([twinmeApplication darkModeEnable]) {
+    if ([twinmeApplication darkModeEnable:[delegate twinmeContext].defaultSpaceSettings]) {
         self.commentTextField.keyboardAppearance = UIKeyboardAppearanceDark;
     } else {
         self.commentTextField.keyboardAppearance = UIKeyboardAppearanceLight;

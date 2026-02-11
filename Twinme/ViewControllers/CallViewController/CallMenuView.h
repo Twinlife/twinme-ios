@@ -6,6 +6,8 @@
  *   Fabrice Trescartes (Fabrice.Trescartes@twin.life)
  */
 
+#import <TwinmeCommon/CallStatus.h>
+
 typedef enum {
     CallMenuViewStateDefault,
     CallMenuViewStateExtend
@@ -42,7 +44,7 @@ typedef enum {
 
 @property (weak, nonatomic) id<CallMenuDelegate> callMenuDelegate;
 
-- (void)updateMenu:(BOOL)isInCall isAudioMuted:(BOOL)isAudioMuted isSpeakerOn:(BOOL)isSpeakerOn isCameraMuted:(BOOL)isCameraMuted isLocalVideoTrack:(BOOL)isLocalVideoTrack isVideoAllowed:(BOOL)isVideoAllowed isConversationAllowed:(BOOL)isConversationAllowed isStreamingAudioSupported:(BOOL)isStreamingAudioSupported isShareInvitationAllowed:(BOOL)isShareInvitationAllowed isInPause:(BOOL)isInPause hideCertify:(BOOL)hideCertify isCertifyRunning:(BOOL)isCertifyRunning audioDevice:(AudioDevice *)audioDevice isHeadSetAvailable:(BOOL)isHeadSetAvailable isCameraControlAllowed:(BOOL)isCameraControlAllowed isRemoteCameraControl:(BOOL)isRemoteCameraControl isWaitingForCameraControlAnswer:(BOOL)isWaitingForCameraControlAnswer;
+- (void)updateMenu:(CallStatus)callStatus isAudioMuted:(BOOL)isAudioMuted isSpeakerOn:(BOOL)isSpeakerOn isCameraMuted:(BOOL)isCameraMuted isLocalVideoTrack:(BOOL)isLocalVideoTrack isVideoAllowed:(BOOL)isVideoAllowed isConversationAllowed:(BOOL)isConversationAllowed isStreamingAudioSupported:(BOOL)isStreamingAudioSupported isShareInvitationAllowed:(BOOL)isShareInvitationAllowed hideCertify:(BOOL)hideCertify isCertifyRunning:(BOOL)isCertifyRunning audioDevice:(AudioDevice *)audioDevice isHeadSetAvailable:(BOOL)isHeadSetAvailable isCameraControlAllowed:(BOOL)isCameraControlAllowed isRemoteCameraControl:(BOOL)isRemoteCameraControl isWaitingForCameraControlAnswer:(BOOL)isWaitingForCameraControlAnswer;
 
 - (void)updateMenuState:(CallMenuViewState)callMenuViewState;
 

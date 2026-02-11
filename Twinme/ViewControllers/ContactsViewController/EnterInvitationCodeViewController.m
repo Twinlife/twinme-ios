@@ -357,40 +357,40 @@ static const CGFloat DESIGN_TEXTFIELD_MARGIN = 20;
 
 #pragma mark - BottomSheetViewDelegate
 
-- (void)didTapConfirm:(nonnull AbstractBottomSheetView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractConfirmView);
+- (void)didTapConfirm:(nonnull AbstractBottomSheetView *)abstractBottomSheetView {
+    DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractBottomSheetView);
     
-    [abstractConfirmView closeConfirmView];
+    [abstractBottomSheetView closeConfirmView];
     
-    if ([abstractConfirmView isKindOfClass:[InvitationCodeConfirmView class]] && self.twincodeOutbound) {
+    if ([abstractBottomSheetView isKindOfClass:[InvitationCodeConfirmView class]] && self.twincodeOutbound) {
         [self.invitationCodeService createContact:self.twincodeOutbound];
     }
 }
 
-- (void)didTapCancel:(nonnull AbstractBottomSheetView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didTapCancel: %@", LOG_TAG, abstractConfirmView);
+- (void)didTapCancel:(nonnull AbstractBottomSheetView *)abstractBottomSheetView {
+    DDLogVerbose(@"%@ didTapCancel: %@", LOG_TAG, abstractBottomSheetView);
     
-    [abstractConfirmView closeConfirmView];
+    [abstractBottomSheetView closeConfirmView];
     
-    if ([abstractConfirmView isKindOfClass:[DefaultConfirmView class]]) {
+    if ([abstractBottomSheetView isKindOfClass:[DefaultConfirmView class]]) {
         [self.twinmeApplication setShowOnboardingType:OnboardingTypeEnterMiniCode state:NO];
     }
 }
 
-- (void)didClose:(nonnull AbstractBottomSheetView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didClose: %@", LOG_TAG, abstractConfirmView);
+- (void)didClose:(nonnull AbstractBottomSheetView *)abstractBottomSheetView {
+    DDLogVerbose(@"%@ didClose: %@", LOG_TAG, abstractBottomSheetView);
     
-    [abstractConfirmView closeConfirmView];
+    [abstractBottomSheetView closeConfirmView];
 }
 
-- (void)didFinishCloseAnimation:(nonnull AbstractBottomSheetView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didFinishCloseAnimation: %@", LOG_TAG, abstractConfirmView);
+- (void)didFinishCloseAnimation:(nonnull AbstractBottomSheetView *)abstractBottomSheetView {
+    DDLogVerbose(@"%@ didFinishCloseAnimation: %@", LOG_TAG, abstractBottomSheetView);
     
-    if ([abstractConfirmView isKindOfClass:[DefaultConfirmView class]]) {
+    if ([abstractBottomSheetView isKindOfClass:[DefaultConfirmView class]]) {
         [self.enterCode1TextField becomeFirstResponder];
     }
     
-    [abstractConfirmView removeFromSuperview];
+    [abstractBottomSheetView removeFromSuperview];
 }
 
 #pragma mark - Private Methods
@@ -738,7 +738,7 @@ static const CGFloat DESIGN_TEXTFIELD_MARGIN = 20;
     
     self.overlayView.backgroundColor = Design.OVERLAY_COLOR;
     
-    if ([self.twinmeApplication darkModeEnable]) {
+    if ([self.twinmeApplication darkModeEnable:[self currentSpaceSettings]]) {
         self.enterCode1TextField.keyboardAppearance = UIKeyboardAppearanceDark;
         self.enterCode2TextField.keyboardAppearance = UIKeyboardAppearanceDark;
         self.enterCode3TextField.keyboardAppearance = UIKeyboardAppearanceDark;

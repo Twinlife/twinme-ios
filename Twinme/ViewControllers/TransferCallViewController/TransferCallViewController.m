@@ -36,6 +36,10 @@ static const int ddLogLevel = DDLogLevelWarning;
 @property (weak, nonatomic) IBOutlet UIView *editImageView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *editLabelTopConstraint;
 @property (weak, nonatomic) IBOutlet UILabel *editLabel;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *removeViewTopConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *removeViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet UIView *removeView;
+@property (weak, nonatomic) IBOutlet UILabel *removeLabel;
 
 @end
 
@@ -84,6 +88,16 @@ static const int ddLogLevel = DDLogLevelWarning;
     self.editLabel.font = Design.FONT_MEDIUM28;
     self.editLabel.textColor = [UIColor whiteColor];
     self.editLabel.text = TwinmeLocalizedString(@"application_edit", nil);
+    
+    self.removeViewTopConstraint.constant *= Design.HEIGHT_RATIO;
+    self.removeViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    self.removeView.backgroundColor = [UIColor clearColor];
+    UITapGestureRecognizer *removeViewGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleRemoveTapGesture:)];
+    [self.removeView addGestureRecognizer:removeViewGestureRecognizer];
+    
+    self.removeLabel.font = Design.FONT_REGULAR34;
+    self.removeLabel.textColor = Design.DELETE_COLOR_RED;
+    self.removeLabel.text = TwinmeLocalizedString(@"application_delete", nil);
 }
 
 - (void)handleEditTransfertCallTapGesture:(UITapGestureRecognizer *)sender {
@@ -96,18 +110,28 @@ static const int ddLogLevel = DDLogLevelWarning;
     }
 }
 
+- (void)handleRemoveTapGesture:(UITapGestureRecognizer *)sender {
+    DDLogVerbose(@"%@ handleRemoveTapGesture: %@", LOG_TAG, sender);
+    
+    if (sender.state == UIGestureRecognizerStateEnded) {
+        [self deleteCallReceiver];
+    }
+}
+
 - (void)updateFont {
     DDLogVerbose(@"%@ updateFont", LOG_TAG);
     
     [super updateFont];
     
     self.editLabel.font = Design.FONT_MEDIUM28;
+    self.removeLabel.font = Design.FONT_REGULAR34;
 }
 
 - (void)updateColor {
     DDLogVerbose(@"%@ updateColor", LOG_TAG);
     
     [super updateColor];
+    self.removeLabel.textColor = Design.DELETE_COLOR_RED;
 }
 
 @end

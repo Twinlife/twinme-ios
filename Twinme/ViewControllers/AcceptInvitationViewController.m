@@ -363,8 +363,8 @@ static const CGFloat DESIGN_CANCEL_HEIGHT = 140;
 
 #pragma mark - BottomSheetViewDelegate
 
-- (void)didTapConfirm:(nonnull AbstractBottomSheetView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractConfirmView);
+- (void)didTapConfirm:(nonnull AbstractBottomSheetView *)abstractBottomSheetView {
+    DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractBottomSheetView);
     
     ApplicationDelegate *delegate = (ApplicationDelegate *)[[UIApplication sharedApplication] delegate];
     MainViewController *mainViewController = delegate.mainViewController;
@@ -375,25 +375,25 @@ static const CGFloat DESIGN_CANCEL_HEIGHT = 140;
     addProfileViewController.invitationURL = self.url;
     [selectedNavigationController pushViewController:addProfileViewController animated:YES];
     
-    [abstractConfirmView closeConfirmView];
+    [abstractBottomSheetView closeConfirmView];
 }
 
-- (void)didTapCancel:(nonnull AbstractBottomSheetView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didTapCancel: %@", LOG_TAG, abstractConfirmView);
+- (void)didTapCancel:(nonnull AbstractBottomSheetView *)abstractBottomSheetView {
+    DDLogVerbose(@"%@ didTapCancel: %@", LOG_TAG, abstractBottomSheetView);
   
-    [abstractConfirmView closeConfirmView];
+    [abstractBottomSheetView closeConfirmView];
 }
 
-- (void)didClose:(nonnull AbstractBottomSheetView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didClose: %@", LOG_TAG, abstractConfirmView);
+- (void)didClose:(nonnull AbstractBottomSheetView *)abstractBottomSheetView {
+    DDLogVerbose(@"%@ didClose: %@", LOG_TAG, abstractBottomSheetView);
         
-    [abstractConfirmView closeConfirmView];
+    [abstractBottomSheetView closeConfirmView];
 }
 
-- (void)didFinishCloseAnimation:(nonnull AbstractBottomSheetView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didFinishCloseAnimation: %@", LOG_TAG, abstractConfirmView);
+- (void)didFinishCloseAnimation:(nonnull AbstractBottomSheetView *)abstractBottomSheetView {
+    DDLogVerbose(@"%@ didFinishCloseAnimation: %@", LOG_TAG, abstractBottomSheetView);
     
-    [abstractConfirmView removeFromSuperview];
+    [abstractBottomSheetView removeFromSuperview];
     
     [self finish];
 }
@@ -604,7 +604,7 @@ static const CGFloat DESIGN_CANCEL_HEIGHT = 140;
             DefaultConfirmView *defaultConfirmView = [[DefaultConfirmView alloc] init];
             defaultConfirmView.bottomSheetViewDelegate = self;
 
-            UIImage *image = [self.twinmeApplication darkModeEnable] ?  [UIImage imageNamed:@"OnboardingAddProfileDark"] : [UIImage imageNamed:@"OnboardingAddProfile"];
+            UIImage *image = [self.twinmeApplication darkModeEnable:[self currentSpaceSettings]] ?  [UIImage imageNamed:@"OnboardingAddProfileDark"] : [UIImage imageNamed:@"OnboardingAddProfile"];
             [defaultConfirmView initWithTitle:TwinmeLocalizedString(@"create_profile_view_controller_title", nil) message:TwinmeLocalizedString(@"application_add_contact_no_profile", nil) image:image avatar:nil action:TwinmeLocalizedString(@"show_profile_view_controller_create_profile", nil) actionColor:nil cancel:nil];
             [self.view addSubview:defaultConfirmView];
             [defaultConfirmView showConfirmView];

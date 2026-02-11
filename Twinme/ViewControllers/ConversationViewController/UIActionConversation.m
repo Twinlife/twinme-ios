@@ -20,12 +20,13 @@
 
 @implementation UIActionConversation
 
-- (nonnull instancetype)initWithConversationActionType:(ConversationActionType)conversationActionType enabled:(BOOL)enabled {
+- (nonnull instancetype)initWithConversationActionType:(ConversationActionType)conversationActionType spaceSettings:(nullable TLSpaceSettings *)spaceSettings enabled:(BOOL)enabled {
     
     self = [super init];
     
     if (self) {
         _conversationActionType = conversationActionType;
+        _spaceSettings = spaceSettings;
         _enabled = enabled;
         [self initAction];
     }
@@ -37,7 +38,7 @@
     ApplicationDelegate *delegate = (ApplicationDelegate *)[[UIApplication sharedApplication] delegate];
     TwinmeApplication *twinmeApplication = [delegate twinmeApplication];
      
-    BOOL darkMode = [twinmeApplication darkModeEnable];
+    BOOL darkMode = [twinmeApplication darkModeEnable:self.spaceSettings];
     
     switch (self.conversationActionType) {
         case ConversationActionTypeCamera:

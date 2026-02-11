@@ -453,38 +453,38 @@ static NSString *HEADER_SETTINGS_CELL_IDENTIFIER = @"HeaderSettingsCellIdentifie
 
 #pragma mark - BottomSheetViewDelegate
 
-- (void)didTapConfirm:(nonnull AbstractBottomSheetView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractConfirmView);
+- (void)didTapConfirm:(nonnull AbstractBottomSheetView *)abstractBottomSheetView {
+    DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractBottomSheetView);
     
-    if ([abstractConfirmView isKindOfClass:[PremiumFeatureConfirmView class]]) {
+    if ([abstractBottomSheetView isKindOfClass:[PremiumFeatureConfirmView class]]) {
         [[UIApplication sharedApplication] openURL:[NSURL URLWithString:TwinmeLocalizedString(@"twinme_plus_link", nil)] options:@{} completionHandler:nil];
     } else {
         [self showPremiumFeatureView];
     }
 
-    [abstractConfirmView closeConfirmView];
+    [abstractBottomSheetView closeConfirmView];
 }
 
-- (void)didTapCancel:(nonnull AbstractBottomSheetView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didTapCancel: %@", LOG_TAG, abstractConfirmView);
+- (void)didTapCancel:(nonnull AbstractBottomSheetView *)abstractBottomSheetView {
+    DDLogVerbose(@"%@ didTapCancel: %@", LOG_TAG, abstractBottomSheetView);
     
-    [abstractConfirmView closeConfirmView];
+    [abstractBottomSheetView closeConfirmView];
     
-    if ([abstractConfirmView isKindOfClass:[OnboardingDetailView class]]) {
+    if ([abstractBottomSheetView isKindOfClass:[OnboardingDetailView class]]) {
         [self.twinmeApplication setShowOnboardingType:OnboardingTypeTransferCall state:NO];
     }
 }
 
-- (void)didClose:(nonnull AbstractBottomSheetView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didClose: %@", LOG_TAG, abstractConfirmView);
+- (void)didClose:(nonnull AbstractBottomSheetView *)abstractBottomSheetView {
+    DDLogVerbose(@"%@ didClose: %@", LOG_TAG, abstractBottomSheetView);
     
-    [abstractConfirmView closeConfirmView];
+    [abstractBottomSheetView closeConfirmView];
 }
 
-- (void)didFinishCloseAnimation:(nonnull AbstractBottomSheetView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didFinishCloseAnimation: %@", LOG_TAG, abstractConfirmView);
+- (void)didFinishCloseAnimation:(nonnull AbstractBottomSheetView *)abstractBottomSheetView {
+    DDLogVerbose(@"%@ didFinishCloseAnimation: %@", LOG_TAG, abstractBottomSheetView);
     
-    [abstractConfirmView removeFromSuperview];
+    [abstractBottomSheetView removeFromSuperview];
 }
 
 #pragma mark - DefaultProfileDelegate
@@ -678,7 +678,7 @@ static NSString *HEADER_SETTINGS_CELL_IDENTIFIER = @"HeaderSettingsCellIdentifie
     if ([self.twinmeApplication startOnboarding:OnboardingTypeTransferCall]) {
         OnboardingDetailView *onboardingDetailView = [[OnboardingDetailView alloc] init];
         onboardingDetailView.bottomSheetViewDelegate = self;
-        [onboardingDetailView initWithPremiumFeature:[[UIPremiumFeature alloc]initWithFeatureType:FeatureTypeTransfertCall]];
+        [onboardingDetailView initWithPremiumFeature:[[UIPremiumFeature alloc]initWithFeatureType:FeatureTypeTransfertCall spaceSettings:[[delegate twinmeContext] defaultSpaceSettings]]];
         [twinmeNavigationController.tabBarController.view addSubview:onboardingDetailView];
         [onboardingDetailView showConfirmView];
     } else {
@@ -695,7 +695,7 @@ static NSString *HEADER_SETTINGS_CELL_IDENTIFIER = @"HeaderSettingsCellIdentifie
     
     PremiumFeatureConfirmView *premiumFeatureConfirmView = [[PremiumFeatureConfirmView alloc] init];
     premiumFeatureConfirmView.bottomSheetViewDelegate = self;
-    [premiumFeatureConfirmView initWithPremiumFeature:[[UIPremiumFeature alloc]initWithFeatureType:FeatureTypeTransfertCall] parentViewController:twinmeNavigationController.tabBarController];
+    [premiumFeatureConfirmView initWithPremiumFeature:[[UIPremiumFeature alloc]initWithFeatureType:FeatureTypeTransfertCall spaceSettings:[[delegate twinmeContext] defaultSpaceSettings]] parentViewController:twinmeNavigationController.tabBarController];
     [twinmeNavigationController.tabBarController.view addSubview:premiumFeatureConfirmView];
     [premiumFeatureConfirmView showConfirmView];
 }

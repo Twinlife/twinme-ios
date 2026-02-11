@@ -195,6 +195,19 @@ static CGFloat DESIGN_UPDATE_VERSION_MARGIN = 4.0;
     return delegate.mainViewController.space;
 }
 
+- (nonnull TLSpaceSettings *)currentSpaceSettings {
+    DDLogVerbose(@"%@ currentSpaceSettings", LOG_TAG);
+    
+    TLSpaceSettings *spaceSettings;
+    if (self.currentSpace) {
+        spaceSettings = self.currentSpace.settings;
+    } else {
+        spaceSettings = self.twinmeContext.defaultSpaceSettings;
+    }
+    
+    return spaceSettings;
+}
+
 - (TLProfile *)defaultProfile {
     
     ApplicationDelegate *delegate = (ApplicationDelegate *)[[UIApplication sharedApplication] delegate];

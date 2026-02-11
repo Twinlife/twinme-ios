@@ -918,7 +918,7 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
         self.descriptionTextView.textColor = Design.FONT_COLOR_DEFAULT;
     }
 
-    if ([self.twinmeApplication darkModeEnable]) {
+    if ([self.twinmeApplication darkModeEnable:[self currentSpaceSettings]]) {
         self.nameTextField.keyboardAppearance = UIKeyboardAppearanceDark;
         self.descriptionTextView.keyboardAppearance = UIKeyboardAppearanceDark;
     } else {

@@ -939,6 +939,30 @@
 		5758AED22E2E235300A970C4 /* UIWelcome.m in Sources */ = {isa = PBXBuildFile; fileRef = 5758AED12E2E235300A970C4 /* UIWelcome.m */; };
 		575B02202B84C28900D15880 /* CallHoldView.m in Sources */ = {isa = PBXBuildFile; fileRef = 575B021D2B84C28900D15880 /* CallHoldView.m */; };
 		575B02212B84C28900D15880 /* CallHoldView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 575B021F2B84C28900D15880 /* CallHoldView.xib */; };
+		57638FCF2F2B4E4A00BAA531 /* TemplateExternalCallCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 57638FCA2F2B4E4A00BAA531 /* TemplateExternalCallCell.xib */; };
+		57638FD02F2B4E4A00BAA531 /* TemplateExternalCallCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 57638FC92F2B4E4A00BAA531 /* TemplateExternalCallCell.m */; };
+		57638FD12F2B4E4A00BAA531 /* UITemplateExternalCall.m in Sources */ = {isa = PBXBuildFile; fileRef = 57638FCE2F2B4E4A00BAA531 /* UITemplateExternalCall.m */; };
+		57638FD22F2B4E4A00BAA531 /* TemplateExternalCallViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 57638FCC2F2B4E4A00BAA531 /* TemplateExternalCallViewController.m */; };
+		57638FD32F2B4E4A00BAA531 /* TemplateExternalCallCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 57638FC92F2B4E4A00BAA531 /* TemplateExternalCallCell.m */; };
+		57638FD42F2B4E4A00BAA531 /* UITemplateExternalCall.m in Sources */ = {isa = PBXBuildFile; fileRef = 57638FCE2F2B4E4A00BAA531 /* UITemplateExternalCall.m */; };
+		57638FD52F2B4E4A00BAA531 /* TemplateExternalCallViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 57638FCC2F2B4E4A00BAA531 /* TemplateExternalCallViewController.m */; };
+		57638FD62F2B4E4A00BAA531 /* TemplateExternalCallCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 57638FCA2F2B4E4A00BAA531 /* TemplateExternalCallCell.xib */; };
+		576393AF2F32069400BAA531 /* nature_audio.caf in Resources */ = {isa = PBXBuildFile; fileRef = 576393AC2F32069400BAA531 /* nature_audio.caf */; };
+		576393B02F32069400BAA531 /* skype.caf in Resources */ = {isa = PBXBuildFile; fileRef = 576393AE2F32069400BAA531 /* skype.caf */; };
+		576393B12F32069400BAA531 /* nature_video.caf in Resources */ = {isa = PBXBuildFile; fileRef = 576393AD2F32069400BAA531 /* nature_video.caf */; };
+		576393B22F32069400BAA531 /* nature_audio.caf in Resources */ = {isa = PBXBuildFile; fileRef = 576393AC2F32069400BAA531 /* nature_audio.caf */; };
+		576393B32F32069400BAA531 /* skype.caf in Resources */ = {isa = PBXBuildFile; fileRef = 576393AE2F32069400BAA531 /* skype.caf */; };
+		576393B42F32069400BAA531 /* nature_video.caf in Resources */ = {isa = PBXBuildFile; fileRef = 576393AD2F32069400BAA531 /* nature_video.caf */; };
+		576393B52F32069400BAA531 /* nature_audio.caf in Resources */ = {isa = PBXBuildFile; fileRef = 576393AC2F32069400BAA531 /* nature_audio.caf */; };
+		576393B62F32069400BAA531 /* skype.caf in Resources */ = {isa = PBXBuildFile; fileRef = 576393AE2F32069400BAA531 /* skype.caf */; };
+		576393B72F32069400BAA531 /* nature_video.caf in Resources */ = {isa = PBXBuildFile; fileRef = 576393AD2F32069400BAA531 /* nature_video.caf */; };
+		576393B82F32069400BAA531 /* nature_audio.caf in Resources */ = {isa = PBXBuildFile; fileRef = 576393AC2F32069400BAA531 /* nature_audio.caf */; };
+		576393B92F32069400BAA531 /* skype.caf in Resources */ = {isa = PBXBuildFile; fileRef = 576393AE2F32069400BAA531 /* skype.caf */; };
+		576393BA2F32069400BAA531 /* nature_video.caf in Resources */ = {isa = PBXBuildFile; fileRef = 576393AD2F32069400BAA531 /* nature_video.caf */; };
+		576394952F337D1200BAA531 /* ScheduleCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 576394932F337D1200BAA531 /* ScheduleCell.m */; };
+		576394962F337D1200BAA531 /* ScheduleCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 576394942F337D1200BAA531 /* ScheduleCell.xib */; };
+		576394972F337D1200BAA531 /* ScheduleCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 576394932F337D1200BAA531 /* ScheduleCell.m */; };
+		576394982F337D1200BAA531 /* ScheduleCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 576394942F337D1200BAA531 /* ScheduleCell.xib */; };
 		57639FDF2D9C2B8A00C18D77 /* OnboardingConfirmView.m in Sources */ = {isa = PBXBuildFile; fileRef = 57639FDE2D9C2B8A00C18D77 /* OnboardingConfirmView.m */; };
 		57639FE12D9C2BC100C18D77 /* OnboardingConfirmView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 57639FE02D9C2BC100C18D77 /* OnboardingConfirmView.xib */; };
 		5765D59C2D5B4E570061DD3B /* BottomConversationView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5765D59A2D5B4E570061DD3B /* BottomConversationView.m */; };
@@ -2102,6 +2126,19 @@
 		575B021D2B84C28900D15880 /* CallHoldView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CallHoldView.m; sourceTree = "<group>"; };
 		575B021E2B84C28900D15880 /* CallHoldView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CallHoldView.h; sourceTree = "<group>"; };
 		575B021F2B84C28900D15880 /* CallHoldView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CallHoldView.xib; sourceTree = "<group>"; };
+		57638FC82F2B4E4A00BAA531 /* TemplateExternalCallCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TemplateExternalCallCell.h; sourceTree = "<group>"; };
+		57638FC92F2B4E4A00BAA531 /* TemplateExternalCallCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TemplateExternalCallCell.m; sourceTree = "<group>"; };
+		57638FCA2F2B4E4A00BAA531 /* TemplateExternalCallCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TemplateExternalCallCell.xib; sourceTree = "<group>"; };
+		57638FCB2F2B4E4A00BAA531 /* TemplateExternalCallViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TemplateExternalCallViewController.h; sourceTree = "<group>"; };
+		57638FCC2F2B4E4A00BAA531 /* TemplateExternalCallViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TemplateExternalCallViewController.m; sourceTree = "<group>"; };
+		57638FCD2F2B4E4A00BAA531 /* UITemplateExternalCall.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UITemplateExternalCall.h; sourceTree = "<group>"; };
+		57638FCE2F2B4E4A00BAA531 /* UITemplateExternalCall.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UITemplateExternalCall.m; sourceTree = "<group>"; };
+		576393AC2F32069400BAA531 /* nature_audio.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = nature_audio.caf; sourceTree = "<group>"; };
+		576393AD2F32069400BAA531 /* nature_video.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = nature_video.caf; sourceTree = "<group>"; };
+		576393AE2F32069400BAA531 /* skype.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = skype.caf; sourceTree = "<group>"; };
+		576394922F337D1200BAA531 /* ScheduleCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ScheduleCell.h; sourceTree = "<group>"; };
+		576394932F337D1200BAA531 /* ScheduleCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ScheduleCell.m; sourceTree = "<group>"; };
+		576394942F337D1200BAA531 /* ScheduleCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ScheduleCell.xib; sourceTree = "<group>"; };
 		57639FDD2D9C2B8A00C18D77 /* OnboardingConfirmView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = OnboardingConfirmView.h; path = Utilities/OnboardingConfirmView.h; sourceTree = "<group>"; };
 		57639FDE2D9C2B8A00C18D77 /* OnboardingConfirmView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = OnboardingConfirmView.m; path = Utilities/OnboardingConfirmView.m; sourceTree = "<group>"; };
 		57639FE02D9C2BC100C18D77 /* OnboardingConfirmView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = OnboardingConfirmView.xib; path = Utilities/OnboardingConfirmView.xib; sourceTree = "<group>"; };
@@ -3144,10 +3181,17 @@
 				01D932AA29F0376100175376 /* SectionCallCell.xib */,
 				01D932A529F0376100175376 /* ShowExternalCallViewController.h */,
 				01D932AC29F0376100175376 /* ShowExternalCallViewController.m */,
+				57638FC82F2B4E4A00BAA531 /* TemplateExternalCallCell.h */,
+				57638FC92F2B4E4A00BAA531 /* TemplateExternalCallCell.m */,
+				57638FCA2F2B4E4A00BAA531 /* TemplateExternalCallCell.xib */,
+				57638FCB2F2B4E4A00BAA531 /* TemplateExternalCallViewController.h */,
+				57638FCC2F2B4E4A00BAA531 /* TemplateExternalCallViewController.m */,
 				01B9937D29F6BB1500D7F183 /* UICallReceiver.h */,
 				01B9937E29F6BB1500D7F183 /* UICallReceiver.m */,
 				57ABEDF42B4D5DEB00D0F1C8 /* UIOnboarding.h */,
 				57ABEDF32B4D5DEB00D0F1C8 /* UIOnboarding.m */,
+				57638FCD2F2B4E4A00BAA531 /* UITemplateExternalCall.h */,
+				57638FCE2F2B4E4A00BAA531 /* UITemplateExternalCall.m */,
 			);
 			name = ExternalCallViewController;
 			path = ViewControllers/ExternalCallViewController;
@@ -3240,6 +3284,9 @@
 		4756FF9D1924FAA300361186 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				576393AC2F32069400BAA531 /* nature_audio.caf */,
+				576393AD2F32069400BAA531 /* nature_video.caf */,
+				576393AE2F32069400BAA531 /* skype.caf */,
 				47DCF2BF2EB3D9FC001AC393 /* twinme */,
 				47DCF2BA2EB3D92E001AC393 /* mytwinlife */,
 				574F955B2E98FFF5008A2DFF /* opensource.html */,
@@ -3613,6 +3660,9 @@
 				57AF1F8D2D06E17100E38EE5 /* ResetInvitationConfirmView.h */,
 				57AF1F8E2D06E17100E38EE5 /* ResetInvitationConfirmView.m */,
 				57AF1F902D06E18200E38EE5 /* ResetInvitationConfirmView.xib */,
+				576394922F337D1200BAA531 /* ScheduleCell.h */,
+				576394932F337D1200BAA531 /* ScheduleCell.m */,
+				576394942F337D1200BAA531 /* ScheduleCell.xib */,
 				83E222A31C5A2FF900350665 /* ShowContactViewController.h */,
 				83E222A41C5A2FF900350665 /* ShowContactViewController.m */,
 				5704E24C2ED7B209006A1B1E /* SuccessAuthentifiedRelationView.h */,
@@ -4949,6 +4999,9 @@
 				47FF4C3A24A1C9F800C3CDDD /* twinme_audio_call.caf in Resources */,
 				47D3BCCB29B91F390052DC46 /* Twinme.xcconfig in Resources */,
 				47FF4C3B24A1C9F800C3CDDD /* twinme_call_end.caf in Resources */,
+				576393AF2F32069400BAA531 /* nature_audio.caf in Resources */,
+				576393B02F32069400BAA531 /* skype.caf in Resources */,
+				576393B12F32069400BAA531 /* nature_video.caf in Resources */,
 				47FF4C3C24A1C9F800C3CDDD /* twinme_connecting.caf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -4975,6 +5028,7 @@
 				83F491A721E8DD2900CAF01A /* SettingsItemCell.xib in Resources */,
 				571000632D2C0810002954D0 /* DeleteAccountConfirmView.xib in Resources */,
 				833D915F1EC9B09C0000E500 /* ContactCell.xib in Resources */,
+				57638FD62F2B4E4A00BAA531 /* TemplateExternalCallCell.xib in Resources */,
 				57BB6DC72D91CB8D00274A48 /* PreviewAddCell.xib in Resources */,
 				01A4E76C28343ED900E75899 /* AppearanceColorCell.xib in Resources */,
 				836C6BD1231918A100CD3AF1 /* privacy_policy_en.html in Resources */,
@@ -5078,6 +5132,7 @@
 				83CE1A89264EB641008A1E3A /* ReplyView.xib in Resources */,
 				01A0587C28227E260068B387 /* DisplayModeCell.xib in Resources */,
 				01CC1FC32962E3C600C96A66 /* MenuConversationButtonView.xib in Resources */,
+				576394962F337D1200BAA531 /* ScheduleCell.xib in Resources */,
 				8334D9E31DD08CB5005094D5 /* PeerImageItemCell.xib in Resources */,
 				836C6BFA23191A1F00CD3AF1 /* terms_of_service_fr.html in Resources */,
 				836C6BCE231918A100CD3AF1 /* privacy_policy_hi.html in Resources */,
@@ -5214,6 +5269,9 @@
 				836C6BF923191A1F00CD3AF1 /* terms_of_service_en.html in Resources */,
 				836C6BD5231918A100CD3AF1 /* privacy_policy_de.html in Resources */,
 				836C6BCA231918A100CD3AF1 /* privacy_policy_es.html in Resources */,
+				576393B52F32069400BAA531 /* nature_audio.caf in Resources */,
+				576393B62F32069400BAA531 /* skype.caf in Resources */,
+				576393B72F32069400BAA531 /* nature_video.caf in Resources */,
 				83C7E72C24016090005735DD /* CallItemCell.xib in Resources */,
 				836C6BF323191A1F00CD3AF1 /* terms_of_service_zh-Hans.html in Resources */,
 				57DD46932DBBE4A400F14087 /* MenuAddContactView.xib in Resources */,
@@ -5242,6 +5300,7 @@
 				47CD19762E9CF7DB00F0E361 /* SettingsItemCell.xib in Resources */,
 				47CD19772E9CF7DB00F0E361 /* DeleteAccountConfirmView.xib in Resources */,
 				47CD19782E9CF7DB00F0E361 /* ContactCell.xib in Resources */,
+				57638FCF2F2B4E4A00BAA531 /* TemplateExternalCallCell.xib in Resources */,
 				47CD19792E9CF7DB00F0E361 /* PreviewAddCell.xib in Resources */,
 				47CD197A2E9CF7DB00F0E361 /* AppearanceColorCell.xib in Resources */,
 				47CD197B2E9CF7DB00F0E361 /* privacy_policy_en.html in Resources */,
@@ -5345,6 +5404,7 @@
 				47CD19DE2E9CF7DB00F0E361 /* DisplayModeCell.xib in Resources */,
 				47CD19DF2E9CF7DB00F0E361 /* MenuConversationButtonView.xib in Resources */,
 				47CD19E02E9CF7DB00F0E361 /* PeerImageItemCell.xib in Resources */,
+				576394982F337D1200BAA531 /* ScheduleCell.xib in Resources */,
 				47CD19E12E9CF7DB00F0E361 /* terms_of_service_fr.html in Resources */,
 				47CD19E22E9CF7DB00F0E361 /* privacy_policy_hi.html in Resources */,
 				47CD19E32E9CF7DB00F0E361 /* MenuManageConversationView.xib in Resources */,
@@ -5481,6 +5541,9 @@
 				47CD1A602E9CF7DB00F0E361 /* terms_of_service_en.html in Resources */,
 				47CD1A612E9CF7DB00F0E361 /* privacy_policy_de.html in Resources */,
 				47CD1A622E9CF7DB00F0E361 /* privacy_policy_es.html in Resources */,
+				576393B82F32069400BAA531 /* nature_audio.caf in Resources */,
+				576393B92F32069400BAA531 /* skype.caf in Resources */,
+				576393BA2F32069400BAA531 /* nature_video.caf in Resources */,
 				47CD1A632E9CF7DB00F0E361 /* CallItemCell.xib in Resources */,
 				47CD1A642E9CF7DB00F0E361 /* terms_of_service_zh-Hans.html in Resources */,
 				47CD1A652E9CF7DB00F0E361 /* MenuAddContactView.xib in Resources */,
@@ -5511,6 +5574,9 @@
 				47DCF2BE2EB3D95A001AC393 /* tool.cfg in Resources */,
 				47CD1A992E9CF8B600F0E361 /* Twinme.xcconfig in Resources */,
 				47CD1A9A2E9CF8B600F0E361 /* twinme_call_end.caf in Resources */,
+				576393B22F32069400BAA531 /* nature_audio.caf in Resources */,
+				576393B32F32069400BAA531 /* skype.caf in Resources */,
+				576393B42F32069400BAA531 /* nature_video.caf in Resources */,
 				47CD1A9B2E9CF8B600F0E361 /* twinme_connecting.caf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -5726,6 +5792,9 @@
 				83485B051DC1ECF400EFFBAE /* CaptureSessionManager.m in Sources */,
 				01EC60F0294D125200A0705B /* CoachMarkManager.m in Sources */,
 				57ABEDF52B4D5DEB00D0F1C8 /* UIOnboarding.m in Sources */,
+				57638FD32F2B4E4A00BAA531 /* TemplateExternalCallCell.m in Sources */,
+				57638FD42F2B4E4A00BAA531 /* UITemplateExternalCall.m in Sources */,
+				57638FD52F2B4E4A00BAA531 /* TemplateExternalCallViewController.m in Sources */,
 				83D88D171EBBA77600AFD6F2 /* UIViewController+ProgressIndicator.m in Sources */,
 				57ABEDF12B4D5DE100D0F1C8 /* OnboardingExternalCallCell.m in Sources */,
 				83BCAF782285AF0E002D955C /* CopyItemCell.m in Sources */,
@@ -5848,6 +5917,7 @@
 				01CEB04D2A3A03B3006BFAF4 /* LinkCell.m in Sources */,
 				83BCAF7A2285AF0E002D955C /* InfoFileItemCell.m in Sources */,
 				01543F8A298D133C002E636E /* ExportActionCell.m in Sources */,
+				576394952F337D1200BAA531 /* ScheduleCell.m in Sources */,
 				57A41C032B5A7FEA004FB171 /* CallConversationView.m in Sources */,
 				01C3DDBD2A657AEC001077B5 /* FullScreenImageCell.m in Sources */,
 				83EF7F8520C990C2002A7224 /* PeerVideoItemCell.m in Sources */,
@@ -6096,6 +6166,9 @@
 				47CD18762E9CF7DB00F0E361 /* CaptureSessionManager.m in Sources */,
 				47CD18772E9CF7DB00F0E361 /* CoachMarkManager.m in Sources */,
 				47CD18782E9CF7DB00F0E361 /* UIOnboarding.m in Sources */,
+				57638FD02F2B4E4A00BAA531 /* TemplateExternalCallCell.m in Sources */,
+				57638FD12F2B4E4A00BAA531 /* UITemplateExternalCall.m in Sources */,
+				57638FD22F2B4E4A00BAA531 /* TemplateExternalCallViewController.m in Sources */,
 				47CD18792E9CF7DB00F0E361 /* UIViewController+ProgressIndicator.m in Sources */,
 				47CD187A2E9CF7DB00F0E361 /* OnboardingExternalCallCell.m in Sources */,
 				47CD187B2E9CF7DB00F0E361 /* CopyItemCell.m in Sources */,
@@ -6218,6 +6291,7 @@
 				47CD18EE2E9CF7DB00F0E361 /* LinkCell.m in Sources */,
 				47CD18EF2E9CF7DB00F0E361 /* InfoFileItemCell.m in Sources */,
 				47CD18F02E9CF7DB00F0E361 /* ExportActionCell.m in Sources */,
+				576394972F337D1200BAA531 /* ScheduleCell.m in Sources */,
 				47CD18F12E9CF7DB00F0E361 /* CallConversationView.m in Sources */,
 				47CD18F22E9CF7DB00F0E361 /* FullScreenImageCell.m in Sources */,
 				47CD18F32E9CF7DB00F0E361 /* PeerVideoItemCell.m in Sources */,

@@ -38,6 +38,6 @@ typedef enum {
 
 - (void)setMenuDateTimeTypeWithType:(MenuDateTimeType)menuDateTimeType;
 
-- (void)openMenu:(NSDate *)minimumDate;
+- (void)openMenu:(NSDate *)minimumDate date:(NSDate *)date;
 
 @end

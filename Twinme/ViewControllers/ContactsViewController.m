@@ -558,7 +558,7 @@ static const int CONTACTS_VIEW_SECTION_COUNT = 2;
     self.noContactImageViewTopConstraint.constant *= Design.HEIGHT_RATIO;
     self.noContactImageView.hidden = YES;
     
-    self.noContactImageView.image = [self.twinmeApplication darkModeEnable] ? [UIImage imageNamed:@"OnboardingStep3Dark"] : [UIImage imageNamed:@"OnboardingStep3"];
+    self.noContactImageView.image = [self.twinmeApplication darkModeEnable:[self currentSpaceSettings]] ? [UIImage imageNamed:@"OnboardingStep3Dark"] : [UIImage imageNamed:@"OnboardingStep3"];
     
     self.noContactLabelWidthConstraint.constant *= Design.WIDTH_RATIO;
     self.noContactLabelTopConstraint.constant *= Design.HEIGHT_RATIO;
@@ -751,7 +751,7 @@ static const int CONTACTS_VIEW_SECTION_COUNT = 2;
         self.searchController.searchBar.backgroundColor = Design.NAVIGATION_BAR_BACKGROUND_COLOR;
     }
     
-    if ([self.twinmeApplication darkModeEnable]) {
+    if ([self.twinmeApplication darkModeEnable:[self currentSpaceSettings]]) {
         self.searchController.searchBar.keyboardAppearance = UIKeyboardAppearanceDark;
     } else {
         self.searchController.searchBar.keyboardAppearance = UIKeyboardAppearanceLight;
@@ -764,7 +764,7 @@ static const int CONTACTS_VIEW_SECTION_COUNT = 2;
     self.transferLabel.textColor = Design.FONT_COLOR_DEFAULT;
     self.noResultFoundTitleLabel.textColor = Design.FONT_COLOR_DEFAULT;
     
-    self.noContactImageView.image = [self.twinmeApplication darkModeEnable] ? [UIImage imageNamed:@"OnboardingStep3Dark"] : [UIImage imageNamed:@"OnboardingStep3"];
+    self.noContactImageView.image = [self.twinmeApplication darkModeEnable:[self currentSpaceSettings]] ? [UIImage imageNamed:@"OnboardingStep3Dark"] : [UIImage imageNamed:@"OnboardingStep3"];
 }
 
 @end
