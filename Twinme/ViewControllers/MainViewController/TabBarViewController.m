@@ -189,35 +189,35 @@ static CGFloat DESIGN_TAB_ICON_INSET;
     
     UIEdgeInsets iconInset = UIEdgeInsetsMake(DESIGN_TAB_ICON_INSET, 0, -DESIGN_TAB_ICON_INSET, 0);
     self.spacesViewController = [[UIStoryboard storyboardWithName:@"Space" bundle:nil] instantiateViewControllerWithIdentifier:@"SpacesViewController"];
-    self.spacesViewController.tabBarItem = [[UITabBarItem alloc] initWithTitle:nil image:[UIImage imageNamed:@"TabBarSpacesGrey"] tag:0];
+    self.spacesViewController.tabBarItem = [[UITabBarItem alloc] initWithTitle:nil image:[UIImage imageNamed:@"TabBarSpacesGrey"] tag:TabBarTypeSpaces];
     self.spacesViewController.tabBarItem.imageInsets = iconInset;
     self.spacesViewController.tabBarItem.accessibilityLabel = TwinmeLocalizedString(@"settings_space_view_controller_space_category_title", nil);
     
     TwinmeNavigationController *spacesNavigationController = [[TwinmeNavigationController alloc]initWithRootViewController:self.spacesViewController];
     
     self.historyViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"HistoryViewController"];
-    self.historyViewController.tabBarItem = [[UITabBarItem alloc] initWithTitle:nil image:[UIImage imageNamed:@"TabBarCallGrey"] tag:1];
+    self.historyViewController.tabBarItem = [[UITabBarItem alloc] initWithTitle:nil image:[UIImage imageNamed:@"TabBarCallGrey"] tag:TabBarTypeRecents];
     self.historyViewController.tabBarItem.imageInsets = iconInset;
     self.historyViewController.tabBarItem.accessibilityLabel = TwinmeLocalizedString(@"history_view_controller_title", nil);
     
     TwinmeNavigationController *historyNavigationController = [[TwinmeNavigationController alloc]initWithRootViewController:self.historyViewController];
     
     self.contactsViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"ContactsViewController"];
-    self.contactsViewController.tabBarItem = [[UITabBarItem alloc] initWithTitle:nil image:[UIImage imageNamed:@"TabBarContactsGrey"] tag:2];
+    self.contactsViewController.tabBarItem = [[UITabBarItem alloc] initWithTitle:nil image:[UIImage imageNamed:@"TabBarContactsGrey"] tag:TabBarTypeContacts];
     self.contactsViewController.tabBarItem.imageInsets = iconInset;
     self.contactsViewController.accessibilityLabel = TwinmeLocalizedString(@"contacts_view_controller_title", nil);
     
     TwinmeNavigationController *contactsNavigationController = [[TwinmeNavigationController alloc]initWithRootViewController:self.contactsViewController];
     
     self.conversationsViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"ConversationsViewController"];
-    self.conversationsViewController.tabBarItem = [[UITabBarItem alloc] initWithTitle:nil image:[UIImage imageNamed:@"TabBarChatGrey"] tag:3];
+    self.conversationsViewController.tabBarItem = [[UITabBarItem alloc] initWithTitle:nil image:[UIImage imageNamed:@"TabBarChatGrey"] tag:TabBarTypeConversations];
     self.conversationsViewController.tabBarItem.imageInsets = iconInset;
     self.conversationsViewController.accessibilityLabel = TwinmeLocalizedString(@"conversations_view_controller_title", nil);
     
     TwinmeNavigationController *conversationsNavigationController = [[TwinmeNavigationController alloc]initWithRootViewController:self.conversationsViewController];
     
     self.notificationsViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"NotificationViewController"];
-    self.notificationsViewController.tabBarItem = [[UITabBarItem alloc] initWithTitle:nil image:[UIImage imageNamed:@"TabBarNotificationGrey"] tag:4];
+    self.notificationsViewController.tabBarItem = [[UITabBarItem alloc] initWithTitle:nil image:[UIImage imageNamed:@"TabBarNotificationGrey"] tag:TabBarTypeNotifications];
     self.notificationsViewController.tabBarItem.imageInsets = iconInset;
     self.notificationsViewController.accessibilityLabel = TwinmeLocalizedString(@"application_notifications", nil);
     

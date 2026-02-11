@@ -41,6 +41,7 @@
 #import "ShowRoomViewController.h"
 #import "AcceptGroupInvitationViewController.h"
 #import "AcceptInvitationViewController.h"
+#import "TabBarViewController.h"
 
 #import <TwinmeCommon/Design.h>
 #import <TwinmeCommon/GroupService.h>
@@ -181,7 +182,7 @@ static NSString *NOTIFICATION_CELL_IDENTIFIER = @"NotificationCellIdentifier";
 - (void)applicationDidBecomeActive:(NSNotification *)notification {
     DDLogVerbose(@"%@ applicationDidBecomeActive", LOG_TAG);
     
-    if (self.needsRefresh) {
+    if (self.needsRefresh && self.tabBarController.selectedIndex == TabBarTypeNotifications) {
         self.needsRefresh = NO;
         [self.notificationService getNotifications];
     }
@@ -225,7 +226,7 @@ static NSString *NOTIFICATION_CELL_IDENTIFIER = @"NotificationCellIdentifier";
 
 - (void)onGetNotifications:(NSArray *)notifications {
     DDLogVerbose(@"%@ onGetNotifications: %@", LOG_TAG, notifications);
-    
+        
     [self.notifications removeAllObjects];
     self.refreshTableScheduled = YES;
     for (TLNotification *notification in notifications) {
@@ -294,7 +295,7 @@ static NSString *NOTIFICATION_CELL_IDENTIFIER = @"NotificationCellIdentifier";
 
 #pragma mark - GroupServiceDelegate
 
-- (void) onGetGroup:(TLGroup *)group groupMembers:(NSArray<TLGroupMember *> *)groupMembers conversation:(id<TLGroupConversation>)conversation {
+- (void)onGetGroup:(TLGroup *)group groupMembers:(NSArray<TLGroupMember *> *)groupMembers conversation:(id<TLGroupConversation>)conversation {
     DDLogVerbose(@"%@ onGetGroup: %@ groupMembers:%@ conversation:%@", LOG_TAG, group, groupMembers,conversation);
     
     if (self.openGroupFromNotification) {
@@ -446,8 +447,8 @@ static NSString *NOTIFICATION_CELL_IDENTIFIER = @"NotificationCellIdentifier";
 
 #pragma mark - BottomSheetViewDelegate
 
-- (void)didTapConfirm:(nonnull AbstractBottomSheetView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractConfirmView);
+- (void)didTapConfirm:(nonnull AbstractBottomSheetView *)abstractBottomSheetView {
+    DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractBottomSheetView);
     
     self.resetAllNotification = YES;
     self.resetNotificationBarButtonItem.enabled = NO;
@@ -463,25 +464,25 @@ static NSString *NOTIFICATION_CELL_IDENTIFIER = @"NotificationCellIdentifier";
         }
     }
     
-    [abstractConfirmView closeConfirmView];
+    [abstractBottomSheetView closeConfirmView];
 }
 
-- (void)didTapCancel:(nonnull AbstractBottomSheetView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didTapCancel: %@", LOG_TAG, abstractConfirmView);
+- (void)didTapCancel:(nonnull AbstractBottomSheetView *)abstractBottomSheetView {
+    DDLogVerbose(@"%@ didTapCancel: %@", LOG_TAG, abstractBottomSheetView);
     
-    [abstractConfirmView closeConfirmView];
+    [abstractBottomSheetView closeConfirmView];
 }
 
-- (void)didClose:(nonnull AbstractBottomSheetView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didClose: %@", LOG_TAG, abstractConfirmView);
+- (void)didClose:(nonnull AbstractBottomSheetView *)abstractBottomSheetView {
+    DDLogVerbose(@"%@ didClose: %@", LOG_TAG, abstractBottomSheetView);
     
-    [abstractConfirmView closeConfirmView];
+    [abstractBottomSheetView closeConfirmView];
 }
 
-- (void)didFinishCloseAnimation:(nonnull AbstractBottomSheetView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didFinishCloseAnimation: %@", LOG_TAG, abstractConfirmView);
+- (void)didFinishCloseAnimation:(nonnull AbstractBottomSheetView *)abstractBottomSheetView {
+    DDLogVerbose(@"%@ didFinishCloseAnimation: %@", LOG_TAG, abstractBottomSheetView);
     
-    [abstractConfirmView removeFromSuperview];
+    [abstractBottomSheetView removeFromSuperview];
 }
 
 #pragma mark - Private methods

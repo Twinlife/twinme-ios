@@ -1130,8 +1130,8 @@ static int LAST_USED_CONVERSATION_COUNT = 99999;
 
 #pragma mark - BottomSheetViewDelegate
 
-- (void)didTapConfirm:(nonnull AbstractBottomSheetView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractConfirmView);
+- (void)didTapConfirm:(nonnull AbstractBottomSheetView *)abstractBottomSheetView {
+    DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractBottomSheetView);
     
     UIConversation* uiConversation = self.resetConversation;
     [self.conversationsTableView setEditing:NO];
@@ -1140,8 +1140,8 @@ static int LAST_USED_CONVERSATION_COUNT = 99999;
     [self.resetConversationConfirmView closeConfirmView];
 }
 
-- (void)didTapCancel:(nonnull AbstractBottomSheetView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didTapCancel: %@", LOG_TAG, abstractConfirmView);
+- (void)didTapCancel:(nonnull AbstractBottomSheetView *)abstractBottomSheetView {
+    DDLogVerbose(@"%@ didTapCancel: %@", LOG_TAG, abstractBottomSheetView);
     
     [self.conversationsTableView setEditing:NO];
     self.resetConversation = nil;
@@ -1149,8 +1149,8 @@ static int LAST_USED_CONVERSATION_COUNT = 99999;
     [self.resetConversationConfirmView closeConfirmView];
 }
 
-- (void)didClose:(nonnull AbstractBottomSheetView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didClose: %@", LOG_TAG, abstractConfirmView);
+- (void)didClose:(nonnull AbstractBottomSheetView *)abstractBottomSheetView {
+    DDLogVerbose(@"%@ didClose: %@", LOG_TAG, abstractBottomSheetView);
     
     [self.conversationsTableView setEditing:NO];
     self.resetConversation = nil;
@@ -1158,8 +1158,8 @@ static int LAST_USED_CONVERSATION_COUNT = 99999;
     [self.resetConversationConfirmView closeConfirmView];
 }
 
-- (void)didFinishCloseAnimation:(nonnull AbstractBottomSheetView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didFinishCloseAnimation: %@", LOG_TAG, abstractConfirmView);
+- (void)didFinishCloseAnimation:(nonnull AbstractBottomSheetView *)abstractBottomSheetView {
+    DDLogVerbose(@"%@ didFinishCloseAnimation: %@", LOG_TAG, abstractBottomSheetView);
     
     [self.resetConversationConfirmView removeFromSuperview];
     self.resetConversationConfirmView = nil;

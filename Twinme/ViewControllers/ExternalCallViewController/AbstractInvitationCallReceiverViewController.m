@@ -12,6 +12,7 @@
 #import <Twinlife/TLTwincodeURI.h>
 
 #import <Twinme/TLCallReceiver.h>
+#import <Twinme/TLSchedule.h>
 
 #import "AbstractInvitationCallReceiverViewController.h"
 
@@ -294,33 +295,33 @@ static UIColor *DESIGN_GREEN_VIEW_COLOR;
 
 #pragma mark - BottomSheetViewDelegate
 
-- (void)didTapConfirm:(nonnull AbstractBottomSheetView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractConfirmView);
+- (void)didTapConfirm:(nonnull AbstractBottomSheetView *)abstractBottomSheetView {
+    DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractBottomSheetView);
     
-    if ([abstractConfirmView isKindOfClass:[DeleteConfirmView class]]) {
+    if ([abstractBottomSheetView isKindOfClass:[DeleteConfirmView class]]) {
         [self.callReceiverService deleteCallReceiverWithCallReceiver:self.callReceiver];
     } else {
         [self.callReceiverService changeCallReceiverTwincodeWithCallReceiver:self.callReceiver];
     }
-    [abstractConfirmView closeConfirmView];
+    [abstractBottomSheetView closeConfirmView];
 }
 
-- (void)didTapCancel:(nonnull AbstractBottomSheetView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didTapCancel: %@", LOG_TAG, abstractConfirmView);
+- (void)didTapCancel:(nonnull AbstractBottomSheetView *)abstractBottomSheetView {
+    DDLogVerbose(@"%@ didTapCancel: %@", LOG_TAG, abstractBottomSheetView);
     
-    [abstractConfirmView closeConfirmView];
+    [abstractBottomSheetView closeConfirmView];
 }
 
-- (void)didClose:(nonnull AbstractBottomSheetView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didClose: %@", LOG_TAG, abstractConfirmView);
+- (void)didClose:(nonnull AbstractBottomSheetView *)abstractBottomSheetView {
+    DDLogVerbose(@"%@ didClose: %@", LOG_TAG, abstractBottomSheetView);
     
-    [abstractConfirmView closeConfirmView];
+    [abstractBottomSheetView closeConfirmView];
 }
 
-- (void)didFinishCloseAnimation:(nonnull AbstractBottomSheetView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didFinishCloseAnimation: %@", LOG_TAG, abstractConfirmView);
+- (void)didFinishCloseAnimation:(nonnull AbstractBottomSheetView *)abstractBottomSheetView {
+    DDLogVerbose(@"%@ didFinishCloseAnimation: %@", LOG_TAG, abstractBottomSheetView);
     
-    [abstractConfirmView removeFromSuperview];
+    [abstractBottomSheetView removeFromSuperview];
 }
 
 #pragma mark - Private methods
@@ -688,9 +689,109 @@ static UIColor *DESIGN_GREEN_VIEW_COLOR;
     NSString *name = [self.callReceiver.name stringByReplacingOccurrencesOfString:@"." withString:@"\u2024"];
     name = [name stringByReplacingOccurrencesOfString:@":" withString:@"\u02d0"];
     
-    NSString *message = [NSString stringWithFormat:TwinmeLocalizedString(@"invitation_call_view_controller_invite_message", nil), self.uri.uri, name];
+    NSMutableString *message = [[NSMutableString alloc] initWithString:@""];
+    [message appendString:[NSString stringWithFormat:TwinmeLocalizedString(@"invitation_call_view_controller_invite_message", nil), self.uri.uri, name]];
+
+    TLCapabilities *capabilities;
     
-    UIActivityViewController *activityViewController = [[UIActivityViewController alloc] initWithActivityItems:@[message] applicationActivities:nil];
+    if (!self.callReceiver.capabilities) {
+        capabilities = [[TLCapabilities alloc]init];
+    } else {
+        capabilities = [[TLCapabilities alloc] initWithCapabilities:[self.callReceiver.capabilities attributeValue]];
+    }
+    
+    NSURL *scheduleUrl = nil;
+    
+    if (capabilities.schedule && capabilities.schedule.enabled) {
+        if (capabilities.schedule.timeRanges.count > 0) {
+            NSDateFormatter *dateFormatter = [[NSDateFormatter alloc]init];
+            [dateFormatter setDateFormat:@"yyyyMMdd'T'HHmmss'Z'"];
+            [dateFormatter setTimeZone:[NSTimeZone timeZoneWithAbbreviation:@"UTC"]];
+            
+            TLDateTimeRange *dateTimeRange = (TLDateTimeRange *)[capabilities.schedule.timeRanges objectAtIndex:0];
+            TLDate *scheduleStartDate = dateTimeRange.start.date;
+            TLTime *scheduleStartTime = dateTimeRange.start.time;
+            TLDate *scheduleEndDate = dateTimeRange.end.date;
+            TLTime *scheduleEndTime = dateTimeRange.end.time;
+            
+            NSDateComponents *startDateComponents = [[NSDateComponents alloc] init];
+            startDateComponents.day = scheduleStartDate.day;
+            startDateComponents.month = scheduleStartDate.month;
+            startDateComponents.year = scheduleStartDate.year;
+            startDateComponents.hour = scheduleStartTime.hour;
+            startDateComponents.minute = scheduleStartTime.minute;
+            
+            NSDateComponents *endDateComponents = [[NSDateComponents alloc] init];
+            endDateComponents.day = scheduleEndDate.day;
+            endDateComponents.month = scheduleEndDate.month;
+            endDateComponents.year = scheduleEndDate.year;
+            endDateComponents.hour = scheduleEndTime.hour;
+            endDateComponents.minute = scheduleEndTime.minute;
+            
+            NSCalendar *calendar = [NSCalendar currentCalendar];
+            NSDate *startDate = [calendar dateFromComponents:startDateComponents];
+            NSDate *endDate = [calendar dateFromComponents:endDateComponents];
+            
+            NSMutableString *fileContent = [[NSMutableString alloc] initWithString:@""];
+            [fileContent appendString:@"BEGIN:VCALENDAR\n"];
+            [fileContent appendString:@"PRODID:"];
+            [fileContent appendString:TwinmeLocalizedString(@"application_name", nil)];
+            [fileContent appendString:@"\n"];
+            [fileContent appendString:@"BEGIN:VEVENT\n"];
+            [fileContent appendString:@"UID:"];
+            [fileContent appendString:[NSString stringWithFormat:@"%@",self.callReceiver.uuid]];
+            [fileContent appendString:@"\n"];
+            [fileContent appendString:@"SEQUENCE:1"];
+            [fileContent appendString:@"\n"];
+            [fileContent appendString:@"DTSTAMP:"];
+            [fileContent appendString:[dateFormatter stringFromDate:[NSDate date]]];
+            [fileContent appendString:@"\n"];
+            [fileContent appendString:@"DTSTART:"];
+            [fileContent appendString:[dateFormatter stringFromDate:startDate]];
+            [fileContent appendString:@"\n"];
+            [fileContent appendString:@"DTEND:"];
+            [fileContent appendString:[dateFormatter stringFromDate:endDate]];
+            [fileContent appendString:@"\n"];
+            [fileContent appendString:@"SUMMARY:"];
+            [fileContent appendString:name];
+            [fileContent appendString:@"\n"];
+            [fileContent appendString:@"LOCATION:"];
+            [fileContent appendString:self.uri.uri];
+            [fileContent appendString:@"\n"];
+            [fileContent appendString:@"DESCRIPTION:"];
+            [fileContent appendString:self.callReceiver.objectDescription];
+            [fileContent appendString:@"\n"];
+            [fileContent appendString:@"END:VEVENT\n"];
+            [fileContent appendString:@"END:VCALENDAR"];
+            
+            [dateFormatter setDateFormat:@"YYYY/MM/dd HH:mm"];
+            
+            [message appendString:@"\n\n"];
+            [message appendString:TwinmeLocalizedString(@"create_external_call_view_controller_link_validity", nil)];
+            [message appendString:@"\n"];
+            [message appendString:TwinmeLocalizedString(@"show_call_view_controller_setting_start", nil)];
+            [message appendString:@" : "];
+            [message appendString:[dateFormatter stringFromDate:startDate]];
+            [message appendString:@"\n"];
+            [message appendString:TwinmeLocalizedString(@"show_call_view_controller_setting_end", nil)];
+            [message appendString:@" : "];
+            [message appendString:[dateFormatter stringFromDate:endDate]];
+            
+            NSString *fileName = [NSString stringWithFormat:@"%@_call.ics", TwinmeLocalizedString(@"application_name", nil)];
+            NSString *path = [NSTemporaryDirectory() stringByAppendingPathComponent:fileName];
+            scheduleUrl = [NSURL fileURLWithPath:path];
+            [fileContent writeToFile:path atomically:YES encoding:NSUTF8StringEncoding error:nil];
+        }
+    }
+    
+    NSArray *shareItems;
+    if (scheduleUrl) {
+        shareItems = @[message, scheduleUrl];
+    } else {
+        shareItems = @[message];
+    }
+    
+    UIActivityViewController *activityViewController = [[UIActivityViewController alloc] initWithActivityItems:shareItems applicationActivities:nil];
     activityViewController.excludedActivityTypes = @[UIActivityTypeAirDrop,
                                                      UIActivityTypePrint,
                                                      UIActivityTypeAssignToContact,

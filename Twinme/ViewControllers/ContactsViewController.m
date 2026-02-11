@@ -592,7 +592,8 @@ static const int CONTACTS_VIEW_SECTION_COUNT = 2;
     self.noContactImageViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     self.noContactImageViewWidthConstraint.constant *= Design.WIDTH_RATIO;
     self.noContactImageViewTopConstraint.constant *= Design.HEIGHT_RATIO;
-    self.noContactImageView.hidden = YES;        
+    self.noContactImageView.hidden = YES;
+    
     self.noContactImageView.image = [self.twinmeApplication darkModeEnable:[self currentSpaceSettings]] ? [UIImage imageNamed:@"OnboardingStep3Dark"] : [UIImage imageNamed:@"OnboardingStep3"];
     
     self.noContactLabelWidthConstraint.constant *= Design.WIDTH_RATIO;

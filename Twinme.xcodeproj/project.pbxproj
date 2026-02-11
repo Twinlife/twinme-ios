@@ -273,6 +273,8 @@
 		575B02372B84DA5D00D15880 /* CallHoldView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 575B02352B84DA5D00D15880 /* CallHoldView.xib */; };
 		575B02382B84DA5D00D15880 /* CallHoldView.m in Sources */ = {isa = PBXBuildFile; fileRef = 575B02362B84DA5D00D15880 /* CallHoldView.m */; };
 		57638ACC2C5137FC0006DEC8 /* MapView.m in Sources */ = {isa = PBXBuildFile; fileRef = 57638ACB2C5137FC0006DEC8 /* MapView.m */; };
+		576394002F323E2F00BAA531 /* hiphop_video.caf in Resources */ = {isa = PBXBuildFile; fileRef = 576393FF2F323E2F00BAA531 /* hiphop_video.caf */; };
+		576394012F323E2F00BAA531 /* hiphop_audio.caf in Resources */ = {isa = PBXBuildFile; fileRef = 576393FE2F323E2F00BAA531 /* hiphop_audio.caf */; };
 		5765D6FD2D5B62170061DD3B /* BottomConversationView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5765D6FC2D5B62170061DD3B /* BottomConversationView.xib */; };
 		5765D6FE2D5B62170061DD3B /* BottomConversationView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5765D6FB2D5B62170061DD3B /* BottomConversationView.m */; };
 		5765D7052D5B622A0061DD3B /* MenuActionConversationView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5765D7042D5B622A0061DD3B /* MenuActionConversationView.xib */; };
@@ -1362,6 +1364,8 @@
 		575B02362B84DA5D00D15880 /* CallHoldView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CallHoldView.m; path = ViewControllers/CallViewController/CallHoldView.m; sourceTree = "<group>"; };
 		57638ACA2C5137FC0006DEC8 /* MapView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MapView.h; path = ViewControllers/CallViewController/MapView.h; sourceTree = "<group>"; };
 		57638ACB2C5137FC0006DEC8 /* MapView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = MapView.m; path = ViewControllers/CallViewController/MapView.m; sourceTree = "<group>"; };
+		576393FE2F323E2F00BAA531 /* hiphop_audio.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = hiphop_audio.caf; sourceTree = "<group>"; };
+		576393FF2F323E2F00BAA531 /* hiphop_video.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = hiphop_video.caf; sourceTree = "<group>"; };
 		5765D6FA2D5B62170061DD3B /* BottomConversationView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = BottomConversationView.h; path = ViewControllers/ConversationViewController/BottomConversationView.h; sourceTree = "<group>"; };
 		5765D6FB2D5B62170061DD3B /* BottomConversationView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = BottomConversationView.m; path = ViewControllers/ConversationViewController/BottomConversationView.m; sourceTree = "<group>"; };
 		5765D6FC2D5B62170061DD3B /* BottomConversationView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = BottomConversationView.xib; path = ViewControllers/ConversationViewController/BottomConversationView.xib; sourceTree = "<group>"; };
@@ -2767,24 +2771,26 @@
 		47DCF2E02EB3DB55001AC393 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				47DCF2E12EB3DBFE001AC393 /* skred */,
-				574F95862E990879008A2DFF /* opensource.html */,
-				57835E472CB98D25005BA8FA /* certification_animation_success.json */,
 				5756462B2C9D979600BD77BE /* bip39_wordlist_en.txt */,
-				5777AA012C11A735003130CD /* shield_animation.json */,
-				01EC71FB29DECC34000C7D32 /* twinme_ringing.caf */,
 				83FEE0FC2617458A0007C1F1 /* call_kit_icon.png */,
+				57835E472CB98D25005BA8FA /* certification_animation_success.json */,
+				576393FE2F323E2F00BAA531 /* hiphop_audio.caf */,
+				576393FF2F323E2F00BAA531 /* hiphop_video.caf */,
 				83FEE39E26174A990007C1F1 /* Images.xcassets */,
 				83FEE0FE2617458A0007C1F1 /* licenses.html */,
+				574F95862E990879008A2DFF /* opensource.html */,
 				83FEE0F9261745890007C1F1 /* photo_counter.png */,
 				01995B3D28C24198001B7BC5 /* privacy_policy */,
+				5777AA012C11A735003130CD /* shield_animation.json */,
 				83FEE1012617458A0007C1F1 /* silence.mp3 */,
+				47DCF2E12EB3DBFE001AC393 /* skred */,
 				01995B4228C241AB001B7BC5 /* terms_of_service */,
 				83FEE1052617458A0007C1F1 /* twinme_audio_call.caf */,
 				83FEE0FA261745890007C1F1 /* twinme_call_end.caf */,
 				83FEE0F8261745890007C1F1 /* twinme_connecting.caf */,
-				8314AD5C2629DA2F00983137 /* twinme_notification_default.caf */,
 				83FEE0FB261745890007C1F1 /* twinme_notification.caf */,
+				8314AD5C2629DA2F00983137 /* twinme_notification_default.caf */,
+				01EC71FB29DECC34000C7D32 /* twinme_ringing.caf */,
 				8314AD5D2629DA2F00983137 /* twinme_ringtone_default.caf */,
 				83FEE1002617458A0007C1F1 /* twinme_video_call.caf */,
 			);
@@ -4226,6 +4232,8 @@
 				83FEE1102617458A0007C1F1 /* twinme_video_call.caf in Resources */,
 				83FEE10C2617458A0007C1F1 /* call_kit_icon.png in Resources */,
 				57C49A812B71502F006EB227 /* CallConversationView.xib in Resources */,
+				576394002F323E2F00BAA531 /* hiphop_video.caf in Resources */,
+				576394012F323E2F00BAA531 /* hiphop_audio.caf in Resources */,
 				83FEE2A2261748300007C1F1 /* TypingAvatarCell.xib in Resources */,
 				83FEE1082617458A0007C1F1 /* twinme_connecting.caf in Resources */,
 				477F785227C6B97E00C8ACF1 /* ClearItemCell.xib in Resources */,

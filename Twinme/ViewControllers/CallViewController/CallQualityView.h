@@ -10,7 +10,7 @@
 
 @protocol CallQualityViewDelegate <NSObject>
 
-- (void)didSendCallQuality:(nonnull AbstractBottomSheetView *)abstractConfirmView quality:(int)quality;
+- (void)didSendCallQuality:(nonnull AbstractBottomSheetView *)abstractBottomSheetView quality:(int)quality;
 
 @end
 

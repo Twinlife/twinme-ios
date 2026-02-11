@@ -377,10 +377,10 @@ static const int WELCOME_STEP_COUNT = 3;
     DDLogVerbose(@"%@ setupWelcome", LOG_TAG);
     
     self.uiWelcome = [[NSMutableArray alloc]init];
-    [self.uiWelcome addObject:[[UIWelcome alloc]initWithWelcomePart:WelcomePartOne spaceSettings:self.currentSpace.settings]];
-    [self.uiWelcome addObject:[[UIWelcome alloc]initWithWelcomePart:WelcomePartTwo spaceSettings:self.currentSpace.settings]];
-    [self.uiWelcome addObject:[[UIWelcome alloc]initWithWelcomePart:WelcomePartThree spaceSettings:self.currentSpace.settings]];
-    [self.uiWelcome addObject:[[UIWelcome alloc]initWithWelcomePart:WelcomePartFour spaceSettings:self.currentSpace.settings]];
+    [self.uiWelcome addObject:[[UIWelcome alloc]initWithWelcomePart:WelcomePartOne spaceSettings:[self currentSpaceSettings]]];
+    [self.uiWelcome addObject:[[UIWelcome alloc]initWithWelcomePart:WelcomePartTwo spaceSettings:[self currentSpaceSettings]]];
+    [self.uiWelcome addObject:[[UIWelcome alloc]initWithWelcomePart:WelcomePartThree spaceSettings:[self currentSpaceSettings]]];
+    [self.uiWelcome addObject:[[UIWelcome alloc]initWithWelcomePart:WelcomePartFour spaceSettings:[self currentSpaceSettings]]];
     
     self.welcomePageControl.numberOfPages = self.uiWelcome.count;
     

@@ -20,6 +20,8 @@
 #import <TwinmeCommon/Design.h>
 #import <TwinmeCommon/TwinmeApplication.h>
 
+#import <Twinme/TLTwinmeContext.h>
+
 #import "UIContact.h"
 #import "UICustomColor.h"
 #import "UIColor+Hex.h"

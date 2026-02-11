@@ -426,10 +426,10 @@ static NSString *CALL_CELL_IDENTIFIER = @"CallCellIdentifier";
 
 #pragma mark - BottomSheetViewDelegate
 
-- (void)didTapConfirm:(nonnull AbstractBottomSheetView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractConfirmView);
+- (void)didTapConfirm:(nonnull AbstractBottomSheetView *)abstractBottomSheetView {
+    DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractBottomSheetView);
     
-    if ([abstractConfirmView isKindOfClass:[CallAgainConfirmView class]]) {
+    if ([abstractBottomSheetView isKindOfClass:[CallAgainConfirmView class]]) {
         if (self.callOriginator) {
             if (self.callDescriptor.isVideo) {
                 [self startVideoCallWithPermissionCheck:NO];
@@ -439,7 +439,7 @@ static NSString *CALL_CELL_IDENTIFIER = @"CallCellIdentifier";
         }
         
         self.callDescriptor = nil;
-    } else if ([abstractConfirmView isKindOfClass:[DeleteConfirmView class]]) {
+    } else if ([abstractBottomSheetView isKindOfClass:[DeleteConfirmView class]]) {
         self.resetAllCalls = YES;
         self.resetCallsBarButtonItem.enabled = NO;
         [self showProgressIndicator];
@@ -449,33 +449,33 @@ static NSString *CALL_CELL_IDENTIFIER = @"CallCellIdentifier";
             TLCallDescriptor *callDescriptor = self.allCalls[i];
             [self.callsService deleteCallDescriptor:callDescriptor];
         }
-    } else if ([abstractConfirmView isKindOfClass:[PremiumFeatureConfirmView class]]) {
+    } else if ([abstractBottomSheetView isKindOfClass:[PremiumFeatureConfirmView class]]) {
         InAppSubscriptionViewController *inAppSubscriptionViewController = [[UIStoryboard storyboardWithName:@"iPhone" bundle:nil] instantiateViewControllerWithIdentifier:@"InAppSubscriptionViewController"];
         TwinmeNavigationController *navigationController = [[TwinmeNavigationController alloc]initWithRootViewController:inAppSubscriptionViewController];
         [self.navigationController presentViewController:navigationController animated:YES completion:nil];
     }
     
-    [abstractConfirmView closeConfirmView];
+    [abstractBottomSheetView closeConfirmView];
 }
 
-- (void)didTapCancel:(nonnull AbstractBottomSheetView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didTapCancel: %@", LOG_TAG, abstractConfirmView);
+- (void)didTapCancel:(nonnull AbstractBottomSheetView *)abstractBottomSheetView {
+    DDLogVerbose(@"%@ didTapCancel: %@", LOG_TAG, abstractBottomSheetView);
     
     self.callDescriptor = nil;
-    [abstractConfirmView closeConfirmView];
+    [abstractBottomSheetView closeConfirmView];
 }
 
-- (void)didClose:(nonnull AbstractBottomSheetView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didClose: %@", LOG_TAG, abstractConfirmView);
+- (void)didClose:(nonnull AbstractBottomSheetView *)abstractBottomSheetView {
+    DDLogVerbose(@"%@ didClose: %@", LOG_TAG, abstractBottomSheetView);
     
     self.callDescriptor = nil;
-    [abstractConfirmView closeConfirmView];
+    [abstractBottomSheetView closeConfirmView];
 }
 
-- (void)didFinishCloseAnimation:(nonnull AbstractBottomSheetView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didFinishCloseAnimation: %@", LOG_TAG, abstractConfirmView);
+- (void)didFinishCloseAnimation:(nonnull AbstractBottomSheetView *)abstractBottomSheetView {
+    DDLogVerbose(@"%@ didFinishCloseAnimation: %@", LOG_TAG, abstractBottomSheetView);
     
-    [abstractConfirmView removeFromSuperview];
+    [abstractBottomSheetView removeFromSuperview];
 }
 
 #pragma mark - Private methods

@@ -726,15 +726,15 @@ static const int NB_CALL_RECEIVER = 3;
 
 #pragma mark - BottomSheetViewDelegate
 
-- (void)didTapConfirm:(nonnull AbstractBottomSheetView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractConfirmView);
+- (void)didTapConfirm:(nonnull AbstractBottomSheetView *)abstractBottomSheetView {
+    DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractBottomSheetView);
     
-    if ([abstractConfirmView isKindOfClass:[PremiumFeatureConfirmView class]]) {
+    if ([abstractBottomSheetView isKindOfClass:[PremiumFeatureConfirmView class]]) {
         InAppSubscriptionViewController *inAppSubscriptionViewController = [[UIStoryboard storyboardWithName:@"iPhone" bundle:nil] instantiateViewControllerWithIdentifier:@"InAppSubscriptionViewController"];
         TwinmeNavigationController *navigationController = [[TwinmeNavigationController alloc]initWithRootViewController:inAppSubscriptionViewController];
         [self.navigationController presentViewController:navigationController animated:YES completion:nil];
-    } else if ([abstractConfirmView isKindOfClass:[DeleteConfirmView class]]) {
-        DeleteConfirmView *deleteConfirmView = (DeleteConfirmView *)abstractConfirmView;
+    } else if ([abstractBottomSheetView isKindOfClass:[DeleteConfirmView class]]) {
+        DeleteConfirmView *deleteConfirmView = (DeleteConfirmView *)abstractBottomSheetView;
         if (deleteConfirmView.deleteConfirmType == DeleteConfirmTypeHistory) {
             self.resetAllCalls = YES;
             self.resetCallsBarButtonItem.enabled = NO;
@@ -748,7 +748,7 @@ static const int NB_CALL_RECEIVER = 3;
         } else if (deleteConfirmView.deleteConfirmType == DeleteConfirmTypeOriginator && self.callReceiverToDelete) {
             [self.callsService deleteCallReceiverWithCallReceiver:self.callReceiverToDelete];
         }
-    } else if ([abstractConfirmView isKindOfClass:[CallAgainConfirmView class]]) {
+    } else if ([abstractBottomSheetView isKindOfClass:[CallAgainConfirmView class]]) {
         if (self.callOriginator) {
             if (self.callDescriptor.isVideo) {
                 [self startVideoCallWithPermissionCheck:NO];
@@ -760,29 +760,29 @@ static const int NB_CALL_RECEIVER = 3;
         self.callDescriptor = nil;
     }
     
-    [abstractConfirmView closeConfirmView];
+    [abstractBottomSheetView closeConfirmView];
 }
 
-- (void)didTapCancel:(nonnull AbstractBottomSheetView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didTapCancel: %@", LOG_TAG, abstractConfirmView);
+- (void)didTapCancel:(nonnull AbstractBottomSheetView *)abstractBottomSheetView {
+    DDLogVerbose(@"%@ didTapCancel: %@", LOG_TAG, abstractBottomSheetView);
     
     self.callReceiverToDelete = nil;
     self.callDescriptor = nil;
-    [abstractConfirmView closeConfirmView];
+    [abstractBottomSheetView closeConfirmView];
 }
 
-- (void)didClose:(nonnull AbstractBottomSheetView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didClose: %@", LOG_TAG, abstractConfirmView);
+- (void)didClose:(nonnull AbstractBottomSheetView *)abstractBottomSheetView {
+    DDLogVerbose(@"%@ didClose: %@", LOG_TAG, abstractBottomSheetView);
     
     self.callReceiverToDelete = nil;
     self.callDescriptor = nil;
-    [abstractConfirmView closeConfirmView];
+    [abstractBottomSheetView closeConfirmView];
 }
 
-- (void)didFinishCloseAnimation:(nonnull AbstractBottomSheetView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didFinishCloseAnimation: %@", LOG_TAG, abstractConfirmView);
+- (void)didFinishCloseAnimation:(nonnull AbstractBottomSheetView *)abstractBottomSheetView {
+    DDLogVerbose(@"%@ didFinishCloseAnimation: %@", LOG_TAG, abstractBottomSheetView);
     
-    [abstractConfirmView removeFromSuperview];
+    [abstractBottomSheetView removeFromSuperview];
 }
 
 #pragma mark - AlertMessageViewDelegate
@@ -806,7 +806,7 @@ static const int NB_CALL_RECEIVER = 3;
     
     PremiumFeatureConfirmView *premiumFeatureConfirmView = [[PremiumFeatureConfirmView alloc] init];
     premiumFeatureConfirmView.bottomSheetViewDelegate = self;
-    [premiumFeatureConfirmView initWithPremiumFeature:[[UIPremiumFeature alloc]initWithFeatureType:FeatureTypeClickToCall spaceSettings:self.currentSpaceSettings] parentViewController:self.tabBarController];
+    [premiumFeatureConfirmView initWithPremiumFeature:[[UIPremiumFeature alloc]initWithFeatureType:FeatureTypeClickToCall spaceSettings:[self currentSpaceSettings]] parentViewController:self.tabBarController];
     [self.tabBarController.view addSubview:premiumFeatureConfirmView];
     [premiumFeatureConfirmView showConfirmView];
 }

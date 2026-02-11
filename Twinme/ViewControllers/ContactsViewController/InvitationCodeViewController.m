@@ -354,46 +354,46 @@ static const int CONTACTS_VIEW_SECTION_COUNT = 2;
 
 #pragma mark - BottomSheetViewDelegate
 
-- (void)didTapConfirm:(nonnull AbstractBottomSheetView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractConfirmView);
+- (void)didTapConfirm:(nonnull AbstractBottomSheetView *)abstractBottomSheetView {
+    DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractBottomSheetView);
 
-    [abstractConfirmView closeConfirmView];
+    [abstractBottomSheetView closeConfirmView];
     
-    if ([abstractConfirmView isKindOfClass:[InvitationCodeShareView class]] && self.uiInvitationCode) {
+    if ([abstractBottomSheetView isKindOfClass:[InvitationCodeShareView class]] && self.uiInvitationCode) {
         [self.invitationCode insertObject:self.uiInvitationCode atIndex:0];
         [self.invitationCodeTableView reloadData];
         self.uiInvitationCode = nil;
    }
 }
 
-- (void)didTapCancel:(nonnull AbstractBottomSheetView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didTapCancel: %@", LOG_TAG, abstractConfirmView);
+- (void)didTapCancel:(nonnull AbstractBottomSheetView *)abstractBottomSheetView {
+    DDLogVerbose(@"%@ didTapCancel: %@", LOG_TAG, abstractBottomSheetView);
     
-    [abstractConfirmView closeConfirmView];
+    [abstractBottomSheetView closeConfirmView];
     
-    if ([abstractConfirmView isKindOfClass:[DefaultConfirmView class]]) {
+    if ([abstractBottomSheetView isKindOfClass:[DefaultConfirmView class]]) {
         [self.twinmeApplication setShowOnboardingType:OnboardingTypeMiniCode state:NO];
-    } else if ([abstractConfirmView isKindOfClass:[InvitationCodeShareView class]] && self.uiInvitationCode) {
+    } else if ([abstractBottomSheetView isKindOfClass:[InvitationCodeShareView class]] && self.uiInvitationCode) {
         [self.invitationCodeService deleteInvitationWithInvitation:self.uiInvitationCode.invitation];
         self.uiInvitationCode = nil;
     }
 }
 
-- (void)didClose:(nonnull AbstractBottomSheetView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didClose: %@", LOG_TAG, abstractConfirmView);
+- (void)didClose:(nonnull AbstractBottomSheetView *)abstractBottomSheetView {
+    DDLogVerbose(@"%@ didClose: %@", LOG_TAG, abstractBottomSheetView);
     
-    [abstractConfirmView closeConfirmView];
+    [abstractBottomSheetView closeConfirmView];
     
-    if ([abstractConfirmView isKindOfClass:[InvitationCodeShareView class]] && self.uiInvitationCode) {
+    if ([abstractBottomSheetView isKindOfClass:[InvitationCodeShareView class]] && self.uiInvitationCode) {
        [self.invitationCodeService deleteInvitationWithInvitation:self.uiInvitationCode.invitation];
        self.uiInvitationCode = nil;
    }
 }
 
-- (void)didFinishCloseAnimation:(nonnull AbstractBottomSheetView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didFinishCloseAnimation: %@", LOG_TAG, abstractConfirmView);
+- (void)didFinishCloseAnimation:(nonnull AbstractBottomSheetView *)abstractBottomSheetView {
+    DDLogVerbose(@"%@ didFinishCloseAnimation: %@", LOG_TAG, abstractBottomSheetView);
     
-    [abstractConfirmView removeFromSuperview];
+    [abstractBottomSheetView removeFromSuperview];
 }
 
 #pragma mark - Private Methods

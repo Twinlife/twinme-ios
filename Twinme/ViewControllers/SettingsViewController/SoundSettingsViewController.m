@@ -365,7 +365,7 @@ typedef enum {
             }
             break;
             
-        case SECTION_AUDIO_CALL:
+        /*case SECTION_AUDIO_CALL:
             if (indexPath.row == 2) {
                 selectNotificationSoundViewController.notificationSoundType = NotificationSoundTypeAudioCall;
                 [self.navigationController pushViewController:selectNotificationSoundViewController animated:YES];
@@ -377,7 +377,7 @@ typedef enum {
                 selectNotificationSoundViewController.notificationSoundType = NotificationSoundTypeVideoCall;
                 [self.navigationController pushViewController:selectNotificationSoundViewController animated:YES];
             }
-            break;
+            break;*/
             
         default:
             break;

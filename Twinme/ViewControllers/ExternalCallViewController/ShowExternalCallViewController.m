@@ -18,10 +18,10 @@
 #import "LastCallsViewController.h"
 
 #import <TwinmeCommon/CallReceiverService.h>
+#import <TwinmeCommon/Design.h>
 
 #import <Utils/NSString+Utils.h>
 
-#import <TwinmeCommon/Design.h>
 #import "MenuCallCapabilitiesView.h"
 #import "MenuDateTimeView.h"
 #import "SwitchView.h"

@@ -51,6 +51,7 @@
     
     ApplicationDelegate *delegate = (ApplicationDelegate *)[[UIApplication sharedApplication] delegate];
     TwinmeApplication *twinmeApplication = [delegate twinmeApplication];
+     
     BOOL darkMode = [twinmeApplication darkModeEnable:self.spaceSettings];
     
     switch (self.welcomePart) {

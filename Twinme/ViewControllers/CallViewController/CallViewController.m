@@ -114,6 +114,9 @@ static NSInteger CONTROL_CAMERA_ANSWER_TAG = 3;
 
 static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
 
+static NSInteger WARNING_BACKGROUND_LOCATION = 4;
+static NSInteger WARNING_FINE_LOCATION = 5;
+
 //
 // Interface: CallViewController ()
 //
@@ -781,6 +784,10 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
 - (IBAction)pauseCall:(id)sender {
     DDLogVerbose(@"%@ pauseCall", LOG_TAG);
     
+    if (!CALL_IS_ACTIVE(self.callService.callStatus)) {
+        return;
+    }
+    
     [self.menuView updateMenuState:CallMenuViewStateDefault];
     
     if (CALL_IS_PAUSED(self.callService.callStatus)) {
@@ -901,7 +908,6 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
         
         self.mapView.frame = self.conversationView.frame;
         [self.mapView loadViews];
-        
         CallState *callState = [self.callService currentCall];
         if (callState) {
             NSArray<CallParticipant *> *participants = [callState getParticipants];
@@ -1719,17 +1725,17 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
 
 #pragma mark - BottomSheetViewDelegate
 
-- (void)didSendCallQuality:(AbstractBottomSheetView *)abstractConfirmView quality:(int)quality {
-    DDLogVerbose(@"%@ didSendCallQuality: %@ quality:%d", LOG_TAG, abstractConfirmView, quality);
+- (void)didSendCallQuality:(AbstractBottomSheetView *)abstractBottomSheetView quality:(int)quality {
+    DDLogVerbose(@"%@ didSendCallQuality: %@ quality:%d", LOG_TAG, abstractBottomSheetView, quality);
     
     [self.callService sendCallQuality:quality];
-    [abstractConfirmView closeConfirmView];
+    [abstractBottomSheetView closeConfirmView];
 }
 
-- (void)didTapConfirm:(nonnull AbstractBottomSheetView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractConfirmView);
+- (void)didTapConfirm:(nonnull AbstractBottomSheetView *)abstractBottomSheetView {
+    DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractBottomSheetView);
     
-    if ([abstractConfirmView isKindOfClass:[InvitationCodeConfirmView class]]) {
+    if ([abstractBottomSheetView isKindOfClass:[InvitationCodeConfirmView class]]) {
         CallState *callState = [self.callService currentCall];
         if (callState) {
             [self.twinmeService createUriWithKind:TLTwincodeURIKindInvitation twincodeOutbound:self.currentSpace.profile.twincodeOutbound withBlock:^(TLBaseServiceErrorCode errorCode, TLTwincodeURI *twincodeURI) {
@@ -1741,61 +1747,65 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
                 }
             }];
         }
-    } else if ([abstractConfirmView isKindOfClass:[DefaultConfirmView class]]) {
-        if (abstractConfirmView.tag == CONTROL_CAMERA_ASK_TAG) {
+    } else if ([abstractBottomSheetView isKindOfClass:[DefaultConfirmView class]]) {
+        if (abstractBottomSheetView.tag == CONTROL_CAMERA_ASK_TAG) {
             [self.participant remoteAskControl];
             [self updateMenu];
-        } else if (abstractConfirmView.tag == CONTROL_CAMERA_STOP_TAG) {
+        } else if (abstractBottomSheetView.tag == CONTROL_CAMERA_STOP_TAG) {
             [self.participant remoteStopControl];
             [self updateView:[self.callService callStatus]];
-        } else if (abstractConfirmView.tag == CONTROL_CAMERA_ANSWER_TAG) {
+        } else if (abstractBottomSheetView.tag == CONTROL_CAMERA_ANSWER_TAG) {
             [self.participant remoteAnswerControlWithGrant:YES];
             [self updateView:[self.callService callStatus]];
         } else {
             [[UIApplication sharedApplication] openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString] options:@{} completionHandler:nil];
         }
-    } else if ([abstractConfirmView isKindOfClass:[OnboardingConfirmView class]]) {
-        if (abstractConfirmView.tag == ONBOARDING_REMOTE_CAMERA) {
+    } else if ([abstractBottomSheetView isKindOfClass:[OnboardingConfirmView class]]) {
+        if (abstractBottomSheetView.tag == ONBOARDING_REMOTE_CAMERA) {
             [self cameraControl:nil];
         }
-    } else if (([abstractConfirmView isKindOfClass:[PremiumFeatureConfirmView class]])) {
+    } else if (([abstractBottomSheetView isKindOfClass:[PremiumFeatureConfirmView class]])) {
         InAppSubscriptionViewController *inAppSubscriptionViewController = [[UIStoryboard storyboardWithName:@"iPhone" bundle:nil] instantiateViewControllerWithIdentifier:@"InAppSubscriptionViewController"];
         TwinmeNavigationController *navigationController = [[TwinmeNavigationController alloc]initWithRootViewController:inAppSubscriptionViewController];
         [self.navigationController presentViewController:navigationController animated:YES completion:nil];
     }
     
-    [abstractConfirmView closeConfirmView];
+    [abstractBottomSheetView closeConfirmView];
 }
 
-- (void)didTapCancel:(nonnull AbstractBottomSheetView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didTapCancel: %@", LOG_TAG, abstractConfirmView);
+- (void)didTapCancel:(nonnull AbstractBottomSheetView *)abstractBottomSheetView {
+    DDLogVerbose(@"%@ didTapCancel: %@", LOG_TAG, abstractBottomSheetView);
     
-    [abstractConfirmView closeConfirmView];
+    [abstractBottomSheetView closeConfirmView];
     
-    if ([abstractConfirmView isKindOfClass:[DefaultConfirmView class]]) {
-        if (abstractConfirmView.tag == CONTROL_CAMERA_ANSWER_TAG) {
+    if ([abstractBottomSheetView isKindOfClass:[DefaultConfirmView class]]) {
+        if (abstractBottomSheetView.tag == CONTROL_CAMERA_ANSWER_TAG) {
             [self.participant remoteAnswerControlWithGrant:NO];
+        } else if (abstractBottomSheetView.tag == WARNING_BACKGROUND_LOCATION) {
+            [self.twinmeApplication setShowWarningLocationBackgroundWithState:NO];
+        } else if (abstractBottomSheetView.tag == WARNING_FINE_LOCATION) {
+            [self.twinmeApplication setShowWarningLocationFineWithState:NO];
         }
-    } else if ([abstractConfirmView isKindOfClass:[OnboardingConfirmView class]]) {
-        if (abstractConfirmView.tag == ONBOARDING_REMOTE_CAMERA) {
+    } else if ([abstractBottomSheetView isKindOfClass:[OnboardingConfirmView class]]) {
+        if (abstractBottomSheetView.tag == ONBOARDING_REMOTE_CAMERA) {
             [self.twinmeApplication setShowOnboardingType:OnboardingTypeRemoteCamera state:NO];
             [self cameraControl:nil];
         }
     }
 }
 
-- (void)didClose:(nonnull AbstractBottomSheetView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didClose: %@", LOG_TAG, abstractConfirmView);
+- (void)didClose:(nonnull AbstractBottomSheetView *)abstractBottomSheetView {
+    DDLogVerbose(@"%@ didClose: %@", LOG_TAG, abstractBottomSheetView);
     
-    [abstractConfirmView closeConfirmView];
+    [abstractBottomSheetView closeConfirmView];
 }
 
-- (void)didFinishCloseAnimation:(nonnull AbstractBottomSheetView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didFinishCloseAnimation: %@", LOG_TAG, abstractConfirmView);
+- (void)didFinishCloseAnimation:(nonnull AbstractBottomSheetView *)abstractBottomSheetView {
+    DDLogVerbose(@"%@ didFinishCloseAnimation: %@", LOG_TAG, abstractBottomSheetView);
 
-    [abstractConfirmView removeFromSuperview];
+    [abstractBottomSheetView removeFromSuperview];
     
-    if ([abstractConfirmView isKindOfClass:[CallQualityView class]]) {
+    if ([abstractBottomSheetView isKindOfClass:[CallQualityView class]]) {
         [self finish];
     }
 }
@@ -2264,21 +2274,29 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
 - (void)showBackgroundAlert {
     DDLogVerbose(@"%@ showBackgroundAlert", LOG_TAG);
         
-    DefaultConfirmView *defaultConfirmView = [[DefaultConfirmView alloc] init];
-    defaultConfirmView.bottomSheetViewDelegate = self;
-    [defaultConfirmView initWithTitle:TwinmeLocalizedString(@"call_view_controller_location_share", nil) message:TwinmeLocalizedString(@"call_view_controller_location_background_warning", nil) image:nil avatar:nil  action:TwinmeLocalizedString(@"application_authorization_go_settings", nil) actionColor:nil cancel:nil];
-    [self.view addSubview:defaultConfirmView];
-    [defaultConfirmView showConfirmView];
+    if ([self.twinmeApplication startWarningLocationBackground]) {
+        DefaultConfirmView *defaultConfirmView = [[DefaultConfirmView alloc] init];
+        defaultConfirmView.bottomSheetViewDelegate = self;
+        defaultConfirmView.forceDarkMode = YES;
+        defaultConfirmView.tag = WARNING_BACKGROUND_LOCATION;
+        [defaultConfirmView initWithTitle:TwinmeLocalizedString(@"call_view_controller_location_share", nil) message:TwinmeLocalizedString(@"call_view_controller_location_background_warning", nil) image:nil avatar:nil  action:TwinmeLocalizedString(@"application_authorization_go_settings", nil) actionColor:nil cancel:TwinmeLocalizedString(@"application_do_not_display", nil)];
+        [self.view addSubview:defaultConfirmView];
+        [defaultConfirmView showConfirmView];
+    }
 }
 
 - (void)showExactLocationAlert {
     DDLogVerbose(@"%@ showExactLocationAlert", LOG_TAG);
         
-    DefaultConfirmView *defaultConfirmView = [[DefaultConfirmView alloc] init];
-    defaultConfirmView.bottomSheetViewDelegate = self;
-    [defaultConfirmView initWithTitle:TwinmeLocalizedString(@"call_view_controller_location_share", nil) message:TwinmeLocalizedString(@"call_view_controller_location_exact_warning", nil) image:nil avatar:nil  action:TwinmeLocalizedString(@"application_authorization_go_settings", nil) actionColor:nil cancel:nil];
-    [self.view addSubview:defaultConfirmView];
-    [defaultConfirmView showConfirmView];
+    if ([self.twinmeApplication startWarningLocationFine]) {
+        DefaultConfirmView *defaultConfirmView = [[DefaultConfirmView alloc] init];
+        defaultConfirmView.bottomSheetViewDelegate = self;
+        defaultConfirmView.forceDarkMode = YES;
+        defaultConfirmView.tag = WARNING_FINE_LOCATION;
+        [defaultConfirmView initWithTitle:TwinmeLocalizedString(@"call_view_controller_location_share", nil) message:TwinmeLocalizedString(@"call_view_controller_location_exact_warning", nil) image:nil avatar:nil  action:TwinmeLocalizedString(@"application_authorization_go_settings", nil) actionColor:nil cancel:TwinmeLocalizedString(@"application_do_not_display", nil)];
+        [self.view addSubview:defaultConfirmView];
+        [defaultConfirmView showConfirmView];
+    }
 }
 
 - (void)stopShareLocation {
@@ -2978,16 +2996,12 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
 - (void)updateMenu {
     DDLogVerbose(@"%@ updateMenu", LOG_TAG);
     
-    CallStatus callStatus = [self.callService callStatus];
     BOOL isLocalVideoTrack = [self.callService localVideoTrack] != nil;
     BOOL isVideoAllowed = self.accessCameraGranted && (self.isCallStartedInVideo || (self.originator.capabilities.hasVideo && self.originator.identityCapabilities.hasVideo));
     BOOL isCameraControlAllowed = isVideoAllowed && [self isZoomableSupported] && self.originator.capabilities.zoomable != TLVideoZoomableNever && self.callParticipantViews.count == 2;
     BOOL isRemoteCameraControl = [self isRemoteCameraControl];
     
     BOOL isWaitingForCameraControlAnswer = self.participant && self.participant.isWaitingForCameraControlAnswer;
-    
-    BOOL isInCall = CALL_IS_ACTIVE(callStatus) && !CALL_IS_ON_HOLD(callStatus);
-    BOOL isInPause = CALL_IS_PAUSED(callStatus);
     
     BOOL hideCertify = YES;
     if (self.originator && [self.originator isKindOfClass:[TLContact class]] && self.callParticipantViews.count == 2) {
@@ -2998,7 +3012,7 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
         }
     }
 
-    [self.menuView updateMenu:isInCall isAudioMuted:[self.callService isAudioMuted] isSpeakerOn:[self.callService isSpeakerOn] isCameraMuted:[self.callService isCameraMuted] isLocalVideoTrack:isLocalVideoTrack isVideoAllowed:isVideoAllowed isConversationAllowed:[self isMessageSupported] isStreamingAudioSupported:[self isStreamingSupported] isShareInvitationAllowed:self.isCallReceiver isShareLocationAllowed:[self isLocationSupported] isInPause:isInPause isLocationShared:[self.callService isLocationStartShared] hideCertify:hideCertify isCertifyRunning:[self.callService isKeyCheckRunning] audioDevice:self.callService.getCurrentAudioDevice isHeadSetAvailable:self.callService.isHeadsetAvailable isCameraControlAllowed:isCameraControlAllowed isRemoteCameraControl:isRemoteCameraControl isWaitingForCameraControlAnswer:isWaitingForCameraControlAnswer];
+    [self.menuView updateMenu:[self.callService callStatus] isAudioMuted:[self.callService isAudioMuted] isSpeakerOn:[self.callService isSpeakerOn] isCameraMuted:[self.callService isCameraMuted] isLocalVideoTrack:isLocalVideoTrack isVideoAllowed:isVideoAllowed isConversationAllowed:[self isMessageSupported] isStreamingAudioSupported:[self isStreamingSupported] isShareInvitationAllowed:self.isCallReceiver isShareLocationAllowed:[self isLocationSupported] isLocationShared:[self.callService isLocationStartShared] hideCertify:hideCertify isCertifyRunning:[self.callService isKeyCheckRunning] audioDevice:self.callService.getCurrentAudioDevice isHeadSetAvailable:self.callService.isHeadsetAvailable isCameraControlAllowed:isCameraControlAllowed isRemoteCameraControl:isRemoteCameraControl isWaitingForCameraControlAnswer:isWaitingForCameraControlAnswer];
 }
 
 - (BOOL)isMessageSupported {
@@ -3858,7 +3872,7 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
     PremiumFeatureConfirmView *premiumFeatureConfirmView = [[PremiumFeatureConfirmView alloc] init];
     premiumFeatureConfirmView.bottomSheetViewDelegate = self;
     premiumFeatureConfirmView.forceDarkMode = YES;
-    [premiumFeatureConfirmView initWithPremiumFeature:[[UIPremiumFeature alloc]initWithFeatureType:featureType spaceSettings:self.currentSpaceSettings] parentViewController:self];
+    [premiumFeatureConfirmView initWithPremiumFeature:[[UIPremiumFeature alloc]initWithFeatureType:featureType spaceSettings:[self currentSpaceSettings]] parentViewController:self];
     [self.view addSubview:premiumFeatureConfirmView];
     [premiumFeatureConfirmView showConfirmView];
 }

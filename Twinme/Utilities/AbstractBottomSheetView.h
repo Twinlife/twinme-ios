@@ -14,13 +14,13 @@
 
 @protocol BottomSheetViewDelegate <NSObject>
 
-- (void)didTapConfirm:(nonnull AbstractBottomSheetView *)abstractConfirmView;
+- (void)didTapConfirm:(nonnull AbstractBottomSheetView *)abstractBottomSheetView;
 
-- (void)didTapCancel:(nonnull AbstractBottomSheetView *)abstractConfirmView;
+- (void)didTapCancel:(nonnull AbstractBottomSheetView *)abstractBottomSheetView;
 
-- (void)didClose:(nonnull AbstractBottomSheetView *)abstractConfirmView;
+- (void)didClose:(nonnull AbstractBottomSheetView *)abstractBottomSheetView;
 
-- (void)didFinishCloseAnimation:(nonnull AbstractBottomSheetView *)abstractConfirmView;
+- (void)didFinishCloseAnimation:(nonnull AbstractBottomSheetView *)abstractBottomSheetView;
 
 @end
 

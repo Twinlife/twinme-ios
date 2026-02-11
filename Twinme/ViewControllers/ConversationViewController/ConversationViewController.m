@@ -3071,56 +3071,56 @@ typedef enum {
 
 #pragma mark - BottomSheetViewDelegate
 
-- (void)didTapConfirm:(nonnull AbstractBottomSheetView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractConfirmView);
+- (void)didTapConfirm:(nonnull AbstractBottomSheetView *)abstractBottomSheetView {
+    DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractBottomSheetView);
     
-    if ([abstractConfirmView isKindOfClass:[PremiumFeatureConfirmView class]]) {
+    if ([abstractBottomSheetView isKindOfClass:[PremiumFeatureConfirmView class]]) {
         InAppSubscriptionViewController *inAppSubscriptionViewController = [[UIStoryboard storyboardWithName:@"iPhone" bundle:nil] instantiateViewControllerWithIdentifier:@"InAppSubscriptionViewController"];
         TwinmeNavigationController *navigationController = [[TwinmeNavigationController alloc]initWithRootViewController:inAppSubscriptionViewController];
         [self.navigationController presentViewController:navigationController animated:YES completion:nil];
-    } else if ([abstractConfirmView isKindOfClass:[ResetConversationConfirmView class]]) {
+    } else if ([abstractBottomSheetView isKindOfClass:[ResetConversationConfirmView class]]) {
         [self.conversationService resetConversation];
-    } else if([abstractConfirmView isKindOfClass:[CallAgainConfirmView class]]) {
+    } else if([abstractBottomSheetView isKindOfClass:[CallAgainConfirmView class]]) {
         if (self.callAgainDescriptor.isVideo) {
             [self handleVideoTapGesture:nil];
         } else {
             [self handleAudioTapGesture:nil];
         }
         [self setSelectedMode:ModeDefault];
-    } else if([abstractConfirmView isKindOfClass:[DeleteConfirmView class]]) {
+    } else if([abstractBottomSheetView isKindOfClass:[DeleteConfirmView class]]) {
         [self deleteSelectedItems];
         [self handleCancelSelectModeTapGesture:nil];
     }
     
-    [abstractConfirmView closeConfirmView];
+    [abstractBottomSheetView closeConfirmView];
 }
 
-- (void)didTapCancel:(nonnull AbstractBottomSheetView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didTapCancel: %@", LOG_TAG, abstractConfirmView);
+- (void)didTapCancel:(nonnull AbstractBottomSheetView *)abstractBottomSheetView {
+    DDLogVerbose(@"%@ didTapCancel: %@", LOG_TAG, abstractBottomSheetView);
     
-    if([abstractConfirmView isKindOfClass:[DefaultConfirmView class]]) {
+    if([abstractBottomSheetView isKindOfClass:[DefaultConfirmView class]]) {
         [self.twinmeApplication setShowWarningEditMessageWithState:NO];
-    } else if([abstractConfirmView isKindOfClass:[DeleteConfirmView class]]) {
+    } else if([abstractBottomSheetView isKindOfClass:[DeleteConfirmView class]]) {
         [self handleCancelSelectModeTapGesture:nil];
     }
      
-    [abstractConfirmView closeConfirmView];
+    [abstractBottomSheetView closeConfirmView];
 }
 
-- (void)didClose:(nonnull AbstractBottomSheetView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didClose: %@", LOG_TAG, abstractConfirmView);
+- (void)didClose:(nonnull AbstractBottomSheetView *)abstractBottomSheetView {
+    DDLogVerbose(@"%@ didClose: %@", LOG_TAG, abstractBottomSheetView);
     
-   if ([abstractConfirmView isKindOfClass:[DeleteConfirmView class]]) {
+   if ([abstractBottomSheetView isKindOfClass:[DeleteConfirmView class]]) {
        [self handleCancelSelectModeTapGesture:nil];
    }
     
-    [abstractConfirmView closeConfirmView];
+    [abstractBottomSheetView closeConfirmView];
 }
 
-- (void)didFinishCloseAnimation:(nonnull AbstractBottomSheetView *)abstractConfirmView {
-    DDLogVerbose(@"%@ didFinishCloseAnimation: %@", LOG_TAG, abstractConfirmView);
+- (void)didFinishCloseAnimation:(nonnull AbstractBottomSheetView *)abstractBottomSheetView {
+    DDLogVerbose(@"%@ didFinishCloseAnimation: %@", LOG_TAG, abstractBottomSheetView);
     
-    [abstractConfirmView removeFromSuperview];
+    [abstractBottomSheetView removeFromSuperview];
 }
 
 #pragma mark - ReplyViewDelegate

@@ -6,6 +6,14 @@
  *   Fabrice Trescartes (Fabrice.Trescartes@twin.life)
  */
 
+typedef enum {
+    TabBarTypeSpaces,
+    TabBarTypeRecents,
+    TabBarTypeContacts,
+    TabBarTypeConversations,
+    TabBarTypeNotifications
+} TabBarType;
+
 //
 // Interface: TabBarViewController
 //

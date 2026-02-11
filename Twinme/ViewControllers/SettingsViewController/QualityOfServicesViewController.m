@@ -270,7 +270,6 @@ static CGFloat TEXT_MARGIN = 44;
     DDLogVerbose(@"%@ initQualityOfServices", LOG_TAG);
     
     self.uiQualities = [[NSMutableArray alloc]init];
-
     [self.uiQualities addObject:[[UIQuality alloc]initWithQualityOfServicesPart:QualityOfServicesPartOne spaceSettings:[self currentSpaceSettings]]];
     [self.uiQualities addObject:[[UIQuality alloc]initWithQualityOfServicesPart:QualityOfServicesPartTwo spaceSettings:[self currentSpaceSettings]]];
     [self.uiQualities addObject:[[UIQuality alloc]initWithQualityOfServicesPart:QualityOfServicesPartThree spaceSettings:[self currentSpaceSettings]]];

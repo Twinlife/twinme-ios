@@ -16,6 +16,8 @@
 #import <TwinmeCommon/Design.h>
 #import <TwinmeCommon/TwinmeApplication.h>
 
+#import <Twinme/TLTwinmeContext.h>
+
 #if 0
 static const int ddLogLevel = DDLogLevelVerbose;
 #else

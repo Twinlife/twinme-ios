@@ -33,7 +33,6 @@
         _featureType = featureType;
         _featureDetails = [[NSMutableArray alloc]init];
         _spaceSettings = spaceSettings;
-        
         [self initFeatureDetails];
     }
     return self;
@@ -123,8 +122,9 @@
 
     ApplicationDelegate *delegate = (ApplicationDelegate *)[[UIApplication sharedApplication] delegate];
     TwinmeApplication *twinmeApplication = [delegate twinmeApplication];
+     
     BOOL darkMode = [twinmeApplication darkModeEnable:self.spaceSettings];
-
+    
     UIImage *featureImage;
     switch (self.featureType) {
         case FeatureTypeClickToCall:
@@ -166,8 +166,9 @@
     
     ApplicationDelegate *delegate = (ApplicationDelegate *)[[UIApplication sharedApplication] delegate];
     TwinmeApplication *twinmeApplication = [delegate twinmeApplication];
+     
     BOOL darkMode = [twinmeApplication darkModeEnable:self.spaceSettings];
-    
+
     switch (self.featureType) {
         case FeatureTypeClickToCall:
             [self.featureDetails addObject:[[UIPremiumFeatureDetail alloc]initWithMessage:TwinmeLocalizedString(@"premium_services_view_controller_click_to_call_description_1", nil) image:darkMode ? [UIImage imageNamed:@"PremiumClickToCallDarkIcon1"]:[UIImage imageNamed:@"PremiumClickToCallIcon1"]]];

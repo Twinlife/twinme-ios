@@ -150,13 +150,15 @@ static TLStringSharedConfigIdentifier *videoCallSoundConfig;
             
         case NotificationSoundTypeAudioCall:
             return [[NSArray alloc] initWithObjects:
-                    [[NotificationSoundSetting alloc] initWithType:NotificationSoundTypeAudioCall name:@"Skred audio call" soundId:0 soundPath:@"twinme_ringtone_default.caf"],
-                    [[NotificationSoundSetting alloc] initWithType:NotificationSoundTypeAudioCall name:@"Skred video call" soundId:0 soundPath:@"twinme_ringtone_default.caf"],
+                    [[NotificationSoundSetting alloc] initWithType:NotificationSoundTypeAudioCall name:@"Skred call" soundId:0 soundPath:@"twinme_ringtone_default.caf"],
+                    /*[[NotificationSoundSetting alloc] initWithType:NotificationSoundTypeAudioCall name:@"HipHop audio call" soundId:0 soundPath:@"hiphop_audio.caf"],
+                    [[NotificationSoundSetting alloc] initWithType:NotificationSoundTypeAudioCall name:@"HipHop video call" soundId:0 soundPath:@"hiphop_video.caf"],*/
                     nil];
         case NotificationSoundTypeVideoCall:
             return [[NSArray alloc] initWithObjects:
-                    [[NotificationSoundSetting alloc] initWithType:NotificationSoundTypeVideoCall name:@"Skred audio call" soundId:0 soundPath:@"twinme_ringtone_default.caf"],
-                    [[NotificationSoundSetting alloc] initWithType:NotificationSoundTypeVideoCall name:@"Skred video call" soundId:0 soundPath:@"twinme_ringtone_default.caf"],
+                    [[NotificationSoundSetting alloc] initWithType:NotificationSoundTypeVideoCall name:@"Skred call" soundId:0 soundPath:@"twinme_ringtone_default.caf"],
+                    /*[[NotificationSoundSetting alloc] initWithType:NotificationSoundTypeAudioCall name:@"HipHop audio call" soundId:0 soundPath:@"hiphop_audio.caf"],
+                    [[NotificationSoundSetting alloc] initWithType:NotificationSoundTypeAudioCall name:@"HipHop video call" soundId:0 soundPath:@"hiphop_video.caf"],*/
                     nil];
         
         case NotificationSoundTypeAudioCalling:

@@ -19,7 +19,8 @@
 #import "UIView+GradientBackgroundColor.h"
 #import "CustomProgressBarView.h"
 #import "TTTAttributedLabel.h"
-#import "AlertView.h"
+#import "DefaultConfirmView.h"
+
 
 #import <TwinmeCommon/ApplicationDelegate.h>
 #import <TwinmeCommon/Design.h>
@@ -51,7 +52,7 @@ static const int DESIGN_IMAGE_BOTTOM_MARGN = 6;
 // Interface: InAppSubscriptionViewController ()
 //
 
-@interface InAppSubscriptionViewController () <InAppSubscriptionServiceDelegate, InAppPurchaseManagerDelegate, CustomProgressBarDelegate, TTTAttributedLabelDelegate, InvitationSubscriptionDelegate, AlertViewDelegate>
+@interface InAppSubscriptionViewController () <InAppSubscriptionServiceDelegate, InAppPurchaseManagerDelegate, CustomProgressBarDelegate, TTTAttributedLabelDelegate, InvitationSubscriptionDelegate, BottomSheetViewDelegate>
 
 @property (weak, nonatomic) IBOutlet UIScrollView *scrollView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *containerViewBottomConstraint;
@@ -468,19 +469,34 @@ static const int DESIGN_IMAGE_BOTTOM_MARGN = 6;
     [self.navigationController pushViewController:webViewController animated:YES];
 }
 
-#pragma mark - AlertViewDelegate
+#pragma mark - BottomSheetViewDelegate
 
-- (void)handleAcceptButtonClick:(AlertView *)alertView {
-    DDLogVerbose(@"%@ handleAcceptButtonClick: %@", LOG_TAG, alertView);
+- (void)didTapConfirm:(nonnull AbstractBottomSheetView *)abstractBottomSheetView {
+    DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractBottomSheetView);
     
     if ([self.twinmeApplication getInvitationSubscriptionTwincode]) {
         [self.inAppSubscribeService cancelFeature:[[self.twinmeApplication getInvitationSubscriptionTwincode] UUIDString]];
     }
+    
+    [abstractBottomSheetView closeConfirmView];
 }
 
-- (void)handleCancelButtonClick:(AlertView *)alertView {
-    DDLogVerbose(@"%@ handleCancelButtonClick: %@", LOG_TAG, alertView);
+- (void)didTapCancel:(nonnull AbstractBottomSheetView *)abstractBottomSheetView {
+    DDLogVerbose(@"%@ didTapCancel: %@", LOG_TAG, abstractBottomSheetView);
 
+    [abstractBottomSheetView closeConfirmView];
+}
+
+- (void)didClose:(nonnull AbstractBottomSheetView *)abstractBottomSheetView {
+    DDLogVerbose(@"%@ didClose: %@", LOG_TAG, abstractBottomSheetView);
+    
+    [abstractBottomSheetView closeConfirmView];
+}
+
+- (void)didFinishCloseAnimation:(nonnull AbstractBottomSheetView *)abstractBottomSheetView {
+    DDLogVerbose(@"%@ didFinishCloseAnimation: %@", LOG_TAG, abstractBottomSheetView);
+        
+    [abstractBottomSheetView removeFromSuperview];
 }
 
 #pragma mark - Private methods
@@ -963,8 +979,11 @@ static const int DESIGN_IMAGE_BOTTOM_MARGN = 6;
             self.subscribeInProgress = YES;
             [self updateViews];
         } else if ([self.twinmeApplication getInvitationSubscriptionTwincode]) {
-            AlertView *alertView = [[AlertView alloc] initWithTitle:TwinmeLocalizedString(@"in_app_subscription_view_controller_cancel_subscription", nil) message:TwinmeLocalizedString(@"in_app_subscription_view_controller_cancel_subscription_confirmation", nil) cancelButtonTitle:TwinmeLocalizedString(@"application_cancel", nil) otherButtonTitles:TwinmeLocalizedString(@"application_ok", nil) alertViewDelegate:self];
-            [alertView showInView:self.navigationController];
+            DefaultConfirmView *defaultConfirmView = [[DefaultConfirmView alloc] init];
+            defaultConfirmView.bottomSheetViewDelegate = self;
+            [defaultConfirmView initWithTitle:TwinmeLocalizedString(@"in_app_subscription_view_controller_cancel_subscription", nil) message:TwinmeLocalizedString(@"in_app_subscription_view_controller_cancel_subscription_confirmation", nil) image:nil avatar:nil action: TwinmeLocalizedString(@"application_confirm", nil) actionColor:Design.DELETE_COLOR_RED cancel:TwinmeLocalizedString(@"application_cancel", nil)];
+            [self.view addSubview:defaultConfirmView];
+            [defaultConfirmView showConfirmView];
         } else {
             [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"itms-apps://buy.itunes.apple.com/WebObjects/MZFinance.woa/wa/manageSubscriptions"] options:@{} completionHandler:nil];
         }

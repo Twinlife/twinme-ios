@@ -15,6 +15,7 @@
 #import <TwinmeCommon/ApplicationDelegate.h>
 #import <TwinmeCommon/Design.h>
 #import <TwinmeCommon/TwinmeApplication.h>
+#import <Twinme/TLTwinmeContext.h>
 
 #import "UIView+GradientBackgroundColor.h"
 
@@ -176,6 +177,7 @@ static NSString *MENU_ACTION_CONVERSATION_CELL_IDENTIFIER = @"MenuActionConversa
     
     ApplicationDelegate *delegate = (ApplicationDelegate *)[[UIApplication sharedApplication] delegate];
     TwinmeApplication *twinmeApplication = [delegate twinmeApplication];
+    TLTwinmeContext *twinmeContext = [delegate twinmeContext];
     
     if ([twinmeApplication darkModeEnable:self.spaceSettings]) {
         blurEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark];

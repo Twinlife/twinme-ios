@@ -67,6 +67,8 @@ static const int ddLogLevel = DDLogLevelWarning;
 #define SHOW_ONBOARDING_TRANSFER_CALL @"ShowOnboardingTransferCall"
 #define SHOW_ONBOARDING_PROXY @"ShowOnboardingProxy"
 #define SHOW_WARNING_EDIT_MESSAGE @"ShowWarningEditMessage"
+#define SHOW_WARNING_LOCATION_BACKGROUND @"ShowWarningLocationBackground"
+#define SHOW_WARNING_LOCATION_FINE @"ShowWarningLocationFine"
 #define DEFAULT_TAB @"DefaultTab"
 #define ALLOW_EPHEMERAL_MESSAGE @"AllowEphemeralMessage"
 #define TIMEOUT_EPHEMERAL_MESSAGE @"TimeoutEphemeralMessage"
@@ -143,6 +145,8 @@ static TLBooleanConfigIdentifier *showOnboardingRemoteCameraSettings;
 static TLBooleanConfigIdentifier *showOnboardingTransferCall;
 static TLBooleanConfigIdentifier *showOnboardingProxy;
 static TLBooleanConfigIdentifier *showWarningEditMessage;
+static TLBooleanConfigIdentifier *showWarningLocationBackground;
+static TLBooleanConfigIdentifier *showWarningLocationFine;
 static TLFloatConfigIdentifier *keyboardHeightConfig;
 static TLFloatConfigIdentifier *audioItemRateConfig;
 
@@ -254,7 +258,11 @@ static TLStringConfigIdentifier *invitationSubscriptionImageConfig;
         showOnboardingTransferCall = [TLBooleanConfigIdentifier defineWithName:SHOW_ONBOARDING_TRANSFER_CALL defaultValue:YES];
         showOnboardingProxy = [TLBooleanConfigIdentifier defineWithName:SHOW_ONBOARDING_PROXY defaultValue:YES];
         showWarningEditMessage = [TLBooleanConfigIdentifier defineWithName:SHOW_WARNING_EDIT_MESSAGE defaultValue:YES];
-
+        
+        //Skred
+        showWarningLocationBackground = [TLBooleanConfigIdentifier defineWithName:SHOW_WARNING_LOCATION_BACKGROUND defaultValue:YES];
+        showWarningLocationFine = [TLBooleanConfigIdentifier defineWithName:SHOW_WARNING_LOCATION_FINE defaultValue:YES];
+       
         // Twinme+ and Skred
         TLBooleanConfigIdentifier *oldConfig = [TLBooleanConfigIdentifier defineWithName:SCREEN_LOCK uuid:@"D3372EA5-1CB2-4365-92E5-5780B1F982FD" defaultValue:NO];
         screenLockConfig = [TLBooleanSharedConfigIdentifier defineWithName:SCREEN_LOCK uuid:@"D3372EA5-1CB2-4365-92E5-5780B1F982FD" defaultValue:NO];
@@ -827,6 +835,35 @@ static TLStringConfigIdentifier *invitationSubscriptionImageConfig;
 - (void)setShowWarningEditMessageWithState:(BOOL)state {
     
     showWarningEditMessage.boolValue = state;
+}
+
+//
+// Warning Location Background
+//
+
+- (BOOL)startWarningLocationBackground {
+    
+    return showWarningLocationBackground.boolValue;
+}
+
+- (void)setShowWarningLocationBackgroundWithState:(BOOL)state {
+    
+    showWarningLocationBackground.boolValue = state;
+}
+
+
+//
+// Warning Location Fine
+//
+
+- (BOOL)startWarningLocationFine {
+    
+    return showWarningLocationFine.boolValue;
+}
+
+- (void)setShowWarningLocationFineWithState:(BOOL)state {
+    
+    showWarningLocationFine.boolValue = state;
 }
 
 - (BOOL)startOnboarding:(OnboardingType)onboardingType {
