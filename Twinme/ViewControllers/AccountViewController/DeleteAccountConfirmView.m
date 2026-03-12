@@ -96,7 +96,7 @@ static CGFloat DESIGN_TEXTFIELD_HEIGHT = 82;
             self.deleteConfirmViewHeightConstraint.constant = DESIGN_TEXTFIELD_HEIGHT * Design.HEIGHT_RATIO;
             self.messageLabel.text = TwinmeLocalizedString(@"delete_account_view_controller_confirm_message", nil);
             self.confirmLabel.text = TwinmeLocalizedString(@"application_confirm_deletion", nil);
-        } else if ([self.deleteConfirmTextField.text isEqualToString:@"OK"]) {
+        } else if ([self canDeleteAccount:self.deleteConfirmTextField.text]) {
             if ([self.bottomSheetViewDelegate respondsToSelector:@selector(didTapConfirm:)]) {
                 [self.bottomSheetViewDelegate didTapConfirm:self];
             }
@@ -116,7 +116,7 @@ static CGFloat DESIGN_TEXTFIELD_HEIGHT = 82;
 - (void)textFieldDidChange:(UITextField *)textField {
     DDLogVerbose(@"%@ textFieldDidChange: %@", LOG_TAG, textField);
     
-    if ([textField.text isEqual:@"OK"]) {
+    if ([self canDeleteAccount:textField.text]) {
         self.confirmView.alpha = 1.0f;
         [textField resignFirstResponder];
     } else {
@@ -170,6 +170,19 @@ static CGFloat DESIGN_TEXTFIELD_HEIGHT = 82;
     } else {
         self.deleteConfirmTextField.keyboardAppearance = UIKeyboardAppearanceLight;
     }
+}
+
+- (BOOL)canDeleteAccount:(NSString *)text {
+    
+    if ([text compare:@"OK" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
+        return YES;
+    } else if ([text compare:TwinmeLocalizedString(@"application_ok", nil) options:NSCaseInsensitiveSearch] == NSOrderedSame) {
+        return YES;
+    } else if ([text compare:@"ОК" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
+        return YES;
+    }
+        
+    return NO;
 }
 
 @end
