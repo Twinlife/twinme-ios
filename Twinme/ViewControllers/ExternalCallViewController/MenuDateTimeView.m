@@ -64,10 +64,29 @@ static const int ddLogLevel = DDLogLevelWarning;
 
 #pragma mark - Public methods
 
-- (void)setMenuDateTimeTypeWithType:(MenuDateTimeType)menuDateTimeType {
+- (void)setMenuDateTimeTypeWithType:(MenuDateTimeType)menuDateTimeType isPeriodic:(BOOL)isPeriodic {
     DDLogVerbose(@"%@ setMenuDateTimeTypeWithType", LOG_TAG);
     
     self.menuDateTimeType = menuDateTimeType;
+    
+    self.datePicker = [[UIDatePicker alloc]init];
+    self.datePicker.datePickerMode = isPeriodic ?  UIDatePickerModeTime : UIDatePickerModeDateAndTime;
+    
+    if (!isPeriodic) {
+        self.datePicker.minimumDate = [NSDate date];
+        
+        if (@available(iOS 14.0, *)) {
+            [self.datePicker setPreferredDatePickerStyle:UIDatePickerStyleInline];
+        }
+    } else if (@available(iOS 14.0, *)) {
+        [self.datePicker setPreferredDatePickerStyle:UIDatePickerStyleWheels];
+    }
+    
+    self.datePicker.tintColor = Design.MAIN_COLOR;
+    
+    [self.datePickerView addSubview:self.datePicker];
+    self.datePickerViewWidthConstraint.constant = self.datePicker.frame.size.width;
+    self.datePickerViewHeightConstraint.constant = self.datePicker.frame.size.height;
     
     [self setupTitle];
 }
@@ -75,7 +94,10 @@ static const int ddLogLevel = DDLogLevelWarning;
 - (void)openMenu:(NSDate *)minimumDate date:(NSDate *)date {
     DDLogVerbose(@"%@ openMenu", LOG_TAG);
     
-    self.datePicker.minimumDate = minimumDate;
+    if (self.datePicker.datePickerMode == UIDatePickerModeDateAndTime) {
+        self.datePicker.minimumDate = minimumDate;
+    }
+    
     self.datePicker.date = date;
    
     [self openMenu];
@@ -91,18 +113,6 @@ static const int ddLogLevel = DDLogLevelWarning;
     
     self.datePickerViewTopConstraint.constant *= Design.HEIGHT_RATIO;
     self.datePickerViewBottomConstraint.constant = safeAreaInset;
-    
-    self.datePicker = [[UIDatePicker alloc]init];
-    self.datePicker.datePickerMode = UIDatePickerModeDateAndTime;
-    if (@available(iOS 14.0, *)) {
-        [self.datePicker setPreferredDatePickerStyle:UIDatePickerStyleInline];
-    }
-    self.datePicker.minimumDate = [NSDate date];
-    self.datePicker.tintColor = Design.MAIN_COLOR;
-    
-    [self.datePickerView addSubview:self.datePicker];
-    self.datePickerViewWidthConstraint.constant = self.datePicker.frame.size.width;
-    self.datePickerViewHeightConstraint.constant = self.datePicker.frame.size.height;
 }
 
 - (void)setupTitle {

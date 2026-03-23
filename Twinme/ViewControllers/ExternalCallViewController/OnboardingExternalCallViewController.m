@@ -11,6 +11,7 @@
 #import <Utils/NSString+Utils.h>
 
 #import "OnboardingExternalCallViewController.h"
+#import "TemplateExternalCallViewController.h"
 
 #import "OnboardingExternalCallCell.h"
 
@@ -166,6 +167,14 @@ static NSString *ONBOARDING_CELL_IDENTIFIER = @"OnboardingExternalCallCellIdenti
 
 - (void)collectionView:(UICollectionView *)collectionView willDisplayCell:(UICollectionViewCell *)cell forItemAtIndexPath:(NSIndexPath *)indexPath {
     DDLogVerbose(@"%@ collectionView: %@ willDisplayCell: %@ forItemAtIndexPath: %@", LOG_TAG, collectionView, cell, indexPath);
+    
+    UIOnboarding *uiOnboarding = [self.uiOnboarding objectAtIndex:indexPath.row];
+    
+    if ([uiOnboarding getTitle]) {
+        self.titleLabel.text = [uiOnboarding getTitle];
+    } else {
+        self.titleLabel.text = TwinmeLocalizedString(@"premium_services_view_controller_click_to_call_title", nil);
+    }
 }
 
 - (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout minimumLineSpacingForSectionAtIndex:(NSInteger)section {
@@ -224,6 +233,24 @@ static NSString *ONBOARDING_CELL_IDENTIFIER = @"OnboardingExternalCallCellIdenti
             [self finish];
         }
     }
+}
+
+- (void)startExternalCallTemplate {
+    DDLogVerbose(@"%@ startExternalCallTemplate", LOG_TAG);
+    
+    [CATransaction begin];
+    [CATransaction setCompletionBlock:^{
+        ApplicationDelegate *delegate = (ApplicationDelegate *)[[UIApplication sharedApplication] delegate];
+        MainViewController *mainViewController = delegate.mainViewController;
+        TwinmeNavigationController *selectedNavigationController = mainViewController.selectedViewController;
+
+        TemplateExternalCallViewController *templateExternalCallViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"TemplateExternalCallViewController"];
+        [selectedNavigationController pushViewController:templateExternalCallViewController animated:YES];
+    }];
+
+    [self finish];
+
+    [CATransaction commit];
 }
 
 #pragma mark - Private methods

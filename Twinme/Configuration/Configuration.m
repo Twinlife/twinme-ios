@@ -22,6 +22,7 @@
 #import <Twinlife/TLImageService.h>
 #import <Twinlife/TLPeerCallService.h>
 #import <Twinlife/TLCryptoService.h>
+#import <Twinlife/TLBackupService.h>
 
 #import <Twinme/TLMessage.h>
 #import <Twinme/TLTyping.h>
@@ -72,6 +73,7 @@ static NSString *APPLICATION_NAME = @"twinme";
         self.peerCallServiceConfiguration.serviceOn = true;
         self.accountMigrationServiceConfiguration.serviceOn = true;
         self.cryptoServiceConfiguration.serviceOn = true;
+        self.backupServiceConfiguration.serviceOn = true;
     }
     return self;
 }

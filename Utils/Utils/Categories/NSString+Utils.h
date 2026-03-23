@@ -16,6 +16,8 @@
 
 #define TwinmeLocalizedString(key, comment) NSLocalizedString((key), (comment))
 
+#define TwinmeLocalizedStringFromTable(key, table, comment) NSLocalizedStringFromTable((key), (table), (comment))
+
 @interface NSString (Utils)
 
 + (nonnull NSString *)convertWithLocale:(nonnull NSString *)string;
@@ -25,6 +27,8 @@
 + (nonnull NSString *)formatTimeInterval:(NSTimeInterval)interval;
 
 + (nonnull NSString *)formatCallTimeInterval:(NSTimeInterval)interval;
+
++ (nonnull NSString *)formatBackupTimeInterval:(NSTimeInterval)interval;
 
 + (nonnull NSString *)formatItemTimeInterval:(NSTimeInterval)interval;
 

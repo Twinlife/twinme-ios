@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="32700.99.1234" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22684"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -26,7 +26,7 @@
                         </constraints>
                     </imageView>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text=".label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zDY-Gw-Qj7">
-                        <rect key="frame" x="158" y="33.666666666666664" width="476" height="52.999999999999993"/>
+                        <rect key="frame" x="158" y="33.666666666666664" width="328" height="52.999999999999993"/>
                         <fontDescription key="fontDescription" type="system" pointSize="44"/>
                         <nil key="textColor"/>
                         <nil key="highlightedColor"/>
@@ -38,6 +38,15 @@
                             <constraint firstAttribute="width" constant="46" id="z3g-fN-fRI"/>
                         </constraints>
                     </imageView>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text=".label" textAlignment="right" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="1a5-eF-56e">
+                        <rect key="frame" x="518" y="33.666666666666671" width="200" height="52.666666666666671"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="200" id="RI1-I8-dpx"/>
+                        </constraints>
+                        <fontDescription key="fontDescription" type="system" pointSize="44"/>
+                        <nil key="textColor"/>
+                        <nil key="highlightedColor"/>
+                    </label>
                     <view autoresizesSubviews="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="P1q-wO-Zpa">
                         <rect key="frame" x="158" y="119" width="592" height="1"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -51,12 +60,14 @@
                     <constraint firstAttribute="trailing" secondItem="LC2-73-tn7" secondAttribute="trailing" constant="38" id="1yy-0Q-PJT"/>
                     <constraint firstItem="Qgw-pG-wbG" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="4Ub-CY-Jpr"/>
                     <constraint firstItem="Qgw-pG-wbG" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="42" id="A6L-fd-yXs"/>
-                    <constraint firstItem="LC2-73-tn7" firstAttribute="leading" secondItem="zDY-Gw-Qj7" secondAttribute="trailing" constant="32" id="EU2-d9-7Fi"/>
+                    <constraint firstItem="1a5-eF-56e" firstAttribute="leading" secondItem="zDY-Gw-Qj7" secondAttribute="trailing" constant="32" id="EU2-d9-7Fi"/>
                     <constraint firstItem="LC2-73-tn7" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="Oj6-XU-fI7"/>
                     <constraint firstItem="zDY-Gw-Qj7" firstAttribute="leading" secondItem="Qgw-pG-wbG" secondAttribute="trailing" constant="32" id="QGp-mb-P1p"/>
+                    <constraint firstAttribute="trailing" secondItem="1a5-eF-56e" secondAttribute="trailing" constant="32" id="bol-y1-h8R"/>
                     <constraint firstItem="zDY-Gw-Qj7" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="cCw-VW-uPN"/>
                     <constraint firstAttribute="bottom" secondItem="P1q-wO-Zpa" secondAttribute="bottom" id="kQQ-UN-0Th"/>
                     <constraint firstItem="P1q-wO-Zpa" firstAttribute="leading" secondItem="zDY-Gw-Qj7" secondAttribute="leading" id="o1u-BW-TXF"/>
+                    <constraint firstItem="1a5-eF-56e" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="wK7-Gq-ARJ"/>
                 </constraints>
             </tableViewCellContentView>
             <viewLayoutGuide key="safeArea" id="aW0-zy-SZf"/>
@@ -68,6 +79,9 @@
                 <outlet property="avatarView" destination="Qgw-pG-wbG" id="AqF-Be-RrR"/>
                 <outlet property="avatarViewHeightConstraint" destination="G2Y-fh-lrm" id="DAK-cu-2JI"/>
                 <outlet property="avatarViewLeadingConstraint" destination="A6L-fd-yXs" id="GNl-8Z-5ZP"/>
+                <outlet property="dateInfoLabel" destination="1a5-eF-56e" id="WWk-D6-WUc"/>
+                <outlet property="dateInfoLabelWidthConstraint" destination="RI1-I8-dpx" id="6wc-dw-8v6"/>
+                <outlet property="dateInfoTrailingConstraint" destination="bol-y1-h8R" id="Qq9-m8-I8g"/>
                 <outlet property="nameLabel" destination="zDY-Gw-Qj7" id="b84-D4-YPP"/>
                 <outlet property="nameLabelLeadingConstraint" destination="QGp-mb-P1p" id="Vbp-xM-Ml1"/>
                 <outlet property="nameLabelTrailingConstraint" destination="EU2-d9-7Fi" id="Puc-d8-Ryi"/>

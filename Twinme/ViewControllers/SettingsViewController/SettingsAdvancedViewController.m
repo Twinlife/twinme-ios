@@ -282,7 +282,7 @@ typedef enum {
             
             cell.settingsActionDelegate = self;
                         
-            [cell bindWithTitle:TwinmeLocalizedString(@"proxy_view_controller_enable", nil) icon:nil stateSwitch:[[self.twinmeContext getConnectivityService] isProxyEnabled] tagSwitch:0 hiddenSwitch:NO disableSwitch:self.proxies.count == 0 backgroundColor:Design.WHITE_COLOR hiddenSeparator:NO];
+            [cell bindWithTitle:TwinmeLocalizedString(@"proxy_view_controller_enable", nil) subTitle:nil icon:nil stateSwitch:[[self.twinmeContext getConnectivityService] isProxyEnabled] tagSwitch:0 hiddenSwitch:NO disableSwitch:self.proxies.count == 0 backgroundColor:Design.WHITE_COLOR hiddenSeparator:NO];
             
             return cell;
         } else if (indexPath.row == self.proxies.count + 2) {

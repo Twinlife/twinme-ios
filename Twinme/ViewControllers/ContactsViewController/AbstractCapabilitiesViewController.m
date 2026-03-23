@@ -192,7 +192,7 @@ typedef enum {
     
     NSString *sectionName = @"";
     BOOL hideSeparator = NO;
-    BOOL showNewFeature = NO;
+    NSString *badgeTitle = nil;
     switch (section) {
         case SECTION_CALL_PERMISSIONS:
             sectionName = TwinmeLocalizedString(@"settings_view_controller_authorization_title", nil);
@@ -201,7 +201,6 @@ typedef enum {
         case SECTION_CONTROL_CAMERA:
             sectionName = TwinmeLocalizedString(@"call_view_controller_camera_control", nil);
             hideSeparator = YES;
-            showNewFeature = YES;
             break;
             
         case SECTION_DISCREET_RELATION:
@@ -218,7 +217,7 @@ typedef enum {
             break;
     }
     
-    [settingsSectionHeaderCell bindWithTitle:sectionName backgroundColor:Design.LIGHT_GREY_BACKGROUND_COLOR hideSeparator:hideSeparator uppercaseString:YES showNewFeature:showNewFeature];
+    [settingsSectionHeaderCell bindWithTitle:sectionName backgroundColor:Design.LIGHT_GREY_BACKGROUND_COLOR hideSeparator:hideSeparator uppercaseString:YES badgeTitle:badgeTitle];
     
     return settingsSectionHeaderCell;
 }
@@ -317,7 +316,7 @@ typedef enum {
                 break;
         }
         
-        [cell bindWithTitle:title icon:nil stateSwitch:switchState tagSwitch:tag hiddenSwitch:hiddenSwitch disableSwitch:YES backgroundColor:Design.WHITE_COLOR hiddenSeparator:NO];
+        [cell bindWithTitle:title subTitle:nil icon:nil stateSwitch:switchState tagSwitch:tag hiddenSwitch:hiddenSwitch disableSwitch:YES backgroundColor:Design.WHITE_COLOR hiddenSeparator:NO];
         
         return cell;
     }
@@ -335,7 +334,7 @@ typedef enum {
 
 #pragma mark - SettingsSectionHeaderDelegate
 
-- (void)didTapNewFeature {
+- (void)didTapSectionBadge {
     DDLogVerbose(@"%@ didTapNewFeature", LOG_TAG);
     
     [self showOnboarding:YES];

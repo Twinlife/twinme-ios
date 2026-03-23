@@ -2,7 +2,6 @@
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
-        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
@@ -56,11 +55,11 @@
             <viewLayoutGuide key="safeArea" id="aW0-zy-SZf"/>
             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
             <connections>
+                <outlet property="badgeLabel" destination="swg-88-5r9" id="b0T-oo-Pzu"/>
+                <outlet property="badgeLabelHeightConstraint" destination="GhN-pr-cm1" id="Z62-lA-url"/>
+                <outlet property="badgeLabelLeadingConstraint" destination="vew-f0-IO1" id="eS0-OB-PwK"/>
                 <outlet property="separatorView" destination="vtr-xo-t0x" id="WH6-tb-Vki"/>
                 <outlet property="separatorViewHeightConstraint" destination="Ty1-E6-L9I" id="3bI-Lr-gFg"/>
-                <outlet property="settingsNewLabel" destination="swg-88-5r9" id="b0T-oo-Pzu"/>
-                <outlet property="settingsNewLabelHeightConstraint" destination="GhN-pr-cm1" id="Z62-lA-url"/>
-                <outlet property="settingsNewLabelLeadingConstraint" destination="vew-f0-IO1" id="eS0-OB-PwK"/>
                 <outlet property="title" destination="QIa-BO-jU0" id="XCE-70-X7m"/>
                 <outlet property="titleBottomConstraint" destination="KJh-MO-WXE" id="ThL-6K-7x1"/>
                 <outlet property="titleLeadingConstraint" destination="2Mx-Gj-KSn" id="Ylu-wz-kCf"/>

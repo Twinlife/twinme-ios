@@ -23,6 +23,8 @@ typedef enum {
 
 - (nonnull instancetype)initWithOnboardingType:(OnboardingExternalCall)onboardingType hideActionView:(BOOL)hideActionView;
 
+- (nullable NSString *)getTitle;
+
 - (nullable UIImage *)getImage;
 
 - (nonnull NSString *)getMessage;

@@ -109,6 +109,40 @@ static int BOLD_VALUE = -2;
     }
 }
 
++ (NSString *)formatBackupTimeInterval:(NSTimeInterval)interval {
+    
+    NSDate *date = [NSDate dateWithTimeIntervalSince1970:interval];
+    NSCalendar *calendar = [NSCalendar currentCalendar];
+    NSCalendarUnit calendarUnit = NSCalendarUnitYear | NSCalendarUnitMonth |  NSCalendarUnitDay;
+    NSDateComponents* dateComponents = [calendar components:calendarUnit fromDate:date toDate:[NSDate date] options:NSCalendarWrapComponents];
+    
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc]init];
+    dateFormatter.locale = [NSLocale currentLocale];
+    
+    if ([calendar isDateInToday:date]) {
+        [dateFormatter setDateStyle:NSDateFormatterNoStyle];
+    } else if ([calendar isDateInYesterday:date]) {
+        [dateFormatter setDoesRelativeDateFormatting:YES];
+        [dateFormatter setDateStyle:NSDateFormatterMediumStyle];
+    } else if (dateComponents.year == 0 && dateComponents.month == 0 && dateComponents.day < 6) {
+        [dateFormatter setDateFormat:@"EEEE"];
+    } else {
+        [dateFormatter setDateStyle:NSDateFormatterShortStyle];
+    }
+    
+    NSString *dateToString = [dateFormatter stringFromDate:date];
+    
+    [dateFormatter setDateStyle:NSDateFormatterNoStyle];
+    [dateFormatter setTimeStyle:NSDateFormatterShortStyle];
+    NSString *timeToString = [dateFormatter stringFromDate:date];
+    
+    if ([dateToString isEqualToString:@""]) {
+        return timeToString;
+    } else {
+        return [NSString stringWithFormat:@"%@ - %@", dateToString, timeToString];
+    }
+}
+
 + (NSString *)formatItemTimeInterval:(NSTimeInterval)interval {
     
     NSDate *date = [NSDate dateWithTimeIntervalSince1970:interval];

@@ -92,6 +92,12 @@ static CGFloat DESIGN_TITLE_LARGE_WIDTH = 620;
     self.separatorView.backgroundColor = Design.SEPARATOR_COLOR_GREY;
 }
 
+- (void)resetMargins {
+    
+    self.titleLabelLeadingConstraint.constant = 0;
+    self.selectImageViewTrailingConstraint.constant = 0;
+}
+
 - (void)bindWithTitle:(NSString *)title value:(NSString *)value hiddenAccessory:(BOOL)hiddenAccessory {
     DDLogVerbose(@"%@ bindWithTitle: %@ value: %@ hiddenAccessory: %d ", LOG_TAG, title, value, hiddenAccessory);
     

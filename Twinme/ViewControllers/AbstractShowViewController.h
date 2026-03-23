@@ -28,6 +28,10 @@
 @property (weak, nonatomic) IBOutlet UIImageView *avatarView;
 @property (weak, nonatomic) IBOutlet UILabel *nameLabel;
 @property (weak, nonatomic) IBOutlet UILabel *descriptionLabel;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *identityTitleLabelTopConstraint;
+@property (weak, nonatomic) IBOutlet UILabel *identityTitleLabel;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *identityViewTopConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *identityViewHeightConstraint;
 @property (weak, nonatomic) IBOutlet InsideBorderView *identityView;
 @property (weak, nonatomic) IBOutlet UILabel *identityLabel;
 @property (weak, nonatomic) IBOutlet UIImageView *identityAvatarView;

@@ -3539,18 +3539,23 @@ typedef enum {
         return;
     }
     
-    [self.conversationService listAnnotationsWithDescriptorId:descriptorId withBlock:^(NSMutableDictionary<NSUUID *, TLDescriptorAnnotationPair *>* annotations) {
+    [self.conversationService listAnnotationsWithDescriptorId:descriptorId withBlock:^(NSDictionary<NSUUID *, NSArray<TLDescriptorAnnotationPair *> *>* annotations) {
         NSMutableArray<UIAnnotation *> *uiAnnotationList = [[NSMutableArray alloc] initWithCapacity:annotations.count];
         
         for (NSUUID *uuid in annotations.allKeys) {
-            TLDescriptorAnnotationPair *descriptorAnnotation = [annotations objectForKey:uuid];
-            if (descriptorAnnotation.annotation.type == TLDescriptorAnnotationTypeLike) {
-                UIReaction *uiReaction = [[UIReaction alloc]initWithDescriptorAnnotationValue:descriptorAnnotation.annotation.value];
-                NSString *name = descriptorAnnotation.twincodeOutbound.name;
-                UIImage *avatar = [self.conversationService getImageWithTwincode:descriptorAnnotation.twincodeOutbound];
+            NSArray<TLDescriptorAnnotationPair *> *descriptorAnnotations = [annotations objectForKey:uuid];
+            
+            for (TLDescriptorAnnotationPair *descriptorAnnotation in descriptorAnnotations) {
                 
-                UIAnnotation *uiAnnotation = [[UIAnnotation alloc]initWithReaction:uiReaction name:name avatar:avatar];
-                [uiAnnotationList addObject:uiAnnotation];
+                if (descriptorAnnotation.annotation.type == TLDescriptorAnnotationTypeLike) {
+                    UIReaction *uiReaction = [[UIReaction alloc]initWithDescriptorAnnotationValue:descriptorAnnotation.annotation.value];
+                    NSString *name = descriptorAnnotation.twincodeOutbound.name;
+                    UIImage *avatar = [self.conversationService getImageWithTwincode:descriptorAnnotation.twincodeOutbound];
+                    
+                    UIAnnotation *uiAnnotation = [[UIAnnotation alloc]initWithType:TLDescriptorAnnotationTypeLike reaction:uiReaction name:name avatar:avatar timestamp:0];
+                    [uiAnnotationList addObject:uiAnnotation];
+                    break;
+                }
             }
         }
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -3667,7 +3672,7 @@ typedef enum {
     if (self.selectedItem) {
         InfoItemViewController *infoItemViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"InfoItemViewController"];
         infoItemViewController.conversationViewController = self;
-        [infoItemViewController initWithContact:self.contact andItem:self.selectedItem];
+        [infoItemViewController initWithContact:self.contact andItem:self.selectedItem groupMembers:self.groupMembers];
         [self.navigationController pushViewController:infoItemViewController animated:YES];
     }
 }

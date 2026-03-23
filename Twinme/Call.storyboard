@@ -326,6 +326,13 @@
                                     <constraint firstAttribute="height" constant="171" id="5tl-a8-Ko1"/>
                                 </constraints>
                             </view>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="1DY-P3-gg6" customClass="CallInfoView">
+                                <rect key="frame" x="0.0" y="1174" width="750" height="160"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="160" id="LbQ-n3-dw8"/>
+                                </constraints>
+                            </view>
                             <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="vBw-aH-GDu">
                                 <rect key="frame" x="88" y="1128" width="574" height="206"/>
                                 <subviews>
@@ -451,6 +458,7 @@
                             <constraint firstItem="1bW-WJ-sgc" firstAttribute="centerY" secondItem="rVf-aM-cft" secondAttribute="centerY" id="OE6-qW-1O6"/>
                             <constraint firstItem="VWy-uV-jVX" firstAttribute="leading" secondItem="rVf-aM-cft" secondAttribute="leading" constant="40" id="On2-Wg-JfH"/>
                             <constraint firstItem="I9m-fb-eXL" firstAttribute="width" secondItem="TFs-g7-gQk" secondAttribute="width" id="QNY-vA-bcX"/>
+                            <constraint firstItem="1DY-P3-gg6" firstAttribute="leading" secondItem="rVf-aM-cft" secondAttribute="leading" id="Ter-PI-AGS"/>
                             <constraint firstItem="Gb0-NL-U6t" firstAttribute="bottom" secondItem="TFs-g7-gQk" secondAttribute="bottom" constant="80" id="UoV-AN-nh7"/>
                             <constraint firstItem="rVf-aM-cft" firstAttribute="trailing" secondItem="Gb0-NL-U6t" secondAttribute="trailing" id="Uyj-uw-LIF"/>
                             <constraint firstItem="rVf-aM-cft" firstAttribute="trailing" secondItem="egl-5L-EZa" secondAttribute="trailing" id="YuP-zI-YTh"/>
@@ -467,8 +475,10 @@
                             <constraint firstItem="vBw-aH-GDu" firstAttribute="centerX" secondItem="rVf-aM-cft" secondAttribute="centerX" id="igl-bj-z34"/>
                             <constraint firstItem="Vgp-hy-mOJ" firstAttribute="centerX" secondItem="rVf-aM-cft" secondAttribute="centerX" id="jwc-Wv-lz8"/>
                             <constraint firstItem="I9m-fb-eXL" firstAttribute="centerX" secondItem="TFs-g7-gQk" secondAttribute="centerX" id="lMN-1P-1ya"/>
+                            <constraint firstItem="rVf-aM-cft" firstAttribute="trailing" secondItem="1DY-P3-gg6" secondAttribute="trailing" id="lxA-G0-tmu"/>
                             <constraint firstItem="OHA-Jr-ato" firstAttribute="top" secondItem="rVf-aM-cft" secondAttribute="top" id="pJf-5N-YG1"/>
                             <constraint firstItem="Gb0-NL-U6t" firstAttribute="leading" secondItem="rVf-aM-cft" secondAttribute="leading" id="uZ6-5f-H3p"/>
+                            <constraint firstAttribute="bottom" secondItem="1DY-P3-gg6" secondAttribute="bottom" id="vEu-YO-jqB"/>
                             <constraint firstItem="rVf-aM-cft" firstAttribute="trailing" secondItem="hix-KU-3rD" secondAttribute="trailing" id="vWS-p2-5UB"/>
                             <constraint firstAttribute="bottom" secondItem="HVB-1u-EVh" secondAttribute="bottom" id="wF4-vy-cIM"/>
                         </constraints>
@@ -501,6 +511,9 @@
                         <outlet property="callHoldView" destination="hix-KU-3rD" id="cch-vF-Qet"/>
                         <outlet property="callHoldViewBottomConstraint" destination="eE8-An-7dz" id="hoY-H1-c5k"/>
                         <outlet property="callHoldViewHeightConstraint" destination="5tl-a8-Ko1" id="fFA-hV-XlO"/>
+                        <outlet property="callInfoView" destination="1DY-P3-gg6" id="Tm3-hq-CGD"/>
+                        <outlet property="callInfoViewBottomConstraint" destination="vEu-YO-jqB" id="8kM-D6-Xr8"/>
+                        <outlet property="callInfoViewHeightConstraint" destination="LbQ-n3-dw8" id="13c-xg-qqU"/>
                         <outlet property="cancelButton" destination="tK2-yR-Xp9" id="moN-bQ-mq4"/>
                         <outlet property="cancelButtonHeightConstraint" destination="8bH-fD-LAq" id="Lzr-Yo-QkP"/>
                         <outlet property="cancelImageView" destination="tnO-Hd-zvl" id="TTO-5d-84v"/>

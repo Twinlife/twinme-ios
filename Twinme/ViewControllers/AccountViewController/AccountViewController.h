@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2020 twinlife SA.
+ *  Copyright (c) 2020-2026 twinlife SA.
  *  SPDX-License-Identifier: AGPL-3.0-only
  *
  *  Contributors:
@@ -13,5 +13,7 @@
 //
 
 @interface AccountViewController : AbstractTwinmeViewController
+
+- (void)startOnboarding;
 
 @end

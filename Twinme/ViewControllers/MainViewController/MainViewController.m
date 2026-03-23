@@ -21,6 +21,7 @@
 #import <Twinme/TLProfile.h>
 #import <Twinme/TLContact.h>
 #import <Twinme/TLGroup.h>
+#import <Twinme/TLSchedule.h>
 #import <Twinme/TLSpace.h>
 #import <Twinme/TLGroupMember.h>
 #import <Twinme/TLInvocation.h>
@@ -35,6 +36,7 @@
 #import "ConversationViewController.h"
 #import "AcceptInvitationViewController.h"
 #import "ShareViewController.h"
+#import "RestoreViewController.h"
 #import "UIGroupConversation.h"
 #import "WelcomeViewController.h"
 #import "SplashScreenViewController.h"
@@ -430,6 +432,9 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
 - (void)startCallFromRecents {
     DDLogVerbose(@"%@ startCallFromRecents", LOG_TAG);
     
+    if (self.inPersonToCall) {
+        [self handleDeferredCall];
+    }
 }
 
 #pragma mark - SplashScreenDelegate
@@ -982,9 +987,14 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
     dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
         id<TLOriginator> subject = [self.twinmeContext findSubjectWithHandle:self.inPersonToCall.personHandle.value];
         if (subject) {
-            CallViewController *callViewController = (CallViewController *)[[UIStoryboard storyboardWithName:@"Call" bundle:nil] instantiateViewControllerWithIdentifier:@"CallViewController"];
-            [callViewController startCallWithOriginator:subject videoBell:NO isVideoCall:self.startVideoCall isCertifyCall:NO];
-            [self.selectedViewController pushViewController:callViewController animated:YES];
+            if ([self hasSchedule:subject]) {
+                [self showSchedule:subject];
+            } else if (!self.twinmeApplication.inCall) {
+                CallViewController *callViewController = (CallViewController *)[[UIStoryboard storyboardWithName:@"Call" bundle:nil] instantiateViewControllerWithIdentifier:@"CallViewController"];
+                [callViewController startCallWithOriginator:subject videoBell:NO isVideoCall:self.startVideoCall isCertifyCall:NO];
+                [self.selectedViewController pushViewController:callViewController animated:YES];
+            }
+            
             self.inPersonToCall = nil;
         }
     });
@@ -997,7 +1007,12 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
         NSURL *shareContentURL = self.shareContentURL;
         self.shareContentURL = nil;
         
-        if (shareContentURL && [CONVERSATION_ACTION isEqualToString:shareContentURL.host]) {
+        if ([shareContentURL.pathExtension isEqualToString:[TLTwinlife BACKUP_EXTENSION]]) {
+            RestoreViewController *restoreViewController = [[UIStoryboard storyboardWithName:@"Backup" bundle:nil] instantiateViewControllerWithIdentifier:@"RestoreViewController"];
+            [restoreViewController initWithFilePath:shareContentURL verifyMode:NO];
+            TwinmeNavigationController *navigationController = [[TwinmeNavigationController alloc] initWithRootViewController:restoreViewController];
+            [self presentViewController:navigationController animated:YES completion:nil];
+        } else if (shareContentURL && [CONVERSATION_ACTION isEqualToString:shareContentURL.host]) {
             [self handleExtensionShareContentURL:shareContentURL];
         } else {
             ShareViewController *shareViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"ShareViewController"];
@@ -1083,6 +1098,10 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
             
         case TLBaseServiceErrorCodeItemNotFound:
             message = TwinmeLocalizedString(@"add_contact_view_controller_scan_error_corrupt_link", nil);
+            break;
+            
+        case TLBaseServiceErrorCodeExpired:
+            message = TwinmeLocalizedString(@"add_contact_view_controller_scan_error_expired_link", nil);
             break;
             
         default:
@@ -1273,6 +1292,98 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
         [topViewController.presentedViewController dismissViewControllerAnimated:NO completion:^{
         }];
     }
+}
+
+- (BOOL)hasSchedule:(id<TLOriginator>)originator {
+    DDLogVerbose(@"%@ hasSchedule", LOG_TAG);
+    
+    if (originator.capabilities.schedule && originator.capabilities.schedule.enabled) {
+        return ![originator.capabilities.schedule isNowInRange];
+    }
+    
+    return NO;
+}
+
+- (void)showSchedule:(id<TLOriginator>)originator {
+    DDLogVerbose(@"%@ showSchedule", LOG_TAG);
+    
+    NSString *message = @"";
+    
+    TLSchedule *schedule = originator.capabilities.schedule;
+    
+    if (schedule && schedule.timeRanges.count > 0) {
+        if ([schedule.timeRanges[0] isKindOfClass:[TLWeeklyTimeRange class]]) {
+            TLWeeklyTimeRange *weeklyTimeRange = (TLWeeklyTimeRange *)[schedule.timeRanges objectAtIndex:0];
+                     
+            TLTime *scheduleStartTime = weeklyTimeRange.start;
+            TLTime *scheduleEndTime = weeklyTimeRange.end;
+            
+            NSDateFormatter *dateFormatter = [[NSDateFormatter alloc]init];
+            NSMutableString *validityMessage = [[NSMutableString alloc] initWithString:@""];
+            [validityMessage appendString:TwinmeLocalizedString(@"show_call_view_controller_setting_start", nil)];
+            [validityMessage appendString:@" : "];
+            [validityMessage appendString:[scheduleStartTime formatTime]];
+            [validityMessage appendString:@"\n"];
+            [validityMessage appendString:TwinmeLocalizedString(@"show_call_view_controller_setting_end", nil)];
+            [validityMessage appendString:@" : "];
+            [validityMessage appendString:[scheduleEndTime formatTime]];
+            [validityMessage appendString:@"\n\n"];
+            
+            NSArray<NSString *> *symbols = dateFormatter.weekdaySymbols;
+            
+            for (NSNumber *dayOfWeek in weeklyTimeRange.days) {
+                NSString *dayString = @"";
+                switch ([dayOfWeek intValue]) {
+                    case MONDAY:
+                        dayString = symbols[1];
+                        break;
+                    case TUESDAY:
+                        dayString = symbols[2];
+                        break;
+                    case WEDNESDAY:
+                        dayString = symbols[3];
+                        break;
+                    case THURSDAY:
+                        dayString = symbols[4];
+                        break;
+                    case FRIDAY:
+                        dayString = symbols[5];
+                        break;
+                    case SATURDAY:
+                        dayString = symbols[6];
+                        break;
+                    case SUNDAY:
+                        dayString = symbols[0];
+                        break;
+                }
+                
+                if (![dayString isEqualToString:@""]) {
+                    [validityMessage appendString:dayString];
+                    [validityMessage appendString:@"\n"];
+                }
+                
+                message = [validityMessage description];
+            }
+        } else {
+            TLDateTimeRange *dateTimeRange = (TLDateTimeRange *)[schedule.timeRanges objectAtIndex:0];
+                    
+            TLDateTime *start = dateTimeRange.start;
+            TLDateTime *end = dateTimeRange.end;
+            if ([start.date isEqual:end.date]) {
+                message = [NSString stringWithFormat:TwinmeLocalizedString(@"show_call_view_controller_schedule_from_to", nil), [start.date formatDate], [start.time formatTime], [end.time formatTime]];
+            } else {
+                message = [NSString stringWithFormat:@"%@ %@", [start formatDateTime], [end formatDateTime]];
+            }
+        }
+    } else {
+        message = TwinmeLocalizedString(@"show_call_view_controller_schedule_message", nil);
+    }
+                
+    AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
+    alertMessageView.alertMessageViewDelegate = self;
+    [alertMessageView initWithTitle:TwinmeLocalizedString(@"show_call_view_controller_schedule_call", nil) message:message];
+    [self.view addSubview:alertMessageView];
+    [alertMessageView showAlertView];
 }
 
 - (void)showProxy:(NSString *)proxy {

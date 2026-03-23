@@ -51,6 +51,7 @@
                 </subviews>
                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                 <constraints>
+                    <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="tDb-Jk-PiE" secondAttribute="bottom" constant="16" id="3ER-va-tXf"/>
                     <constraint firstAttribute="trailing" secondItem="6SG-5b-G14" secondAttribute="trailing" constant="32" id="FSB-iV-ZOb"/>
                     <constraint firstItem="Uqy-iX-HQZ" firstAttribute="width" secondItem="H2p-sc-9uM" secondAttribute="width" id="JIG-EJ-Ykj"/>
                     <constraint firstItem="6SG-5b-G14" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="bjH-96-l0W"/>
@@ -58,6 +59,7 @@
                     <constraint firstAttribute="bottom" secondItem="Uqy-iX-HQZ" secondAttribute="bottom" id="g80-ed-kmm"/>
                     <constraint firstItem="tDb-Jk-PiE" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="32" id="gdd-6x-510"/>
                     <constraint firstItem="Uqy-iX-HQZ" firstAttribute="centerX" secondItem="H2p-sc-9uM" secondAttribute="centerX" id="mqf-Kz-YfE"/>
+                    <constraint firstItem="tDb-Jk-PiE" firstAttribute="top" relation="greaterThanOrEqual" secondItem="H2p-sc-9uM" secondAttribute="top" constant="16" id="omd-kw-aB8"/>
                     <constraint firstItem="tDb-Jk-PiE" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="vKV-QB-JzR"/>
                 </constraints>
             </tableViewCellContentView>
@@ -71,7 +73,9 @@
                 <outlet property="separatorView" destination="Uqy-iX-HQZ" id="6AS-Vw-4R3"/>
                 <outlet property="separatorViewHeightConstraint" destination="l4n-9x-ZSz" id="UeC-I0-dAi"/>
                 <outlet property="valueLabel" destination="tDb-Jk-PiE" id="uo9-HC-PYQ"/>
+                <outlet property="valueLabelBottomConstraint" destination="3ER-va-tXf" id="qhQ-kL-MVb"/>
                 <outlet property="valueLabelLeadingConstraint" destination="gdd-6x-510" id="88L-Ur-QGo"/>
+                <outlet property="valueLabelTopConstraint" destination="omd-kw-aB8" id="Bcw-F2-b36"/>
                 <outlet property="valueLabelTrailingConstraint" destination="cne-yi-y6f" id="WLS-Dc-Klr"/>
             </connections>
             <point key="canvasLocation" x="-386" y="-1"/>

@@ -140,7 +140,7 @@ static NSString *CALL_CELL_IDENTIFIER = @"CallCellIdentifier";
     self.callsService = [[CallsService alloc] initWithTwinmeContext:self.twinmeContext delegate:self originator:originator];
     self.uiContact = [[UIContact alloc]initWithContact:originator];
     
-    if (self.callOriginator.isGroup) {
+    if (!self.isCallReceiver && [self.callOriginator isGroup]) {
         [self.callsService getImageWithGroup:(TLGroup *)self.callOriginator withBlock:^(UIImage *image) {
             [self.uiContact updateAvatar:image];
         }];

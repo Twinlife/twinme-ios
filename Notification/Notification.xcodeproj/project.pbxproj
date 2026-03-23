@@ -121,7 +121,7 @@
 			remoteGlobalIDString = 8F4BFC646F4C43DA1E3C7CDA;
 			remoteInfo = TwinmeMytwinlifePlus;
 		};
-		4770BAAA2E9D050F0042F374 /* PBXContainerItemProxy */ = {
+		574DAF8A2EBA0EFD000E1F90 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 7AB2AA022B600F52006EB6D7 /* Twinme.xcodeproj */;
 			proxyType = 1;
@@ -491,7 +491,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				4770BAAB2E9D050F0042F374 /* PBXTargetDependency */,
+				574DAF8B2EBA0EFD000E1F90 /* PBXTargetDependency */,
 			);
 			name = NotificationMytwinlife;
 			productName = Notification;
@@ -720,10 +720,10 @@
 			name = TwinmeMytwinlifePlus;
 			targetProxy = 471A5CAD2E9D4D64008F4406 /* PBXContainerItemProxy */;
 		};
-		4770BAAB2E9D050F0042F374 /* PBXTargetDependency */ = {
+		574DAF8B2EBA0EFD000E1F90 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = TwinmeMytwinlife;
-			targetProxy = 4770BAAA2E9D050F0042F374 /* PBXContainerItemProxy */;
+			targetProxy = 574DAF8A2EBA0EFD000E1F90 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 

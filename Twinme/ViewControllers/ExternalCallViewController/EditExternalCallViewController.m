@@ -14,12 +14,15 @@
 #import "EditExternalCallViewController.h"
 
 #import <Utils/NSString+Utils.h>
-#import "DeviceAuthorization.h"
+
 
 #import <TwinmeCommon/CallReceiverService.h>
 #import <TwinmeCommon/Design.h>
 
 #import "DeleteConfirmView.h"
+#import "DeviceAuthorization.h"
+#import "MenuPhotoView.h"
+#import "UIConfigExternalCall.h"
 
 #if 0
 static const int ddLogLevel = DDLogLevelVerbose;
@@ -33,8 +36,11 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
 // Interface: EditExternalCallViewController ()
 //
 
-@interface EditExternalCallViewController ()<UITextFieldDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate, UITextViewDelegate, BottomSheetViewDelegate, CallReceiverServiceDelegate>
+@interface EditExternalCallViewController ()<UITextFieldDelegate, UINavigationControllerDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate,UIAdaptivePresentationControllerDelegate, UITextViewDelegate, BottomSheetViewDelegate, CallReceiverServiceDelegate, MenuPhotoViewDelegate>
 
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *avatarPlaceholderImageViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet UIImageView *avatarPlaceholderImageView;
+@property (weak, nonatomic) IBOutlet UIView *editAvatarView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *nameViewTopConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *nameViewWidthConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *nameViewHeightConstraint;
@@ -76,6 +82,7 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
 
 @property (nonatomic) NSString *name;
 @property (nonatomic) NSString *callReceiverDescription;
+
 @property (nonatomic) UIImage *avatar;
 
 @property (nonatomic) CallReceiverService *callReceiverService;
@@ -308,6 +315,59 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     [abstractBottomSheetView removeFromSuperview];
 }
 
+#pragma mark - UIImagePickerControllerDelegate
+
+- (void)imagePickerController:(UIImagePickerController *)pickerController didFinishPickingMediaWithInfo:(NSDictionary *)info {
+    DDLogVerbose(@"%@ imagePickerController: %@ didFinishPickingMediaWithInfo: %@", LOG_TAG, pickerController, info);
+    
+    self.navigationController.navigationBarHidden = YES;
+    
+    [pickerController dismissViewControllerAnimated:YES completion:^{
+        self.updatedLargeAvatar = info[UIImagePickerControllerEditedImage];
+        self.updatedAvatar = [self.updatedLargeAvatar resizeImage];
+        self.avatarView.image = self.updatedLargeAvatar;
+        self.updated = YES;
+        [self setUpdated];
+    }];
+}
+
+- (void)imagePickerControllerDidCancel:(UIImagePickerController *)pickerController {
+    DDLogVerbose(@"%@ imagePickerControllerDidCancel: %@", LOG_TAG, pickerController);
+    
+    self.navigationController.navigationBarHidden = YES;
+    [pickerController dismissViewControllerAnimated:YES completion:nil];
+}
+
+#pragma mark - UIAdaptivePresentationControllerDelegate
+
+- (void)presentationControllerWillDismiss:(UIPresentationController *)presentationController {
+    DDLogVerbose(@"%@ presentationControllerWillDismiss: %@", LOG_TAG, presentationController);
+    
+    self.navigationController.navigationBarHidden = YES;
+}
+
+#pragma mark - MenuPhotoViewDelegate
+
+- (void)menuPhotoDidSelectCamera:(MenuPhotoView *)menuPhotoView {
+    DDLogVerbose(@"%@ menuPhotoDidSelectCamera", LOG_TAG);
+    
+    [menuPhotoView removeFromSuperview];
+    [self takePhoto];
+}
+
+- (void)menuPhotoDidSelectGallery:(MenuPhotoView *)menuPhotoView {
+    DDLogVerbose(@"%@ menuPhotoDidSelectGallery", LOG_TAG);
+    
+    [menuPhotoView removeFromSuperview];
+    [self selectPhoto];
+}
+
+- (void)cancelMenuPhoto:(MenuPhotoView *)menuPhotoView {
+    DDLogVerbose(@"%@ cancelMenu", LOG_TAG);
+    
+    [menuPhotoView removeFromSuperview];
+}
+
 #pragma mark - Private methods
 
 - (void)initViews {
@@ -321,6 +381,11 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     [self setNavigationTitle:TwinmeLocalizedString(@"application_profile", nil)];
     
     self.avatarView.backgroundColor = DESIGN_AVATAR_PLACEHOLDER_COLOR;
+    
+    [self.editAvatarView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleUpdateAvatarTapGesture)]];
+    self.editAvatarView.isAccessibilityElement = YES;
+    
+    self.avatarPlaceholderImageViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
         
     self.nameViewTopConstraint.constant *= Design.HEIGHT_RATIO;
     self.nameViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
@@ -398,6 +463,7 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     self.saveProfileView.isAccessibilityElement = YES;
     self.saveProfileView.accessibilityLabel = TwinmeLocalizedString(@"application_save", nil);
     [self.saveProfileView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSaveTapGesture:)]];
+    self.saveProfileView.alpha = 0.5f;
     
     self.saveProfileLabelWidthConstraint.constant *= Design.WIDTH_RATIO;
     self.saveProfileLabel.font = Design.FONT_BOLD36;
@@ -500,8 +566,13 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
         updatedCallReceiverDescription = self.callReceiver.objectDescription;
     }
     
-    if (![updatedCallReceiverName isEqualToString:self.name] || ![updatedCallReceiverDescription isEqualToString:self.callReceiverDescription]) {
-        [self.callReceiverService updateCallReceiverWithCallReceiver:self.callReceiver name:updatedCallReceiverName description:updatedCallReceiverDescription identityName:self.callReceiver.identityName identityDescription:self.callReceiver.identityDescription avatar:nil largeAvatar:nil capabilities:nil];
+    BOOL updated = ![updatedCallReceiverName isEqualToString:self.name] || ![updatedCallReceiverDescription isEqualToString:self.callReceiverDescription];
+    updated = updated || self.updatedAvatar != nil;
+    
+    if (updated) {
+        [self.callReceiver setNumberWithName:PROPERTY_CALL_RECEIVER_UPDATE_COUNTER value:1 + [self.callReceiver getNumberWithName:PROPERTY_CALL_RECEIVER_UPDATE_COUNTER defaultValue:0] twinmeContext:self.twinmeContext];
+        
+        [self.callReceiverService updateCallReceiverWithCallReceiver:self.callReceiver name:updatedCallReceiverName description:updatedCallReceiverDescription avatar:self.updatedAvatar largeAvatar:self.updatedLargeAvatar capabilities:nil];
     } else {
         [self finish];
     }
@@ -527,6 +598,84 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
         [deleteConfirmView showConfirmView];
     }
 }
+
+- (void)handleUpdateAvatarTapGesture {
+    DDLogVerbose(@"%@ handleUpdateAvatarTapGesture", LOG_TAG);
+    
+    [self openMenuPhoto];
+}
+
+- (void)takePhoto {
+    DDLogVerbose(@"%@ takePhoto", LOG_TAG);
+    
+    AVAuthorizationStatus cameraAuthorizationStatus = [DeviceAuthorization deviceCameraAuthorizationStatus];
+    switch (cameraAuthorizationStatus) {
+        case AVAuthorizationStatusNotDetermined: {
+            [AVCaptureDevice requestAccessForMediaType:AVMediaTypeVideo completionHandler:^(BOOL granted) {
+                if (granted) {
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        UIImagePickerController *picker = [[UIImagePickerController alloc] init];
+                        picker.delegate = self;
+                        picker.allowsEditing = YES;
+                        picker.sourceType = UIImagePickerControllerSourceTypeCamera;
+                        picker.cameraDevice = UIImagePickerControllerCameraDeviceFront;
+                        [self presentViewController:picker animated:YES completion:nil];
+                    });
+                }
+            }];
+            break;
+        }
+            
+        case AVAuthorizationStatusRestricted:
+        case AVAuthorizationStatusDenied: {
+            [DeviceAuthorization showCameraSettingsAlertInController:self];
+            break;
+        }
+            
+        case AVAuthorizationStatusAuthorized: {
+            UIImagePickerController *picker = [[UIImagePickerController alloc] init];
+            picker.delegate = self;
+            picker.allowsEditing = YES;
+            picker.sourceType = UIImagePickerControllerSourceTypeCamera;
+            picker.cameraDevice = UIImagePickerControllerCameraDeviceFront;
+            [self presentViewController:picker animated:YES completion:nil];
+            break;
+        }
+    }
+}
+
+- (void)selectPhoto {
+    DDLogVerbose(@"%@ selectPhoto", LOG_TAG);
+    
+    UIImagePickerController *picker = [[UIImagePickerController alloc] init];
+    picker.delegate = self;
+    picker.presentationController.delegate = self;
+    picker.allowsEditing = YES;
+    picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+    
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+        CGSize size = self.view.bounds.size;
+        picker.modalPresentationStyle = UIModalPresentationPopover;
+        picker.popoverPresentationController.sourceView = self.view;
+        picker.popoverPresentationController.sourceRect = CGRectMake(size.width / 2., size.height * 0.2, size.width * 0.6, size.height * 0.7);
+        picker.popoverPresentationController.permittedArrowDirections = UIPopoverArrowDirectionAny;
+        [self presentViewController:picker animated:YES completion:nil];
+    } else {
+        [self presentViewController:picker animated:YES completion:nil];
+    }
+}
+
+- (void)openMenuPhoto {
+    DDLogVerbose(@"%@ openMenuPhoto", LOG_TAG);
+    
+    [self handleTapGesture];
+    
+    MenuPhotoView *menuPhotoView = [[MenuPhotoView alloc]init];
+    menuPhotoView.menuPhotoViewDelegate = self;
+    [self.tabBarController.view addSubview:menuPhotoView];
+    [menuPhotoView openMenu:YES];
+}
+
 
 - (void)updateFont {
     DDLogVerbose(@"%@ updateFont", LOG_TAG);

@@ -590,7 +590,7 @@ static const int GET_CONTACTS_DONE = 1 << 15;
     if (operationId == GET_CURRENT_SPACE) {
         self.state |= GET_CURRENT_SPACE_DONE;
 
-        if (errorCode == TLBaseServiceErrorCodeItemNotFound) {
+        if (errorCode == TLBaseServiceErrorCodeItemNotFound || errorCode == TLBaseServiceErrorCodeExpired) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 [(id<MainServiceDelegate>)self.delegate onGetDefaultProfileNotFound];
             });

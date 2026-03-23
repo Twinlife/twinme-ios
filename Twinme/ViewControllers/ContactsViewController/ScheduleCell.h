@@ -35,6 +35,8 @@ typedef enum {
 
 @property (weak, nonatomic) id<ScheduleDelegate> scheduleDelegate;
 
-- (void)bind:(ScheduleType)scheduleType date:(TLDate *)date time:(TLTime *)time;
+- (void)bind:(ScheduleType)scheduleType date:(TLDate *)date time:(TLTime *)time isRecurrent:(BOOL)isRecurrent;
+
+- (void)resetMargins;
 
 @end

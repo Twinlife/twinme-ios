@@ -107,7 +107,7 @@ static NSString *ANNOTATION_INFO_CELL_IDENTIFIER = @"AnnotationInfoCellIdentifie
     
     UIAnnotation *uiAnnotation = [self.annotationsArray objectAtIndex:indexPath.row];
     BOOL hideSeparator = indexPath.row + 1 == self.annotationsArray.count ? YES : NO;
-    [cell bindWithAnnotation:uiAnnotation hideSeparator:hideSeparator];
+    [cell bindWithAnnotation:uiAnnotation hideSeparator:hideSeparator backgroundColor:Design.POPUP_BACKGROUND_COLOR];
             
     return cell;
 }

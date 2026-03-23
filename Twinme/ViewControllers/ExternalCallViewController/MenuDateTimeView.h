@@ -36,7 +36,7 @@ typedef enum {
 @property (weak, nonatomic) id<MenuDateTimeViewDelegate> menuDateTimeViewDelegate;
 @property (nonatomic) MenuDateTimeType menuDateTimeType;
 
-- (void)setMenuDateTimeTypeWithType:(MenuDateTimeType)menuDateTimeType;
+- (void)setMenuDateTimeTypeWithType:(MenuDateTimeType)menuDateTimeType isPeriodic:(BOOL)isPeriodic;
 
 - (void)openMenu:(NSDate *)minimumDate date:(NSDate *)date;
 

@@ -18,18 +18,29 @@
 #import <TwinmeCommon/TwinmeNavigationController.h>
 #import "InvitationExternalCallViewController.h"
 #import "TransferCallViewController.h"
+#import "MessageSettingsViewController.h"
 
 #import <Utils/NSString+Utils.h>
 
 #import "SwitchView.h"
 #import "MenuCallCapabilitiesView.h"
 #import "MenuDateTimeView.h"
+#import "MenuSelectValueView.h"
 #import "DeviceAuthorization.h"
 #import "OnboardingDetailView.h"
+#import "SettingsSectionHeaderCell.h"
+#import "SettingsValueItemCell.h"
+#import "ScheduleCell.h"
+#import "SettingsItemCell.h"
+#import "WeeklyScheduleCell.h"
+#import "SettingsInformationCell.h"
+#import "AlertMessageView.h"
 
 #import "MenuPhotoView.h"
 #import "UIPremiumFeature.h"
 #import "UITemplateExternalCall.h"
+#import "UIConfigExternalCall.h"
+#import "UIConfigExternalCallItem.h"
 
 #import <TwinmeCommon/ApplicationDelegate.h>
 #import <TwinmeCommon/CallReceiverService.h>
@@ -43,13 +54,20 @@ static const int ddLogLevel = DDLogLevelVerbose;
 static const int ddLogLevel = DDLogLevelWarning;
 #endif
 
+static NSString *HEADER_SETTINGS_CELL_IDENTIFIER = @"HeaderSettingsCellIdentifier";
+static NSString *SCHEDULE_CELL_IDENTIFIER = @"ScheduleCellIdentifier";
+static NSString *WEEKLY_SCHEDULE_CELL_IDENTIFIER = @"WeeklyScheduleCellIdentifier";
+static NSString *SETTINGS_VALUE_CELL_IDENTIFIER = @"SettingsValueCellIdentifier";
+static NSString *SETTINGS_ITEM_CELL_IDENTIFIER = @"SettingsCellIdentifier";
+static NSString *SETTINGS_INFORMATION_CELL_IDENTIFIER = @"SettingsInformationCellIdentifier";
+
 static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
 
 //
 // Interface: CreateExternalCallViewController ()
 //
 
-@interface CreateExternalCallViewController ()<UITextFieldDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate, UITextViewDelegate, CallReceiverServiceDelegate, SwitchViewDelegate, MenuCallCapabilitiesDelegate, MenuDateTimeViewDelegate, UIAdaptivePresentationControllerDelegate, MenuPhotoViewDelegate, BottomSheetViewDelegate>
+@interface CreateExternalCallViewController ()<UITextFieldDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate, UITextViewDelegate, UITableViewDelegate, UITableViewDataSource, CallReceiverServiceDelegate, MenuCallCapabilitiesDelegate, MenuDateTimeViewDelegate, UIAdaptivePresentationControllerDelegate, MenuPhotoViewDelegate, BottomSheetViewDelegate, ScheduleDelegate, SettingsActionDelegate, UIGestureRecognizerDelegate, MenuSelectValueDelegate, WeeklyScheduleDelegate, AlertMessageViewDelegate>
 
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *avatarPlaceholderImageViewHeightConstraint;
 @property (weak, nonatomic) IBOutlet UIImageView *avatarPlaceholderImageView;
@@ -76,66 +94,10 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *counterDescriptionLabelTopConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *counterDescriptionLabelWidthConstraint;
 @property (weak, nonatomic) IBOutlet UILabel *counterDescriptionLabel;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *settingsViewHeightConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *settingsViewWidthConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *settingsViewTopConstraint;
-@property (weak, nonatomic) IBOutlet InsideBorderView *settingsView;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *settingsLabelLeadingConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *settingsLabelTrailingConstraint;
-@property (weak, nonatomic) IBOutlet UILabel *settingsLabel;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *settingsAccessoryViewTrailingConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *settingsAccessoryViewHeightConstraint;
-@property (weak, nonatomic) IBOutlet UIImageView *settingsAccessoryView;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *limitedViewHeightConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *limitedViewWidthConstraint;
-@property (weak, nonatomic) IBOutlet InsideBorderView *limitedView;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *limitedLabelLeadingConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *limitedLabelTrailingConstraint;
-@property (weak, nonatomic) IBOutlet UILabel *limitedLabel;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *limitedSwitchTrailingConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *limitedSwitchHeightConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *limitedSwitchWidthConstraint;
-@property (weak, nonatomic) IBOutlet SwitchView *limitedSwitch;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *startViewHeightConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *startViewWidthConstraint;
-@property (weak, nonatomic) IBOutlet InsideBorderView *startView;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *startLabelLeadingConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *startLabelTrailingConstraint;
-@property (weak, nonatomic) IBOutlet UILabel *startLabel;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *startDateViewWidthConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *startDateViewHeightConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *startDateViewTrailingConstraint;
-@property (weak, nonatomic) IBOutlet UIView *startDateView;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *startDateLabelLeadingConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *startDateLabelTrailingConstraint;
-@property (weak, nonatomic) IBOutlet UILabel *startDateLabel;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *startHourViewWidthConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *startHourViewHeightConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *startHourViewTrailingConstraint;
-@property (weak, nonatomic) IBOutlet UIView *startHourView;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *startHourLabelLeadingConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *startHourLabelTrailingConstraint;
-@property (weak, nonatomic) IBOutlet UILabel *startHourLabel;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *endViewHeightConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *endViewWidthConstraint;
-@property (weak, nonatomic) IBOutlet InsideBorderView *endView;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *endLabelLeadingConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *endLabelTrailingConstraint;
-@property (weak, nonatomic) IBOutlet UILabel *endLabel;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *endDateViewWidthConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *endDateViewHeightConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *endDateViewTrailingConstraint;
-@property (weak, nonatomic) IBOutlet UIView *endDateView;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *endDateLabelLeadingConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *endDateLabelTrailingConstraint;
-@property (weak, nonatomic) IBOutlet UILabel *endDateLabel;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *endHourViewWidthConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *endHourViewHeightConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *endHourViewTrailingConstraint;
-@property (weak, nonatomic) IBOutlet UIView *endHourView;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *endHourLabelLeadingConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *endHourLabelTrailingConstraint;
-@property (weak, nonatomic) IBOutlet UILabel *endHourLabel;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *settingsTableViewTopConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *settingsTableViewWidthConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *settingsTableViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet UITableView *settingsTableView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *saveViewTopConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *saveViewHeightConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *saveViewWidthConstraint;
@@ -157,16 +119,7 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
 @property (nonatomic) CallReceiverService *callReceiverService;
 @property (nonatomic) TLCallReceiver *callReceiver;
 
-@property (nonatomic) TLDate *scheduleStartDate;
-@property (nonatomic) TLTime *scheduleStartTime;
-@property (nonatomic) TLDate *scheduleEndDate;
-@property (nonatomic) TLTime *scheduleEndTime;
-
-@property (nonatomic) BOOL scheduleEnable;
-@property (nonatomic) BOOL allowVoiceCall;
-@property (nonatomic) BOOL allowVideoCall;
-@property (nonatomic) BOOL allowGroupCall;
-
+@property (nonatomic) UIConfigExternalCall *configExternalCall;
 @property (nonatomic) UITemplateExternalCall *uiTemplateExternalCall;
 
 @end
@@ -200,10 +153,6 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
         _keyboardHidden = YES;
         _showOnboardingView = NO;
         _showPremiumFeatureDescription = NO;
-        _scheduleEnable = NO;
-        _allowVoiceCall = YES;
-        _allowVideoCall = YES;
-        _allowGroupCall = NO;
         _callReceiverService = [[CallReceiverService alloc] initWithTwinmeContext:self.twinmeContext delegate:self];
     }
     return self;
@@ -224,6 +173,7 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillChangeFrame:) name:UIKeyboardWillChangeFrameNotification object:nil];
     
     if (!self.showPremiumFeatureDescription && self.isTransfert && [self.twinmeApplication startOnboarding:OnboardingTypeTransferCall]) {
         self.showPremiumFeatureDescription = YES;
@@ -243,6 +193,7 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillHideNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillChangeFrameNotification object:nil];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -251,10 +202,25 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     [super viewDidAppear:animated];
 }
 
+- (int)getActionViewHeight {
+    DDLogVerbose(@"%@ getActionViewHeight", LOG_TAG);
+    
+    UIWindow *window = UIApplication.sharedApplication.keyWindow;
+    CGFloat safeAreaInset = window.safeAreaInsets.bottom;
+    
+    return self.messageLabel.frame.origin.y + self.messageLabel.frame.size.height + self.messageLabelTopConstraint.constant + safeAreaInset;
+}
+
 - (void)initWithTemplate:(UITemplateExternalCall *)templateExternalCall {
     DDLogVerbose(@"%@ initWithTemplate: %@", LOG_TAG, templateExternalCall);
     
     self.uiTemplateExternalCall = templateExternalCall;
+    self.configExternalCall = [[UIConfigExternalCall alloc]initWithCreateExternalCallMode:YES];
+    [self.configExternalCall initWithTemplate:templateExternalCall];
+    
+    if (self.uiTemplateExternalCall.templateType == TemplateExternalCallTypeProfile) {
+        [self.callReceiverService getProfileAvatar:self.currentSpace.profile];
+    }
 }
 
 #pragma mark - CallReceiverServiceDelegate
@@ -301,6 +267,307 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
 
 }
 
+- (void)onGetProfileAvatar:(nonnull UIImage *)avatar {
+    DDLogVerbose(@"%@ onGetProfileAvatar: %@", LOG_TAG, avatar);
+    
+    self.updatedCallReceiverLargeAvatar = avatar;
+    self.updatedCallReceiverAvatar = [self.updatedCallReceiverLargeAvatar resizeImage];
+    self.avatarView.image = self.updatedCallReceiverLargeAvatar;
+    self.avatarPlaceholderImageView.hidden = YES;
+    [self setUpdated];
+}
+
+#pragma mark - UITableViewDataSource
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+    DDLogVerbose(@"%@ numberOfSectionsInTableView: %@", LOG_TAG, tableView);
+    
+    return 1;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath  {
+    DDLogVerbose(@"%@ tableView: %@ heightForRowAtIndexPath: %@", LOG_TAG, tableView, indexPath);
+        
+    return Design.SETTING_CELL_HEIGHT;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
+    DDLogVerbose(@"%@ tableView: %@ heightForHeaderInSection: %ld", LOG_TAG, tableView, (long)section);
+    
+    return Design.SETTING_CELL_HEIGHT;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section {
+    DDLogVerbose(@"%@ tableView: %@ heightForFooterInSection: %ld", LOG_TAG, tableView, (long)section);
+    
+    return CGFLOAT_MIN;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    DDLogVerbose(@"%@ tableView: %@ numberOfRowsInSection: %ld", LOG_TAG, tableView, (long)section);
+    
+    return self.configExternalCall.configItems.count;
+}
+
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
+    DDLogVerbose(@"%@ tableView: %@ viewForHeaderInSection: %ld", LOG_TAG, tableView, (long)section);
+        
+    SettingsSectionHeaderCell *settingsSectionHeaderCell = (SettingsSectionHeaderCell *)[tableView dequeueReusableCellWithIdentifier:HEADER_SETTINGS_CELL_IDENTIFIER];
+    if (!settingsSectionHeaderCell) {
+        settingsSectionHeaderCell = [[SettingsSectionHeaderCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:HEADER_SETTINGS_CELL_IDENTIFIER];
+    }
+    
+    [settingsSectionHeaderCell resetMargins];
+    
+    NSString *title = TwinmeLocalizedString(@"create_external_call_view_controller_call_configuration", nil);
+    [settingsSectionHeaderCell bindWithTitle:title backgroundColor:Design.WHITE_COLOR hideSeparator:YES uppercaseString:YES];
+    
+    return settingsSectionHeaderCell;
+}
+
+- (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section {
+    DDLogVerbose(@"%@ tableView: %@ viewForFooterInSection: %ld", LOG_TAG, tableView, (long)section);
+    
+    return [[UIView alloc]init];
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    DDLogVerbose(@"%@ tableView: %@ cellForRowAtIndexPath: %@", LOG_TAG, tableView, indexPath);
+    
+    UIConfigExternalCallItem *configItem = self.configExternalCall.configItems[indexPath.row];
+    
+    switch (configItem.configExternalCallSettings) {
+        case ConfigExternalCallSettingsCallType:
+        case ConfigExternalCallSettingsPermissions:
+        case ConfigExternalCallSettingsExpiration: {
+            SettingsValueItemCell *cell = [tableView dequeueReusableCellWithIdentifier:SETTINGS_VALUE_CELL_IDENTIFIER];
+            if (!cell) {
+                cell = [[SettingsValueItemCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:SETTINGS_VALUE_CELL_IDENTIFIER];
+            }
+            
+            [cell resetMargins];
+            
+            NSString *value = @"";
+            if (configItem.configExternalCallSettings == ConfigExternalCallSettingsCallType) {
+                value = [UIConfigExternalCall getCallType:self.configExternalCall.configTypeCall];
+            } else if (configItem.configExternalCallSettings == ConfigExternalCallSettingsExpiration) {
+                value = [UIConfigExternalCall getValidity:self.configExternalCall.linkValidity];
+            } else {
+                value = [UIConfigExternalCall getCallCapabilities:self.configExternalCall.allowVoiceCall allowVideo:self.configExternalCall.allowVideoCall allowGroup:self.configExternalCall.allowGroupCall];
+            }
+            [cell bindWithTitle:[configItem getTitle] value:value];
+            
+            return cell;
+        }
+            
+        case ConfigExternalCallSettingsScheduleStart:
+        case ConfigExternalCallSettingsScheduleEnd: {
+            
+            ScheduleCell *cell = [tableView dequeueReusableCellWithIdentifier:SCHEDULE_CELL_IDENTIFIER];
+            if (!cell) {
+                cell = [[ScheduleCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:SCHEDULE_CELL_IDENTIFIER];
+            }
+            
+            cell.scheduleDelegate = self;
+            [cell resetMargins];
+            
+            if (configItem.configExternalCallSettings == ConfigExternalCallSettingsScheduleStart) {
+                [cell bind:ScheduleTypeStart date:self.configExternalCall.scheduleStartDate time:self.configExternalCall.scheduleStartTime isRecurrent:self.configExternalCall.linkValidity == TLLinkValidityPeriodic];
+            } else {
+                [cell bind:ScheduleTypeEnd date:self.configExternalCall.scheduleEndDate time:self.configExternalCall.scheduleEndTime isRecurrent:self.configExternalCall.linkValidity == TLLinkValidityPeriodic];
+            }
+            
+            return cell;
+        }
+            
+        case ConfigExternalCallSettingsScheduleRecurrent: {
+            WeeklyScheduleCell *cell = [tableView dequeueReusableCellWithIdentifier:WEEKLY_SCHEDULE_CELL_IDENTIFIER];
+            if (!cell) {
+                cell = [[WeeklyScheduleCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:WEEKLY_SCHEDULE_CELL_IDENTIFIER];
+            }
+            
+            cell.weeklyScheduleDelegate = self;
+            [cell bind:self.settingsTableViewWidthConstraint.constant days:self.configExternalCall.scheduleRecurrentDays];
+        
+            return cell;
+        }
+        case ConfigExternalCallSettingsDelete: {
+            SettingsInformationCell *cell = [tableView dequeueReusableCellWithIdentifier:SETTINGS_INFORMATION_CELL_IDENTIFIER];
+            if (!cell) {
+                cell = [[SettingsInformationCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:SETTINGS_INFORMATION_CELL_IDENTIFIER];
+            }
+            
+            [cell bindWithText:TwinmeLocalizedString(@"create_external_call_view_controller_delete_link_setting", nil) font:Design.FONT_REGULAR30 color:Design.FONT_COLOR_DEFAULT];
+            [cell resetMargins];
+            
+            return cell;
+        }
+        case ConfigExternalCallSettingsNotification: {
+            SettingsItemCell *cell = [tableView dequeueReusableCellWithIdentifier:SETTINGS_ITEM_CELL_IDENTIFIER];
+            if (!cell) {
+                cell = [[SettingsItemCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:SETTINGS_ITEM_CELL_IDENTIFIER];
+            }
+            
+            cell.settingsActionDelegate = self;
+        
+            BOOL stateSwitch = NO;
+            
+            if (configItem.configExternalCallSettings == ConfigExternalCallSettingsDelete) {
+                stateSwitch = self.configExternalCall.deleteLinkSetting;
+            } else {
+                stateSwitch = self.configExternalCall.notificationCallSetting;
+            }
+            
+            [cell bindWithTitle:[configItem getTitle] subTitle:nil  icon:nil stateSwitch:stateSwitch tagSwitch:configItem.configExternalCallSettings hiddenSwitch:NO disableSwitch:NO backgroundColor:Design.WHITE_COLOR hiddenSeparator:YES];
+                 
+            [cell resetMargins];
+            
+            return cell;
+        }
+            
+        default:
+            return [[UITableViewCell alloc]init];
+    }
+}
+
+#pragma mark - UITableViewDelegate
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    DDLogVerbose(@"%@ tableView: %@ didSelectRowAtIndexPath: %@", LOG_TAG, tableView, indexPath);
+    
+    UIConfigExternalCall *configItem = self.configExternalCall.configItems[indexPath.row];
+    
+    if (configItem.configExternalCallSettings == ConfigExternalCallSettingsPermissions) {
+        [self openMenuCallCapabilities];
+    } else if (configItem.configExternalCallSettings == ConfigExternalCallSettingsCallType) {
+        [self openMenuSelectValue:MenuSelectValueTypeExternalCallType defaultValue:self.configExternalCall.configTypeCall];
+    } else if (configItem.configExternalCallSettings == ConfigExternalCallSettingsExpiration) {
+        [self openMenuSelectValue:MenuSelectValueTypeExternalCallExpiration defaultValue:(int)self.configExternalCall.linkValidity];
+    }
+}
+
+#pragma mark - ScheduleDelegate
+
+- (void)scheduleDate:(ScheduleType)scheduleType {
+    DDLogVerbose(@"%@ scheduleDate", LOG_TAG);
+    
+    if (scheduleType == ScheduleTypeStart) {
+        NSDate *date = [NSDate date];
+        if (self.configExternalCall.scheduleStartDate) {
+            NSDateComponents *startDateComponents = [[NSDateComponents alloc] init];
+            startDateComponents.day = self.configExternalCall.scheduleStartDate.day;
+            startDateComponents.month = self.configExternalCall.scheduleStartDate.month;
+            startDateComponents.year = self.configExternalCall.scheduleStartDate.year;
+            startDateComponents.hour = self.configExternalCall.scheduleStartTime.hour;
+            startDateComponents.minute = self.configExternalCall.scheduleStartTime.minute;
+            
+            NSCalendar *calendar = [NSCalendar currentCalendar];
+            date = [calendar dateFromComponents:startDateComponents];
+        }
+        
+        [self openMenuDateTime:date minimumDate:[NSDate date] menuDateTimeType:MenuDateTimeTypeStartDate];
+    } else {
+        if (self.configExternalCall.scheduleStartDate) {
+            NSDateComponents *startDateComponents = [[NSDateComponents alloc] init];
+            startDateComponents.day = self.configExternalCall.scheduleStartDate.day;
+            startDateComponents.month = self.configExternalCall.scheduleStartDate.month;
+            startDateComponents.year = self.configExternalCall.scheduleStartDate.year;
+            startDateComponents.hour = self.configExternalCall.scheduleStartTime.hour;
+            startDateComponents.minute = self.configExternalCall.scheduleStartTime.minute;
+            
+            NSCalendar *calendar = [NSCalendar currentCalendar];
+            NSDate *minimumDate = [calendar dateFromComponents:startDateComponents];
+            
+            NSDate *date = [minimumDate dateByAddingTimeInterval:3600];
+            if (self.configExternalCall.scheduleEndDate) {
+                NSDateComponents *startEndComponents = [[NSDateComponents alloc] init];
+                startEndComponents.day = self.configExternalCall.scheduleEndDate.day;
+                startEndComponents.month = self.configExternalCall.scheduleEndDate.month;
+                startEndComponents.year = self.configExternalCall.scheduleEndDate.year;
+                startEndComponents.hour = self.configExternalCall.scheduleEndTime.hour;
+                startEndComponents.minute = self.configExternalCall.scheduleEndTime.minute;
+                
+                date = [calendar dateFromComponents:startEndComponents];
+            }
+        
+            [self openMenuDateTime:date minimumDate:minimumDate menuDateTimeType:MenuDateTimeTypeEndDate];
+        } else {
+            [self openMenuDateTime:[NSDate date] minimumDate:[NSDate date] menuDateTimeType:MenuDateTimeTypeEndDate];
+        }
+    }
+}
+
+- (void)scheduleTime:(ScheduleType)scheduleType {
+    DDLogVerbose(@"%@ scheduleTime", LOG_TAG);
+    
+    if (scheduleType == ScheduleTypeStart) {
+        
+        NSDate *date = [NSDate date];
+        if (self.configExternalCall.scheduleStartDate) {
+            NSDateComponents *startDateComponents = [[NSDateComponents alloc] init];
+            startDateComponents.day = self.configExternalCall.scheduleStartDate.day;
+            startDateComponents.month = self.configExternalCall.scheduleStartDate.month;
+            startDateComponents.year = self.configExternalCall.scheduleStartDate.year;
+            startDateComponents.hour = self.configExternalCall.scheduleStartTime.hour;
+            startDateComponents.minute = self.configExternalCall.scheduleStartTime.minute;
+            
+            NSCalendar *calendar = [NSCalendar currentCalendar];
+            date = [calendar dateFromComponents:startDateComponents];
+        }
+        
+        [self openMenuDateTime:date minimumDate:[NSDate date] menuDateTimeType:MenuDateTimeTypeStartHour];
+    } else {
+        if (self.configExternalCall.scheduleStartDate) {
+            NSDateComponents *startDateComponents = [[NSDateComponents alloc] init];
+            startDateComponents.day = self.configExternalCall.scheduleStartDate.day;
+            startDateComponents.month = self.configExternalCall.scheduleStartDate.month;
+            startDateComponents.year = self.configExternalCall.scheduleStartDate.year;
+            startDateComponents.hour = self.configExternalCall.scheduleStartTime.hour;
+            startDateComponents.minute = self.configExternalCall.scheduleStartTime.minute;
+            
+            NSCalendar *calendar = [NSCalendar currentCalendar];
+            NSDate *minimumDate = [calendar dateFromComponents:startDateComponents];
+            
+            NSDate *date = [minimumDate dateByAddingTimeInterval:3600];
+            if (self.configExternalCall.scheduleEndDate) {
+                NSDateComponents *startEndComponents = [[NSDateComponents alloc] init];
+                startEndComponents.day = self.configExternalCall.scheduleEndDate.day;
+                startEndComponents.month = self.configExternalCall.scheduleEndDate.month;
+                startEndComponents.year = self.configExternalCall.scheduleEndDate.year;
+                startEndComponents.hour = self.configExternalCall.scheduleEndTime.hour;
+                startEndComponents.minute = self.configExternalCall.scheduleEndTime.minute;
+                
+                date = [calendar dateFromComponents:startEndComponents];
+            }
+        
+            [self openMenuDateTime:date minimumDate:minimumDate menuDateTimeType:MenuDateTimeTypeEndHour];
+        } else {
+            [self openMenuDateTime:[NSDate date] minimumDate:[NSDate date] menuDateTimeType:MenuDateTimeTypeEndHour];
+        }
+    }
+}
+
+#pragma mark - WeeklyScheduleDelegate
+
+- (void)didSelectDay:(UIScheduleDay *)scheduleDay {
+    DDLogVerbose(@"%@ didSelectDay: %@", LOG_TAG, scheduleDay);
+    
+}
+
+#pragma mark - SettingsActionDelegate
+
+- (void)switchChangeValue:(SwitchView *)updatedSwitch {
+    DDLogVerbose(@"%@ switchChangeValue: %@", LOG_TAG, updatedSwitch);
+
+    if (updatedSwitch.tag == ConfigExternalCallSettingsNotification) {
+        self.configExternalCall.notificationCallSetting = updatedSwitch.isOn;
+    } else {
+        self.configExternalCall.deleteLinkSetting = updatedSwitch.isOn;
+    }
+    
+    [self updateConfig];
+}
+
 #pragma mark - UITextFieldDelegate
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
@@ -319,13 +586,7 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
 - (void)textFieldDidChange:(UITextField *)textField{
     DDLogVerbose(@"%@ textFieldDidChange: %@", LOG_TAG, textField);
     
-    if ([textField.text isEqual:@""]) {
-        self.updated = NO;
-        self.saveView.alpha = 0.5;
-    } else {
-        self.updated = YES;
-        self.saveView.alpha = 1.f;
-    }
+    [self setUpdated];
     
     self.counterNameLabel.text = [NSString stringWithFormat:@"%lu/%d", (unsigned long)self.nameTextField.text.length, MAX_NAME_LENGTH];
 }
@@ -372,12 +633,12 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     self.navigationController.navigationBarHidden = YES;
     
     [pickerController dismissViewControllerAnimated:YES completion:^{
-        [self setUpdated];
-        
         self.updatedCallReceiverLargeAvatar = info[UIImagePickerControllerEditedImage];
         self.updatedCallReceiverAvatar = [self.updatedCallReceiverLargeAvatar resizeImage];
         self.avatarView.image = self.updatedCallReceiverLargeAvatar;
         self.avatarPlaceholderImageView.hidden = YES;
+        
+        [self setUpdated];
     }];
 }
 
@@ -424,6 +685,19 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     [abstractBottomSheetView removeFromSuperview];
 }
 
+#pragma mark - AlertMessageViewDelegate
+
+- (void)didCloseAlertMessage:(nonnull AlertMessageView *)alertMessageView {
+    DDLogVerbose(@"%@ didCloseAlertMessage: %@", LOG_TAG, alertMessageView);
+    
+    [alertMessageView closeAlertView];
+}
+
+- (void)didFinishCloseAlertMessageAnimation:(nonnull AlertMessageView *)alertMessageView {
+    DDLogVerbose(@"%@ didFinishCloseAlertMessageAnimation: %@", LOG_TAG, alertMessageView);
+    
+    [alertMessageView removeFromSuperview];
+}
 
 #pragma mark - MenuSelectValueDelegate
 
@@ -432,11 +706,33 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
 
     [menuCallCapabilitiesView removeFromSuperview];
     
-    self.allowVoiceCall = allowVoiceCall;
-    self.allowVideoCall = allowVideoCall;
-    self.allowGroupCall = allowGroupCall;
+    self.configExternalCall.allowVoiceCall = allowVoiceCall;
+    self.configExternalCall.allowVideoCall = allowVideoCall;
+    self.configExternalCall.allowGroupCall = allowGroupCall;
     
-    [self updateCallCapabilities];
+    [self updateConfig];
+}
+
+#pragma mark - MenuSelectValueDelegate
+
+- (void)selectValue:(MenuSelectValueView *)menuSelectValueView value:(int)value {
+    DDLogVerbose(@"%@ selectValue: %d", LOG_TAG, value);
+
+    [menuSelectValueView removeFromSuperview];
+    
+    if (menuSelectValueView.menuSelectValueType == MenuSelectValueTypeExternalCallType) {
+        [self.configExternalCall setCallType:value];
+    } else {
+        [self.configExternalCall setValidity:value];
+    }
+    
+    [self updateConfig];
+}
+
+- (void)cancelMenuSelectValue:(MenuSelectValueView *)menuSelectValueView {
+    DDLogVerbose(@"%@ cancelMenuSelectValue: %@", LOG_TAG, menuSelectValueView);
+    
+    [menuSelectValueView removeFromSuperview];
 }
 
 #pragma mark - MenuDateTimeDelegate
@@ -451,43 +747,29 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     NSDateComponents *dateComponents = [calendar components:calendarUnit fromDate:date];
     
     if (menuDateTimeType == MenuDateTimeTypeStartDate || menuDateTimeType == MenuDateTimeTypeStartHour) {
-        self.scheduleStartDate = [[TLDate alloc]initWithYear:(int)dateComponents.year month:(int)dateComponents.month day:(int)dateComponents.day];
-        self.scheduleStartTime = [[TLTime alloc]initWithHour:(int)dateComponents.hour minute:(int)dateComponents.minute];
+        self.configExternalCall.scheduleStartDate = [[TLDate alloc]initWithYear:(int)dateComponents.year month:(int)dateComponents.month day:(int)dateComponents.day];
+        self.configExternalCall.scheduleStartTime = [[TLTime alloc]initWithHour:(int)dateComponents.hour minute:(int)dateComponents.minute];
     } else if (menuDateTimeType == MenuDateTimeTypeEndDate || menuDateTimeType == MenuDateTimeTypeEndHour) {
-        self.scheduleEndDate = [[TLDate alloc]initWithYear:(int)dateComponents.year month:(int)dateComponents.month day:(int)dateComponents.day];
-        self.scheduleEndTime = [[TLTime alloc]initWithHour:(int)dateComponents.hour minute:(int)dateComponents.minute];
+        self.configExternalCall.scheduleEndDate = [[TLDate alloc]initWithYear:(int)dateComponents.year month:(int)dateComponents.month day:(int)dateComponents.day];
+        self.configExternalCall.scheduleEndTime = [[TLTime alloc]initWithHour:(int)dateComponents.hour minute:(int)dateComponents.minute];
     }
     
-    if ([self.scheduleStartDate compare:self.scheduleEndDate] ==  NSOrderedDescending) {
+    if ([self.configExternalCall.scheduleStartDate compare:self.configExternalCall.scheduleEndDate] ==  NSOrderedDescending || ([self.configExternalCall.scheduleStartDate compare:self.configExternalCall.scheduleEndDate] ==  NSOrderedSame && [self.configExternalCall.scheduleStartTime compare:self.configExternalCall.scheduleEndTime] != NSOrderedAscending)) {
         NSDateComponents *startDateComponents = [[NSDateComponents alloc] init];
-        startDateComponents.day = self.scheduleStartDate.day;
-        startDateComponents.month = self.scheduleStartDate.month;
-        startDateComponents.year = self.scheduleStartDate.year;
-        startDateComponents.hour = self.scheduleStartTime.hour;
-        startDateComponents.minute = self.scheduleStartTime.minute;
+        startDateComponents.day = self.configExternalCall.scheduleStartDate.day;
+        startDateComponents.month = self.configExternalCall.scheduleStartDate.month;
+        startDateComponents.year = self.configExternalCall.scheduleStartDate.year;
+        startDateComponents.hour = self.configExternalCall.scheduleStartTime.hour;
+        startDateComponents.minute = self.configExternalCall.scheduleStartTime.minute;
         
         NSDate *startDate = [calendar dateFromComponents:startDateComponents];
-        NSDate *endDate = [calendar dateByAddingUnit:NSCalendarUnitHour value:1 toDate:startDate options:NSCalendarWrapComponents];
+        NSDate *endDate = [calendar dateByAddingUnit:NSCalendarUnitHour value:1 toDate:startDate options:0];
         dateComponents = [calendar components:calendarUnit fromDate:endDate];
-        self.scheduleEndDate = [[TLDate alloc]initWithYear:(int)dateComponents.year month:(int)dateComponents.month day:(int)dateComponents.day];
-        self.scheduleEndTime = [[TLTime alloc]initWithHour:(int)dateComponents.hour minute:(int)dateComponents.minute];
+        self.configExternalCall.scheduleEndDate = [[TLDate alloc]initWithYear:(int)dateComponents.year month:(int)dateComponents.month day:(int)dateComponents.day];
+        self.configExternalCall.scheduleEndTime = [[TLTime alloc]initWithHour:(int)dateComponents.hour minute:(int)dateComponents.minute];
     }
     
-    [self updateSchedule];
-}
-
-#pragma mark - SwitchViewDelegate
-
-- (void)switchViewDidTap:(SwitchView *)switchView {
-    DDLogVerbose(@"%@ switchViewDidTap: %@", LOG_TAG, switchView);
-    
-    self.scheduleEnable = switchView.isOn;
-    
-    if (self.scheduleEnable && !self.scheduleStartDate) {
-        [self initSchedule];
-    }
-    
-    [self updateSchedule];
+    [self updateConfig];
 }
 
 #pragma mark - MenuPhotoViewDelegate
@@ -512,6 +794,16 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     [menuPhotoView removeFromSuperview];
 }
 
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch {
+    DDLogVerbose(@"%@ gestureRecognizer: %@ shouldReceiveTouch: %@", LOG_TAG, gestureRecognizer, touch);
+    
+    if ([touch.view isDescendantOfView:self.settingsTableView]) {
+        return NO;
+    }
+    
+    return YES;
+}
+
 #pragma mark - Private methods
 
 - (void)initViews {
@@ -520,7 +812,6 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     [super initViews];
     
     self.view.backgroundColor = Design.WHITE_COLOR;
-    [self.view addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(dismissKeyboard)]];
     
     [self setNavigationTitle:TwinmeLocalizedString(@"premium_services_view_controller_click_to_call_title", nil)];
         
@@ -580,138 +871,25 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     self.counterDescriptionLabel.textColor = Design.FONT_COLOR_DEFAULT;
     self.counterDescriptionLabel.text = [NSString stringWithFormat:@"0/%d", MAX_DESCRIPTION_LENGTH];
 
-    self.settingsViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
-    self.settingsViewWidthConstraint.constant *= Design.WIDTH_RATIO;
-    self.settingsViewTopConstraint.constant *= Design.HEIGHT_RATIO;
+    self.settingsTableViewTopConstraint.constant *= Design.WIDTH_RATIO;
+    self.settingsTableViewWidthConstraint.constant *= Design.WIDTH_RATIO;
+    self.settingsTableViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     
-    UITapGestureRecognizer *settingsViewGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSettingsTapGesture:)];
-    [self.settingsView addGestureRecognizer:settingsViewGestureRecognizer];
+    self.settingsTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+    self.settingsTableView.rowHeight = UITableViewAutomaticDimension;
+    self.settingsTableView.backgroundColor = Design.WHITE_COLOR;
+    self.settingsTableView.delegate = self;
+    self.settingsTableView.dataSource = self;
+    self.settingsTableView.scrollEnabled = NO;
+    self.settingsTableView.estimatedRowHeight = Design.SETTING_CELL_HEIGHT * Design.HEIGHT_RATIO;
     
-    [self.settingsView setBorder:Design.SEPARATOR_COLOR_GREY borderWidth:Design.SEPARATOR_HEIGHT width:self.settingsViewWidthConstraint.constant height:self.settingsViewHeightConstraint.constant left:false right:false top:false bottom:true];
-    
-    self.settingsLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
-    self.settingsLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
-    self.settingsLabel.text = TwinmeLocalizedString(@"show_call_view_controller_setting_calls", nil);
-    self.settingsAccessoryViewTrailingConstraint.constant *= Design.WIDTH_RATIO;
-    self.settingsAccessoryViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
-    self.settingsAccessoryView.tintColor = Design.ACCESSORY_COLOR;
-    self.settingsAccessoryView.image = [self.settingsAccessoryView.image imageFlippedForRightToLeftLayoutDirection];
-    
-    self.limitedViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
-    self.limitedViewWidthConstraint.constant *= Design.WIDTH_RATIO;
-    
-    [self.limitedView setBorder:Design.SEPARATOR_COLOR_GREY borderWidth:Design.SEPARATOR_HEIGHT width:self.limitedViewWidthConstraint.constant height:self.limitedViewHeightConstraint.constant left:false right:false top:false bottom:true];
-    
-    self.limitedLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
-    self.limitedLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
-    
-    self.limitedLabel.font = Design.FONT_REGULAR34;
-    self.limitedLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    self.limitedLabel.text = TwinmeLocalizedString(@"show_call_view_controller_setting_limited", nil);
-        
-    CGSize switchSize = [Design switchSize];
-    self.limitedSwitchTrailingConstraint.constant *= Design.WIDTH_RATIO;
-    self.limitedSwitchHeightConstraint.constant = switchSize.height;
-    self.limitedSwitchWidthConstraint.constant = switchSize.width;
-    
-    self.limitedSwitch.switchViewDelegate = self;
-    
-    self.startViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
-    self.startViewWidthConstraint.constant *= Design.WIDTH_RATIO;
-    
-    [self.startView setBorder:Design.SEPARATOR_COLOR_GREY borderWidth:Design.SEPARATOR_HEIGHT width:self.startViewWidthConstraint.constant height:self.limitedViewHeightConstraint.constant left:false right:false top:false bottom:true];
-    
-    self.startLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
-    self.startLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
-    
-    self.startLabel.font = Design.FONT_REGULAR34;
-    self.startLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    self.startLabel.text = TwinmeLocalizedString(@"show_call_view_controller_setting_start", nil);
-    
-    self.startDateViewWidthConstraint.constant *= Design.WIDTH_RATIO;
-    self.startDateViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
-    self.startDateViewTrailingConstraint.constant *= Design.WIDTH_RATIO;
-        
-    self.startDateView.userInteractionEnabled = YES;
-    self.startDateView.clipsToBounds = YES;
-    self.startDateView.layer.cornerRadius = Design.CONTAINER_RADIUS;
-    self.startDateView.layer.backgroundColor = Design.BACKGROUND_COLOR_GREY.CGColor;
-    
-    UITapGestureRecognizer *startDateViewGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleStartDateViewTapGesture:)];
-    [self.startDateView addGestureRecognizer:startDateViewGestureRecognizer];
-    
-    self.startDateLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
-    self.startDateLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
-    
-    self.startDateLabel.font = Design.FONT_REGULAR32;
-    self.startDateLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    
-    self.startHourViewWidthConstraint.constant *= Design.WIDTH_RATIO;
-    self.startHourViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
-    self.startHourViewTrailingConstraint.constant *= Design.WIDTH_RATIO;
-    
-    self.startHourView.userInteractionEnabled = YES;
-    self.startHourView.clipsToBounds = YES;
-    self.startHourView.layer.cornerRadius = Design.CONTAINER_RADIUS;
-    self.startHourView.layer.backgroundColor = Design.BACKGROUND_COLOR_GREY.CGColor;
-    
-    UITapGestureRecognizer *startHourViewGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleStartHourViewTapGesture:)];
-    [self.startHourView addGestureRecognizer:startHourViewGestureRecognizer];
-    
-    self.startHourLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
-    self.startHourLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
-    
-    self.startHourLabel.font = Design.FONT_REGULAR32;
-    self.startHourLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    
-    self.endViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
-    self.endViewWidthConstraint.constant *= Design.WIDTH_RATIO;
-    
-    [self.endView setBorder:Design.SEPARATOR_COLOR_GREY borderWidth:Design.SEPARATOR_HEIGHT width:self.endViewWidthConstraint.constant height:self.limitedViewHeightConstraint.constant left:false right:false top:false bottom:false];
-    
-    self.endLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
-    self.endLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
-    
-    self.endLabel.font = Design.FONT_REGULAR34;
-    self.endLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    self.endLabel.text = TwinmeLocalizedString(@"show_call_view_controller_setting_end", nil);
-    
-    self.endDateViewWidthConstraint.constant *= Design.WIDTH_RATIO;
-    self.endDateViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
-    self.endDateViewTrailingConstraint.constant *= Design.WIDTH_RATIO;
-    
-    self.endDateView.userInteractionEnabled = YES;
-    self.endDateView.clipsToBounds = YES;
-    self.endDateView.layer.cornerRadius = Design.CONTAINER_RADIUS;
-    self.endDateView.layer.backgroundColor = Design.BACKGROUND_COLOR_GREY.CGColor;
-    
-    UITapGestureRecognizer *endDateViewGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleEndDateViewTapGesture:)];
-    [self.endDateView addGestureRecognizer:endDateViewGestureRecognizer];
-    
-    self.endDateLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
-    self.endDateLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
-    
-    self.endDateLabel.font = Design.FONT_REGULAR32;
-    self.endDateLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    
-    self.endHourViewWidthConstraint.constant *= Design.WIDTH_RATIO;
-    self.endHourViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
-    self.endHourViewTrailingConstraint.constant *= Design.WIDTH_RATIO;
-    
-    self.endHourView.userInteractionEnabled = YES;
-    self.endHourView.clipsToBounds = YES;
-    self.endHourView.layer.cornerRadius = Design.CONTAINER_RADIUS;
-    self.endHourView.layer.backgroundColor = Design.BACKGROUND_COLOR_GREY.CGColor;
-    
-    UITapGestureRecognizer *endHourViewGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleEndHourViewTapGesture:)];
-    [self.endHourView addGestureRecognizer:endHourViewGestureRecognizer];
-    
-    self.endHourLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
-    self.endHourLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
-    
-    self.endHourLabel.font = Design.FONT_REGULAR32;
-    self.endHourLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    
+    [self.settingsTableView registerNib:[UINib nibWithNibName:@"SettingsSectionHeaderCell" bundle:nil] forCellReuseIdentifier:HEADER_SETTINGS_CELL_IDENTIFIER];
+    [self.settingsTableView registerNib:[UINib nibWithNibName:@"WeeklyScheduleCell" bundle:nil] forCellReuseIdentifier:WEEKLY_SCHEDULE_CELL_IDENTIFIER];
+    [self.settingsTableView registerNib:[UINib nibWithNibName:@"ScheduleCell" bundle:nil] forCellReuseIdentifier:SCHEDULE_CELL_IDENTIFIER];
+    [self.settingsTableView registerNib:[UINib nibWithNibName:@"SettingsValueItemCell" bundle:nil] forCellReuseIdentifier:SETTINGS_VALUE_CELL_IDENTIFIER];
+    [self.settingsTableView registerNib:[UINib nibWithNibName:@"SettingsItemCell" bundle:nil] forCellReuseIdentifier:SETTINGS_ITEM_CELL_IDENTIFIER];
+    [self.settingsTableView registerNib:[UINib nibWithNibName:@"SettingsInformationCell" bundle:nil] forCellReuseIdentifier:SETTINGS_INFORMATION_CELL_IDENTIFIER];
+
     self.saveViewTopConstraint.constant *= Design.HEIGHT_RATIO;
     self.saveViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     self.saveViewWidthConstraint.constant *= Design.WIDTH_RATIO;
@@ -730,6 +908,8 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     self.saveLabel.text = TwinmeLocalizedString(@"application_save", nil);
     
     UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTapGesture)];
+    tapGesture.delegate = self;
+    tapGesture.cancelsTouchesInView = NO;
     [self.view addGestureRecognizer:tapGesture];
     
     self.messageLabelTopConstraint.constant *= Design.HEIGHT_RATIO;
@@ -739,8 +919,7 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     self.messageLabel.textColor = Design.FONT_COLOR_DEFAULT;
     
     [self initCallReceiver];
-    [self updateCallCapabilities];
-    [self updateSchedule];
+    [self updateConfig];
 }
 
 - (void)finish {
@@ -764,12 +943,13 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
 - (void)setUpdated {
     DDLogVerbose(@"%@ setUpdated", LOG_TAG);
     
-    if (self.updated) {
-        return;
+    if ([self.nameTextField.text isEqual:@""] || (!self.updatedCallReceiverLargeAvatar  && !self.isTransfert)) {
+        self.updated = NO;
+        self.saveView.alpha = 0.5;
+    } else {
+        self.updated = YES;
+        self.saveView.alpha = 1.f;
     }
-    self.updated = YES;
-    
-    self.saveView.alpha = 1.0;
 }
 
 - (void)keyboardWillShow:(NSNotification *)notification {
@@ -782,10 +962,13 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     self.keyboardHidden = NO;
     NSDictionary *info = [notification userInfo];
     CGSize keyboardSize = [[info objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue].size;
-    CGRect saveViewFrame = self.saveView.frame;
+    CGRect descriptionViewFrame = self.descriptionView.frame;
     CGRect frame = self.view.frame;
-    CGFloat slidePosition = frame.size.height - (keyboardSize.height + saveViewFrame.origin.y + saveViewFrame.size.height + self.saveViewTopConstraint.constant);
+    CGFloat slidePosition = frame.size.height - (keyboardSize.height + descriptionViewFrame.origin.y + descriptionViewFrame.size.height + self.descriptionViewTopConstraint.constant);
     [self moveSlideToPosition:slidePosition];
+    
+    frame.origin.y = -keyboardSize.height;
+    self.view.frame = frame;
     
     if ([self.twinmeApplication getDefaultKeyboardHeight] != keyboardSize.height) {
         [self.twinmeApplication setDefaultKeyboardHeight:keyboardSize.height];
@@ -797,7 +980,21 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     
     self.keyboardHidden = YES;
     
+    CGRect frame = self.view.frame;
+    frame.origin.y = 0;
+    self.view.frame = frame;
+    
     [self moveSlideToInitialPosition];
+}
+
+- (void)keyboardWillChangeFrame:(NSNotification *)notification {
+    DDLogVerbose(@"%@ keyboardWillChangeFrame: %@", LOG_TAG, notification);
+    
+    NSDictionary *info = [notification userInfo];
+    CGSize keyboardSize = [[info objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue].size;
+    CGRect frame = CGRectMake(0, 0, Design.DISPLAY_WIDTH, Design.DISPLAY_HEIGHT);
+    frame.origin.y = -keyboardSize.height;
+    self.view.frame = frame;
 }
 
 - (void)dismissKeyboard {
@@ -827,145 +1024,33 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     [self openMenuPhoto];
 }
 
-- (void)handleStartDateViewTapGesture:(UITapGestureRecognizer *)sender {
-    DDLogVerbose(@"%@ handleStartDateViewTapGesture: %@", LOG_TAG, sender);
-    
-    if (sender.state == UIGestureRecognizerStateEnded) {
-        
-        NSDate *date = [NSDate date];
-        
-        if (self.scheduleStartDate) {
-            NSDateComponents *startDateComponents = [[NSDateComponents alloc] init];
-            startDateComponents.day = self.scheduleStartDate.day;
-            startDateComponents.month = self.scheduleStartDate.month;
-            startDateComponents.year = self.scheduleStartDate.year;
-            startDateComponents.hour = self.scheduleStartTime.hour;
-            startDateComponents.minute = self.scheduleStartTime.minute;
-            
-            NSCalendar *calendar = [NSCalendar currentCalendar];
-            date = [calendar dateFromComponents:startDateComponents];
-        }
-        
-        [self openMenuDateTime:date minimumDate:[NSDate date] menuDateTimeType:MenuDateTimeTypeStartDate];
-    }
-}
-
-- (void)handleStartHourViewTapGesture:(UITapGestureRecognizer *)sender {
-    DDLogVerbose(@"%@ handleStartHourViewTapGesture: %@", LOG_TAG, sender);
-    
-    if (sender.state == UIGestureRecognizerStateEnded) {
-        
-        NSDate *date = [NSDate date];
-        
-        if (self.scheduleStartDate) {
-            NSDateComponents *startDateComponents = [[NSDateComponents alloc] init];
-            startDateComponents.day = self.scheduleStartDate.day;
-            startDateComponents.month = self.scheduleStartDate.month;
-            startDateComponents.year = self.scheduleStartDate.year;
-            startDateComponents.hour = self.scheduleStartTime.hour;
-            startDateComponents.minute = self.scheduleStartTime.minute;
-            
-            NSCalendar *calendar = [NSCalendar currentCalendar];
-            date = [calendar dateFromComponents:startDateComponents];
-        }
-        
-        [self openMenuDateTime:date minimumDate:[NSDate date] menuDateTimeType:MenuDateTimeTypeStartHour];
-    }
-}
-
-- (void)handleEndDateViewTapGesture:(UITapGestureRecognizer *)sender {
-    DDLogVerbose(@"%@ handleEndDateViewTapGesture: %@", LOG_TAG, sender);
-    
-    if (sender.state == UIGestureRecognizerStateEnded) {
-        
-        NSDate *date = [NSDate date];
-        NSDate *minimumDate = [NSDate date];
-        
-        if (self.scheduleEndDate) {
-            NSDateComponents *startDateComponents = [[NSDateComponents alloc] init];
-            startDateComponents.day = self.scheduleEndDate.day;
-            startDateComponents.month = self.scheduleEndDate.month;
-            startDateComponents.year = self.scheduleEndDate.year;
-            startDateComponents.hour = self.scheduleEndTime.hour;
-            startDateComponents.minute = self.scheduleEndTime.minute;
-            
-            NSCalendar *calendar = [NSCalendar currentCalendar];
-            date = [calendar dateFromComponents:startDateComponents];
-        }
-        
-        if (self.scheduleStartDate) {
-            NSDateComponents *startDateComponents = [[NSDateComponents alloc] init];
-            startDateComponents.day = self.scheduleStartDate.day;
-            startDateComponents.month = self.scheduleStartDate.month;
-            startDateComponents.year = self.scheduleStartDate.year;
-            startDateComponents.hour = self.scheduleStartTime.hour;
-            startDateComponents.minute = self.scheduleStartTime.minute;
-            
-            NSCalendar *calendar = [NSCalendar currentCalendar];
-            minimumDate = [calendar dateFromComponents:startDateComponents];
-        }
-            
-        [self openMenuDateTime:date minimumDate:minimumDate menuDateTimeType:MenuDateTimeTypeEndDate];
-    }
-}
-
-- (void)handleEndHourViewTapGesture:(UITapGestureRecognizer *)sender {
-    DDLogVerbose(@"%@ handleStartHourViewTapGesture: %@", LOG_TAG, sender);
-    
-    if (sender.state == UIGestureRecognizerStateEnded) {
-        NSDate *date = [NSDate date];
-        NSDate *minimumDate = [NSDate date];
-        
-        if (self.scheduleEndDate) {
-            NSDateComponents *startDateComponents = [[NSDateComponents alloc] init];
-            startDateComponents.day = self.scheduleEndDate.day;
-            startDateComponents.month = self.scheduleEndDate.month;
-            startDateComponents.year = self.scheduleEndDate.year;
-            startDateComponents.hour = self.scheduleEndTime.hour;
-            startDateComponents.minute = self.scheduleEndTime.minute;
-            
-            NSCalendar *calendar = [NSCalendar currentCalendar];
-            date = [calendar dateFromComponents:startDateComponents];
-        }
-        
-        if (self.scheduleStartDate) {
-            NSDateComponents *startDateComponents = [[NSDateComponents alloc] init];
-            startDateComponents.day = self.scheduleStartDate.day;
-            startDateComponents.month = self.scheduleStartDate.month;
-            startDateComponents.year = self.scheduleStartDate.year;
-            startDateComponents.hour = self.scheduleStartTime.hour;
-            startDateComponents.minute = self.scheduleStartTime.minute;
-            
-            NSCalendar *calendar = [NSCalendar currentCalendar];
-            minimumDate = [calendar dateFromComponents:startDateComponents];
-        }
-            
-        [self openMenuDateTime:date minimumDate:minimumDate menuDateTimeType:MenuDateTimeTypeEndHour];
-    }
-}
-
-- (void)handleSettingsTapGesture:(UITapGestureRecognizer *)sender {
-    DDLogVerbose(@"%@ handleSettingsTapGesture: %@", LOG_TAG, sender);
-    
-    if (sender.state == UIGestureRecognizerStateEnded) {
-        [self openMenuCallCapabilities];
-    }
-}
-
 - (void)handleSaveTapGesture:(UITapGestureRecognizer *)sender {
     DDLogVerbose(@"%@ handleSaveTapGesture: %@", LOG_TAG, sender);
     
-    if (self.creatingInProgress || [self.nameTextField.text isEqualToString:@""]) {
+    if (self.creatingInProgress) {
         return;
     }
     
-    NSString *identityDescription =  [self.descriptionTextView.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
-    if ([identityDescription isEqualToString:TwinmeLocalizedString(@"side_menu_view_controller_about", nil)]) {
-        identityDescription = @"";
+    if ([self.nameTextField.text length] == 0) {
+        AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
+        alertMessageView.alertMessageViewDelegate = self;
+        [alertMessageView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:TwinmeLocalizedString(@"create_external_call_view_controller_name_required", nil)];
+        [self.navigationController.view addSubview:alertMessageView];
+        [alertMessageView showAlertView];
+        return;
+    } else if (!self.updatedCallReceiverAvatar && !self.isTransfert) {
+        [self openMenuPhoto];
+        return;
     }
     
-    TLCapabilities *capabilities = [[TLCapabilities alloc]initWithTwincodeKind:TLTwincodeKindCallReceiver admin:NO];
+    NSString *callReceiverDescription =  [self.descriptionTextView.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+    if ([callReceiverDescription isEqualToString:TwinmeLocalizedString(@"side_menu_view_controller_about", nil)]) {
+        callReceiverDescription = @"";
+    }
+
+    TLCapabilities *capabilities;
     if (self.isTransfert) {
+        capabilities = [[TLCapabilities alloc]initWithTwincodeKind:TLTwincodeKindCallReceiver admin:NO];
         [capabilities setCapTransferWithValue:YES];
         
         if (!self.updatedCallReceiverAvatar) {
@@ -973,22 +1058,31 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
             self.updatedCallReceiverAvatar = [self.updatedCallReceiverLargeAvatar resizeImage];
         }
     } else {
-        [capabilities setCapAudioWithValue:self.allowVoiceCall];
-        [capabilities setCapVideoWithValue:self.allowVideoCall];
-        [capabilities setCapGroupCallWithValue:self.allowGroupCall];
+        capabilities = [[TLCapabilities alloc]initWithTwincodeKind:self.configExternalCall.configTypeCall == ConfigExternalCallTypeCallConference ? TLTwincodeKindConference : TLTwincodeKindCallReceiver admin:NO];
+        [capabilities setCapAudioWithValue:self.configExternalCall.allowVoiceCall];
+        [capabilities setCapVideoWithValue:self.configExternalCall.allowVideoCall];
+        [capabilities setCapGroupCallWithValue:self.configExternalCall.allowGroupCall];
+        [capabilities setLinkValidityWithValue:self.configExternalCall.linkValidity];
+        [capabilities setCapNotifyJoinWithValue:self.configExternalCall.notificationCallSetting];
         
-        if (self.scheduleStartDate) {
-            TLDateTime *startDateTime = [[TLDateTime alloc]initWithDate:self.scheduleStartDate time:self.scheduleStartTime];
-            TLDateTime *endDateTime = [[TLDateTime alloc]initWithDate:self.scheduleEndDate time:self.scheduleEndTime];
+        if (self.configExternalCall.linkValidity == TLLinkValiditySingleUse && self.configExternalCall.scheduleStartDate) {
+            TLDateTime *startDateTime = [[TLDateTime alloc]initWithDate:self.configExternalCall.scheduleStartDate time:self.configExternalCall.scheduleStartTime];
+            TLDateTime *endDateTime = [[TLDateTime alloc]initWithDate:self.configExternalCall.scheduleEndDate time:self.configExternalCall.scheduleEndTime];
             TLDateTimeRange *dateTimeRange = [[TLDateTimeRange alloc]initWithStart:startDateTime end:endDateTime];
             
             TLSchedule *schedule = [[TLSchedule alloc]initWithPrivate:NO timeZone:[NSTimeZone localTimeZone] timeRanges:@[dateTimeRange]];
-            [schedule setEnabled:self.scheduleEnable];
+            [schedule setEnabled:YES];
+            [capabilities setSchedule:schedule];
+        } else if (self.configExternalCall.linkValidity == TLLinkValidityPeriodic) {
+            TLWeeklyTimeRange *weeklyTimeRange = [[TLWeeklyTimeRange alloc]initWithDays:[self.configExternalCall getSelectedDaysOfWeek] start:self.configExternalCall.scheduleStartTime end:self.configExternalCall.scheduleEndTime];
+            
+            TLSchedule *schedule = [[TLSchedule alloc]initWithPrivate:NO timeZone:[NSTimeZone localTimeZone] timeRanges:@[weeklyTimeRange]];
+            [schedule setEnabled:YES];
             [capabilities setSchedule:schedule];
         }
     }
     
-    [self.callReceiverService createCallReceiver:self.nameTextField.text description:identityDescription identityName:self.nameTextField.text identityDescription:identityDescription avatar:self.updatedCallReceiverAvatar largeAvatar:self.updatedCallReceiverLargeAvatar capabilities:capabilities space:self.currentSpace];
+    [self.callReceiverService createCallReceiver:self.nameTextField.text description:callReceiverDescription avatar:self.updatedCallReceiverAvatar largeAvatar:self.updatedCallReceiverLargeAvatar capabilities:capabilities space:self.currentSpace];
 }
 
 - (void)takePhoto {
@@ -1111,128 +1205,16 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
                             self.avatarView.image = image;
                             self.updatedCallReceiverLargeAvatar = image;
                             self.updatedCallReceiverAvatar = [self.uiTemplateExternalCall getImage];
+                            [self setUpdated];
                         }
                     }
                 }];
                 [urlSessionDataTask resume];
             }
         }
-        
-        self.allowVoiceCall = [self.uiTemplateExternalCall voiceCallAllowed];
-        self.allowVideoCall = [self.uiTemplateExternalCall videoCallAllowed];
-        self.allowGroupCall = [self.uiTemplateExternalCall groupCallAllowed];
-        self.scheduleEnable = [self.uiTemplateExternalCall hasSchedule];
-        
-        if (self.scheduleEnable && !self.scheduleStartDate) {
-            [self initSchedule];
-        }
-    }
-}
-
-- (void)initSchedule {
-    DDLogVerbose(@"%@ initSchedule", LOG_TAG);
-    
-    NSCalendar *calendar = [NSCalendar currentCalendar];
-    NSCalendarUnit calendarUnit = NSCalendarUnitYear | NSCalendarUnitMonth |  NSCalendarUnitDay | NSCalendarUnitHour | NSCalendarUnitMinute;
-    NSDate *date = [NSDate date];
-    NSDateComponents *dateComponents = [calendar components:calendarUnit fromDate:date];
-    self.scheduleStartDate = [[TLDate alloc]initWithYear:(int)dateComponents.year month:(int)dateComponents.month day:(int)dateComponents.day];
-    
-    date = [calendar dateByAddingUnit:NSCalendarUnitHour value:1 toDate:date options:NSCalendarWrapComponents];
-    dateComponents = [calendar components:calendarUnit fromDate:date];
-    self.scheduleStartTime = [[TLTime alloc]initWithHour:(int)dateComponents.hour minute:0];
-    
-    date = [calendar dateByAddingUnit:NSCalendarUnitHour value:1 toDate:date options:NSCalendarWrapComponents];
-    dateComponents = [calendar components:calendarUnit fromDate:date];
-    self.scheduleEndDate = [[TLDate alloc]initWithYear:(int)dateComponents.year month:(int)dateComponents.month day:(int)dateComponents.day];
-    self.scheduleEndTime = [[TLTime alloc]initWithHour:(int)dateComponents.hour minute:0];
-}
-
-- (void)updateSchedule {
-    DDLogVerbose(@"%@ updateSchedule", LOG_TAG);
-
-    if (self.isTransfert) {
-        self.settingsView.hidden = YES;
-        self.limitedView.hidden = YES;
-        self.settingsViewHeightConstraint.constant = 0;
-        self.limitedViewHeightConstraint.constant = 0;
-    }
-
-    [self.limitedSwitch setOn:self.scheduleEnable];
-    
-    if (self.scheduleEnable) {
-        self.startView.hidden = NO;
-        self.endView.hidden = NO;
-        self.startViewHeightConstraint.constant = Design.SETTING_CELL_HEIGHT;
-        self.endViewHeightConstraint.constant = Design.SETTING_CELL_HEIGHT;
-        
-        NSDateComponents *startDateComponents = [[NSDateComponents alloc] init];
-        startDateComponents.day = self.scheduleStartDate.day;
-        startDateComponents.month = self.scheduleStartDate.month;
-        startDateComponents.year = self.scheduleStartDate.year;
-        startDateComponents.hour = self.scheduleStartTime.hour;
-        startDateComponents.minute = self.scheduleStartTime.minute;
-        
-        NSDateComponents *endDateComponents = [[NSDateComponents alloc] init];
-        endDateComponents.day = self.scheduleEndDate.day;
-        endDateComponents.month = self.scheduleEndDate.month;
-        endDateComponents.year = self.scheduleEndDate.year;
-        endDateComponents.hour = self.scheduleEndTime.hour;
-        endDateComponents.minute = self.scheduleEndTime.minute;
-        
-        NSCalendar *calendar = [NSCalendar currentCalendar];
-        NSDate *startDate = [calendar dateFromComponents:startDateComponents];
-        NSDate *endDate = [calendar dateFromComponents:endDateComponents];
-         
-        NSDateFormatter *dateFormatter = [[NSDateFormatter alloc]init];
-        dateFormatter.locale = [NSLocale currentLocale];
-        [dateFormatter setDateFormat:@"dd MMM yyyy"];
-
-        self.startDateLabel.text = [dateFormatter stringFromDate:startDate];
-        self.endDateLabel.text = [dateFormatter stringFromDate:endDate];
-        
-        [dateFormatter setDateFormat:@"HH:mm"];
-        self.startHourLabel.text = [dateFormatter stringFromDate:startDate];
-        self.endHourLabel.text = [dateFormatter stringFromDate:endDate];
-    } else {
-        self.startView.hidden = YES;
-        self.endView.hidden = YES;
-        self.startViewHeightConstraint.constant = 0;
-        self.endViewHeightConstraint.constant = 0;
-    }
-}
-
-- (void)updateCallCapabilities {
-    DDLogVerbose(@"%@ updateCallCapabilities", LOG_TAG);
-    
-    NSMutableAttributedString *capabilitiesAttributedString = [[NSMutableAttributedString alloc] initWithString:@""];
-    
-    if (self.allowVoiceCall) {
-        [capabilitiesAttributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:TwinmeLocalizedString(@"show_contact_view_controller_audio", nil) attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_REGULAR32, NSFontAttributeName, Design.FONT_COLOR_GREY, NSForegroundColorAttributeName, nil]]];
     }
     
-    if (self.allowVideoCall) {
-        if (capabilitiesAttributedString.length > 0) {
-            [capabilitiesAttributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:TwinmeLocalizedString(@", ", nil) attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_REGULAR32, NSFontAttributeName, Design.FONT_COLOR_GREY, NSForegroundColorAttributeName, nil]]];
-        }
-        [capabilitiesAttributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:TwinmeLocalizedString(@"show_contact_view_controller_video", nil) attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_REGULAR32, NSFontAttributeName, Design.FONT_COLOR_GREY, NSForegroundColorAttributeName, nil]]];
-    }
-    
-    if (self.allowGroupCall) {
-        if (capabilitiesAttributedString.length > 0) {
-            [capabilitiesAttributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:TwinmeLocalizedString(@", ", nil) attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_REGULAR32, NSFontAttributeName, Design.FONT_COLOR_GREY, NSForegroundColorAttributeName, nil]]];
-        }
-        [capabilitiesAttributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:TwinmeLocalizedString(@"show_group_view_controller_title", nil) attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_REGULAR32, NSFontAttributeName, Design.FONT_COLOR_GREY, NSForegroundColorAttributeName, nil]]];
-    }
-    
-    NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:TwinmeLocalizedString(@"show_call_view_controller_setting_calls", nil) attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_REGULAR34, NSFontAttributeName, Design.FONT_COLOR_DEFAULT, NSForegroundColorAttributeName, nil]];
-    
-    if (capabilitiesAttributedString.length > 0) {
-        [attributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:@"\n"]];
-        [attributedString appendAttributedString:capabilitiesAttributedString];
-    }
-    
-    self.settingsLabel.attributedText = attributedString;
+    [self setUpdated];
 }
 
 - (void)openMenuCallCapabilities {
@@ -1245,11 +1227,23 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     [self.tabBarController.view addSubview:menuCallCapabilitiesView];
     
     TLCapabilities *capabilities = [[TLCapabilities alloc]init];
-    [capabilities setCapAudioWithValue:self.allowVoiceCall];
-    [capabilities setCapVideoWithValue:self.allowVideoCall];
-    [capabilities setCapGroupCallWithValue:self.allowGroupCall];
+    [capabilities setCapAudioWithValue:self.configExternalCall.allowVoiceCall];
+    [capabilities setCapVideoWithValue:self.configExternalCall.allowVideoCall];
+    [capabilities setCapGroupCallWithValue:self.configExternalCall.allowGroupCall];
     
     [menuCallCapabilitiesView openMenu:capabilities];
+}
+
+- (void)openMenuSelectValue:(MenuSelectValueType)menuSelectValueType defaultValue:(int)defaultValue {
+    DDLogVerbose(@"%@ openMenuSelectValue", LOG_TAG);
+    
+    [self dismissKeyboard];
+    
+    MenuSelectValueView *menuSelectValueView = [[MenuSelectValueView alloc]init];
+    menuSelectValueView.menuSelectValueDelegate = self;
+    [self.tabBarController.view addSubview:menuSelectValueView];
+    [menuSelectValueView setMenuSelectValueTypeWithType:menuSelectValueType defaultValue:defaultValue];
+    [menuSelectValueView openMenu];
 }
 
 - (void)openMenuPhoto {
@@ -1272,8 +1266,32 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     menuDateTimeView.menuDateTimeViewDelegate = self;
     [self.tabBarController.view addSubview:menuDateTimeView];
         
-    [menuDateTimeView setMenuDateTimeTypeWithType:menuDateTimeType];
+    [menuDateTimeView setMenuDateTimeTypeWithType:menuDateTimeType isPeriodic:self.configExternalCall.linkValidity == TLLinkValidityPeriodic];
     [menuDateTimeView openMenu:minimumDate date:date];
+}
+
+- (void)updateConfig {
+    DDLogVerbose(@"%@ updateConfig", LOG_TAG);
+    
+    if (self.isTransfert) {
+        self.settingsTableView.hidden = YES;
+        self.settingsTableViewHeightConstraint.constant = 0;
+    }
+    
+    self.settingsTableViewHeightConstraint.constant = (self.configExternalCall.configItems.count + 1) * Design.SETTING_CELL_HEIGHT;
+    [self.settingsTableView reloadData];
+    
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.3f * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+        int actionViewHeight = [self getActionViewHeight];
+        if (actionViewHeight != -1) {
+            int heightDiff = Design.DISPLAY_HEIGHT - actionViewHeight;
+            if (heightDiff < 0) {
+                [self.actionView setSlideContactTopMargin:heightDiff];
+            }
+            self.actionViewHeightConstraint.constant = actionViewHeight;
+        }
+        self.containerViewHeightConstraint.constant = [self getScrollViewContentHeight];
+    });
 }
 
 - (void)updateFont {
@@ -1285,14 +1303,6 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     self.counterNameLabel.font = Design.FONT_REGULAR26;
     self.counterDescriptionLabel.font = Design.FONT_REGULAR26;
     self.messageLabel.font = Design.FONT_REGULAR32;
-    self.settingsLabel.font = Design.FONT_REGULAR34;
-    self.limitedLabel.font = Design.FONT_REGULAR34;
-    self.startLabel.font = Design.FONT_REGULAR34;
-    self.startDateLabel.font = Design.FONT_REGULAR32;
-    self.startHourLabel.font = Design.FONT_REGULAR32;
-    self.endLabel.font = Design.FONT_REGULAR34;
-    self.endDateLabel.font = Design.FONT_REGULAR32;
-    self.endHourLabel.font = Design.FONT_REGULAR32;
 }
 
 - (void)updateColor {
@@ -1328,20 +1338,6 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
         self.nameTextField.keyboardAppearance = UIKeyboardAppearanceLight;
         self.descriptionTextView.keyboardAppearance = UIKeyboardAppearanceLight;
     }
-    
-    self.limitedLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    self.startLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    self.startDateView.layer.backgroundColor = Design.BACKGROUND_COLOR_GREY.CGColor;
-    self.startDateLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    self.startHourView.layer.backgroundColor = Design.BACKGROUND_COLOR_GREY.CGColor;
-    self.startHourLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    self.endLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    self.endDateView.layer.backgroundColor = Design.BACKGROUND_COLOR_GREY.CGColor;
-    self.endDateLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    self.endHourView.layer.backgroundColor = Design.BACKGROUND_COLOR_GREY.CGColor;
-    self.endHourLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    
-    [self updateCallCapabilities];
 }
 
 @end

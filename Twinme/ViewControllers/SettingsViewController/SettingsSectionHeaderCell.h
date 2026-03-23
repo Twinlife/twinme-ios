@@ -12,7 +12,7 @@
 
 @protocol SettingsSectionHeaderDelegate <NSObject>
 
-- (void)didTapNewFeature;
+- (void)didTapSectionBadge;
 
 @end
 
@@ -24,8 +24,10 @@
 
 @property (nonatomic, weak) id<SettingsSectionHeaderDelegate>delegate;
 
-- (void)bindWithTitle:(NSString *)title backgroundColor:(UIColor *)backgroundColor hideSeparator:(BOOL)hideSeparator uppercaseString:(BOOL)uppercaseString;
+- (void)bindWithTitle:(nonnull NSString *)title backgroundColor:(nonnull UIColor *)backgroundColor hideSeparator:(BOOL)hideSeparator uppercaseString:(BOOL)uppercaseString;
 
-- (void)bindWithTitle:(NSString *)title backgroundColor:(UIColor *)backgroundColor hideSeparator:(BOOL)hideSeparator uppercaseString:(BOOL)uppercaseString showNewFeature:(BOOL)showNewFeature;
+- (void)bindWithTitle:(nonnull NSString *)title backgroundColor:(nonnull UIColor *)backgroundColor hideSeparator:(BOOL)hideSeparator uppercaseString:(BOOL)uppercaseString badgeTitle:(nullable NSString *)badgeTitle;
+
+- (void)resetMargins;
 
 @end

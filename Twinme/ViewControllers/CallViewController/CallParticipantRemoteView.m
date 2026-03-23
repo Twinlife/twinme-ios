@@ -14,15 +14,15 @@
 #import <WebRTC/RTCMTLVideoView.h>
 
 #import <Twinme/TLCapabilities.h>
+#import <Twinme/TLTwinmeAttributes.h>
 
 #import <Utils/NSString+Utils.h>
 
 #import "CallParticipantRemoteView.h"
-#import <TwinmeCommon/CallViewController.h>
-
-#import <TwinmeCommon/CallParticipant.h>
 
 #import <TwinmeCommon/ApplicationDelegate.h>
+#import <TwinmeCommon/CallViewController.h>
+#import <TwinmeCommon/CallParticipant.h>
 #import <TwinmeCommon/TwinmeApplication.h>
 
 #if 0
@@ -294,7 +294,7 @@ static const int ddLogLevel = DDLogLevelWarning;
             self.remoteVideoView.hidden = YES;
         }
         
-        if (self.callParticipant.avatar && (!self.isCallReceiver || !CALL_IS_ACTIVE(self.callStatus))) {
+        if (self.callParticipant.avatar && ![self.callParticipant.avatar isEqual:[TLTwinmeAttributes DEFAULT_AVATAR]] && (!self.isCallReceiver || !CALL_IS_ACTIVE(self.callStatus))) {
             self.noAvatarView.hidden = YES;
             self.avatarView.hidden = NO;
             self.avatarView.image = self.callParticipant.avatar;

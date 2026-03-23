@@ -145,7 +145,7 @@ static NSString *SETTINGS_INFORMATION_CELL_IDENTIFIER = @"SettingsInformationCel
             title = TwinmeLocalizedString(@"privacy_view_controller_display_recent_call", nil);
         }
         
-        [cell bindWithTitle:title icon:nil stateSwitch:NO tagSwitch:0 hiddenSwitch:NO disableSwitch:YES backgroundColor:Design.WHITE_COLOR hiddenSeparator:NO];
+        [cell bindWithTitle:title subTitle:nil icon:nil stateSwitch:NO tagSwitch:0 hiddenSwitch:NO disableSwitch:YES backgroundColor:Design.WHITE_COLOR hiddenSeparator:NO];
                 
         return cell;
     }

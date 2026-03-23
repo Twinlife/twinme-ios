@@ -360,4 +360,15 @@
     return string;
 }
 
++ (TLDescriptorId *)defaultDescriptorId {
+    
+    static TLDescriptorId *descriptor = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        descriptor = [[TLDescriptorId alloc] initWithTwincodeOutboundId:[[NSUUID alloc] initWithUUIDString:@"00000000-0000-0000-0000-000000000000"] sequenceId:ITEM_DEFAULT_SEQUENCE_ID];
+    });
+
+    return descriptor;
+}
+
 @end

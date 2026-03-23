@@ -20,6 +20,6 @@
 @property (weak, nonatomic) ConversationViewController *conversationViewController;
 @property (weak, nonatomic) Item *item;
 
-- (void)initWithContact:(id<TLOriginator>)contact andItem:(Item *)item;
+- (void)initWithContact:(nonnull id<TLOriginator>)contact andItem:(nonnull Item *)item groupMembers:(nullable NSMutableDictionary *)groupMembers;
 
 @end

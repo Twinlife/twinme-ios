@@ -11,7 +11,9 @@
 typedef enum {
     MenuSelectValueTypeQualityMedia,
     MenuSelectValueTypeDisplayCallsMode,
-    MenuSelectValueTypeProfileUpdateMode
+    MenuSelectValueTypeProfileUpdateMode,
+    MenuSelectValueTypeExternalCallExpiration,
+    MenuSelectValueTypeExternalCallType
 } MenuSelectValueType;
 
 //

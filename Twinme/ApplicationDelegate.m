@@ -25,6 +25,7 @@
 #import <Twinlife/TLJobService.h>
 #import <Twinlife/TLAccountService.h>
 #import <Twinlife/TLApplication.h>
+#import <Twinlife/TLTwinlife.h>
 #import <Twinlife/TLAssertion.h>
 
 #import <Twinme/TLTwinmeContext.h>
@@ -38,6 +39,7 @@
 #import <TwinmeCommon/MainViewController.h>
 #import <TwinmeCommon/TwinmeNavigationController.h>
 #import "ShareViewController.h"
+#import "RestoreViewController.h"
 #import <TwinmeCommon/UIViewController+Utils.h>
 #import "Configuration.h"
 #import <TwinmeCommon/TwinmeApplication.h>
@@ -238,17 +240,11 @@ static const int ddLogLevel = DDLogLevelWarning;
         if (startAudioCall || startVideoCall) {
             INStartCallIntent *intent = (INStartCallIntent *)userActivity.interaction.intent;
             INPerson *contact = intent.contacts.firstObject;
+            self.mainViewController.inPersonToCall = contact;
+            self.mainViewController.startVideoCall = startVideoCall;
             
             if ([self.mainViewController isInitialized]) {
-                id<TLOriginator> subject = [self.twinmeContext findSubjectWithHandle:contact.personHandle.value];
-                if (subject) {
-                    CallViewController *callViewController = (CallViewController *)[[UIStoryboard storyboardWithName:@"Call" bundle:nil] instantiateViewControllerWithIdentifier:@"CallViewController"];
-                    [callViewController startCallWithOriginator:subject videoBell:NO isVideoCall:startVideoCall isCertifyCall:NO];
-                    [self.mainViewController.selectedViewController pushViewController:callViewController animated:YES];
-                }
-            } else {
-                self.mainViewController.inPersonToCall = contact;
-                self.mainViewController.startVideoCall = startVideoCall;
+                [self.mainViewController startCallFromRecents];
             }
         }
     }
@@ -257,7 +253,7 @@ static const int ddLogLevel = DDLogLevelWarning;
 
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey, id> *)options {
     DDLogVerbose(@"%@ application: %@ openURL: %@ options: %@", LOG_TAG, application, url, options);
-    
+        
     if (!url) {
         return NO;
     }
@@ -285,13 +281,20 @@ static const int ddLogLevel = DDLogLevelWarning;
             [topViewController.presentedViewController dismissViewControllerAnimated:NO completion:^{
             }];
         }
-        
+                
         if ([self.mainViewController isInitialized]) {
-            ShareViewController *shareViewController = [self.mainViewController.storyboard instantiateViewControllerWithIdentifier:@"ShareViewController"];
-            shareViewController.fileURL = url;
-            
-            TwinmeNavigationController *navigationController = [[TwinmeNavigationController alloc]initWithRootViewController:shareViewController];
-            [self.mainViewController presentViewController:navigationController animated:YES completion:nil];
+            if ([url.pathExtension isEqual:[TLTwinlife BACKUP_EXTENSION]]) {
+                RestoreViewController *restoreViewController = [[UIStoryboard storyboardWithName:@"Backup" bundle:nil] instantiateViewControllerWithIdentifier:@"RestoreViewController"];
+                [restoreViewController initWithFilePath:url verifyMode:NO];
+                TwinmeNavigationController *navigationController = [[TwinmeNavigationController alloc] initWithRootViewController:restoreViewController];
+                [self.mainViewController presentViewController:navigationController animated:YES completion:nil];
+            } else {
+                ShareViewController *shareViewController = [self.mainViewController.storyboard instantiateViewControllerWithIdentifier:@"ShareViewController"];
+                shareViewController.fileURL = url;
+                
+                TwinmeNavigationController *navigationController = [[TwinmeNavigationController alloc]initWithRootViewController:shareViewController];
+                [self.mainViewController presentViewController:navigationController animated:YES completion:nil];
+            }
         } else {
             self.mainViewController.shareContentURL = url;
         }

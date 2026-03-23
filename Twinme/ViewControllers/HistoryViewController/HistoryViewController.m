@@ -43,6 +43,7 @@
 #import "UIViewController+ProgressIndicator.h"
 #import "UIView+Toast.h"
 #import "UIPremiumFeature.h"
+#import "AlertMessageView.h"
 
 #import <TwinmeCommon/ApplicationDelegate.h>
 #import <TwinmeCommon/CallsService.h>
@@ -62,17 +63,21 @@ static CGFloat DESIGN_NO_CALL_MARGIN_TOP = 160.0;
 static NSString *SECTION_CALL_CELL_IDENTIFIER = @"SectionCallCellIdentifier";
 static NSString *ADD_EXTERNAL_CALL_CELL_IDENTIFIER = @"AddExternalCallCellIdentifier";
 static NSString *CALL_CELL_IDENTIFIER = @"CallCellIdentifier";
+static NSString *CONTACT_CELL_IDENTIFIER = @"ContactCellIdentifier";
 
-static const int HISTORY_VIEW_SECTION_COUNT = 2;
+static const int HISTORY_VIEW_SECTION_COUNT = 3;
 
-static const int EXTERNAL_CALL_SECTION = 0;
-static const int LAST_CALLS_SECTION = 1;
+static const int CREATE_EXTERNAL_CALL_SECTION = 0;
+static const int EXTERNAL_CALL_SECTION = 1;
+static const int LAST_CALLS_SECTION = 2;
+
+static const int NB_CALL_RECEIVER = 3;
 
 //
 // Interface: HistoryViewController
 //
 
-@interface HistoryViewController () <UITableViewDataSource, UITableViewDelegate, CallsServiceDelegate, BottomSheetViewDelegate, OnboardingExternalCallDelegate>
+@interface HistoryViewController () <UITableViewDataSource, UITableViewDelegate, CallsServiceDelegate, BottomSheetViewDelegate, OnboardingExternalCallDelegate, SectionCallDelegate, AlertMessageViewDelegate>
 
 @property (weak, nonatomic) IBOutlet UITableView *callsTableView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *noCallImageViewHeightConstraint;
@@ -92,12 +97,16 @@ static const int LAST_CALLS_SECTION = 1;
 @property (nonatomic) NSMutableArray<TLCallDescriptor *> *allCalls;
 @property (nonatomic) NSArray<TLCallDescriptor *> *filteredCalls;
 @property (nonatomic) NSMutableArray<UICall *> *uiCalls;
+@property (nonatomic) NSMutableArray<UICallReceiver *> *uiCallReceivers;
 @property (nonatomic) CallsService *callsService;
 @property (nonatomic) id<TLOriginator> callOriginator;
 @property (nonatomic) TLCallDescriptor *callDescriptor;
+@property (nonatomic) TLCallReceiver *callReceiverToDelete;
 
 @property (nonatomic) BOOL onlyMissedCalls;
 @property (nonatomic) BOOL resetAllCalls;
+@property (nonatomic) BOOL displayAllCallReceiver;
+@property (nonatomic) int nbCallReceivers;
 @property (nonatomic) BOOL refreshTableScheduled;
 
 - (void)deleteOriginator:(nonnull id<TLOriginator>)originator;
@@ -121,7 +130,10 @@ static const int LAST_CALLS_SECTION = 1;
     if (self) {
         _onlyMissedCalls = NO;
         _resetAllCalls = NO;
+        _displayAllCallReceiver = NO;
+        _nbCallReceivers = NO;
         _uiCalls = [[NSMutableArray alloc] init];
+        _uiCallReceivers = [[NSMutableArray alloc] init];
         _allCalls = [[NSMutableArray alloc] init];
         _filteredCalls = [[NSArray alloc] init];
         _uiContacts = [[NSMutableDictionary alloc]init];
@@ -177,6 +189,7 @@ static const int LAST_CALLS_SECTION = 1;
     [self.uiContacts removeAllObjects];
     [self.allCalls removeAllObjects];
     [self.uiCalls removeAllObjects];
+    [self.uiCallReceivers removeAllObjects];
     self.filteredCalls = [[NSArray alloc]init];
     [self reloadData];
     [self setLeftBarButtonItem:self.callsService profile:space.profile];
@@ -354,13 +367,24 @@ static const int LAST_CALLS_SECTION = 1;
 - (void)onGetCallReceivers:(NSArray<TLCallReceiver *> *)callReceivers {
     DDLogVerbose(@"%@ onGetCallReceivers: %@", LOG_TAG, callReceivers);
     
+    NSCalendar *calendar = [NSCalendar currentCalendar];
+    NSCalendarUnit calendarUnit = NSCalendarUnitYear | NSCalendarUnitMonth |  NSCalendarUnitDay | NSCalendarUnitHour | NSCalendarUnitMinute;
+    NSDateComponents *dateComponents = [calendar components:calendarUnit fromDate:[NSDate date]];
+    TLDate *date = [[TLDate alloc]initWithYear:(int)dateComponents.year month:(int)dateComponents.month day:(int)dateComponents.day];
+    TLTime *time = [[TLTime alloc] initWithHour:(int)dateComponents.hour minute:(int)dateComponents.minute];
+    TLDateTime *dateTime = [[TLDateTime alloc] initWithDate:date time:time];
+    
     for (TLCallReceiver *callReceiver in callReceivers) {
-        UIContact *uiContact = [[UIContact alloc] initWithContact:callReceiver];
-        [self.uiContacts setObject:uiContact forKey:callReceiver.uuid];
-        [self.uiContacts setObject:uiContact forKey:callReceiver.twincodeOutboundId];
-        [self.callsService getImageWithCallReceiver:callReceiver withBlock:^(UIImage *image) {
-            [uiContact updateAvatar:image];
-        }];
+        TLDateTime *expireDateTime = [self getExpireDateTime:callReceiver];
+        
+        if (expireDateTime && [expireDateTime compare:dateTime] == NSOrderedAscending) {
+            [self.callsService deleteCallReceiverWithCallReceiver:callReceiver];
+        } else {
+            UIContact *uiContact = [[UIContact alloc] initWithContact:callReceiver];
+            [self.uiContacts setObject:uiContact forKey:callReceiver.uuid];
+            [self.uiContacts setObject:uiContact forKey:callReceiver.twincodeOutboundId];
+            [self updateUICallReceiver:callReceiver avatar:nil];
+        }
     }
 
     [self updateCalls];
@@ -372,23 +396,23 @@ static const int LAST_CALLS_SECTION = 1;
     UIContact *uiContact = [[UIContact alloc] initWithContact:callReceiver];
     [self.uiContacts setObject:uiContact forKey:callReceiver.uuid];
     [self.uiContacts setObject:uiContact forKey:callReceiver.twincodeOutboundId];
-    [self.callsService getImageWithCallReceiver:callReceiver withBlock:^(UIImage *image) {
-        [uiContact updateAvatar:image];
-    }];
+    [self updateUICallReceiver:callReceiver avatar:nil];
+        
     [self updateCalls];
 }
 
 - (void)onUpdateCallReceiver:(nonnull TLCallReceiver *)callReceiver {
     DDLogVerbose(@"%@ onUpdateCallReceiver: %@", LOG_TAG, callReceiver);
     
-    UIContact *uiContact = self.uiContacts[callReceiver.uuid];
-    if (uiContact) {
-        [uiContact setContact:callReceiver];
-        [self.uiContacts setObject:uiContact forKey:callReceiver.uuid];
-        [self.uiContacts setObject:uiContact forKey:callReceiver.twincodeOutboundId];
-        [self.callsService getImageWithCallReceiver:callReceiver withBlock:^(UIImage *image) {
-            [uiContact updateAvatar:image];
-        }];
+    for (UICallReceiver *uiCallReceiver in self.uiCallReceivers) {
+        if ([uiCallReceiver.callReceiver.uuid isEqual:callReceiver.uuid]) {
+            UIContact *uiContact = [[UIContact alloc] initWithContact:callReceiver];
+            [self.uiContacts setObject:uiContact forKey:callReceiver.uuid];
+            [self.uiContacts setObject:uiContact forKey:callReceiver.twincodeOutboundId];
+            
+            [self updateUICallReceiver:callReceiver avatar:nil];
+            break;
+        }
     }
     
     [self updateCalls];
@@ -397,9 +421,17 @@ static const int LAST_CALLS_SECTION = 1;
 - (void)onDeleteCallReceiver:(nonnull NSUUID *)callReceiverId {
     DDLogVerbose(@"%@ onDeleteCallReceiver: %@", LOG_TAG, callReceiverId);
         
-    UIContact *uiContact = self.uiContacts[callReceiverId];
-    if (uiContact) {
-        [self deleteOriginator:uiContact.contact];
+    if ([callReceiverId isEqual:self.callReceiverToDelete.uuid]) {
+        self.callReceiverToDelete = nil;
+    }
+        
+    for (UICallReceiver *uiCallReceiver in self.uiCallReceivers) {
+        if ([callReceiverId isEqual:uiCallReceiver.callReceiver.uuid]) {
+            [self.uiContacts removeObjectForKey:uiCallReceiver.callReceiver.uuid];
+            [self.uiContacts removeObjectForKey:uiCallReceiver.callReceiver.twincodeOutboundId];
+            [self.uiCallReceivers removeObject:uiCallReceiver];
+            break;
+        }
     }
     
     [self updateCalls];
@@ -435,8 +467,10 @@ static const int LAST_CALLS_SECTION = 1;
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     DDLogVerbose(@"%@ tableView: %@ numberOfRowsInSection: %ld", LOG_TAG, tableView, (long)section);
     
-    if (section == EXTERNAL_CALL_SECTION) {
+    if (section == CREATE_EXTERNAL_CALL_SECTION) {
         return 1;
+    } else if (section == EXTERNAL_CALL_SECTION) {
+        return self.nbCallReceivers;
     }
     
     return self.uiCalls.count;
@@ -450,7 +484,11 @@ static const int LAST_CALLS_SECTION = 1;
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
     DDLogVerbose(@"%@ tableView: %@ heightForHeaderInSection: %ld", LOG_TAG, tableView, (long)section);
             
-    if (section == LAST_CALLS_SECTION && self.filteredCalls.count > 0) {
+    if (section == CREATE_EXTERNAL_CALL_SECTION) {
+        return CGFLOAT_MIN;
+    } else if (section == EXTERNAL_CALL_SECTION && self.nbCallReceivers > 0) {
+        return Design.CELL_HEIGHT;
+    } else if (section == LAST_CALLS_SECTION && self.filteredCalls.count > 0) {
         return Design.SETTING_SECTION_HEIGHT;
     }
     
@@ -470,9 +508,22 @@ static const int LAST_CALLS_SECTION = 1;
     if (!sectionCallCell) {
         sectionCallCell = [[SectionCallCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:SECTION_CALL_CELL_IDENTIFIER];
     }
+    
+    sectionCallCell.sectionCallDelegate = self;
         
     NSString *sectionName = @"";
+    BOOL showRightAction = NO;
     switch (section) {
+        case EXTERNAL_CALL_SECTION:
+            sectionName = TwinmeLocalizedString(@"premium_services_view_controller_click_to_call_title", nil);
+            if (self.displayAllCallReceiver || self.uiCallReceivers.count <= NB_CALL_RECEIVER) {
+                showRightAction = NO;
+            } else {
+                showRightAction = YES;
+            }
+            
+            break;
+                
         case LAST_CALLS_SECTION:
             sectionName = TwinmeLocalizedString(@"show_contact_view_controller_history_title", nil);
             break;
@@ -482,7 +533,7 @@ static const int LAST_CALLS_SECTION = 1;
             break;
     }
     
-    [sectionCallCell bindWithTitle:sectionName hideSeparator:NO uppercaseString:YES showRightAction:NO];
+    [sectionCallCell bindWithTitle:sectionName hideSeparator:NO uppercaseString:YES showRightAction:showRightAction];
     
     return sectionCallCell;
 }
@@ -490,7 +541,7 @@ static const int LAST_CALLS_SECTION = 1;
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     DDLogVerbose(@"%@ tableView: %@ cellForRowAtIndexPath: %@", LOG_TAG, tableView, indexPath);
     
-    if (indexPath.section == EXTERNAL_CALL_SECTION) {
+    if (indexPath.section == CREATE_EXTERNAL_CALL_SECTION) {
         AddExternalCallCell *addExternalCallCell = (AddExternalCallCell *)[tableView dequeueReusableCellWithIdentifier:ADD_EXTERNAL_CALL_CELL_IDENTIFIER];
         if (!addExternalCallCell) {
             addExternalCallCell = [[AddExternalCallCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:ADD_EXTERNAL_CALL_CELL_IDENTIFIER];
@@ -499,6 +550,25 @@ static const int LAST_CALLS_SECTION = 1;
         [addExternalCallCell bindWithTitle:TwinmeLocalizedString(@"history_view_controller_create_link", nil) subTitle:TwinmeLocalizedString(@"show_call_view_controller_code_information", nil)];
         
         return addExternalCallCell;
+    } else if (indexPath.section == EXTERNAL_CALL_SECTION) {
+        ContactCell *contactCell = (ContactCell *)[tableView dequeueReusableCellWithIdentifier:CONTACT_CELL_IDENTIFIER];
+        if (!contactCell) {
+            contactCell = [[ContactCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:CONTACT_CELL_IDENTIFIER];
+        }
+        
+        if (indexPath.row < self.uiCallReceivers.count) {
+            UICallReceiver *uiCallReceiver = self.uiCallReceivers[indexPath.row];
+            BOOL hideSchedule = YES;
+            
+            if (uiCallReceiver.callReceiver.capabilities && uiCallReceiver.callReceiver.capabilities.schedule) {
+                hideSchedule = !uiCallReceiver.callReceiver.capabilities.schedule.enabled;
+            }
+            BOOL hideSeparator = indexPath.row + 1 == self.nbCallReceivers ? YES : NO;
+
+            [contactCell bindWithName:uiCallReceiver.name avatar:uiCallReceiver.avatar hideSeparator:hideSeparator hideSchedule:hideSchedule conferenceCall:[uiCallReceiver.callReceiver isConference]];
+        }
+        
+        return contactCell;
     } else {
         if (indexPath.row == [self.uiCalls count] - 1 && ![self.callsService isGetDescriptorsDone]) {
             dispatch_async(dispatch_get_main_queue(), ^{
@@ -554,22 +624,37 @@ static const int LAST_CALLS_SECTION = 1;
             UICall *uiCall = [self.uiCalls objectAtIndex:indexPath.row];
             self.callDescriptor = [uiCall getLastCallDescriptor];
             
-            if([(NSObject *)uiCall.uiContact.contact class] != [TLCallReceiver class]){
-                
-                self.callOriginator = uiCall.uiContact.contact;
-                
-                if (self.callOriginator.isGroup) {
-                    PremiumFeatureConfirmView *premiumFeatureConfirmView = [[PremiumFeatureConfirmView alloc] init];
-                    premiumFeatureConfirmView.bottomSheetViewDelegate = self;
-                    [premiumFeatureConfirmView initWithPremiumFeature:[[UIPremiumFeature alloc]initWithFeatureType:FeatureTypeGroupCall spaceSettings:[self currentSpaceSettings]] parentViewController:self.tabBarController];
-                    [self.tabBarController.view addSubview:premiumFeatureConfirmView];
-                    [premiumFeatureConfirmView showConfirmView];
-                } else {
-                    [self callAgain];
+            BOOL isCallReceiver = [uiCall.uiContact.contact isKindOfClass:[TLCallReceiver class]];
+            if (isCallReceiver) {
+                TLCallReceiver *callReceiver = (TLCallReceiver *)uiCall.uiContact.contact;
+                if (![callReceiver isConference]) {
+                    return;
                 }
+            }
+            
+            self.callOriginator = uiCall.uiContact.contact;
+            
+            if ([self hasSchedule]) {
+                [self showSchedule];
+                return;
+            }
+            
+            if (!isCallReceiver && self.callOriginator.isGroup) {
+                PremiumFeatureConfirmView *premiumFeatureConfirmView = [[PremiumFeatureConfirmView alloc] init];
+                premiumFeatureConfirmView.bottomSheetViewDelegate = self;
+                [premiumFeatureConfirmView initWithPremiumFeature:[[UIPremiumFeature alloc]initWithFeatureType:FeatureTypeGroupCall spaceSettings:[self currentSpaceSettings]] parentViewController:self.tabBarController];
+                [self.tabBarController.view addSubview:premiumFeatureConfirmView];
+                [premiumFeatureConfirmView showConfirmView];
+            } else {
+                [self callAgain];
             }
         }
     } else if (indexPath.section == EXTERNAL_CALL_SECTION) {
+        UICallReceiver *uiCallReceiver = [self.uiCallReceivers objectAtIndex:indexPath.row];
+        ShowExternalCallViewController *showExternalCallViewController = [[UIStoryboard storyboardWithName:@"ExternalCall" bundle:nil] instantiateViewControllerWithIdentifier:@"ShowExternalCallViewController"];
+        [showExternalCallViewController initWithCallReceiver:uiCallReceiver.callReceiver];
+        [self.navigationController pushViewController:showExternalCallViewController animated:YES];
+    } else if (indexPath.section == CREATE_EXTERNAL_CALL_SECTION) {
         ApplicationDelegate *delegate = (ApplicationDelegate *)[[UIApplication sharedApplication] delegate];
         MainViewController *mainViewController = delegate.mainViewController;
         if ([self.twinmeApplication startOnboarding:OnboardingTypeExternalCall]) {
@@ -584,6 +669,16 @@ static const int LAST_CALLS_SECTION = 1;
             [premiumFeatureConfirmView showConfirmView];
         }
     }
+}
+
+#pragma mark - SectionCallDelegate
+
+ - (void)didTapRight {
+    DDLogVerbose(@"%@ didTapRight", LOG_TAG);
+    
+    self.displayAllCallReceiver = YES;
+    
+    [self reloadData];
 }
 
 #pragma mark - BottomSheetViewDelegate
@@ -638,6 +733,20 @@ static const int LAST_CALLS_SECTION = 1;
     [abstractBottomSheetView removeFromSuperview];
 }
 
+#pragma mark - AlertMessageViewDelegate
+
+- (void)didCloseAlertMessage:(nonnull AlertMessageView *)alertMessageView {
+    DDLogVerbose(@"%@ didCloseAlertMessage: %@", LOG_TAG, alertMessageView);
+    
+    [alertMessageView closeAlertView];
+}
+
+- (void)didFinishCloseAlertMessageAnimation:(nonnull AlertMessageView *)alertMessageView {
+    DDLogVerbose(@"%@ didFinishCloseAlertMessageAnimation: %@", LOG_TAG, alertMessageView);
+    
+    [alertMessageView removeFromSuperview];
+}
+
 #pragma mark - OnboardingExternalCallDelegate
 
 - (void)didTouchCreateExernalCall {
@@ -686,6 +795,7 @@ static const int LAST_CALLS_SECTION = 1;
     [self.callsTableView registerNib:[UINib nibWithNibName:@"SectionCallCell" bundle:nil] forCellReuseIdentifier:SECTION_CALL_CELL_IDENTIFIER];
     [self.callsTableView registerNib:[UINib nibWithNibName:@"AddExternalCallCell" bundle:nil] forCellReuseIdentifier:ADD_EXTERNAL_CALL_CELL_IDENTIFIER];
     [self.callsTableView registerNib:[UINib nibWithNibName:@"CallCell" bundle:nil] forCellReuseIdentifier:CALL_CELL_IDENTIFIER];
+    [self.callsTableView registerNib:[UINib nibWithNibName:@"ContactCell" bundle:nil] forCellReuseIdentifier:CONTACT_CELL_IDENTIFIER];
     self.callsTableView.tableFooterView = [[UIView alloc] init];
     
     self.noCallImageViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
@@ -738,6 +848,34 @@ static const int LAST_CALLS_SECTION = 1;
             TLCallDescriptor *callDescriptor = uiCall.callDescriptors[i];
             [self.callsService deleteCallDescriptor:callDescriptor];
         }
+    }
+}
+
+- (void)handleDeleteCallReceiver:(UICallReceiver *)uiCallReceiver {
+    DDLogVerbose(@"%@ handleDeleteCallReceiver: %@", LOG_TAG, uiCallReceiver);
+    
+    if (uiCallReceiver) {
+        [self.callsTableView setEditing:NO];
+        self.callReceiverToDelete = uiCallReceiver.callReceiver;
+        
+        NSString *message = [NSString stringWithFormat:@"%@\n%@", TwinmeLocalizedString(@"edit_external_call_view_controller_message", nil), TwinmeLocalizedString(@"edit_external_call_view_controller_confirm_message", nil)];
+        
+        DeleteConfirmView *deleteConfirmView = [[DeleteConfirmView alloc] init];
+        deleteConfirmView.bottomSheetViewDelegate = self;
+        deleteConfirmView.deleteConfirmType = DeleteConfirmTypeOriginator;
+        [deleteConfirmView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:message avatar:uiCallReceiver.avatar icon:[UIImage imageNamed:@"ActionBarDelete"]];
+        [self.tabBarController.view addSubview:deleteConfirmView];
+        [deleteConfirmView showConfirmView];
+    }
+}
+
+ - (void)handleShareCallReceiver:(UICallReceiver *)uiCallReceiver {
+    DDLogVerbose(@"%@ handleShareCallReceiver: %@", LOG_TAG, uiCallReceiver);
+    
+    if (uiCallReceiver) {
+        InvitationExternalCallViewController *invitationExternalCallViewController = [[UIStoryboard storyboardWithName:@"ExternalCall" bundle:nil] instantiateViewControllerWithIdentifier:@"InvitationExternalCallViewController"];
+        [invitationExternalCallViewController initWithCallReceiver:uiCallReceiver.callReceiver];
+        [self.navigationController pushViewController:invitationExternalCallViewController animated:YES];
     }
 }
 
@@ -825,6 +963,54 @@ static const int LAST_CALLS_SECTION = 1;
     }
     
     return NO;
+}
+
+- (void)updateUICallReceiver:(TLCallReceiver *)callReceiver avatar:(UIImage *)avatar {
+    DDLogVerbose(@"%@ updateUICallReceiver: %@ avatar: %@", LOG_TAG, callReceiver, avatar);
+    
+    UICallReceiver *uiCallReceiver = nil;
+    for (UICallReceiver *lUICallRecevier in self.uiCallReceivers) {
+        if ([lUICallRecevier.callReceiver.uuid isEqual:callReceiver.uuid]) {
+            uiCallReceiver = lUICallRecevier;
+            break;
+        }
+    }
+    
+    if (uiCallReceiver)  {
+        [uiCallReceiver updateCallReceiver:callReceiver];
+    } else {
+        uiCallReceiver = [[UICallReceiver alloc] initWithCallReceiver:callReceiver];
+        
+        BOOL added = NO;
+        NSInteger count = self.uiCallReceivers.count;
+        for (NSInteger i = 0; i < count; i++) {
+            UICallReceiver *lUICallRecevier = self.uiCallReceivers[i];
+            if (lUICallRecevier.callReceiver.creationDate < callReceiver.creationDate) {
+                [self.uiCallReceivers insertObject:uiCallReceiver atIndex:i];
+                added = YES;
+                break;
+            }
+        }
+        if (!added) {
+            [self.uiCallReceivers addObject:uiCallReceiver];
+        }
+    }
+    
+    
+    void (^setAvatar)(UIImage *) = ^(UIImage *image) {
+        uiCallReceiver.avatar = image;
+        UIContact *uiContact = [self.uiContacts objectForKey:callReceiver.uuid];
+        if (uiContact) {
+            uiContact.avatar = image;
+        }
+        [self refreshTable];
+    };
+    
+    if (avatar) {
+        setAvatar(avatar);
+    } else {
+        [self.callsService getImageWithCallReceiver:callReceiver withBlock:setAvatar];
+    }
 }
 
 - (void)startAudioCallWithPermissionCheck {
@@ -1012,8 +1198,8 @@ static const int LAST_CALLS_SECTION = 1;
     
     if ((!self.callDescriptor.isVideo && self.callOriginator.capabilities.hasAudio) || (self.callDescriptor.isVideo && self.callOriginator.capabilities.hasVideo)) {
         
-        
-        if (self.callOriginator.isGroup) {
+        BOOL isCallReceiver = [self.callOriginator isKindOfClass:[TLCallReceiver class]];
+        if (!isCallReceiver && self.callOriginator.isGroup) {
             [self.callsService getImageWithGroup:self.callOriginator withBlock:^(UIImage *image) {
                 [self showCallAgainConfirmView:image];
             }];
@@ -1027,6 +1213,98 @@ static const int LAST_CALLS_SECTION = 1;
             [[UIApplication sharedApplication].keyWindow makeToast:TwinmeLocalizedString(@"application_not_authorized_operation_by_your_contact",nil)];
         });
     }
+}
+
+- (BOOL)hasSchedule {
+    DDLogVerbose(@"%@ hasSchedule", LOG_TAG);
+    
+    if (self.callOriginator.capabilities.schedule && self.callOriginator.capabilities.schedule.enabled) {
+        return ![self.callOriginator.capabilities.schedule isNowInRange];
+    }
+    
+    return NO;
+}
+
+- (void)showSchedule {
+    DDLogVerbose(@"%@ showSchedule", LOG_TAG);
+    
+    NSString *message = @"";
+    
+    TLSchedule *schedule = self.callOriginator.capabilities.schedule;
+    
+    if (schedule && schedule.timeRanges.count > 0) {
+        if ([schedule.timeRanges[0] isKindOfClass:[TLWeeklyTimeRange class]]) {
+            TLWeeklyTimeRange *weeklyTimeRange = (TLWeeklyTimeRange *)[schedule.timeRanges objectAtIndex:0];
+                     
+            TLTime *scheduleStartTime = weeklyTimeRange.start;
+            TLTime *scheduleEndTime = weeklyTimeRange.end;
+            
+            NSDateFormatter *dateFormatter = [[NSDateFormatter alloc]init];
+            NSMutableString *validityMessage = [[NSMutableString alloc] initWithString:@""];
+            [validityMessage appendString:TwinmeLocalizedString(@"show_call_view_controller_setting_start", nil)];
+            [validityMessage appendString:@" : "];
+            [validityMessage appendString:[scheduleStartTime formatTime]];
+            [validityMessage appendString:@"\n"];
+            [validityMessage appendString:TwinmeLocalizedString(@"show_call_view_controller_setting_end", nil)];
+            [validityMessage appendString:@" : "];
+            [validityMessage appendString:[scheduleEndTime formatTime]];
+            [validityMessage appendString:@"\n\n"];
+            
+            NSArray<NSString *> *symbols = dateFormatter.weekdaySymbols;
+            
+            for (NSNumber *dayOfWeek in weeklyTimeRange.days) {
+                NSString *dayString = @"";
+                switch ([dayOfWeek intValue]) {
+                    case MONDAY:
+                        dayString = symbols[1];
+                        break;
+                    case TUESDAY:
+                        dayString = symbols[2];
+                        break;
+                    case WEDNESDAY:
+                        dayString = symbols[3];
+                        break;
+                    case THURSDAY:
+                        dayString = symbols[4];
+                        break;
+                    case FRIDAY:
+                        dayString = symbols[5];
+                        break;
+                    case SATURDAY:
+                        dayString = symbols[6];
+                        break;
+                    case SUNDAY:
+                        dayString = symbols[0];
+                        break;
+                }
+                
+                if (![dayString isEqualToString:@""]) {
+                    [validityMessage appendString:dayString];
+                    [validityMessage appendString:@"\n"];
+                }
+                
+                message = [validityMessage description];
+            }
+        } else {
+            TLDateTimeRange *dateTimeRange = (TLDateTimeRange *)[schedule.timeRanges objectAtIndex:0];
+                    
+            TLDateTime *start = dateTimeRange.start;
+            TLDateTime *end = dateTimeRange.end;
+            if ([start.date isEqual:end.date]) {
+                message = [NSString stringWithFormat:TwinmeLocalizedString(@"show_call_view_controller_schedule_from_to", nil), [start.date formatDate], [start.time formatTime], [end.time formatTime]];
+            } else {
+                message = [NSString stringWithFormat:@"%@ %@", [start formatDateTime], [end formatDateTime]];
+            }
+        }
+    } else {
+        message = TwinmeLocalizedString(@"show_call_view_controller_schedule_message", nil);
+    }
+                
+    AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
+    alertMessageView.alertMessageViewDelegate = self;
+    [alertMessageView initWithTitle:TwinmeLocalizedString(@"show_call_view_controller_schedule_call", nil) message:message];
+    [self.tabBarController.view addSubview:alertMessageView];
+    [alertMessageView showAlertView];
 }
 
 - (void)showCallAgainConfirmView:(UIImage *)avatar {
@@ -1048,13 +1326,55 @@ static const int LAST_CALLS_SECTION = 1;
     [callAgainConfirmView showConfirmView];
 }
 
+- (nullable TLDateTime *)getExpireDateTime:(nonnull TLCallReceiver *)callReceiver {
+    DDLogVerbose(@"%@ getExpireDateTime: %@", LOG_TAG, callReceiver);
+    
+    if (callReceiver.capabilities.linkValidity == TLLinkValiditySingleUse) {
+        if (callReceiver.capabilities.schedule && callReceiver.capabilities.schedule.timeRanges.count > 0) {
+            if ([callReceiver.capabilities.schedule.timeRanges[0] isKindOfClass:[TLDateTimeRange class]]) {
+                TLDateTimeRange *dateTimeRange = (TLDateTimeRange *)[callReceiver.capabilities.schedule.timeRanges objectAtIndex:0];
+                TLDateTime *endDateTime = dateTimeRange.end;
+                
+                NSCalendar *calendar = [NSCalendar currentCalendar];
+                NSCalendarUnit calendarUnit = NSCalendarUnitYear | NSCalendarUnitMonth |  NSCalendarUnitDay | NSCalendarUnitHour | NSCalendarUnitMinute;
+    
+                NSDateComponents *dateComponents = [[NSDateComponents alloc] init];
+                dateComponents.day = endDateTime.date.day;
+                dateComponents.month = endDateTime.date.month;
+                dateComponents.year = endDateTime.date.year;
+                dateComponents.hour = endDateTime.time.hour;
+                dateComponents.minute = endDateTime.time.minute;
+                
+                NSDate *expireDateFromComponents = [calendar dateFromComponents:dateComponents];
+                expireDateFromComponents = [calendar dateByAddingUnit:NSCalendarUnitDay value:1 toDate:expireDateFromComponents options:0];
+                dateComponents = [calendar components:calendarUnit fromDate:expireDateFromComponents];
+
+                TLDate *expireDate = [[TLDate alloc]initWithYear:(int)dateComponents.year month:(int)dateComponents.month day:(int)dateComponents.day];
+                TLTime *expireTime = [[TLTime alloc] initWithHour:(int)dateComponents.hour minute:(int)dateComponents.minute];
+                TLDateTime *expireDateTime = [[TLDateTime alloc] initWithDate:expireDate time:expireTime];
+                
+                return expireDateTime;
+            }
+        }
+    }
+    
+    return nil;
+}
+
+
 - (void)reloadData {
     DDLogVerbose(@"%@ reloadData", LOG_TAG);
 
+    if (self.displayAllCallReceiver || self.uiCallReceivers.count <= NB_CALL_RECEIVER) {
+            self.nbCallReceivers = (int) self.uiCallReceivers.count;
+        } else {
+            self.nbCallReceivers = NB_CALL_RECEIVER;
+        }
+    
     dispatch_async(dispatch_get_main_queue(), ^{
         [self.callsTableView reloadData];
         
-        if (self.filteredCalls.count == 0) {
+        if (self.filteredCalls.count == 0 && self.uiCallReceivers.count == 0) {
             self.noCallImageView.hidden = NO;
             self.noCallTitleLabel.hidden = NO;
             self.noCallLabel.hidden = NO;
@@ -1064,6 +1384,12 @@ static const int LAST_CALLS_SECTION = 1;
             } else {
                 self.noCallImageViewTopConstraint.constant = (DESIGN_NO_CALL_MARGIN_TOP * Design.HEIGHT_RATIO) + Design.SETTING_SECTION_HEIGHT;
             }
+        } else if (!self.currentSpace.profile) {
+            self.noCallImageViewTopConstraint.constant = (DESIGN_NO_CALL_MARGIN_TOP * Design.HEIGHT_RATIO);
+            self.noCallImageView.hidden = NO;
+            self.noCallTitleLabel.hidden = NO;
+            self.noCallLabel.hidden = NO;
+            self.view.backgroundColor = Design.WHITE_COLOR;
         } else {
             self.noCallImageView.hidden = YES;
             self.noCallTitleLabel.hidden = YES;

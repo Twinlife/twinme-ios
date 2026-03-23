@@ -43,6 +43,7 @@
 #import <Twinme/TLMessage.h>
 #import <Twinme/TLTyping.h>
 #import <Twinme/TLOriginator.h>
+#import <Twinme/TLCallReceiver.h>
 #import <Twinme/TLContact.h>
 #import <Twinme/TLGroup.h>
 #import <Twinme/TLGroupMember.h>
@@ -769,6 +770,16 @@ static NotificationService *INSTANCE;
     NSMutableArray *list = [[NSMutableArray alloc] init];
     [list addObject:notificationId.UUIDString];
     [userNotificationCenter removeDeliveredNotificationsWithIdentifiers:list];
+}
+
+- (void)onConferenceEventWithConference:(TLCallReceiver *)conference event:(TLConferenceEvent)event date:(int64_t)date {
+    DDLogVerbose(@"%@ onConferenceEventWithConference: %@ event: %d date: %lld", LOG_TAG, conference, (int)event, date);
+
+    if (event == TLConferenceEventJoin && [conference.capabilities hasNotifyJoin]) {
+        [self dispatchNotificationWithBlock:^(NSUUID *notificationId) {
+            return [self.notificationTools createNotificationConference:conference];
+        }];
+    }
 }
 
 #pragma mark - Notification support

@@ -39,6 +39,9 @@
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *tagImageViewHeightConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *tagImageViewTrailingConstraint;
 @property (weak, nonatomic) IBOutlet UIImageView *tagImageView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *conferenceImageViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *conferenceImageViewTrailingConstraint;
+@property (weak, nonatomic) IBOutlet UIImageView *conferenceImageView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *certifiedRelationImageViewHeightConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *certifiedRelationImageViewLeadingConstraint;
 @property (weak, nonatomic) IBOutlet UIImageView *certifiedRelationImageView;
@@ -95,6 +98,11 @@
     self.tagImageViewTrailingConstraint.constant *= Design.WIDTH_RATIO;
     self.tagImageView.tintColor = Design.ACCESSORY_COLOR;
     self.tagImageView.hidden = YES;
+    
+    self.conferenceImageViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    self.conferenceImageViewTrailingConstraint.constant *= Design.WIDTH_RATIO;
+    self.conferenceImageView.tintColor = Design.ACCESSORY_COLOR;
+    self.conferenceImageView.hidden = YES;
     
     self.certifiedRelationImageViewHeightConstraint.constant = Design.CERTIFIED_HEIGHT;
     self.certifiedRelationImageViewLeadingConstraint.constant *= Design.WIDTH_RATIO;
@@ -156,11 +164,25 @@
     [self updateColor];
 }
 
-- (void)bindWithName:(NSString *)name avatar:(UIImage *)avatar hideSeparator:(BOOL)hideSeparator hideSchedule:(BOOL)hideSchedule {
+- (void)bindWithName:(NSString *)name avatar:(UIImage *)avatar hideSeparator:(BOOL)hideSeparator hideSchedule:(BOOL)hideSchedule conferenceCall:(BOOL)conferenceCall {
         
     self.avatarView.image = avatar;
     self.nameLabel.text = name;
     self.separatorView.hidden = hideSeparator;
+    
+    if (conferenceCall) {
+        self.conferenceImageView.hidden = NO;
+        self.conferenceImageView.image = [[UIImage imageNamed:@"GroupsIcon"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+
+        if (!hideSchedule) {
+            self.conferenceImageViewTrailingConstraint.constant = Design.NAME_TRAILING + self.tagImageViewTrailingConstraint.constant + self.tagImageViewHeightConstraint.constant;
+        } else {
+            self.conferenceImageViewTrailingConstraint.constant = Design.NAME_TRAILING;
+        }
+    } else {
+        self.conferenceImageView.hidden = YES;
+    }
+    
     self.tagImageView.hidden = hideSchedule;
     self.certifiedRelationImageView.hidden = YES;
         

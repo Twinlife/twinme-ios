@@ -13,6 +13,12 @@
 
 #import "UIViewController+ProgressIndicator.h"
 
+#import <TwinmeCommon/ApplicationDelegate.h>
+#import <TwinmeCommon/Design.h>
+#import <TwinmeCommon/TwinmeApplication.h>
+
+#import <Twinme/TLTwinmeContext.h>
+
 static const char IndicatorKey;
 
 //
@@ -29,7 +35,19 @@ static const char IndicatorKey;
             return;
         }
         
-        indicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+        ApplicationDelegate *delegate = (ApplicationDelegate *)[[UIApplication sharedApplication] delegate];
+        TwinmeApplication *twinmeApplication = [delegate twinmeApplication];
+        
+        if (@available(iOS 13.0, *)) {
+            indicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleMedium];
+        } else {
+            indicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+        }
+        
+        if ([twinmeApplication darkModeEnable:[[delegate twinmeContext] defaultSpaceSettings]]) {
+            indicatorView.color = [UIColor whiteColor];
+        }
+                
         objc_setAssociatedObject(self, &IndicatorKey, indicatorView, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
         
         indicatorView.center = self.view.center;

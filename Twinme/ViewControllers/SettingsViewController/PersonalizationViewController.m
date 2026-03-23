@@ -345,7 +345,7 @@ static NSString *TWINME_SETTINGS_CELL_IDENTIFIER = @"TwinmeSettingsCellIdentifie
             
             cell.settingsActionDelegate = self;
             
-            [cell bindWithTitle:TwinmeLocalizedString(@"personalization_view_controller_system", nil) icon:nil stateSwitch:self.twinmeApplication.displayMode == DisplayModeSystem tagSwitch:0 hiddenSwitch:NO disableSwitch:NO backgroundColor:Design.WHITE_COLOR hiddenSeparator:NO];
+            [cell bindWithTitle:TwinmeLocalizedString(@"personalization_view_controller_system", nil) subTitle:nil icon:nil stateSwitch:self.twinmeApplication.displayMode == DisplayModeSystem tagSwitch:0 hiddenSwitch:NO disableSwitch:NO backgroundColor:Design.WHITE_COLOR hiddenSeparator:NO];
             return cell;
         }
     } else {

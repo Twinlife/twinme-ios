@@ -64,6 +64,7 @@
 #import "CallMenuView.h"
 #import "CallHoldView.h"
 #import "CallCertifyView.h"
+#import "CallInfoView.h"
 #import "CallConversationView.h"
 #import "PlayerStreamingAudioView.h"
 #import "PremiumFeatureConfirmView.h"
@@ -80,6 +81,7 @@ static const int ddLogLevel = DDLogLevelWarning;
 #endif
 
 #define CLOSE_DELAY 3
+#define DELAY_WAITING 0.5
 #define DELAY_COACH_MARK 0.5
 #define DELAY_START_CERTIFY 0.8
 #define DELAY_HIDE_MENU_VIDEO_CALL 3
@@ -87,6 +89,8 @@ static const int ddLogLevel = DDLogLevelWarning;
 #define SCALE_ANIMATION_DURATION 0.4
 #define SCALE_ANIMATION_REPEAT_DELAY 7
 #define SCALE_ANIMATION_BEGIN_TIME 5
+#define SCALE_MESSAGE_ANIMATION_REPEAT_DELAY 3
+#define SCALE_MESSAGE_AANIMATION_BEGIN_TIME 1
 
 static const CGFloat DESIGN_CORNER_RADIUS = 14;
 static const CGFloat DESIGN_DEFAULT_MENU_MARGIN = 150;
@@ -164,6 +168,9 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *callHoldViewHeightConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *callHoldViewBottomConstraint;
 @property (weak, nonatomic) IBOutlet CallHoldView *callHoldView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *callInfoViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *callInfoViewBottomConstraint;
+@property (weak, nonatomic) IBOutlet CallInfoView *callInfoView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *conversationViewLeadingConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *conversationViewTrailingConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *conversationViewBottomConstraint;
@@ -234,6 +241,7 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
 @property (nonatomic) BOOL keyboardHidden;
 @property (nonatomic) BOOL getDescriptorsDone;
 @property (nonatomic) BOOL accessCameraGranted;
+@property (nonatomic) BOOL startPopMessageAnimation;
 
 @property (nonatomic) NSMutableArray *callParticipantViews;
 @property (nonatomic) CallParticipantLocaleView *callParticipantLocaleView;
@@ -309,6 +317,7 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
         _showTerminateReason = NO;
         _showCertifyView = NO;
         _showRemoteCameraOnboarding = NO;
+        _startPopMessageAnimation = NO;
         _elapsedTime = 0;
         _keyboardHidden = YES;
         _getDescriptorsDone = NO;
@@ -490,7 +499,6 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
     self.isVideoCall = isVideoCall;
     self.isCallStartedInVideo = isVideoCall;
     self.showCertifyView = isCertifyCall;
-    
     if ([(NSObject *) originator class] == [TLCallReceiver class]) {
         self.isCallReceiver = YES;
     }
@@ -717,6 +725,12 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
     
     [self.conversationView reloadData];
     self.conversationView.hidden = NO;
+    
+    if (self.startPopMessageAnimation) {
+        self.startPopMessageAnimation = NO;
+        [self.unreadMessageView.layer removeAllAnimations];
+    }
+    
     self.unreadMessageImageView.image = [UIImage imageNamed:@"CallMessageIcon"];
     [self.view bringSubviewToFront:self.conversationView];
     [self.view bringSubviewToFront:self.menuView];
@@ -836,7 +850,7 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
 
 - (void)onEventWithParticipant:(nonnull CallParticipant *)participant event:(CallParticipantEvent)event {
     DDLogVerbose(@"%@ onEventWithParticipant: %@ - event : %d", LOG_TAG, participant, event);
-    
+        
     if (!self.uiInitialized) {
         return;
     }
@@ -1012,6 +1026,12 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
     if (self.conversationView.hidden) {
         self.unreadMessageImageView.image = [UIImage imageNamed:@"CallNewMessageIcon"];
         [self hapticFeedBack:UIImpactFeedbackStyleMedium];
+        [self popMessageAnimation];
+        
+        if (self.menuHidden) {
+            self.menuHidden = NO;
+            [self animateMenu:YES];
+        }
     }
     
     [self.conversationView addDescriptor:descriptor isLocal:NO needsReload:YES name:participant.name];
@@ -1044,6 +1064,12 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
         
         if ([self.callService getCurrentAudioDevice]) {
             self.currentAudioDeviceType = [self.callService getCurrentAudioDevice].type;
+        }
+        
+        if (self.isCallReceiver) {
+            if (self.callParticipantLocaleView && self.callParticipantViewMode == CallParticipantViewModeSmallLocale) {
+                [self.participantsView bringSubviewToFront:self.callParticipantLocaleView];
+            }
         }
         
         [self updateView:callStatus];
@@ -1857,6 +1883,7 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
     }
     
     self.callHoldView.hidden = YES;
+    self.callInfoView.hidden = YES;
     [self animateMenu:YES];
 }
 
@@ -2034,6 +2061,11 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
     self.callHoldView.callHoldDelegate = self;
     self.callHoldView.hidden = YES;
     
+    self.callInfoViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    self.callInfoViewBottomConstraint.constant =  DESIGN_PARTICIPANTS_BOTTOM_LARGE_MARGIN * Design.HEIGHT_RATIO;
+    
+    self.callInfoView.hidden = YES;
+    
     self.overlayView.backgroundColor = DESIGN_OVERLAY_COLOR;
     self.overlayView.hidden = YES;
     self.overlayView.alpha = 0;
@@ -2078,19 +2110,22 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
         [self initNoParticipantView];
         self.noParticipantsView.hidden = NO;
     }
-    
+
     if (CALL_IS_ACTIVE(callStatus)) {
         [self updateModeInCall];
+        self.callInfoView.hidden = YES;
     } else if (CALL_IS_ACCEPTED(callStatus)) {
         self.declineView.hidden = YES;
         self.answerCallView.hidden = YES;
         self.menuView.hidden = NO;
+        self.callInfoView.hidden = YES;
         self.messageLabel.text = TwinmeLocalizedString(@"video_call_view_controller_connecting", nil);
         
     } else if (CALL_IS_INCOMING(callStatus)) { // CallModeIncomingCall:
         self.declineView.hidden = NO;
         self.answerCallView.hidden = NO;
         self.menuView.hidden = YES;
+        self.callInfoView.hidden = YES;
         if (CALL_IS_VIDEO(callStatus)) {
             self.messageLabel.text = TwinmeLocalizedString(@"video_call_view_controller_calling", nil);
         } else {
@@ -2104,6 +2139,7 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
             self.messageLabel.text = TwinmeLocalizedString(@"audio_call_view_controller_calling", nil);
         }
         self.menuView.hidden = NO;
+        self.callInfoView.hidden = YES;
     } else if (callStatus == CallStatusInVideoBell) {
         if (self.isVideoCall) {
             self.messageLabel.text = TwinmeLocalizedString(@"video_call_view_controller_calling", nil);
@@ -2113,6 +2149,18 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
         self.answerCallView.hidden = YES;
         self.declineView.hidden = YES;
         self.cancelView.hidden = NO;
+        self.callInfoView.hidden = YES;
+    } else if (callStatus == CallStatusWaiting) {
+        self.noParticipantsView.hidden = YES;
+        self.answerCallView.hidden = YES;
+        self.declineView.hidden = YES;
+        self.cancelView.hidden = YES;
+        
+        dispatch_time_t callInfoTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(DELAY_WAITING * NSEC_PER_SEC));
+        dispatch_after(callInfoTime, dispatch_get_main_queue(), ^(void){
+            [self showCallInfo];
+        });
+        
     } else {
         self.menuView.hidden = YES;
         self.playerStreamingAudioView.hidden = YES;
@@ -2126,6 +2174,7 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
         self.unreadMessageView.hidden = YES;
         self.controlCameraView.hidden = YES;
         self.terminatedLabel.hidden = NO;
+        self.callInfoView.hidden = YES;
         
         if (self.callCertifyView) {
             self.callCertifyView.hidden = YES;
@@ -2520,7 +2569,13 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
         //add locale video
         if (self.originator && !self.callParticipantLocaleView) {
             self.callParticipantLocaleView = [[CallParticipantLocaleView alloc]init];
-            self.callParticipantLocaleView.name = self.originator.identityName;
+            self.callParticipantLocaleView.name = self.isCallReceiver ? self.originator.name : self.originator.identityName;
+            if (self.isCallReceiver && !self.originator.identityName) {
+                self.callParticipantLocaleView.name = self.originator.name;
+            } else {
+                self.callParticipantLocaleView.name = self.originator.identityName;
+            }
+        
             [self.twinmeService getIdentityImageWithContact:self.originator withBlock:^(UIImage *image) {
                 self.callParticipantLocaleView.avatar = image;
             }];
@@ -2542,9 +2597,14 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
             [self.participantsView addSubview:self.callParticipantLocaleView];
             [self.callParticipantViews addObject:self.callParticipantLocaleView];
         } else if (self.originator) {
+            if (self.isCallReceiver && !self.originator.identityName) {
+                self.callParticipantLocaleView.name = self.originator.name;
+            } else {
+                self.callParticipantLocaleView.name = self.originator.identityName;
+            }
+            
             self.callParticipantLocaleView.isAudioMute = !callState.audioSourceOn;
             self.callParticipantLocaleView.isVideoMute = !callState.videoSourceOn;
-            self.callParticipantLocaleView.name = self.originator.identityName;
             [self.twinmeService getIdentityImageWithContact:self.originator withBlock:^(UIImage *image) {
                 self.callParticipantLocaleView.avatar = image;
             }];
@@ -3000,14 +3060,21 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
         callHoldHeight  = self.callHoldViewHeightConstraint.constant;
     }
     
+    int callInfoHeight = 0;
+    if (!self.callInfoView.hidden) {
+        callInfoHeight  = self.callInfoViewHeightConstraint.constant;
+    }
+    
     if (!self.menuHidden) {
-        self.participantsViewBottomConstraint.constant = (DESIGN_PARTICIPANTS_BOTTOM_LARGE_MARGIN * Design.HEIGHT_RATIO) + playerHeight + callHoldHeight;
-        self.playerStreamingAudioViewBottomConstraint.constant = (DESIGN_PARTICIPANTS_BOTTOM_LARGE_MARGIN * Design.HEIGHT_RATIO) + callHoldHeight;
-        self.callHoldViewBottomConstraint.constant = (DESIGN_PARTICIPANTS_BOTTOM_LARGE_MARGIN * Design.HEIGHT_RATIO);
+        self.participantsViewBottomConstraint.constant = (DESIGN_PARTICIPANTS_BOTTOM_LARGE_MARGIN * Design.HEIGHT_RATIO) + playerHeight + callHoldHeight + callInfoHeight;
+        self.playerStreamingAudioViewBottomConstraint.constant = (DESIGN_PARTICIPANTS_BOTTOM_LARGE_MARGIN * Design.HEIGHT_RATIO) + callHoldHeight + callInfoHeight;
+        self.callHoldViewBottomConstraint.constant = (DESIGN_PARTICIPANTS_BOTTOM_LARGE_MARGIN * Design.HEIGHT_RATIO) + callInfoHeight;
+        self.callInfoViewBottomConstraint.constant = (DESIGN_PARTICIPANTS_BOTTOM_LARGE_MARGIN * Design.HEIGHT_RATIO);
     } else {
-        self.participantsViewBottomConstraint.constant = (DESIGN_PARTICIPANTS_BOTTOM_MARGIN * Design.HEIGHT_RATIO) + playerHeight + callHoldHeight;
-        self.playerStreamingAudioViewBottomConstraint.constant = (DESIGN_PARTICIPANTS_BOTTOM_MARGIN * Design.HEIGHT_RATIO) + callHoldHeight;
+        self.participantsViewBottomConstraint.constant = (DESIGN_PARTICIPANTS_BOTTOM_MARGIN * Design.HEIGHT_RATIO) + playerHeight + callHoldHeight + callInfoHeight;
+        self.playerStreamingAudioViewBottomConstraint.constant = (DESIGN_PARTICIPANTS_BOTTOM_MARGIN * Design.HEIGHT_RATIO) + callHoldHeight + callInfoHeight;
         self.callHoldViewBottomConstraint.constant = (DESIGN_PARTICIPANTS_BOTTOM_MARGIN * Design.HEIGHT_RATIO);
+        self.callInfoViewBottomConstraint.constant = (DESIGN_PARTICIPANTS_BOTTOM_LARGE_MARGIN * Design.HEIGHT_RATIO);
     }
 }
 
@@ -3444,6 +3511,38 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
             }
             break;
         }
+    }
+}
+
+- (void)showCallInfo {
+    DDLogVerbose(@"%@ showCallInfo", LOG_TAG);
+    
+    CallStatus callStatus = [self.callService callStatus];
+    if (callStatus == CallStatusWaiting) {
+        self.callInfoView.hidden = NO;
+        [self.callInfoView updateMessage:TwinmeLocalizedString(@"call_view_controller_waiting_conference_call", nil)];
+    }
+}
+
+- (void)popMessageAnimation {
+    DDLogVerbose(@"%@ popMessageAnimation", LOG_TAG);
+    
+    if (!self.startPopMessageAnimation) {
+        self.startPopMessageAnimation = YES;
+        CAAnimationGroup *animationGroup = [CAAnimationGroup animation];
+        animationGroup.beginTime = CACurrentMediaTime() + SCALE_MESSAGE_AANIMATION_BEGIN_TIME;
+        animationGroup.duration = SCALE_MESSAGE_ANIMATION_REPEAT_DELAY;
+        animationGroup.repeatCount = INFINITY;
+        
+        CABasicAnimation *scaleAnimation = [CABasicAnimation animationWithKeyPath:@"transform.scale.xy"];
+        scaleAnimation.fromValue = @1.0;
+        scaleAnimation.toValue = @1.4;
+        scaleAnimation.autoreverses = YES;
+        scaleAnimation.duration = SCALE_ANIMATION_DURATION;
+        scaleAnimation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseOut];
+        animationGroup.animations = @[scaleAnimation];
+        
+        [self.unreadMessageView.layer addAnimation:animationGroup forKey:@"scale"];
     }
 }
 

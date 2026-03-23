@@ -21,7 +21,6 @@
 #import "ResetSettingsCell.h"
 
 #import "SwitchView.h"
-#import "AlertMessageView.h"
 
 #if 0
 static const int ddLogLevel = DDLogLevelVerbose;
@@ -142,7 +141,7 @@ static NSString *RESET_SETTINGS_CELL_IDENTIFIER = @"ResetSettingsCellIdentifier"
     cell.settingsActionDelegate = self;
                 
     int onboardingType = (int)indexPath.row;
-    [cell bindWithTitle:[self getOnboardingTitle:onboardingType] icon:nil stateSwitch:[self.twinmeApplication startOnboarding:onboardingType] tagSwitch:onboardingType hiddenSwitch:NO disableSwitch:NO backgroundColor:Design.WHITE_COLOR hiddenSeparator:NO];
+    [cell bindWithTitle:[self getOnboardingTitle:onboardingType] subTitle:nil icon:nil stateSwitch:[self.twinmeApplication startOnboarding:onboardingType] tagSwitch:onboardingType hiddenSwitch:NO disableSwitch:NO backgroundColor:Design.WHITE_COLOR hiddenSeparator:NO];
     
     return cell;
 }
@@ -218,6 +217,18 @@ static NSString *RESET_SETTINGS_CELL_IDENTIFIER = @"ResetSettingsCellIdentifier"
             
         case OnboardingTypeProxy:
             return TwinmeLocalizedString(@"proxy_view_controller_title", nil);
+
+        case OnboardingTypeBackup:
+            return TwinmeLocalizedStringFromTable(@"account_view_controller_backup", @"LocalizableBackup", nil);
+            
+        case OnboardingTypeRestore:
+            return TwinmeLocalizedStringFromTable(@"account_view_controller_restore", @"LocalizableBackup", nil);
+            
+        case OnboardingTypeVerifyBackup:
+            return TwinmeLocalizedStringFromTable(@"account_view_controller_backup_verify",  @"LocalizableBackup", nil);
+            
+        case OnboardingTypeBackupBeta:
+            return [NSString stringWithFormat:@"%@ - %@", TwinmeLocalizedStringFromTable(@"account_view_controller_backup_restore", @"LocalizableBackup", nil), TwinmeLocalizedString(@"application_beta", nil)];
             
         default:
             return @"";
