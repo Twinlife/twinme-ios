@@ -97,7 +97,7 @@ static NSString *SIDE_SPACE_CELL_IDENTIFIER = @"SideSpaceCellIdentifier";
 // Interface: SideMenuViewController ()
 //
 
-@interface SideMenuViewController ()<UITableViewDelegate, UITableViewDataSource, DefaultProfileDelegate, SideSpaceDelegate, CoachMarkDelegate, MenuAddContactViewDelegate, BottomSheetViewDelegate>
+@interface SideMenuViewController ()<UITableViewDelegate, UITableViewDataSource, DefaultProfileDelegate, SideSpaceDelegate, CoachMarkDelegate, MenuAddContactViewDelegate, BottomSheetViewDelegate, TwinmeSettingsItemDeleagte>
 
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *headerSpacesViewHeightConstraint;
@@ -427,6 +427,9 @@ static NSString *SIDE_SPACE_CELL_IDENTIFIER = @"SideSpaceCellIdentifier";
             
             if (indexPath.section == SUPPORT_VIEW_SECTION && indexPath.row == 2) {
                 [cell bindWithTitle:title hiddenAccessory:hiddenAccessory disableSetting:NO updateAvailable:[self.twinmeApplication.lastVersionManager isNewVersionAvailable] color:Design.FONT_COLOR_DEFAULT];
+            } else if (indexPath.section == SUPPORT_VIEW_SECTION && indexPath.row == 3) {
+                cell.delegate = self;
+                [cell bindWithTitle:title hiddenAccessory:hiddenAccessory disableSetting:NO color:Design.FONT_COLOR_DEFAULT badgeTitle:TwinmeLocalizedString(@"application_new", nil)];
             } else {
                 [cell bindWithTitle:title hiddenAccessory:hiddenAccessory disableSetting:NO color:Design.FONT_COLOR_DEFAULT];
             }
@@ -498,6 +501,21 @@ static NSString *SIDE_SPACE_CELL_IDENTIFIER = @"SideSpaceCellIdentifier";
             [self.twinmeApplication stop];
         }
     }
+}
+
+#pragma mark - TwinmeSettingsItemDeleagte
+
+- (void)didTapSettingsBadge {
+    DDLogVerbose(@"%@ didTapSettingsBadge", LOG_TAG);
+    
+    [self openSideMenu:NO];
+    
+    ApplicationDelegate *delegate = (ApplicationDelegate *)[[UIApplication sharedApplication] delegate];
+    MainViewController *mainViewController = delegate.mainViewController;
+    TwinmeNavigationController *twinmeNavigationController = [mainViewController selectedViewController];
+    AccountViewController *accountViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"AccountViewController"];
+    [accountViewController startOnboarding];
+    [twinmeNavigationController pushViewController:accountViewController animated:YES];
 }
 
 #pragma mark - BottomSheetViewDelegate

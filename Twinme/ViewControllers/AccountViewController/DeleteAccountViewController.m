@@ -39,11 +39,15 @@ static const int ddLogLevel = DDLogLevelWarning;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *accountImageViewTopConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *accountImageViewWidthConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *accountImageViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *deleteViewWidthConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *deleteViewHeightConstraint;
 @property (weak, nonatomic) IBOutlet UIView *deleteView;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *deleteLabelLeadingConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *deleteLabelTrailingConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *deleteLabelWidthConstraint;
 @property (weak, nonatomic) IBOutlet UILabel *deleteLabel;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *cancelViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *cancelViewBottomConstraint;
+@property (weak, nonatomic) IBOutlet UIView *cancelView;
+@property (weak, nonatomic) IBOutlet UILabel *cancelLabel;
 
 @property (nonatomic) DeleteAccountService *deleteAccountService;
 
@@ -135,6 +139,8 @@ static const int ddLogLevel = DDLogLevelWarning;
     [self.deleteAccountService dispose];
     
     [super finish];
+    
+    [self.navigationController popViewControllerAnimated:YES];
 }
 
 #pragma mark - DeleteAccountServiceDelegate
@@ -187,7 +193,7 @@ static const int ddLogLevel = DDLogLevelWarning;
     self.accountLabelBottomConstraint.constant *= Design.HEIGHT_RATIO;
     self.accountLabelWidthConstraint.constant *= Design.WIDTH_RATIO;
     
-    self.accountLabel.text =  [NSString stringWithFormat:@"%@\n\n%@", TwinmeLocalizedString(@"account_view_controller_message_first_part", nil), TwinmeLocalizedString(@"account_view_controller_message_second_part", nil)];
+    self.accountLabel.text =  [NSString stringWithFormat:@"%@\n\n%@\n\n%@", TwinmeLocalizedString(@"account_view_controller_message_first_part", nil), TwinmeLocalizedString(@"account_view_controller_message_second_part", nil), TwinmeLocalizedStringFromTable(@"account_view_controller_message_third_part", @"LocalizableBackup", nil)];
     self.accountLabel.font = Design.FONT_MEDIUM34;
     self.accountLabel.textColor = Design.FONT_COLOR_DEFAULT;
     
@@ -196,33 +202,58 @@ static const int ddLogLevel = DDLogLevelWarning;
     self.accountImageViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     
     self.deleteViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
-    
-    UITapGestureRecognizer *deleteViewGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleDeleteTapGesture:)];
-    [self.deleteView addGestureRecognizer:deleteViewGestureRecognizer];
-    
-    self.deleteView.backgroundColor = [UIColor clearColor];
+    self.deleteViewWidthConstraint.constant *= Design.WIDTH_RATIO;
+        
+    self.deleteView.backgroundColor = Design.DELETE_COLOR_RED;
     self.deleteView.userInteractionEnabled = YES;
+    self.deleteView.layer.cornerRadius = Design.CONTAINER_RADIUS;
+    self.deleteView.clipsToBounds = YES;
+    self.deleteView.isAccessibilityElement = YES;
+    [self.deleteView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleDeleteTapGesture:)]];
+
+    self.deleteLabelWidthConstraint.constant *= Design.WIDTH_RATIO;
+        
+    self.deleteLabel.font = Design.FONT_BOLD36;
+    self.deleteLabel.textColor = [UIColor whiteColor];
+    self.deleteLabel.text = TwinmeLocalizedString(@"delete_account_view_controller_delete", nil);
     
-    self.deleteLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
-    self.deleteLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
+    self.cancelViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     
-    self.deleteLabel.font = Design.FONT_MEDIUM34;
-    self.deleteLabel.textColor = [UIColor redColor];
-    self.deleteLabel.text = TwinmeLocalizedString(@"application_delete", nil);
+    UITapGestureRecognizer *cancelViewGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleCancelTapGesture:)];
+    [self.cancelView addGestureRecognizer:cancelViewGestureRecognizer];
+    
+    UIWindow *window = UIApplication.sharedApplication.keyWindow;
+    self.cancelViewBottomConstraint.constant = window.safeAreaInsets.bottom;
+
+    self.cancelLabel.font = Design.FONT_BOLD36;
+    self.cancelLabel.textColor = Design.FONT_COLOR_DEFAULT;
+    self.cancelLabel.text = TwinmeLocalizedString(@"application_cancel", nil);
 }
 
 - (void)handleDeleteTapGesture:(UITapGestureRecognizer *)sender {
     DDLogVerbose(@"%@ handleDeleteTapGesture: %@", LOG_TAG, sender);
     
     if (sender.state == UIGestureRecognizerStateEnded) {
+    
+        [self hapticFeedBack:UIImpactFeedbackStyleLight];
         
         self.deleteConfirmView = [[DeleteAccountConfirmView alloc] init];
         self.deleteConfirmView.bottomSheetViewDelegate = self;
         self.deleteConfirmView.spaceSettings = self.currentSpaceSettings;
         NSString *message = [NSString stringWithFormat:@"%@\n%@", TwinmeLocalizedString(@"application_operation_irreversible", nil), TwinmeLocalizedString(@"account_view_controller_delete_account", nil)];
-        [ self.deleteConfirmView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:message avatar:nil icon:nil];
+        [self.deleteConfirmView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:message avatar:nil icon:nil];
         [self.navigationController.view addSubview: self.deleteConfirmView];
-        [ self.deleteConfirmView showConfirmView];
+        [self.deleteConfirmView showConfirmView];
+    }
+}
+
+- (void)handleCancelTapGesture:(UITapGestureRecognizer *)sender {
+    DDLogVerbose(@"%@ handleCancelTapGesture: %@", LOG_TAG, sender);
+    
+    if (sender.state == UIGestureRecognizerStateEnded) {
+        [self hapticFeedBack:UIImpactFeedbackStyleLight];
+        
+        [self finish];
     }
 }
 
@@ -236,15 +267,17 @@ static const int ddLogLevel = DDLogLevelWarning;
 - (void)updateFont {
     DDLogVerbose(@"%@ updateFont", LOG_TAG);
     
-    self.deleteLabel.font = Design.FONT_MEDIUM34;
+    self.deleteLabel.font = Design.FONT_BOLD36;
     self.accountLabel.font = Design.FONT_MEDIUM34;
+    self.cancelLabel.font = Design.FONT_BOLD36;
 }
 
 - (void)updateColor {
     DDLogVerbose(@"%@ updateColor", LOG_TAG);
     
-    self.deleteLabel.textColor = [UIColor redColor];
+    self.deleteLabel.textColor = [UIColor whiteColor];
     self.accountLabel.textColor = Design.FONT_COLOR_DEFAULT;
+    self.cancelLabel.textColor = Design.FONT_COLOR_DEFAULT;
 }
 
 @end

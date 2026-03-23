@@ -32,10 +32,6 @@ static CGFloat DESIGN_TEXTFIELD_HEIGHT = 82;
 
 @interface DeleteAccountConfirmView ()<UITextFieldDelegate>
 
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *deleteAccountImageViewTopConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *deleteAccountImageViewWidthConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *deleteAccountImageViewHeightConstraint;
-@property (weak, nonatomic) IBOutlet UIImageView *deleteAccountImageView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *deleteConfirmViewTopConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *deleteConfirmViewWidthConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *deleteConfirmViewHeightConstraint;
@@ -129,10 +125,6 @@ static CGFloat DESIGN_TEXTFIELD_HEIGHT = 82;
     
     [super initViews];
     
-    self.deleteAccountImageViewTopConstraint.constant *= Design.HEIGHT_RATIO;
-    self.deleteAccountImageViewWidthConstraint.constant *= Design.WIDTH_RATIO;
-    self.deleteAccountImageViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
-    
     self.deleteConfirmViewTopConstraint.constant *= Design.HEIGHT_RATIO;
     self.deleteConfirmViewWidthConstraint.constant *= Design.WIDTH_RATIO;
     self.deleteConfirmViewHeightConstraint.constant = 0;
@@ -183,6 +175,14 @@ static CGFloat DESIGN_TEXTFIELD_HEIGHT = 82;
     }
         
     return NO;
+}
+
+- (void)updateColor {
+    DDLogVerbose(@"%@ updateColor", LOG_TAG);
+    
+    [super updateColor];
+    
+    self.messageLabel.textColor = Design.FONT_COLOR_DEFAULT;
 }
 
 @end

@@ -476,6 +476,12 @@ static const CGFloat DESIGN_HIGHLIGHT_VIEW_CORNER_RADIUS = 4;
     [self incorrectQRCode];
 }
 
+- (void)onGetTwincodeExpired {
+    DDLogVerbose(@"%@ onGetTwincodeExpired", LOG_TAG);
+    
+    [self incorrectQRCode];
+}
+
 - (void)onGetTwincodeWithTwincode:(nonnull TLTwincodeOutbound *)twincode avatar:(nullable UIImage *)avatar {
     DDLogVerbose(@"%@ onGetTwincodeWithTwincode twincodeOutbound:%@", LOG_TAG, twincode);
     

@@ -17,6 +17,6 @@
 
 - (void)bindWithContact:(UIContact *)uiContact hideSeparator:(BOOL)hideSeparator;
 
-- (void)bindWithName:(NSString *)name avatar:(UIImage *)avatar hideSeparator:(BOOL)hideSeparator hideSchedule:(BOOL)hideSchedule;
+- (void)bindWithName:(NSString *)name avatar:(UIImage *)avatar hideSeparator:(BOOL)hideSeparator hideSchedule:(BOOL)hideSchedule conferenceCall:(BOOL)conferenceCall;
 
 @end

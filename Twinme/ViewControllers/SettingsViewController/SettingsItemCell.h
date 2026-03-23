@@ -17,6 +17,8 @@
 @property (weak, nonatomic) id<SettingsActionDelegate> settingsActionDelegate;
 @property (nonatomic) BOOL forceDarkMode;
 
-- (void)bindWithTitle:(NSString *)title icon:(UIImage *)icon stateSwitch:(BOOL)switchState tagSwitch:(int)tagSwitch hiddenSwitch:(BOOL)hiddenSwitch disableSwitch:(BOOL)disableSwitch backgroundColor:(UIColor *)backgroundColor hiddenSeparator:(BOOL)hiddenSeparator;
+- (void)bindWithTitle:(NSString *)title subTitle:(NSString *)subTitle icon:(UIImage *)icon stateSwitch:(BOOL)switchState tagSwitch:(int)tagSwitch hiddenSwitch:(BOOL)hiddenSwitch disableSwitch:(BOOL)disableSwitch backgroundColor:(UIColor *)backgroundColor hiddenSeparator:(BOOL)hiddenSeparator;
+
+- (void)resetMargins;
 
 @end

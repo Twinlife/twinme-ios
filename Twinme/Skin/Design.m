@@ -1796,6 +1796,21 @@ typedef uint8_t Pixel[4];
 }
 
 //
+// Backup
+//
+
++ (UIFont *)getBackupWordFont {
+    
+    float adjustFontSize = [Design getAdjustFontSize];
+    
+    if (@available(iOS 13.0, *)) {
+        return [UIFont monospacedSystemFontOfSize:(32 * DESIGN_FONT_RATIO) + adjustFontSize weight:UIFontWeightRegular];
+    } else {
+        return [UIFont monospacedDigitSystemFontOfSize:(32 * DESIGN_FONT_RATIO) + adjustFontSize weight:UIFontWeightRegular];
+    }
+}
+
+//
 // Animation show / close view like AbstractConfimeView
 //
 

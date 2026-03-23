@@ -99,10 +99,28 @@ static const int ddLogLevel = DDLogLevelWarning;
     [self.choiceSwitch resetSwitch];
 }
 
-- (void)bindWithTitle:(NSString *)title icon:(UIImage *)icon stateSwitch:(BOOL)switchState tagSwitch:(int)tagSwitch hiddenSwitch:(BOOL)hiddenSwitch disableSwitch:(BOOL)disableSwitch backgroundColor:(UIColor *)backgroundColor hiddenSeparator:(BOOL)hiddenSeparator {
+- (void)resetMargins {
+    
+    self.titleLeadingConstraint.constant = 0;
+    self.choiceSwitchTrailingConstraint.constant = 0;
+}
+
+- (void)bindWithTitle:(NSString *)title subTitle:(NSString *)subTitle icon:(UIImage *)icon stateSwitch:(BOOL)switchState tagSwitch:(int)tagSwitch hiddenSwitch:(BOOL)hiddenSwitch disableSwitch:(BOOL)disableSwitch backgroundColor:(UIColor *)backgroundColor hiddenSeparator:(BOOL)hiddenSeparator {
     DDLogVerbose(@"%@ bindWithTitle: %@ icon: %@ stateSwitch: %d tagSwitch: %d hiddenSwitch: %d disableSwitch: %d hiddenSeparator: %d", LOG_TAG, title, icon, switchState, tagSwitch, hiddenSwitch, disableSwitch, hiddenSeparator);
     
-    self.title.text = title;
+    UIColor *titleColor = Design.FONT_COLOR_DEFAULT;
+    if (self.forceDarkMode) {
+        titleColor = [UIColor whiteColor];
+    }
+    
+    NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:title attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_REGULAR32, NSFontAttributeName, titleColor, NSForegroundColorAttributeName, nil]];
+    
+    if (subTitle) {
+        [attributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:@"\n"]];
+        [attributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:subTitle attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_REGULAR32, NSFontAttributeName, Design.FONT_COLOR_GREY, NSForegroundColorAttributeName, nil]]];
+    }
+    
+    self.title.attributedText = attributedString;
     
     self.choiceSwitch.hidden = hiddenSwitch;
     self.tapGesture.enabled = !hiddenSwitch;
@@ -159,18 +177,15 @@ static const int ddLogLevel = DDLogLevelWarning;
 - (void)updateFont {
     DDLogVerbose(@"%@ updateFont", LOG_TAG);
     
-    self.title.font = Design.FONT_REGULAR32;
 }
 
 - (void)updateColor {
     DDLogVerbose(@"%@ updateColor", LOG_TAG);
     
     if (self.forceDarkMode) {
-        self.title.textColor = [UIColor whiteColor];
         self.separatorView.backgroundColor = [UIColor colorWithRed:199./255. green:199./255. blue:255./255. alpha:0.3];
         self.iconView.tintColor = [UIColor whiteColor];
     } else {
-        self.title.textColor = Design.FONT_COLOR_DEFAULT;
         self.separatorView.backgroundColor = Design.SEPARATOR_COLOR_GREY;
         self.iconView.tintColor = Design.BLACK_COLOR;
     }

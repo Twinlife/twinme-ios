@@ -145,9 +145,11 @@ typedef enum {
     cell.settingsActionDelegate = self;
     
     NSString *title = @"";
+    NSString *subTitle = nil;
     BOOL switchState = NO;
     int tag = 0;
     BOOL disableSwitch = NO;
+    BOOL hideSeparator = NO;
     if (indexPath.row == 0) {
         switchState = self.allowAudioCall;
         disableSwitch = YES;
@@ -159,11 +161,13 @@ typedef enum {
         title = TwinmeLocalizedString(@"conversation_view_controller_video_call", nil);
     } else {
         switchState = self.allowGroupCall;
+        hideSeparator = YES;
         tag = TAG_ALLOW_GROUP_CALL;
         title = TwinmeLocalizedString(@"show_call_view_controller_setting_group_calls", nil);
+        subTitle = TwinmeLocalizedString(@"create_external_call_view_controller_group_call_description", nil);
     }
     
-    [cell bindWithTitle:title icon:nil stateSwitch:switchState tagSwitch:tag hiddenSwitch:NO disableSwitch:disableSwitch backgroundColor:Design.POPUP_BACKGROUND_COLOR hiddenSeparator:NO];
+    [cell bindWithTitle:title subTitle:subTitle icon:nil stateSwitch:switchState tagSwitch:tag hiddenSwitch:NO disableSwitch:disableSwitch backgroundColor:Design.POPUP_BACKGROUND_COLOR hiddenSeparator:hideSeparator];
     
     return cell;
 }

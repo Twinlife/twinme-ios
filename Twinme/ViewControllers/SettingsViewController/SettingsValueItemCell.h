@@ -18,4 +18,6 @@
 
 - (void)bindWithTitle:(nullable NSString *)title value:(nonnull NSString *)value backgroundColor:(nonnull UIColor *)backgroundColor;
 
+- (void)resetMargins;
+
 @end

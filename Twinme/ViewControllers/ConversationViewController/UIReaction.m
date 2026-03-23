@@ -28,7 +28,7 @@
     return self;
 }
 
-- (instancetype)initWithDescriptorAnnotationValue:(int)value {
+- (instancetype)initWithDescriptorAnnotationValue:(int64_t)value {
     
     self = [super init];
     
@@ -39,7 +39,7 @@
     return self;
 }
 
-- (void)initTypeAndImage:(int)value {
+- (void)initTypeAndImage:(int64_t)value {
     
     switch (value) {
         case ReactionTypeLike:

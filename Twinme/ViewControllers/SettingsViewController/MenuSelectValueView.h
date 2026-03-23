@@ -17,7 +17,9 @@ typedef enum {
     MenuSelectValueTypeProfileUpdateMode,
     MenuSelectValueTypeTimeoutEphemeralMessage,
     MenuSelectValueTypeTimeoutLockScreen,
-    MenuSelectValueTypeCallZoomable
+    MenuSelectValueTypeCallZoomable,
+    MenuSelectValueTypeExternalCallExpiration,
+    MenuSelectValueTypeExternalCallType
 } MenuSelectValueType;
 
 //

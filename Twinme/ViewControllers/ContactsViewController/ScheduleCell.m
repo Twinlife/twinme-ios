@@ -119,7 +119,13 @@ static const int ddLogLevel = DDLogLevelWarning;
     self.separatorView.alpha = 0.5f;
 }
 
-- (void)bind:(ScheduleType)scheduleType date:(TLDate *)date time:(TLTime *)time {
+- (void)resetMargins {
+    
+    self.titleLabelLeadingConstraint.constant = 0;
+    self.timeViewTrailingConstraint.constant = 0;
+}
+
+- (void)bind:(ScheduleType)scheduleType date:(TLDate *)date time:(TLTime *)time isRecurrent:(BOOL)isRecurrent {
     
     self.scheduleType = scheduleType;
     
@@ -127,6 +133,12 @@ static const int ddLogLevel = DDLogLevelWarning;
         self.titleLabel.text = TwinmeLocalizedString(@"show_call_view_controller_setting_start", nil);
     } else {
         self.titleLabel.text  = TwinmeLocalizedString(@"show_call_view_controller_setting_end", nil);
+    }
+    
+    if (isRecurrent) {
+        self.dateView.hidden = YES;
+    } else {
+        self.dateView.hidden = NO;
     }
     
     NSDateComponents *dateComponents = [[NSDateComponents alloc] init];

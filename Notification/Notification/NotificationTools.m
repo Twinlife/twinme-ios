@@ -246,6 +246,38 @@ static const BOOL SYSTEM_NOTIFICATION_ON_CONTACT_UPDATE = NO; // Skred does not 
     return [self messageNotificationWithContact:contact notificationMessage:notificationMessage notificationBackgroundMessage:notificationBackgroundMessage type:TLNotificationTypeUpdatedAnnotation canRing:true descriptor:descriptor annotatingUser:annotatingUser notificationId:notificationId];
 }
 
+- (nullable NotificationInfo *)createNotificationConference:(nonnull id<TLOriginator>)conference {
+    DDLogVerbose(@"%@ createNotificationConference: %@", LOG_TAG, conference);
+    
+    NotificationInfo *localNotification = [[NotificationInfo alloc] init];
+    localNotification.type = TLNotificationTypeUnknown;
+    localNotification.originator = conference;
+    localNotification.userInfo = @{@"conferenceId": conference.uuid.UUIDString};
+    
+    NotificationSoundSetting *notificationSound = nil;
+    BOOL hasSounds = [self.settings hasSoundEnable];
+    if (hasSounds && [self.settings hasNotificationSoundWithType:NotificationSoundTypeNotification]) {
+        notificationSound = [self.settings getNotificationSoundWithType:NotificationSoundTypeNotification];
+    }
+    localNotification.alertPrivateTitle = conference.name;
+    localNotification.alertTitle = conference.name;
+    localNotification.identifier = [NSUUID UUID];
+    localNotification.alertBody = TwinmeLocalizedString(@"notification_center_conference_join_call", nil);
+    
+    // In background, either play the selected sound or the vibration, not both at the same time.
+    // The selected sound is in fact not played but the phone will vibrate.
+    if (hasSounds) {
+        if (notificationSound) {
+            localNotification.alertSound = [notificationSound getSoundForLocalNotification];
+            localNotification.soundSettings = notificationSound;
+        } else {
+            localNotification.vibrate = [self.settings hasVibrationWithType:NotificationSoundTypeNotification];
+        }
+    }
+    
+    return localNotification.alertTitle ? localNotification : nil;
+}
+
 - (nullable NotificationInfo *)messageNotificationWithContact:(nonnull id<TLOriginator>)contact notificationMessage:(nonnull NSString *)notificationMessage notificationBackgroundMessage:(nonnull NSString *)notificationBackgroundMessage type:(TLNotificationType)type canRing:(BOOL)canRing descriptor:(nullable TLDescriptor *)descriptor annotatingUser:(nullable TLTwincodeOutbound *)annotatingUser notificationId:(nullable NSUUID *)notificationId {
     DDLogVerbose(@"%@ messageNotificationWithContact: %@ notificationMessage: %@ notificationBackgroundMessage: %@ type: %d canRing: %d descriptor: %@ notificationId: %@ annotatingUser: %@", LOG_TAG, contact, notificationMessage, notificationBackgroundMessage, type, canRing, descriptor, notificationId, annotatingUser);
     

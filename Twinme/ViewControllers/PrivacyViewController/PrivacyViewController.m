@@ -179,7 +179,7 @@ static NSString *SETTINGS_VALUE_CELL_IDENTIFIER = @"SettingsValueCellIdentifier"
             stateSwitch = [self.twinmeApplication isRecentCallsHidden];
         }
         
-        [cell bindWithTitle:title icon:nil stateSwitch:stateSwitch tagSwitch:(int)indexPath.section hiddenSwitch:NO disableSwitch:disableSwitch backgroundColor:Design.WHITE_COLOR hiddenSeparator:NO];
+        [cell bindWithTitle:title subTitle:nil icon:nil stateSwitch:stateSwitch tagSwitch:(int)indexPath.section hiddenSwitch:NO disableSwitch:disableSwitch backgroundColor:Design.WHITE_COLOR hiddenSeparator:NO];
                 
         return cell;
     }

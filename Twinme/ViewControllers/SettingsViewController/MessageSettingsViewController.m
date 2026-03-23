@@ -259,9 +259,6 @@ typedef enum {
             break;
             
         case SECTION_NOTIFICATION:
-            numberOfRowsInSection = 3;
-            break;
-            
         case SECTION_ALLOW_COPY:
             numberOfRowsInSection = 3;
             break;
@@ -275,11 +272,8 @@ typedef enum {
             }
             break;
         }
-
-        case SECTION_CALLS:
-            numberOfRowsInSection = 2;
-            break;
             
+        case SECTION_CALLS:
         case SECTION_CONTENT:
             numberOfRowsInSection = 2;
             break;
@@ -346,8 +340,6 @@ typedef enum {
             }
             [cell bindWithTitle:title value:value backgroundColor:Design.WHITE_COLOR];
         } else if (indexPath.section == SECTION_CALLS) {
-            title = TwinmeLocalizedString(@"settings_view_controller_display_call_title", nil);
-            
             if ([self.twinmeApplication displayCallsMode] == TLDisplayCallsModeNone) {
                 value = TwinmeLocalizedString(@"settings_view_controller_display_call_none", nil);;
             } else if ([self.twinmeApplication displayCallsMode] == TLDisplayCallsModeMissed) {
@@ -355,7 +347,7 @@ typedef enum {
             } else {
                 value = TwinmeLocalizedString(@"history_view_controller_all_call_segmented_control", nil);;
             }
-            [cell bindWithTitle:title value:value backgroundColor:Design.WHITE_COLOR];
+            [cell bindWithTitle:nil value:value backgroundColor:Design.WHITE_COLOR];
         } else {
             NSString *expireTimeoutStringValue = [self.defaultSpaceSettings getStringWithName:PROPERTY_TIMEOUT_EPHEMERAL_MESSAGE defaultValue:[NSString stringWithFormat:@"%d", DEFAULT_TIMEOUT_MESSAGE]];
             NSInteger expireTimeout = [expireTimeoutStringValue integerValue];
@@ -448,7 +440,7 @@ typedef enum {
                 break;
         }
         
-        [cell bindWithTitle:title icon:nil stateSwitch:switchState tagSwitch:tag hiddenSwitch:hiddenSwitch disableSwitch:NO backgroundColor:Design.WHITE_COLOR hiddenSeparator:NO];
+        [cell bindWithTitle:title subTitle:nil  icon:nil stateSwitch:switchState tagSwitch:tag hiddenSwitch:hiddenSwitch disableSwitch:NO backgroundColor:Design.WHITE_COLOR hiddenSeparator:NO];
         
         return cell;
     }
@@ -565,7 +557,7 @@ typedef enum {
 
 - (BOOL)isInformationPath:(NSIndexPath *)indexPath {
     
-    if ((indexPath.section == SECTION_INFO || indexPath.section == SECTION_ALLOW_COPY || indexPath.section == SECTION_EPHEMERAL || indexPath.section == SECTION_CONTENT || indexPath.section == SECTION_LINK) && indexPath.row == 0) {
+    if ((indexPath.section == SECTION_INFO || indexPath.section == SECTION_ALLOW_COPY || indexPath.section == SECTION_EPHEMERAL || indexPath.section == SECTION_CONTENT || indexPath.section == SECTION_LINK || indexPath.section == SECTION_CALLS) && indexPath.row == 0) {
         return YES;
     }
     

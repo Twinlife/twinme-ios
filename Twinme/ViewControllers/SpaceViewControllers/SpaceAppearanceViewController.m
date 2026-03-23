@@ -350,7 +350,7 @@ typedef enum {
             
             cell.settingsActionDelegate = self;
             
-            [cell bindWithTitle:TwinmeLocalizedString(@"personalization_view_controller_system", nil) icon:nil stateSwitch:self.displayMode == DisplayModeSystem tagSwitch:TAG_DISPLAY_MODE hiddenSwitch:NO disableSwitch:NO backgroundColor:Design.WHITE_COLOR hiddenSeparator:NO];
+            [cell bindWithTitle:TwinmeLocalizedString(@"personalization_view_controller_system", nil) subTitle:nil icon:nil stateSwitch:self.displayMode == DisplayModeSystem tagSwitch:TAG_DISPLAY_MODE hiddenSwitch:NO disableSwitch:NO backgroundColor:Design.WHITE_COLOR hiddenSeparator:NO];
             
             return cell;
         }

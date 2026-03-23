@@ -240,7 +240,7 @@ typedef enum {
             icon = self.allowCopy ? [UIImage imageNamed:@"SendOptionCopyAllowedIcon"] : [UIImage imageNamed:@"SendOptionCopyIcon"];
         }
         
-        [cell bindWithTitle:title icon:icon stateSwitch:switchState tagSwitch:tag hiddenSwitch:NO disableSwitch:NO backgroundColor:Design.POPUP_BACKGROUND_COLOR hiddenSeparator:hideSeparator];
+        [cell bindWithTitle:title subTitle:nil icon:icon stateSwitch:switchState tagSwitch:tag hiddenSwitch:NO disableSwitch:NO backgroundColor:Design.POPUP_BACKGROUND_COLOR hiddenSeparator:hideSeparator];
         
         return cell;
     }

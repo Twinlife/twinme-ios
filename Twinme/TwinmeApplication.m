@@ -66,6 +66,10 @@ static const int ddLogLevel = DDLogLevelWarning;
 #define SHOW_ONBOARDING_REMOTE_CAMERA_SETTINGS @"ShowOnboardingRemoteCameraSettings"
 #define SHOW_ONBOARDING_TRANSFER_CALL @"ShowOnboardingTransferCall"
 #define SHOW_ONBOARDING_PROXY @"ShowOnboardingProxy"
+#define SHOW_ONBOARDING_BACKUP @"ShowOnboardingBackup"
+#define SHOW_ONBOARDING_RESTORE @"ShowOnboardingRestore"
+#define SHOW_ONBOARDING_VERIFY_BACKUP @"ShowOnboardingVerifyBackup"
+#define SHOW_ONBOARDING_BACKUP_BETA @"ShowOnboardingBackupBeta"
 #define SHOW_WARNING_EDIT_MESSAGE @"ShowWarningEditMessage"
 #define SHOW_WARNING_LOCATION_BACKGROUND @"ShowWarningLocationBackground"
 #define SHOW_WARNING_LOCATION_FINE @"ShowWarningLocationFine"
@@ -86,6 +90,8 @@ static const int ddLogLevel = DDLogLevelWarning;
 #define INVITATION_SUBSCRIPTION_TWINCODE @"InvitationSubscriptionTwincode"
 #define SHOW_CLICK_TO_CALL_DESCRIPTION_COUNT @"ShowClickToCallDescriptionCount"
 #define AUDIO_ITEM_RATE @"AudioItemRate"
+#define LAST_BACKUP @"LastBackup"
+#define FIRST_INSTALLATION_WITH_BACKUP @"FirstInstallationWithBackup"
 
 #define DEFAULT_COLOR @"#00AEFF"
 
@@ -144,6 +150,10 @@ static TLBooleanConfigIdentifier *showOnboardingRemoteCamera;
 static TLBooleanConfigIdentifier *showOnboardingRemoteCameraSettings;
 static TLBooleanConfigIdentifier *showOnboardingTransferCall;
 static TLBooleanConfigIdentifier *showOnboardingProxy;
+static TLBooleanConfigIdentifier *showOnboardingBackup;
+static TLBooleanConfigIdentifier *showOnboardingRestore;
+static TLBooleanConfigIdentifier *showOnboardingVerifyBackup;
+static TLBooleanConfigIdentifier *showOnboardingBackupBeta;
 static TLBooleanConfigIdentifier *showWarningEditMessage;
 static TLBooleanConfigIdentifier *showWarningLocationBackground;
 static TLBooleanConfigIdentifier *showWarningLocationFine;
@@ -163,6 +173,10 @@ static TLIntegerConfigIdentifier *showClickToCallDescriptionCountConfig;
 // Skred specific
 static TLUUIDConfigIdentifier *invitationSubscriptionTwincodeConfig;
 static TLStringConfigIdentifier *invitationSubscriptionImageConfig;
+
+// Backup
+static TLIntegerConfigIdentifier *lastBackupConfig;
+static TLIntegerConfigIdentifier *firstInstallationWithBackupConfig;
 
 //
 // Interface: TwinmeApplication ()
@@ -227,7 +241,11 @@ static TLStringConfigIdentifier *invitationSubscriptionImageConfig;
         videoCallInFitModeConfig = [TLBooleanConfigIdentifier defineWithName:IS_VIDEO_IN_FIT_MODE uuid:@"D36D6D8A-2DFF-11ED-A261-0242AC120002" defaultValue:NO];
         callQualityCountConfig = [TLIntegerConfigIdentifier defineWithName:CALL_QUALITY_COUNT uuid:@"DDD83ED6-3335-11ED-A261-0242AC120002" defaultValue:0];
         callQualityLastDateConfig = [TLIntegerConfigIdentifier defineWithName:CALL_QUALITY_LAST_DATE uuid:@"B57863E8-3336-11ED-A261-0242AC120002" defaultValue:0];
-
+        
+        lastBackupConfig = [TLIntegerConfigIdentifier defineWithName:LAST_BACKUP uuid:@"E55ECCE5-A709-4C5d-9D7D-09CDDEA8f8C5" defaultValue:0];
+        firstInstallationWithBackupConfig = [TLIntegerConfigIdentifier defineWithName:FIRST_INSTALLATION_WITH_BACKUP defaultValue:0];
+        [self setFirstInstallationWithBackup];
+        
         showGroupCallAnimationConfig = [TLBooleanConfigIdentifier defineWithName:SHOW_GROUP_CALL_ANIMATION uuid:@"BB834EE6-3927-42E1-BC46-5663B2AB47DB" defaultValue:YES];
 
         // Configurations not migrated between devices.
@@ -257,6 +275,10 @@ static TLStringConfigIdentifier *invitationSubscriptionImageConfig;
         showOnboardingRemoteCameraSettings = [TLBooleanConfigIdentifier defineWithName:SHOW_ONBOARDING_REMOTE_CAMERA_SETTINGS defaultValue:YES];
         showOnboardingTransferCall = [TLBooleanConfigIdentifier defineWithName:SHOW_ONBOARDING_TRANSFER_CALL defaultValue:YES];
         showOnboardingProxy = [TLBooleanConfigIdentifier defineWithName:SHOW_ONBOARDING_PROXY defaultValue:YES];
+        showOnboardingBackup = [TLBooleanConfigIdentifier defineWithName:SHOW_ONBOARDING_BACKUP defaultValue:YES];
+        showOnboardingRestore = [TLBooleanConfigIdentifier defineWithName:SHOW_ONBOARDING_RESTORE defaultValue:YES];
+        showOnboardingVerifyBackup = [TLBooleanConfigIdentifier defineWithName:SHOW_ONBOARDING_VERIFY_BACKUP defaultValue:YES];
+        showOnboardingBackupBeta = [TLBooleanConfigIdentifier defineWithName:SHOW_ONBOARDING_BACKUP_BETA defaultValue:YES];
         showWarningEditMessage = [TLBooleanConfigIdentifier defineWithName:SHOW_WARNING_EDIT_MESSAGE defaultValue:YES];
         
         //Skred
@@ -650,6 +672,42 @@ static TLStringConfigIdentifier *invitationSubscriptionImageConfig;
 }
 
 //
+// Backup
+//
+
+- (BOOL)showBackupWarning {
+    DDLogVerbose(@"%@ showBackupWarning", LOG_TAG);
+
+    int64_t oneDay = 60 * 60 * 24;
+    int64_t oneMonth = 30 * oneDay;
+    
+    NSTimeInterval timeInterval = [[NSDate date] timeIntervalSince1970];
+    int64_t diffTimeSinceLastBackup = timeInterval - lastBackupConfig.int64Value;
+    
+    if (diffTimeSinceLastBackup < oneMonth) {
+        return NO;
+    }
+        
+    return YES;
+}
+
+- (void)setLastBackupDate {
+    DDLogVerbose(@"%@ setLastBackupDate", LOG_TAG);
+    
+    NSTimeInterval timeInterval = [[NSDate date] timeIntervalSince1970];
+    lastBackupConfig.int64Value = timeInterval;
+}
+
+- (void)setFirstInstallationWithBackup {
+    DDLogVerbose(@"%@ setFirstInstallationWithBackup", LOG_TAG);
+    
+    if (firstInstallationWithBackupConfig.int64Value == 0) {
+        NSTimeInterval timeInterval = [[NSDate date] timeIntervalSince1970];
+        firstInstallationWithBackupConfig.int64Value = timeInterval;
+    }
+}
+
+//
 // Access twinme management
 //
 
@@ -902,6 +960,18 @@ static TLStringConfigIdentifier *invitationSubscriptionImageConfig;
         case OnboardingTypeProxy:
             return showOnboardingProxy.boolValue;
             
+        case OnboardingTypeBackup:
+            return showOnboardingBackup.boolValue;
+            
+        case OnboardingTypeRestore:
+            return showOnboardingRestore.boolValue;
+            
+        case OnboardingTypeVerifyBackup:
+            return showOnboardingVerifyBackup.boolValue;
+            
+        case OnboardingTypeBackupBeta:
+            return showOnboardingBackupBeta.boolValue;
+            
         default:
             return NO;
     }
@@ -954,6 +1024,20 @@ static TLStringConfigIdentifier *invitationSubscriptionImageConfig;
             showOnboardingProxy.boolValue = state;
             break;
             
+        case OnboardingTypeBackup:
+            showOnboardingBackup.boolValue = state;
+            break;
+            
+        case OnboardingTypeRestore:
+            showOnboardingRestore.boolValue = state;
+            break;
+            
+        case OnboardingTypeVerifyBackup:
+            showOnboardingVerifyBackup.boolValue = state;
+            
+        case OnboardingTypeBackupBeta:
+            showOnboardingBackupBeta.boolValue = state;
+            
         default:
             break;
     }
@@ -972,6 +1056,10 @@ static TLStringConfigIdentifier *invitationSubscriptionImageConfig;
     showOnboardingRemoteCameraSettings.boolValue = YES;
     showOnboardingTransferCall.boolValue = YES;
     showOnboardingProxy.boolValue = YES;
+    showOnboardingBackup.boolValue = YES;
+    showOnboardingRestore.boolValue = YES;
+    showOnboardingVerifyBackup.boolValue = YES;
+    showOnboardingBackupBeta.boolValue = YES;
 }
 
 //

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="19529" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19519"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -19,14 +19,24 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text=".label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qls-Yg-WJZ">
-                        <rect key="frame" x="34" y="0.0" width="636" height="120"/>
+                        <rect key="frame" x="34" y="0.0" width="73" height="120"/>
                         <fontDescription key="fontDescription" type="system" pointSize="32"/>
                         <nil key="textColor"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="251" text=".new" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="8ju-Ic-rMC" customClass="PaddingLabel">
+                        <rect key="frame" x="119" y="35" width="65" height="50"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="50" id="iNI-ju-oVg"/>
+                        </constraints>
+                        <fontDescription key="fontDescription" type="system" pointSize="32"/>
+                        <color key="textColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <nil key="highlightedColor"/>
                     </label>
                     <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="EndChevron" translatesAutoresizingMaskIntoConstraints="NO" id="XU1-nf-0Fu">
                         <rect key="frame" x="702" y="47" width="16" height="26"/>
                         <constraints>
+                            <constraint firstAttribute="width" secondItem="XU1-nf-0Fu" secondAttribute="height" multiplier="8:13" id="cIa-bn-ZuH"/>
                             <constraint firstAttribute="height" constant="26" id="hAa-to-4eB"/>
                         </constraints>
                     </imageView>
@@ -53,8 +63,9 @@
                     <constraint firstItem="pWv-dj-z6k" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="SNw-lH-Tfp"/>
                     <constraint firstItem="qls-Yg-WJZ" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="SUV-hp-Xg2"/>
                     <constraint firstItem="qls-Yg-WJZ" firstAttribute="height" secondItem="H2p-sc-9uM" secondAttribute="height" id="UU3-xu-Msj"/>
-                    <constraint firstItem="XU1-nf-0Fu" firstAttribute="width" secondItem="XU1-nf-0Fu" secondAttribute="height" multiplier="8:13" id="cIa-bn-ZuH"/>
-                    <constraint firstItem="XU1-nf-0Fu" firstAttribute="leading" secondItem="qls-Yg-WJZ" secondAttribute="trailing" constant="32" id="hDG-v3-atv"/>
+                    <constraint firstItem="8ju-Ic-rMC" firstAttribute="leading" secondItem="qls-Yg-WJZ" secondAttribute="trailing" constant="12" id="cCt-a4-4w0"/>
+                    <constraint firstItem="8ju-Ic-rMC" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="eqQ-rt-DSz"/>
+                    <constraint firstItem="XU1-nf-0Fu" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="qls-Yg-WJZ" secondAttribute="trailing" constant="32" id="hDG-v3-atv"/>
                     <constraint firstAttribute="trailing" secondItem="XU1-nf-0Fu" secondAttribute="trailing" constant="32" id="j17-Uo-Jbh"/>
                     <constraint firstItem="XU1-nf-0Fu" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="oew-xx-9KX"/>
                     <constraint firstItem="M1a-we-ROV" firstAttribute="width" secondItem="H2p-sc-9uM" secondAttribute="width" id="uJ8-YZ-ezA"/>
@@ -66,6 +77,9 @@
                 <outlet property="accessoryImageView" destination="XU1-nf-0Fu" id="gj2-6Q-hGz"/>
                 <outlet property="accessoryImageViewHeightConstraint" destination="hAa-to-4eB" id="Ody-jJ-fHH"/>
                 <outlet property="accessoryImageViewTrailingConstraint" destination="j17-Uo-Jbh" id="5xJ-Us-RRS"/>
+                <outlet property="badgeLabel" destination="8ju-Ic-rMC" id="cJI-Kd-fHU"/>
+                <outlet property="badgeLabelHeightConstraint" destination="iNI-ju-oVg" id="d31-ZJ-PgN"/>
+                <outlet property="badgeLabelLeadingConstraint" destination="cCt-a4-4w0" id="u6I-uk-mHh"/>
                 <outlet property="notificationView" destination="pWv-dj-z6k" id="N2Z-bt-T9K"/>
                 <outlet property="notificationViewHeightConstraint" destination="a7K-Fu-EHB" id="l0u-gt-QgL"/>
                 <outlet property="notificationViewLeadingConstraint" destination="8Bz-l9-RRw" id="Zqd-DT-DDD"/>

@@ -141,6 +141,14 @@ static NSString *ONBOARDING_CELL_IDENTIFIER = @"OnboardingExternalCallCellIdenti
 
 - (void)collectionView:(UICollectionView *)collectionView willDisplayCell:(UICollectionViewCell *)cell forItemAtIndexPath:(NSIndexPath *)indexPath {
     DDLogVerbose(@"%@ collectionView: %@ willDisplayCell: %@ forItemAtIndexPath: %@", LOG_TAG, collectionView, cell, indexPath);
+    
+    UIOnboarding *uiOnboarding = [self.uiOnboarding objectAtIndex:indexPath.row];
+    
+    if ([uiOnboarding getTitle]) {
+        self.titleLabel.text = [uiOnboarding getTitle];
+    } else {
+        self.titleLabel.text = TwinmeLocalizedString(@"premium_services_view_controller_click_to_call_title", nil);
+    }
 }
 
 - (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout minimumLineSpacingForSectionAtIndex:(NSInteger)section {

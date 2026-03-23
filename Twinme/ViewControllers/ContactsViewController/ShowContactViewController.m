@@ -669,15 +669,14 @@ static CGFloat DESIGN_NAME_DEFAULT_WIDTH = 420;
     
     self.settingsNewLabel.font = Design.FONT_MEDIUM32;
     self.settingsNewLabel.textColor = [UIColor whiteColor];
-    
     self.settingsNewLabel.textAlignment = NSTextAlignmentCenter;
     self.settingsNewLabel.insets = UIEdgeInsetsMake(0, Design.TEXT_PADDING, 0, Design.TEXT_PADDING);
     self.settingsNewLabel.text = TwinmeLocalizedString(@"application_new", nil);
-    
     self.settingsNewLabel.clipsToBounds = YES;
     self.settingsNewLabel.userInteractionEnabled = YES;
     self.settingsNewLabel.backgroundColor = Design.MAIN_COLOR;
     self.settingsNewLabel.layer.cornerRadius = self.settingsNewLabelHeightConstraint.constant * 0.5;
+    self.settingsNewLabel.hidden = YES;
     
     UITapGestureRecognizer *settingsNewFeatureViewGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSettingsNewFeatureTapGesture:)];
     [self.settingsNewLabel addGestureRecognizer:settingsNewFeatureViewGestureRecognizer];

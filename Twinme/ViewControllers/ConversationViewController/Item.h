@@ -45,7 +45,14 @@ typedef enum {
     ItemTypeInvitationContact,
     ItemTypePeerInvitationContact,
     ItemTypeClear,
-    ItemTypePeerClear
+    ItemTypePeerClear,
+    ItemTypeInfoDate,
+    ItemTypeInfoCopy,
+    ItemTypeInfoFile,
+    ItemTypeInfoSection,
+    ItemTypeInfoAnnotation,
+    ItemTypeInfoEphemeral,
+    ItemTypeInfoDeleted
 } ItemType;
 
 typedef enum {
@@ -153,5 +160,7 @@ typedef enum {
 - (NSComparisonResult)compareWithItem:(nonnull Item *)second;
 
 - (void)appendTo:(nonnull NSMutableString *)string;
+
++ (nonnull TLDescriptorId *)defaultDescriptorId;
 
 @end

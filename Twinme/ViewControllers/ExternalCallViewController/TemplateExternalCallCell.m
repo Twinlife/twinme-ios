@@ -35,6 +35,8 @@ static const int ddLogLevel = DDLogLevelWarning;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *externalCallLabelTrailingConstraint;
 @property (weak, nonatomic) IBOutlet UILabel *externalCallLabel;
 @property (weak, nonatomic) IBOutlet UILabel *externalCallAvatarLabel;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *externalCallIconViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet UIImageView *externalCallIconView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *separatorViewBottomConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *separatorViewHeightConstraint;
 @property (weak, nonatomic) IBOutlet UIView *separatorView;
@@ -70,6 +72,11 @@ static const int ddLogLevel = DDLogLevelWarning;
     
     self.externalCallLabel.font = Design.FONT_REGULAR34;
     self.externalCallLabel.textColor = Design.FONT_COLOR_DEFAULT;
+    
+    self.externalCallIconViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    
+    self.externalCallIconView.tintColor = [UIColor whiteColor];
+    self.externalCallIconView.hidden = YES;
 
     self.separatorViewBottomConstraint.constant = Design.SEPARATOR_HEIGHT;
     self.separatorViewHeightConstraint.constant = Design.SEPARATOR_HEIGHT;
@@ -92,15 +99,30 @@ static const int ddLogLevel = DDLogLevelWarning;
     if ([uiTemplateExternalCall getImage]) {
         self.externalCallImageView.image = [uiTemplateExternalCall getImage];
         self.externalCallAvatarLabel.hidden = YES;
+        self.externalCallIconView.hidden = YES;
     } else {
         self.externalCallImageView.image = nil;
-        self.externalCallAvatarLabel.hidden = NO;
-        self.externalCallImageView.backgroundColor = Design.BACKGROUND_COLOR_GREY;
-        self.externalCallAvatarLabel.text = [NSString firstCharacter:[uiTemplateExternalCall getName]];
+        
+        if (uiTemplateExternalCall.templateType == TemplateExternalCallTypeOther) {
+            self.externalCallImageView.backgroundColor = Design.MAIN_COLOR;
+            self.externalCallAvatarLabel.hidden = YES;
+            self.externalCallIconView.hidden = NO;
+        } else {
+            self.externalCallImageView.backgroundColor = Design.BACKGROUND_COLOR_GREY;
+            self.externalCallAvatarLabel.hidden = NO;
+            self.externalCallIconView.hidden = YES;
+            self.externalCallAvatarLabel.text = [NSString firstCharacter:[uiTemplateExternalCall getName]];
+        }
     }
     
-    self.externalCallLabel.text = [uiTemplateExternalCall getName];
+    NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:@""];
+    [attributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:[uiTemplateExternalCall getName] attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_MEDIUM32, NSFontAttributeName, Design.FONT_COLOR_DEFAULT, NSForegroundColorAttributeName, nil]]];
+    if ([uiTemplateExternalCall getMessage]) {
+        [attributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:@"\n"]];
+        [attributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:[uiTemplateExternalCall getMessage] attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_MEDIUM28, NSFontAttributeName, Design.FONT_COLOR_GREY, NSForegroundColorAttributeName, nil]]];
+    }
     
+    self.externalCallLabel.attributedText = attributedString;
     self.separatorView.hidden = hideSeparator;
     
     [self updateColor];

@@ -50,6 +50,7 @@
 #import "UICustomTab.h"
 #import "CustomTabView.h"
 #import "DefaultConfirmView.h"
+#import "ShareItemSource.h"
 
 #if 0
 static const int ddLogLevel = DDLogLevelVerbose;
@@ -1167,6 +1168,10 @@ static UIColor *DESIGN_PLACEHOLDER_COLOR;
             message = TwinmeLocalizedString(@"add_contact_view_controller_scan_error_corrupt_link", nil);
             break;
             
+        case TLBaseServiceErrorCodeExpired:
+            message = TwinmeLocalizedString(@"add_contact_view_controller_scan_error_expired_link", nil);
+            break;
+            
         default:
             message = TwinmeLocalizedString(@"capture_view_controller_incorrect_qrcode", nil);
             break;
@@ -1387,14 +1392,44 @@ static UIColor *DESIGN_PLACEHOLDER_COLOR;
     
     [self hapticFeedBack:UIImpactFeedbackStyleHeavy];
     
+    if (!self.profile) {
+        return;
+    }
+    
     // To avoid hyperlink injections in names, we replace '.' and ':' into special UTF-8 characters
     // that also visually correspond to '.' and ':'.  These two replacements allow to break
     // hyperlink recognition and forwarding.  Even cut&paste will not allow to follow such link.
     NSString *name = [self.profile.name stringByReplacingOccurrencesOfString:@"." withString:@"\u2024"];
     name = [name stringByReplacingOccurrencesOfString:@":" withString:@"\u02d0"];
-    NSString *message = [NSString stringWithFormat:TwinmeLocalizedString(@"add_contact_view_controller_invite_message %@ %@", nil), self.uri.uri, name];
+   //NSString *message = [NSString stringWithFormat:TwinmeLocalizedString(@"add_contact_view_controller_invite_message %@ %@", nil), self.uri.uri, name];
     
-    UIActivityViewController *activityViewController = [[UIActivityViewController alloc] initWithActivityItems:@[message] applicationActivities:nil];
+    NSMutableString *message = [[NSMutableString alloc] initWithString:@""];
+    [message appendString:[NSString stringWithFormat:TwinmeLocalizedString(@"add_contact_view_controller_share_message_part_1", nil), name]];
+    [message appendString:@"\n\n"];
+    [message appendString:TwinmeLocalizedString(@"add_contact_view_controller_share_message_part_2", nil)];
+    [message appendString:@"\n\n"];
+    [message appendString:[NSString stringWithFormat:TwinmeLocalizedString(@"add_contact_view_controller_share_message_part_3", nil), name]];
+    [message appendString:@"\n"];
+    [message appendString: self.uri.uri];
+    [message appendString:@"\n\n"];
+    [message appendString:TwinmeLocalizedString(@"add_contact_view_controller_share_message_part_4", nil)];
+    
+    UIImage *qrcodeToSave;
+    TwincodeView *twincodeView;
+    
+    NSString *shareTitle = [NSString stringWithFormat:TwinmeLocalizedString(@"add_contact_view_controller_share_title", nil), name];
+    twincodeView = [[TwincodeView alloc] initWithName:self.profile.name avatar:self.avatarView.image qrcode:self.qrcodeView.image twincodeId:self.profile.twincodeOutbound.uuid];
+    qrcodeToSave = [twincodeView screenshot];
+    ShareItemSource *shareItem = [[ShareItemSource alloc] initWithMessage:message subject:shareTitle];
+
+    NSArray *shareItems;
+    if (qrcodeToSave) {
+        shareItems = @[shareItem, qrcodeToSave];
+    } else {
+        shareItems = @[shareItem];
+    }
+    
+    UIActivityViewController *activityViewController = [[UIActivityViewController alloc] initWithActivityItems:shareItems applicationActivities:nil];
     activityViewController.excludedActivityTypes = @[UIActivityTypeAirDrop,
                                                      UIActivityTypePrint,
                                                      UIActivityTypeAssignToContact,

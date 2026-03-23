@@ -163,11 +163,11 @@ static CGFloat DESIGN_AVATAR_BORDER_WIDTH = 6;
     self.messageLabelTopConstraint.constant *= Design.HEIGHT_RATIO;
     self.messageLabelWidthConstraint.constant *= Design.WIDTH_RATIO;
     
-    [self.messageLabel setFont:Design.FONT_MEDIUM28];
+    [self.messageLabel setFont:Design.FONT_MEDIUM30];
     self.messageLabel.textColor = [UIColor blackColor];
     
     self.twincodeLabel.text = [NSString stringWithFormat:@"%@",self.twincodeId];
-    self.messageLabel.text = TwinmeLocalizedString(@"fullscreen_qrcode_view_controller_save_message", nil);
+    self.messageLabel.text = [NSString stringWithFormat:TwinmeLocalizedString(@"add_contact_view_controller_share_image_message", nil), self.name];
 }
 
 @end

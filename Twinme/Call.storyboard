@@ -392,6 +392,13 @@
                                     <constraint firstAttribute="height" constant="171" id="LLJ-JL-s4p"/>
                                 </constraints>
                             </view>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="69g-WM-CKN" customClass="CallInfoView">
+                                <rect key="frame" x="0.0" y="1174" width="750" height="160"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="160" id="leZ-UJ-TIL"/>
+                                </constraints>
+                            </view>
                             <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Tv3-JW-dkW">
                                 <rect key="frame" x="88" y="1128" width="574" height="206"/>
                                 <subviews>
@@ -513,6 +520,7 @@
                             <constraint firstItem="oRV-Va-ts1" firstAttribute="leading" secondItem="IL3-b5-fM8" secondAttribute="leading" id="H2l-SP-Hf1"/>
                             <constraint firstItem="7wu-jh-Mk7" firstAttribute="centerX" secondItem="IL3-b5-fM8" secondAttribute="centerX" id="Hjs-WH-TYt"/>
                             <constraint firstItem="qOp-Jm-r4T" firstAttribute="top" secondItem="oRV-Va-ts1" secondAttribute="bottom" id="IOA-0J-vuP"/>
+                            <constraint firstItem="69g-WM-CKN" firstAttribute="leading" secondItem="IL3-b5-fM8" secondAttribute="leading" id="IuP-5N-04u"/>
                             <constraint firstItem="qOp-Jm-r4T" firstAttribute="leading" secondItem="IL3-b5-fM8" secondAttribute="leading" id="M22-JT-rzb"/>
                             <constraint firstItem="IL3-b5-fM8" firstAttribute="trailing" secondItem="2h3-zy-nFc" secondAttribute="trailing" id="M4t-OT-g5D"/>
                             <constraint firstItem="IL3-b5-fM8" firstAttribute="trailing" secondItem="qOp-Jm-r4T" secondAttribute="trailing" id="MO7-P5-vyO"/>
@@ -524,6 +532,7 @@
                             <constraint firstItem="Ksm-KP-RmJ" firstAttribute="width" secondItem="OdT-Mb-NfC" secondAttribute="width" id="PNu-Bh-FlZ"/>
                             <constraint firstItem="OdT-Mb-NfC" firstAttribute="centerX" secondItem="IL3-b5-fM8" secondAttribute="centerX" id="Qsy-ba-Ceb"/>
                             <constraint firstAttribute="bottom" secondItem="30r-VX-c9U" secondAttribute="bottom" id="T2K-ZM-PWn"/>
+                            <constraint firstAttribute="bottom" secondItem="69g-WM-CKN" secondAttribute="bottom" id="Yhf-ca-kDl"/>
                             <constraint firstItem="ceh-wf-Vl3" firstAttribute="centerY" secondItem="IL3-b5-fM8" secondAttribute="centerY" id="eyO-IA-tzg"/>
                             <constraint firstItem="ceh-wf-Vl3" firstAttribute="centerX" secondItem="IL3-b5-fM8" secondAttribute="centerX" id="gq8-q7-XEc"/>
                             <constraint firstItem="wIN-Ne-rEH" firstAttribute="leading" secondItem="IL3-b5-fM8" secondAttribute="leading" id="meU-4S-9Oj"/>
@@ -534,6 +543,7 @@
                             <constraint firstItem="MEa-eY-cNz" firstAttribute="centerY" secondItem="IL3-b5-fM8" secondAttribute="centerY" id="rka-Gc-rTS"/>
                             <constraint firstItem="oRV-Va-ts1" firstAttribute="top" secondItem="IL3-b5-fM8" secondAttribute="top" id="vUc-D0-AWl"/>
                             <constraint firstItem="IL3-b5-fM8" firstAttribute="trailing" secondItem="30r-VX-c9U" secondAttribute="trailing" id="wCG-Sg-mkk"/>
+                            <constraint firstItem="IL3-b5-fM8" firstAttribute="trailing" secondItem="69g-WM-CKN" secondAttribute="trailing" id="xkw-4N-ymh"/>
                         </constraints>
                     </view>
                     <nil key="simulatedTopBarMetrics"/>
@@ -564,6 +574,9 @@
                         <outlet property="callHoldView" destination="xVd-fK-G6c" id="yZ5-4c-ub8"/>
                         <outlet property="callHoldViewBottomConstraint" destination="Cs8-ry-ddW" id="dmP-i3-e6H"/>
                         <outlet property="callHoldViewHeightConstraint" destination="LLJ-JL-s4p" id="i5b-3H-IxF"/>
+                        <outlet property="callInfoView" destination="69g-WM-CKN" id="uOL-8g-EXe"/>
+                        <outlet property="callInfoViewBottomConstraint" destination="Yhf-ca-kDl" id="nEe-Ox-h28"/>
+                        <outlet property="callInfoViewHeightConstraint" destination="leZ-UJ-TIL" id="LrS-gO-dNW"/>
                         <outlet property="cancelButton" destination="t6O-hV-7oY" id="ZHA-dC-oVn"/>
                         <outlet property="cancelButtonHeightConstraint" destination="Bfz-gT-oR4" id="irA-tw-Ml3"/>
                         <outlet property="cancelImageView" destination="0vz-wf-mzi" id="rUD-hD-rLW"/>
@@ -603,8 +616,8 @@
                         <outlet property="nameLabelLeadingConstraint" destination="jN9-kS-wjr" id="sqT-B8-rAt"/>
                         <outlet property="nameLabelTrailingConstraint" destination="jF7-N9-gqq" id="Nre-sd-CFo"/>
                         <outlet property="noParticipantsView" destination="ceh-wf-Vl3" id="0Zv-eY-Wdt"/>
-                        <outlet property="noParticipantsViewHeightConstraint" destination="0dx-Ox-c5v" id="rfe-Vj-1y4"/>
-                        <outlet property="noParticipantsViewWidthConstraint" destination="5tO-fB-c6i" id="fW0-fA-hwp"/>
+                        <outlet property="noParticipantsViewHeightConstraint" destination="5tO-fB-c6i" id="DSy-g2-MJ5"/>
+                        <outlet property="noParticipantsViewWidthConstraint" destination="0dx-Ox-c5v" id="dYn-gm-m6X"/>
                         <outlet property="overlayView" destination="jBQ-vp-Jtt" id="3sU-RC-IlY"/>
                         <outlet property="participantsView" destination="2h3-zy-nFc" id="2t0-44-Wat"/>
                         <outlet property="participantsViewBottomConstraint" destination="1qf-LR-rHh" id="Ewt-ZV-t8o"/>

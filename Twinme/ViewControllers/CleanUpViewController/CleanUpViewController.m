@@ -368,7 +368,7 @@ static NSString *SETTINGS_ITEM_CELL_IDENTIFIER = @"SettingsCellIdentifier";
             
             cell.settingsActionDelegate = self;
             
-            [cell bindWithTitle:TwinmeLocalizedString(@"cleanup_view_controller_all", nil) icon:nil stateSwitch:self.cleanUpExpiration.expirationType == ExpirationTypeAll tagSwitch:0 hiddenSwitch:NO disableSwitch:NO backgroundColor:Design.WHITE_COLOR hiddenSeparator:NO];
+            [cell bindWithTitle:TwinmeLocalizedString(@"cleanup_view_controller_all", nil) subTitle:nil  icon:nil stateSwitch:self.cleanUpExpiration.expirationType == ExpirationTypeAll tagSwitch:0 hiddenSwitch:NO disableSwitch:NO backgroundColor:Design.WHITE_COLOR hiddenSeparator:NO];
             
             return cell;
         } else {

@@ -375,7 +375,7 @@ static NSString *TWINME_SETTINGS_CELL_IDENTIFIER = @"TwinmeSettingsCellIdentifie
             
             DisplayMode displayMode = [[self.defaultSpaceSettings getStringWithName:PROPERTY_DISPLAY_MODE defaultValue:[NSString stringWithFormat:@"%d",DisplayModeSystem]] intValue];
             
-            [cell bindWithTitle:TwinmeLocalizedString(@"personalization_view_controller_system", nil) icon:nil stateSwitch:displayMode == DisplayModeSystem tagSwitch:0 hiddenSwitch:NO disableSwitch:NO backgroundColor:Design.WHITE_COLOR hiddenSeparator:NO];
+            [cell bindWithTitle:TwinmeLocalizedString(@"personalization_view_controller_system", nil) subTitle:nil icon:nil stateSwitch:displayMode == DisplayModeSystem tagSwitch:0 hiddenSwitch:NO disableSwitch:NO backgroundColor:Design.WHITE_COLOR hiddenSeparator:NO];
             
             return cell;
         }
@@ -399,7 +399,6 @@ static NSString *TWINME_SETTINGS_CELL_IDENTIFIER = @"TwinmeSettingsCellIdentifie
             }
             
             [cell bindWithTitle:TwinmeLocalizedString(@"conversations_view_controller_title", nil) hiddenAccessory:NO disableSetting:NO color:Design.FONT_COLOR_DEFAULT];
-            
             return cell;
         }
     } else {

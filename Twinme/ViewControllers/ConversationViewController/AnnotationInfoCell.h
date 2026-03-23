@@ -14,6 +14,6 @@
 
 @interface AnnotationInfoCell : UITableViewCell
 
-- (void)bindWithAnnotation:(UIAnnotation *)uiAnnotation hideSeparator:(BOOL)hideSeparator;
+- (void)bindWithAnnotation:(UIAnnotation *)uiAnnotation hideSeparator:(BOOL)hideSeparator backgroundColor:(UIColor *)backgroundColor;
 
 @end

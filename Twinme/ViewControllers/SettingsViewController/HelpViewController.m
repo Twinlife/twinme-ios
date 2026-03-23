@@ -171,7 +171,7 @@ static const int COACH_MARK_ROW = 9;
         
         cell.settingsActionDelegate = self;
         
-        [cell bindWithTitle:TwinmeLocalizedString(@"coach_mark_view_controller_setting_title", nil) icon:nil stateSwitch:[self.twinmeApplication showCoachMark] tagSwitch:0 hiddenSwitch:NO disableSwitch:NO backgroundColor:Design.WHITE_COLOR hiddenSeparator:NO];
+        [cell bindWithTitle:TwinmeLocalizedString(@"coach_mark_view_controller_setting_title", nil) subTitle:nil  icon:nil stateSwitch:[self.twinmeApplication showCoachMark] tagSwitch:0 hiddenSwitch:NO disableSwitch:NO backgroundColor:Design.WHITE_COLOR hiddenSeparator:NO];
         return cell;
     } else {
         TwinmeSettingsItemCell *cell = [tableView dequeueReusableCellWithIdentifier:TWINME_SETTINGS_CELL_IDENTIFIER];

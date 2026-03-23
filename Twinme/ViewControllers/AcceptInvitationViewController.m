@@ -312,6 +312,18 @@ static const CGFloat DESIGN_CANCEL_HEIGHT = 140;
     [alertMessageView showAlertView];
 }
 
+- (void)onGetTwincodeExpired {
+    DDLogVerbose(@"%@ onGetTwincodeExpired", LOG_TAG);
+        
+    self.actionView.hidden = YES;
+    
+    AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
+    alertMessageView.alertMessageViewDelegate = self;
+    [alertMessageView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:TwinmeLocalizedString(@"add_contact_view_controller_scan_error_revoked_link", nil)];
+    [self.view addSubview:alertMessageView];
+    [alertMessageView showAlertView];
+}
+
 - (void)onLocalTwincode {
     DDLogVerbose(@"%@ onLocalTwincode", LOG_TAG);
     
@@ -751,6 +763,10 @@ static const CGFloat DESIGN_CANCEL_HEIGHT = 140;
             
         case TLBaseServiceErrorCodeItemNotFound:
             message = TwinmeLocalizedString(@"add_contact_view_controller_scan_error_corrupt_link", nil);
+            break;
+            
+        case TLBaseServiceErrorCodeExpired:
+            message = TwinmeLocalizedString(@"add_contact_view_controller_scan_error_expired_link", nil);
             break;
             
         default:

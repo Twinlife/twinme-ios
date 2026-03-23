@@ -43,6 +43,11 @@
     return self.createdTimestamp;
 }
 
+- (NSString *)getInformation {
+    
+    return [NSString stringWithFormat:@"%f, %f", self.geolocationDescriptor.latitude, self.geolocationDescriptor.longitude];
+}
+
 #pragma mark - NSObject
 
 - (NSString *)description {

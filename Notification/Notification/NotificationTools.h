@@ -77,4 +77,6 @@
 /// Create a new notification with a message.
 - (nullable NotificationInfo *)contactNotificationWithContact:(nonnull id<TLOriginator>)contact notificationMessage:(nonnull NSString *)notificationMessage type:(TLNotificationType)type canRing:(BOOL)canRing notificationId:(nullable NSUUID *)notificationId;
 
+- (nullable NotificationInfo *)createNotificationConference:(nonnull id<TLOriginator>)conference;
+
 @end

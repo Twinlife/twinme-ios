@@ -79,15 +79,6 @@ static const int ddLogLevel = DDLogLevelWarning;
     DDLogVerbose(@"%@ initWithErrorCode: %d", LOG_TAG, errorCode);
 
     switch (errorCode) {
-        case TLBaseServiceErrorCodeBadRequest:
-        case TLBaseServiceErrorCodeLibraryError:
-        case TLBaseServiceErrorCodeFeatureNotImplemented:
-        case TLBaseServiceErrorCodeServerError:
-        default:
-            self.customMessage = YES;
-            self.errorMessage = [NSString stringWithFormat:TwinmeLocalizedString(@"fatal_error_view_controller_error_code_message", nil), errorCode];
-            break;
-            
         case TLBaseServiceErrorCodeFeatureNotSupportedByPeer:
             self.errorMessage = TwinmeLocalizedString(@"conversation_view_controller_feature_not_supported_by_peer", nil);
             break;
@@ -119,6 +110,19 @@ static const int ddLogLevel = DDLogLevelWarning;
             
         case TLBaseServiceErrorCodeAccountDeleted:
             self.errorMessage = TwinmeLocalizedString(@"application_account_deleted", nil);
+            break;
+            
+        case TLBaseServiceErrorCodeAccountRestored:
+            self.errorMessage = TwinmeLocalizedString(@"application_account_restored_error", nil);
+            break;
+            
+        case TLBaseServiceErrorCodeBadRequest:
+        case TLBaseServiceErrorCodeLibraryError:
+        case TLBaseServiceErrorCodeFeatureNotImplemented:
+        case TLBaseServiceErrorCodeServerError:
+        default:
+            self.customMessage = YES;
+            self.errorMessage = [NSString stringWithFormat:TwinmeLocalizedString(@"fatal_error_view_controller_error_code_message", nil), errorCode];
             break;
     }
 }

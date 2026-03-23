@@ -12,6 +12,8 @@
 
 #import <TwinmeCommon/Design.h>
 
+#import "PaddingLabel.h"
+
 #if 0
 static const int ddLogLevel = DDLogLevelVerbose;
 #else
@@ -35,6 +37,9 @@ static const int ddLogLevel = DDLogLevelWarning;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *notificationViewHeightConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *notificationViewLeadingConstraint;
 @property (weak, nonatomic) IBOutlet UIView *notificationView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *badgeLabelLeadingConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *badgeLabelHeightConstraint;
+@property (weak, nonatomic) IBOutlet PaddingLabel *badgeLabel;
 
 @end
 
@@ -74,6 +79,24 @@ static const int ddLogLevel = DDLogLevelWarning;
     self.notificationView.backgroundColor = Design.DELETE_COLOR_RED;
     self.notificationView.layer.cornerRadius = self.notificationViewHeightConstraint.constant * 0.5;
     self.notificationView.hidden = YES;
+    
+    self.badgeLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
+    self.badgeLabelHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    
+    self.badgeLabel.font = Design.FONT_MEDIUM32;
+    self.badgeLabel.textColor = [UIColor whiteColor];
+    
+    self.badgeLabel.textAlignment = NSTextAlignmentCenter;
+    self.badgeLabel.insets = UIEdgeInsetsMake(0, Design.TEXT_PADDING, 0, Design.TEXT_PADDING);
+    
+    self.badgeLabel.hidden = YES;
+    self.badgeLabel.clipsToBounds = YES;
+    self.badgeLabel.userInteractionEnabled = YES;
+    self.badgeLabel.backgroundColor = Design.MAIN_COLOR;
+    self.badgeLabel.layer.cornerRadius = self.badgeLabelHeightConstraint.constant * 0.5;
+    
+    UITapGestureRecognizer *badgeViewGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleBadgeTapGesture:)];
+    [self.badgeLabel addGestureRecognizer:badgeViewGestureRecognizer];
 }
 
 - (void)bindWithTitle:(NSString *)title hiddenAccessory:(BOOL)hiddenAccessory disableSetting:(BOOL)disableSetting color:(UIColor *)color {
@@ -92,6 +115,8 @@ static const int ddLogLevel = DDLogLevelWarning;
         self.accessoryImageView.alpha = 1.0;
     }
     
+    self.badgeLabel.hidden = YES;
+    
     [self updateFont];
     [self updateColor];
 }
@@ -101,6 +126,28 @@ static const int ddLogLevel = DDLogLevelWarning;
     [self bindWithTitle:title hiddenAccessory:hiddenAccessory disableSetting:disableSetting color:color];
     
     self.notificationView.hidden = !updateAvailable;
+}
+
+- (void)bindWithTitle:(NSString *)title hiddenAccessory:(BOOL)hiddenAccessory disableSetting:(BOOL)disableSetting color:(UIColor *)color badgeTitle:(NSString *)badgeTitle {
+    
+    [self bindWithTitle:title hiddenAccessory:hiddenAccessory disableSetting:disableSetting color:color];
+        
+    if (badgeTitle && badgeTitle.length > 0) {
+        self.badgeLabel.text = badgeTitle;
+        self.badgeLabel.hidden = NO;
+    } else {
+        self.badgeLabel.hidden = YES;
+    }
+}
+
+- (void)handleBadgeTapGesture:(UITapGestureRecognizer *)sender {
+    DDLogVerbose(@"%@ handleSettingsTapGesture: %@", LOG_TAG, sender);
+    
+    if (sender.state == UIGestureRecognizerStateEnded) {
+        if (self.self.delegate && [self.delegate respondsToSelector:@selector(didTapSettingsBadge)]) {
+            [self.delegate didTapSettingsBadge];
+        }
+    }
 }
 
 - (void)updateFont {

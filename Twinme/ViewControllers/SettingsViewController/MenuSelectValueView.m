@@ -18,6 +18,8 @@
 
 #import "TimeoutCell.h"
 #import "UITimeout.h"
+#import "UIConfigExternalCall.h"
+#import "ColorCell.h"
 
 #import <TwinmeCommon/Design.h>
 
@@ -30,6 +32,7 @@ static const int ddLogLevel = DDLogLevelWarning;
 static NSString *SELECT_VALUE_CELL_IDENTIFIER = @"SelectValueCellIdentifier";
 static NSString *TIMEOUT_CELL_IDENTIFIER = @"TimeoutCellIdentifier";
 
+static const CGFloat TYPE_EXTERNAL_CALL_HEIGHT = 180;
 static const CGFloat MIN_HEIGHT = 132;
 
 //
@@ -126,11 +129,13 @@ static const CGFloat MIN_HEIGHT = 132;
         case MenuSelectValueTypeDisplayCallsMode:
         case MenuSelectValueTypeProfileUpdateMode:
         case MenuSelectValueTypeCallZoomable:
+        case MenuSelectValueTypeExternalCallExpiration:
             self.count = 3;
             break;
             
         case MenuSelectValueTypeQualityMedia:
         case MenuSelectValueTypeEditSpace:
+        case MenuSelectValueTypeExternalCallType:
             self.count = 2;
             break;
             
@@ -143,9 +148,11 @@ static const CGFloat MIN_HEIGHT = 132;
             break;
     }
     
-    self.tableViewHeightConstraint.constant = Design.SETTING_CELL_HEIGHT * self.count;
+    CGFloat cellHeight = self.menuSelectValueType == MenuSelectValueTypeExternalCallType ? roundf(TYPE_EXTERNAL_CALL_HEIGHT * Design.HEIGHT_RATIO) : Design.SETTING_CELL_HEIGHT;
     
-    CGFloat maxHeight = (MIN_HEIGHT * Design.HEIGHT_RATIO) + (Design.SETTING_CELL_HEIGHT * self.count) + Design.FONT_MEDIUM36.lineHeight;
+    self.tableViewHeightConstraint.constant = cellHeight * self.count;
+    
+    CGFloat maxHeight = (MIN_HEIGHT * Design.HEIGHT_RATIO) + (cellHeight * self.count) + Design.FONT_MEDIUM36.lineHeight;
     if (maxHeight > Design.DISPLAY_HEIGHT) {
         self.tableView.scrollEnabled = YES;
     } else {
@@ -162,7 +169,7 @@ static const CGFloat MIN_HEIGHT = 132;
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     DDLogVerbose(@"%@ tableView: %@ heightForRowAtIndexPath: %@", LOG_TAG, tableView, indexPath);
     
-    return Design.SETTING_CELL_HEIGHT;
+    return self.menuSelectValueType == MenuSelectValueTypeExternalCallType ? roundf(TYPE_EXTERNAL_CALL_HEIGHT * Design.HEIGHT_RATIO) : Design.SETTING_CELL_HEIGHT;
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -235,6 +242,25 @@ static const CGFloat MIN_HEIGHT = 132;
             title = TwinmeLocalizedString(@"contact_capabilities_view_controller_camera_control_ask", nil);
         } else {
             title = TwinmeLocalizedString(@"contact_capabilities_view_controller_camera_control_allow", nil);
+        }
+    } else if (self.menuSelectValueType == MenuSelectValueTypeExternalCallType) {
+        if (indexPath.row == ConfigExternalCallTypeCallDirect) {
+            title = TwinmeLocalizedString(@"create_external_call_view_controller_direct_call_title", nil);
+            subtitle = TwinmeLocalizedString(@"create_external_call_view_controller_direct_call_description", nil);
+        } else {
+            title = TwinmeLocalizedString(@"create_external_call_view_controller_conference_call_title", nil);
+            subtitle = TwinmeLocalizedString(@"create_external_call_view_controller_conference_call_description", nil);
+        }
+    } else if (self.menuSelectValueType == MenuSelectValueTypeExternalCallExpiration) {
+        if (indexPath.row == TLLinkValidityPermanent) {
+            title = TwinmeLocalizedString(@"create_external_call_view_controller_continuous_link_title", nil);
+            subtitle = TwinmeLocalizedString(@"create_external_call_view_controller_continuous_link_description", nil);
+        } else if (indexPath.row == TLLinkValiditySingleUse) {
+            title = TwinmeLocalizedString(@"create_external_call_view_controller_unique_link_title", nil);
+            subtitle = TwinmeLocalizedString(@"create_external_call_view_controller_unique_link_description", nil);
+        } else {
+            title = TwinmeLocalizedString(@"create_external_call_view_controller_recurrent_link_title", nil);
+            subtitle = TwinmeLocalizedString(@"create_external_call_view_controller_recurrent_link_description", nil);
         }
     }
     
@@ -314,6 +340,14 @@ static const CGFloat MIN_HEIGHT = 132;
             self.titleLabel.text = TwinmeLocalizedString(@"contact_capabilities_view_controller_information_camera_control", nil);
             break;
             
+        case MenuSelectValueTypeExternalCallType:
+            self.titleLabel.text = TwinmeLocalizedString(@"create_external_call_view_controller_call_type", nil);
+            break;
+            
+        case MenuSelectValueTypeExternalCallExpiration:
+            self.titleLabel.text = TwinmeLocalizedString(@"create_external_call_view_controller_link_validity", nil);
+            break;
+                                                         
         default:
             break;
     }

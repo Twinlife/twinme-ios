@@ -72,7 +72,8 @@ static const int ddLogLevel = DDLogLevelWarning;
 typedef enum {
     SystemNotificationTypeIncomingCall,
     SystemNotificationTypeNewMessage,
-    SystemNotificationTypeContact
+    SystemNotificationTypeContact,
+    SystemNotificationTypeConference
 } SystemNotificationType;
 
 @interface SystemNotification ()
@@ -200,6 +201,35 @@ typedef enum {
     if (self) {
         _contact = contact;
         _invitationId = invitationId;
+    }
+    return self;
+}
+
+@end
+
+//
+// Interface: ConferenceNotification
+//
+
+@interface ConferenceNotification : SystemNotification
+
+@property (readonly, nonnull) TLCallReceiver *callReceiver;
+
+- (nonnull instancetype)initWithNotificationId:(nonnull NSUUID *)notificationId callReceiver:(nonnull TLCallReceiver *)callReceiver;
+
+@end
+
+//
+// Implementation: ConferenceNotification
+//
+
+@implementation ConferenceNotification
+
+- (nonnull instancetype)initWithNotificationId:(nonnull NSUUID *)notificationId callReceiver:(nonnull TLCallReceiver *)callReceiver {
+
+    self = [super initWithType:SystemNotificationTypeConference notificationId:notificationId];
+    if (self) {
+        _callReceiver = callReceiver;
     }
     return self;
 }
@@ -406,6 +436,9 @@ typedef enum {
             }
             notification = newMessageNotification;
         }
+    } else if ([contact isKindOfClass:[TLCallReceiver class]]) {
+        notification = [[ConferenceNotification alloc] initWithNotificationId:notificationInfo.identifier callReceiver:(TLCallReceiver *)contact];
+        self.notifications[notificationInfo.identifier] = notification;
     } else {
         notification = [[ContactNotification alloc] initWithNotificationId:notificationInfo.identifier contact:(TLContact *)contact invitationId:nil];
     }
@@ -552,8 +585,9 @@ typedef enum {
     UNNotification *notification = response.notification;
     UNNotificationRequest *request = notification.request;
     NSUUID *notificationId =  [[NSUUID alloc] initWithUUIDString:request.identifier];
-    
-    if (notificationId) {
+    NSUUID *conferenceId = [[NSUUID alloc] initWithUUIDString:request.content.userInfo[@"conferenceId"]];
+
+    if (notificationId && !conferenceId) {
         [self.twinmeContext getNotificationWithNotificationId:notificationId withBlock:^(TLBaseServiceErrorCode status, TLNotification *notification) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 if (notification) {
@@ -587,129 +621,160 @@ typedef enum {
         return;
     }
     
+    if (conferenceId) {
+        [self.twinmeContext getCallReceiverWithCallReceiverId:conferenceId withBlock:^(TLBaseServiceErrorCode errorCode, TLCallReceiver *callReceiver) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self handleNotificationConference:callReceiver];
+                completionHandler();
+            });
+        }];
+        return;
+    }
+    
     // Call notification handler but we don't really handle the notification.
     completionHandler();
 }
 
 - (void)handleNotification:(TLNotification *)notification {
     
-    [self dismissModalViewController];
-    
-    ApplicationDelegate *delegate = (ApplicationDelegate *)[[UIApplication sharedApplication] delegate];
-    MainViewController *mainViewController = delegate.mainViewController;
-    TwinmeNavigationController *selectedNavigationController = mainViewController.selectedViewController;
-    if ([selectedNavigationController.topViewController isKindOfClass:[CallViewController class]]) {
-        CallViewController *callViewConroller = (CallViewController *) selectedNavigationController.topViewController;
-        [callViewConroller back];
-    }
-    [selectedNavigationController popToRootViewControllerAnimated:NO];
-    
-    id<TLRepositoryObject> subject = notification.subject;
+    [self dismissModalViewController:^{
+        ApplicationDelegate *delegate = (ApplicationDelegate *)[[UIApplication sharedApplication] delegate];
+        MainViewController *mainViewController = delegate.mainViewController;
+        TwinmeNavigationController *selectedNavigationController = mainViewController.selectedViewController;
+        if ([selectedNavigationController.topViewController isKindOfClass:[CallViewController class]]) {
+            CallViewController *callViewConroller = (CallViewController *) selectedNavigationController.topViewController;
+            [callViewConroller back];
+        }
+        [selectedNavigationController popToRootViewControllerAnimated:NO];
+        
+        id<TLRepositoryObject> subject = notification.subject;
 
-    if ([subject conformsToProtocol:@protocol(TLOriginator)]) {
-        id<TLOriginator> originator = (id<TLOriginator>) subject;
-        if (originator.space && ![self.twinmeContext isCurrentSpace:originator]) {
-            int64_t requestId = [self.twinmeContext newRequestId];
-            [self.twinmeContext setCurrentSpaceWithRequestId:requestId space:originator.space];
-            
-            TLSpaceSettings *spaceSettings = originator.space.settings;
-            if ([originator.space.settings getBooleanWithName:PROPERTY_DEFAULT_APPEARANCE_SETTINGS defaultValue:YES]) {
-                spaceSettings = self.twinmeContext.defaultSpaceSettings;
-            }
-            
-            if (![Design.MAIN_STYLE isEqualToString:spaceSettings.style]) {
-                [Design setMainColor:spaceSettings.style];
-            }
-        }
-    }
-    
-    switch (notification.notificationType) {
-        case TLNotificationTypeNewTextMessage:
-        case TLNotificationTypeNewImageMessage:
-        case TLNotificationTypeNewAudioMessage:
-        case TLNotificationTypeNewVideoMessage:
-        case TLNotificationTypeNewFileMessage:
-        case TLNotificationTypeNewGeolocation:
-        case TLNotificationTypeResetConversation:
-        case TLNotificationTypeUpdatedAnnotation: {
-            [mainViewController selectTab:3];
-            selectedNavigationController = mainViewController.selectedViewController;
-            mainViewController.selectedViewController.navigationBarHidden = NO;
-            
-            ConversationViewController *conversationViewController = (ConversationViewController *)[mainViewController.storyboard instantiateViewControllerWithIdentifier:@"ConversationViewController"];
-            [conversationViewController initWithContact:(id<TLOriginator>)subject];
-            [selectedNavigationController pushViewController:conversationViewController animated:YES];
-            
-            break;
-        }
-            
-        case TLNotificationTypeMissedVideoCall:
-        case TLNotificationTypeMissedAudioCall:
-        case TLNotificationTypeNewContact:
-        case TLNotificationTypeUpdatedContact:
-        case TLNotificationTypeUpdatedAvatarContact:
-        case TLNotificationTypeDeletedContact: {
-            [mainViewController selectTab:2];
-            [ConversationsViewController showViewWithSubject:(id<TLOriginator>)subject navigationController:mainViewController.selectedViewController];
-            break;
-        }
-            
-        case TLNotificationTypeNewGroupJoined: {
-            [mainViewController selectTab:3];
-            ShowGroupViewController *showGroupViewController = [[UIStoryboard storyboardWithName:@"Group" bundle:nil] instantiateViewControllerWithIdentifier:@"ShowGroupViewController"];
-            [showGroupViewController initWithGroup:(TLGroup *)subject];
-            [selectedNavigationController pushViewController:showGroupViewController animated:YES];
-            break;
-        }
-            
-        case TLNotificationTypeNewGroupInvitation: {
-            AcceptGroupInvitationViewController *acceptGroupInvitationViewController = (AcceptGroupInvitationViewController *)[mainViewController.storyboard instantiateViewControllerWithIdentifier:@"AcceptGroupInvitationViewController"];
-            [acceptGroupInvitationViewController initWithInvitationId:notification.descriptorId contactId:subject.objectId];
-            [acceptGroupInvitationViewController showInView:mainViewController.view];
-            break;
-        }
-            
-        case TLNotificationTypeNewContactInvitation: {
-            AcceptInvitationViewController *acceptInvitationViewController = (AcceptInvitationViewController *)[mainViewController.storyboard instantiateViewControllerWithIdentifier:@"AcceptInvitationViewController"];
-            if ([subject isKindOfClass:[TLGroup class]]) {
-                [acceptInvitationViewController initWithProfile:nil url:nil descriptorId:notification.descriptorId originatorId:subject.objectId isGroup:YES notification:notification popToRootViewController:NO];
-                [acceptInvitationViewController showInView:mainViewController.view];
-            } else if ([subject isKindOfClass:[TLContact class]]) {
-                [acceptInvitationViewController initWithProfile:nil url:nil descriptorId:notification.descriptorId originatorId:subject.objectId isGroup:NO notification:notification popToRootViewController:NO];
-                [acceptInvitationViewController showInView:mainViewController.view];
-            } else if ([subject isKindOfClass:[TLGroupMember class]]){
-                TLGroupMember *groupMember = (TLGroupMember *)subject;
-                id<TLOriginator> owner = groupMember.group;
-                if ([owner isGroup]) {
-                    TLGroup *group = (TLGroup *)owner;
-                    [acceptInvitationViewController initWithProfile:nil url:nil descriptorId:notification.descriptorId originatorId:group.uuid isGroup:YES notification:notification popToRootViewController:NO];
-                    [acceptInvitationViewController showInView:mainViewController.view];
+        if ([subject conformsToProtocol:@protocol(TLOriginator)]) {
+            id<TLOriginator> originator = (id<TLOriginator>) subject;
+            if (originator.space && ![self.twinmeContext isCurrentSpace:originator]) {
+                int64_t requestId = [self.twinmeContext newRequestId];
+                [self.twinmeContext setCurrentSpaceWithRequestId:requestId space:originator.space];
+                
+                TLSpaceSettings *spaceSettings = originator.space.settings;
+                if ([originator.space.settings getBooleanWithName:PROPERTY_DEFAULT_APPEARANCE_SETTINGS defaultValue:YES]) {
+                    spaceSettings = self.twinmeContext.defaultSpaceSettings;
+                }
+                
+                if (![Design.MAIN_STYLE isEqualToString:spaceSettings.style]) {
+                    [Design setMainColor:spaceSettings.style];
                 }
             }
-            break;
         }
-            
-        case TLNotificationTypeDeletedGroup:
-        default:
-            break;
-    }
+        
+        switch (notification.notificationType) {
+            case TLNotificationTypeNewTextMessage:
+            case TLNotificationTypeNewImageMessage:
+            case TLNotificationTypeNewAudioMessage:
+            case TLNotificationTypeNewVideoMessage:
+            case TLNotificationTypeNewFileMessage:
+            case TLNotificationTypeNewGeolocation:
+            case TLNotificationTypeResetConversation:
+            case TLNotificationTypeUpdatedAnnotation: {
+                [mainViewController selectTab:3];
+                selectedNavigationController = mainViewController.selectedViewController;
+                mainViewController.selectedViewController.navigationBarHidden = NO;
+                
+                ConversationViewController *conversationViewController = (ConversationViewController *)[mainViewController.storyboard instantiateViewControllerWithIdentifier:@"ConversationViewController"];
+                [conversationViewController initWithContact:(id<TLOriginator>)subject];
+                [selectedNavigationController pushViewController:conversationViewController animated:YES];
+                
+                break;
+            }
+                
+            case TLNotificationTypeMissedVideoCall:
+            case TLNotificationTypeMissedAudioCall:
+            case TLNotificationTypeNewContact:
+            case TLNotificationTypeUpdatedContact:
+            case TLNotificationTypeUpdatedAvatarContact:
+            case TLNotificationTypeDeletedContact: {
+                [mainViewController selectTab:2];
+                [ConversationsViewController showViewWithSubject:(id<TLOriginator>)subject navigationController:mainViewController.selectedViewController];
+                break;
+            }
+                
+            case TLNotificationTypeNewGroupJoined: {
+                [mainViewController selectTab:3];
+                ShowGroupViewController *showGroupViewController = [[UIStoryboard storyboardWithName:@"Group" bundle:nil] instantiateViewControllerWithIdentifier:@"ShowGroupViewController"];
+                [showGroupViewController initWithGroup:(TLGroup *)subject];
+                [selectedNavigationController pushViewController:showGroupViewController animated:YES];
+                break;
+            }
+                
+            case TLNotificationTypeNewGroupInvitation: {
+                AcceptGroupInvitationViewController *acceptGroupInvitationViewController = (AcceptGroupInvitationViewController *)[mainViewController.storyboard instantiateViewControllerWithIdentifier:@"AcceptGroupInvitationViewController"];
+                [acceptGroupInvitationViewController initWithInvitationId:notification.descriptorId contactId:subject.objectId];
+                [acceptGroupInvitationViewController showInView:mainViewController.view];
+                break;
+            }
+                
+            case TLNotificationTypeNewContactInvitation: {
+                AcceptInvitationViewController *acceptInvitationViewController = (AcceptInvitationViewController *)[mainViewController.storyboard instantiateViewControllerWithIdentifier:@"AcceptInvitationViewController"];
+                if ([subject isKindOfClass:[TLGroup class]]) {
+                    [acceptInvitationViewController initWithProfile:nil url:nil descriptorId:notification.descriptorId originatorId:subject.objectId isGroup:YES notification:notification popToRootViewController:NO];
+                    [acceptInvitationViewController showInView:mainViewController.view];
+                } else if ([subject isKindOfClass:[TLContact class]]) {
+                    [acceptInvitationViewController initWithProfile:nil url:nil descriptorId:notification.descriptorId originatorId:subject.objectId isGroup:NO notification:notification popToRootViewController:NO];
+                    [acceptInvitationViewController showInView:mainViewController.view];
+                } else if ([subject isKindOfClass:[TLGroupMember class]]){
+                    TLGroupMember *groupMember = (TLGroupMember *)subject;
+                    id<TLOriginator> owner = groupMember.group;
+                    if ([owner isGroup]) {
+                        TLGroup *group = (TLGroup *)owner;
+                        [acceptInvitationViewController initWithProfile:nil url:nil descriptorId:notification.descriptorId originatorId:group.uuid isGroup:YES notification:notification popToRootViewController:NO];
+                        [acceptInvitationViewController showInView:mainViewController.view];
+                    }
+                }
+                break;
+            }
+                
+            case TLNotificationTypeDeletedGroup:
+            default:
+                break;
+        }
+    }];
 }
 
 - (void)handleFakeNotificationConversationWithOriginator:(id<TLOriginator>)originator {
     DDLogVerbose(@"%@ handleFakeNotificationConversationWithOriginator: %@", LOG_TAG, originator);
+        
+    [self dismissModalViewController:^{
+        ApplicationDelegate *delegate = (ApplicationDelegate *)[[UIApplication sharedApplication] delegate];
+        MainViewController *mainViewController = delegate.mainViewController;
+        
+        TwinmeNavigationController *selectedNavigationController = mainViewController.selectedViewController;
+        if ([selectedNavigationController.topViewController isKindOfClass:[ConversationViewController class]]) {
+            [selectedNavigationController popViewControllerAnimated:NO];
+        }
+        
+        ConversationViewController *conversationViewController = (ConversationViewController *)[mainViewController.storyboard instantiateViewControllerWithIdentifier:@"ConversationViewController"];
+        [conversationViewController initWithContact:originator];
+        [selectedNavigationController pushViewController:conversationViewController animated:YES];
+    }];
+}
+
+- (void)handleNotificationConference:(TLCallReceiver *)callReceiver {
+    DDLogVerbose(@"%@ handleNotificationConference: %@", LOG_TAG, callReceiver);
     
-    [self dismissModalViewController];
-    ApplicationDelegate *delegate = (ApplicationDelegate *)[[UIApplication sharedApplication] delegate];
-    MainViewController *mainViewController = delegate.mainViewController;
-    
-    TwinmeNavigationController *selectedNavigationController = mainViewController.selectedViewController;
-    if ([selectedNavigationController.topViewController isKindOfClass:[ConversationViewController class]]) {
-        [selectedNavigationController popViewControllerAnimated:NO];
-    }
-    
-    ConversationViewController *conversationViewController = (ConversationViewController *)[mainViewController.storyboard instantiateViewControllerWithIdentifier:@"ConversationViewController"];
-    [conversationViewController initWithContact:originator];
-    [selectedNavigationController pushViewController:conversationViewController animated:YES];
+    [self dismissModalViewController:^{
+        ApplicationDelegate *delegate = (ApplicationDelegate *)[[UIApplication sharedApplication] delegate];
+        MainViewController *mainViewController = delegate.mainViewController;
+        
+        [mainViewController selectTab:1];
+        
+        TwinmeNavigationController *selectedNavigationController = mainViewController.selectedViewController;
+        if ([selectedNavigationController.topViewController isKindOfClass:[ConversationViewController class]]) {
+            [selectedNavigationController popViewControllerAnimated:NO];
+        }
+        
+        ShowExternalCallViewController *showExternalCallViewController = [[UIStoryboard storyboardWithName:@"ExternalCall" bundle:nil] instantiateViewControllerWithIdentifier:@"ShowExternalCallViewController"];
+        [showExternalCallViewController initWithCallReceiver:callReceiver];
+        [selectedNavigationController pushViewController:showExternalCallViewController animated:YES];
+    }];
 }
 
 #pragma mark - NotificationViewDelegate
@@ -746,9 +811,16 @@ typedef enum {
                 } else {
                     [self incomingCallWithNotification:incomingCallNotification];
                 }
-            }
                 return;
+            }
                 
+            case SystemNotificationTypeConference: {
+                ConferenceNotification *conferenceNotification = (ConferenceNotification *)notification;
+                [self handleNotificationConference:conferenceNotification.callReceiver];
+                return;
+            }
+                
+            
             default:
                 break;
         }
@@ -812,6 +884,7 @@ typedef enum {
     notificationContent.subtitle = notificationInfo.alertBody;
     notificationContent.categoryIdentifier = @"NOTIFICATION";
     notificationContent.sound = notificationInfo.alertSound;
+    notificationContent.userInfo = notificationInfo.userInfo;
     
     // In background, either play the selected sound or the vibration, not both at the same time.
     // The selected sound is in fact not played but the phone will vibrate.
@@ -832,12 +905,14 @@ typedef enum {
     ApplicationDelegate *delegate = (ApplicationDelegate *)[[UIApplication sharedApplication] delegate];
     MainViewController *mainViewController = delegate.mainViewController;
     [mainViewController closeSideMenu:NO];
-    [self dismissModalViewController];
-    CallViewController *callViewController = (CallViewController *)[[UIStoryboard storyboardWithName:@"Call" bundle:nil] instantiateViewControllerWithIdentifier:@"CallViewController"];
-    [callViewController initCallWithOriginator:incomingCallNotification.originator isVideoCall:incomingCallNotification.video];
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [mainViewController.selectedViewController pushViewController:callViewController animated:NO];
-    });
+    
+    [self dismissModalViewController:^{
+        CallViewController *callViewController = (CallViewController *)[[UIStoryboard storyboardWithName:@"Call" bundle:nil] instantiateViewControllerWithIdentifier:@"CallViewController"];
+        [callViewController initCallWithOriginator:incomingCallNotification.originator isVideoCall:incomingCallNotification.video];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [mainViewController.selectedViewController pushViewController:callViewController animated:NO];
+        });
+    }];
 }
 
 - (void)acceptIncomingCallWithNotification:(IncomingCallNotification *)incomingCallNotification {
@@ -848,13 +923,16 @@ typedef enum {
     ApplicationDelegate *delegate = (ApplicationDelegate *)[[UIApplication sharedApplication] delegate];
     MainViewController *mainViewController = delegate.mainViewController;
     [mainViewController closeSideMenu:NO];
-    [self dismissModalViewController];
-    CallViewController *callViewController = (CallViewController *)[[UIStoryboard storyboardWithName:@"Call" bundle:nil] instantiateViewControllerWithIdentifier:@"CallViewController"];
-    incomingCallNotification.accepted = YES;
-    [callViewController initCallWithOriginator:incomingCallNotification.originator isVideoCall:incomingCallNotification.video];
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [mainViewController.selectedViewController pushViewController:callViewController animated:NO];
-    });
+    
+    [self dismissModalViewController:^{
+        CallViewController *callViewController = (CallViewController *)[[UIStoryboard storyboardWithName:@"Call" bundle:nil] instantiateViewControllerWithIdentifier:@"CallViewController"];
+        incomingCallNotification.accepted = YES;
+        [callViewController initCallWithOriginator:incomingCallNotification.originator isVideoCall:incomingCallNotification.video];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [mainViewController.selectedViewController pushViewController:callViewController animated:NO];
+        });
+    }];
+    
 }
 
 - (void)missedCallNotificationWithOriginator:(nonnull id<TLOriginator>)originator video:(BOOL)video{
@@ -871,21 +949,22 @@ typedef enum {
 - (void)showContactWithNotification:(SystemNotification *)systemNotification {
     DDLogVerbose(@"%@ showContactWithNotification: %@", LOG_TAG, systemNotification);
     
-    [self dismissModalViewController];
-    ApplicationDelegate *delegate = (ApplicationDelegate *)[[UIApplication sharedApplication] delegate];
-    MainViewController *mainViewController = delegate.mainViewController;
-    [mainViewController closeSideMenu:NO];
-    
-    ShowContactViewController *showContactViewController = (ShowContactViewController *)[[UIStoryboard storyboardWithName:@"Contact" bundle:nil] instantiateViewControllerWithIdentifier:@"ShowContactViewController"];
-    if (systemNotification.type == SystemNotificationTypeContact) {
-        ContactNotification *contactNotification = (ContactNotification *) systemNotification;
-        [showContactViewController initWithContact:contactNotification.contact];
-    } else if (systemNotification.type == SystemNotificationTypeIncomingCall) {
-        IncomingCallNotification *incomingCallNotification = (IncomingCallNotification *) systemNotification;
-        [showContactViewController initWithContact:(TLContact *)incomingCallNotification.originator];
-    }
-    
-    [mainViewController.selectedViewController pushViewController:showContactViewController animated:YES];
+    [self dismissModalViewController:^{
+        ApplicationDelegate *delegate = (ApplicationDelegate *)[[UIApplication sharedApplication] delegate];
+        MainViewController *mainViewController = delegate.mainViewController;
+        [mainViewController closeSideMenu:NO];
+        
+        ShowContactViewController *showContactViewController = (ShowContactViewController *)[[UIStoryboard storyboardWithName:@"Contact" bundle:nil] instantiateViewControllerWithIdentifier:@"ShowContactViewController"];
+        if (systemNotification.type == SystemNotificationTypeContact) {
+            ContactNotification *contactNotification = (ContactNotification *) systemNotification;
+            [showContactViewController initWithContact:contactNotification.contact];
+        } else if (systemNotification.type == SystemNotificationTypeIncomingCall) {
+            IncomingCallNotification *incomingCallNotification = (IncomingCallNotification *) systemNotification;
+            [showContactViewController initWithContact:(TLContact *)incomingCallNotification.originator];
+        }
+        
+        [mainViewController.selectedViewController pushViewController:showContactViewController animated:YES];
+    }];
 }
 
 - (SystemNotification *)cancelNotificationWithNotificationId:(nonnull NSUUID *)notificationId {
@@ -909,6 +988,19 @@ typedef enum {
         [self.notifications removeObjectForKey:notificationId];
     }
     [self deleteSystemNotification:notificationId];
+}
+
+- (void)onConferenceEventWithConference:(TLCallReceiver *)conference event:(TLConferenceEvent)event date:(int64_t)date {
+    DDLogVerbose(@"%@ onConferenceEventWithConference: %@ event: %ld", LOG_TAG, conference, event);
+    
+    if (event == TLConferenceEventJoin && [conference.capabilities hasNotifyJoin]) {
+        NotificationInfo *notificationInfo = [self createNotificationConference:conference];
+        if (!notificationInfo) {
+            return;
+        }
+        
+        [self messageNotificationWithContact:conference notification:notificationInfo conversationId:nil descriptor:nil];
+    }
 }
 
 - (void)cancelNotification:(SystemNotification *)notification {
@@ -947,6 +1039,7 @@ typedef enum {
         }
             
         case SystemNotificationTypeContact:
+        case SystemNotificationTypeConference:
             break;
     }
 }
@@ -985,7 +1078,7 @@ typedef enum {
     }
 }
 
-- (void)dismissModalViewController {
+- (void)dismissModalViewController:(void (^)(void))completion {
     DDLogVerbose(@"%@ dismissModalViewController", LOG_TAG);
     
     UIViewController *topViewController = [UIViewController topViewController];
@@ -993,14 +1086,31 @@ typedef enum {
         UIViewController *presentingViewController = topViewController.presentingViewController;
         if (presentingViewController.parentViewController && presentingViewController.parentViewController.presentingViewController) {
             [presentingViewController.parentViewController dismissViewControllerAnimated:NO completion:^{
+                if (completion) {
+                    completion();
+                }
             }];
+        } else {
+            if (completion) {
+                completion();
+            }
         }
     } else if (topViewController.presentingViewController) {
         [topViewController dismissViewControllerAnimated:NO completion:^{
+            if (completion) {
+                completion();
+            }
         }];
     } else if (topViewController.presentedViewController) {
         [topViewController.presentedViewController dismissViewControllerAnimated:NO completion:^{
+            if (completion) {
+                completion();
+            }
         }];
+    } else {
+        if (completion) {
+            completion();
+        }
     }
 }
 

@@ -30,6 +30,8 @@
 #import "ClickToCallView.h"
 #import "DeleteConfirmView.h"
 #import "ResetInvitationConfirmView.h"
+#import "UIConfigExternalCall.h"
+#import "ShareItemSource.h"
 
 #if 0
 static const int ddLogLevel = DDLogLevelVerbose;
@@ -690,10 +692,14 @@ static UIColor *DESIGN_GREEN_VIEW_COLOR;
     name = [name stringByReplacingOccurrencesOfString:@":" withString:@"\u02d0"];
     
     NSMutableString *message = [[NSMutableString alloc] initWithString:@""];
-    [message appendString:[NSString stringWithFormat:TwinmeLocalizedString(@"invitation_call_view_controller_invite_message", nil), self.uri.uri, name]];
-
-    TLCapabilities *capabilities;
     
+    if ([self.callReceiver isConference]) {
+        [message appendString:[NSString stringWithFormat:TwinmeLocalizedString(@"invitation_call_view_controller_invite_message", nil), self.uri.uri, name]];
+    } else {
+        [message appendString:[NSString stringWithFormat:TwinmeLocalizedString(@"invitation_call_view_controller_invite_message", nil), self.uri.uri, name]];
+    }
+    
+    TLCapabilities *capabilities;
     if (!self.callReceiver.capabilities) {
         capabilities = [[TLCapabilities alloc]init];
     } else {
@@ -705,90 +711,163 @@ static UIColor *DESIGN_GREEN_VIEW_COLOR;
     if (capabilities.schedule && capabilities.schedule.enabled) {
         if (capabilities.schedule.timeRanges.count > 0) {
             NSDateFormatter *dateFormatter = [[NSDateFormatter alloc]init];
-            [dateFormatter setDateFormat:@"yyyyMMdd'T'HHmmss'Z'"];
-            [dateFormatter setTimeZone:[NSTimeZone timeZoneWithAbbreviation:@"UTC"]];
-            
-            TLDateTimeRange *dateTimeRange = (TLDateTimeRange *)[capabilities.schedule.timeRanges objectAtIndex:0];
-            TLDate *scheduleStartDate = dateTimeRange.start.date;
-            TLTime *scheduleStartTime = dateTimeRange.start.time;
-            TLDate *scheduleEndDate = dateTimeRange.end.date;
-            TLTime *scheduleEndTime = dateTimeRange.end.time;
-            
-            NSDateComponents *startDateComponents = [[NSDateComponents alloc] init];
-            startDateComponents.day = scheduleStartDate.day;
-            startDateComponents.month = scheduleStartDate.month;
-            startDateComponents.year = scheduleStartDate.year;
-            startDateComponents.hour = scheduleStartTime.hour;
-            startDateComponents.minute = scheduleStartTime.minute;
-            
-            NSDateComponents *endDateComponents = [[NSDateComponents alloc] init];
-            endDateComponents.day = scheduleEndDate.day;
-            endDateComponents.month = scheduleEndDate.month;
-            endDateComponents.year = scheduleEndDate.year;
-            endDateComponents.hour = scheduleEndTime.hour;
-            endDateComponents.minute = scheduleEndTime.minute;
-            
-            NSCalendar *calendar = [NSCalendar currentCalendar];
-            NSDate *startDate = [calendar dateFromComponents:startDateComponents];
-            NSDate *endDate = [calendar dateFromComponents:endDateComponents];
-            
-            NSMutableString *fileContent = [[NSMutableString alloc] initWithString:@""];
-            [fileContent appendString:@"BEGIN:VCALENDAR\n"];
-            [fileContent appendString:@"PRODID:"];
-            [fileContent appendString:TwinmeLocalizedString(@"application_name", nil)];
-            [fileContent appendString:@"\n"];
-            [fileContent appendString:@"BEGIN:VEVENT\n"];
-            [fileContent appendString:@"UID:"];
-            [fileContent appendString:[NSString stringWithFormat:@"%@",self.callReceiver.uuid]];
-            [fileContent appendString:@"\n"];
-            [fileContent appendString:@"SEQUENCE:1"];
-            [fileContent appendString:@"\n"];
-            [fileContent appendString:@"DTSTAMP:"];
-            [fileContent appendString:[dateFormatter stringFromDate:[NSDate date]]];
-            [fileContent appendString:@"\n"];
-            [fileContent appendString:@"DTSTART:"];
-            [fileContent appendString:[dateFormatter stringFromDate:startDate]];
-            [fileContent appendString:@"\n"];
-            [fileContent appendString:@"DTEND:"];
-            [fileContent appendString:[dateFormatter stringFromDate:endDate]];
-            [fileContent appendString:@"\n"];
-            [fileContent appendString:@"SUMMARY:"];
-            [fileContent appendString:name];
-            [fileContent appendString:@"\n"];
-            [fileContent appendString:@"LOCATION:"];
-            [fileContent appendString:self.uri.uri];
-            [fileContent appendString:@"\n"];
-            [fileContent appendString:@"DESCRIPTION:"];
-            [fileContent appendString:self.callReceiver.objectDescription];
-            [fileContent appendString:@"\n"];
-            [fileContent appendString:@"END:VEVENT\n"];
-            [fileContent appendString:@"END:VCALENDAR"];
-            
-            [dateFormatter setDateFormat:@"YYYY/MM/dd HH:mm"];
-            
-            [message appendString:@"\n\n"];
-            [message appendString:TwinmeLocalizedString(@"create_external_call_view_controller_link_validity", nil)];
-            [message appendString:@"\n"];
-            [message appendString:TwinmeLocalizedString(@"show_call_view_controller_setting_start", nil)];
-            [message appendString:@" : "];
-            [message appendString:[dateFormatter stringFromDate:startDate]];
-            [message appendString:@"\n"];
-            [message appendString:TwinmeLocalizedString(@"show_call_view_controller_setting_end", nil)];
-            [message appendString:@" : "];
-            [message appendString:[dateFormatter stringFromDate:endDate]];
-            
-            NSString *fileName = [NSString stringWithFormat:@"%@_call.ics", TwinmeLocalizedString(@"application_name", nil)];
-            NSString *path = [NSTemporaryDirectory() stringByAppendingPathComponent:fileName];
-            scheduleUrl = [NSURL fileURLWithPath:path];
-            [fileContent writeToFile:path atomically:YES encoding:NSUTF8StringEncoding error:nil];
+            if ([capabilities.schedule.timeRanges[0] isKindOfClass:[TLDateTimeRange class]]) {
+                [dateFormatter setDateFormat:@"yyyyMMdd'T'HHmmss"];
+                [dateFormatter setTimeZone:[NSTimeZone defaultTimeZone]];
+                
+                TLDateTimeRange *dateTimeRange = (TLDateTimeRange *)[capabilities.schedule.timeRanges objectAtIndex:0];
+                TLDate *scheduleStartDate = dateTimeRange.start.date;
+                TLTime *scheduleStartTime = dateTimeRange.start.time;
+                TLDate *scheduleEndDate = dateTimeRange.end.date;
+                TLTime *scheduleEndTime = dateTimeRange.end.time;
+                
+                NSDateComponents *startDateComponents = [[NSDateComponents alloc] init];
+                startDateComponents.day = scheduleStartDate.day;
+                startDateComponents.month = scheduleStartDate.month;
+                startDateComponents.year = scheduleStartDate.year;
+                startDateComponents.hour = scheduleStartTime.hour;
+                startDateComponents.minute = scheduleStartTime.minute;
+                
+                NSDateComponents *endDateComponents = [[NSDateComponents alloc] init];
+                endDateComponents.day = scheduleEndDate.day;
+                endDateComponents.month = scheduleEndDate.month;
+                endDateComponents.year = scheduleEndDate.year;
+                endDateComponents.hour = scheduleEndTime.hour;
+                endDateComponents.minute = scheduleEndTime.minute;
+                
+                NSCalendar *calendar = [NSCalendar currentCalendar];
+                NSDate *startDate = [calendar dateFromComponents:startDateComponents];
+                NSDate *endDate = [calendar dateFromComponents:endDateComponents];
+                
+                NSMutableString *fileContent = [[NSMutableString alloc] initWithString:@""];
+                [fileContent appendString:@"BEGIN:VCALENDAR\r\n"];
+                [fileContent appendString:@"VERSION:2.0\r\n"];
+                [fileContent appendString:@"PRODID:"];
+                [fileContent appendString:TwinmeLocalizedString(@"application_name", nil)];
+                [fileContent appendString:@"\r\n"];
+                [fileContent appendString:@"METHOD:REQUEST\r\n"];
+                [fileContent appendString:@"BEGIN:VEVENT\r\n"];
+                [fileContent appendString:@"UID:"];
+                [fileContent appendString:[NSString stringWithFormat:@"%@", self.callReceiver.uuid]];
+                [fileContent appendString:@"\r\n"];
+                
+                if ([self.callReceiver getNumberWithName:PROPERTY_CALL_RECEIVER_UPDATE_COUNTER defaultValue:0] > 0) {
+                    [fileContent appendString:@"SEQUENCE:"];
+                    [fileContent appendString:[NSString stringWithFormat:@"%lld", [self.callReceiver getNumberWithName:PROPERTY_CALL_RECEIVER_UPDATE_COUNTER defaultValue:0]]];
+                }
+                
+                [fileContent appendString:@"\r\n"];
+                [fileContent appendString:@"DTSTAMP:"];
+                [fileContent appendString:[dateFormatter stringFromDate:[NSDate date]]];
+                [fileContent appendString:@"\r\n"];
+                [fileContent appendString:@"DTSTART;TZID="];
+                [fileContent appendString:[NSTimeZone defaultTimeZone].name];
+                [fileContent appendString:@":"];
+                [fileContent appendString:[dateFormatter stringFromDate:startDate]];
+                [fileContent appendString:@"\r\n"];
+                [fileContent appendString:@"DTEND;TZID="];
+                [fileContent appendString:[NSTimeZone defaultTimeZone].name];
+                [fileContent appendString:@":"];
+                [fileContent appendString:[dateFormatter stringFromDate:endDate]];
+                [fileContent appendString:@"\r\n"];
+                [fileContent appendString:@"SUMMARY:"];
+                [fileContent appendString:name];
+                [fileContent appendString:@"\r\n"];
+                [fileContent appendString:@"LOCATION:"];
+                [fileContent appendString:self.uri.uri];
+                [fileContent appendString:@"\r\n"];
+                
+                if (self.callReceiver.objectDescription && ![self.callReceiver.objectDescription isEqual:@""]) {
+                    [fileContent appendString:@"DESCRIPTION:"];
+                    [fileContent appendString:[self getDescriptionForICSFile]];
+                    [fileContent appendString:@"\r\n"];
+                }
+                
+                [fileContent appendString:@"END:VEVENT\r\n"];
+                [fileContent appendString:@"END:VCALENDAR"];
+                
+                [dateFormatter setDateFormat:@"YYYY/MM/dd HH:mm"];
+                [dateFormatter setTimeZone:[NSTimeZone localTimeZone]];
+                
+                [message appendString:@"\n\n"];
+                [message appendString:TwinmeLocalizedString(@"create_external_call_view_controller_link_validity", nil)];
+                [message appendString:@"\n"];
+                [message appendString:TwinmeLocalizedString(@"show_call_view_controller_setting_start", nil)];
+                [message appendString:@" : "];
+                [message appendString:[dateFormatter stringFromDate:startDate]];
+                [message appendString:@"\n"];
+                [message appendString:TwinmeLocalizedString(@"show_call_view_controller_setting_end", nil)];
+                [message appendString:@" : "];
+                [message appendString:[dateFormatter stringFromDate:endDate]];
+                
+                [dateFormatter setDateFormat:@"YYYYMMdd"];
+                
+                NSString *fileName = [NSString stringWithFormat:@"%@-call-%@.ics", TwinmeLocalizedString(@"application_name", nil), [dateFormatter stringFromDate:startDate]];
+                NSString *path = [NSTemporaryDirectory() stringByAppendingPathComponent:fileName];
+                scheduleUrl = [NSURL fileURLWithPath:path];
+                [fileContent writeToFile:path atomically:YES encoding:NSUTF8StringEncoding error:nil];
+                
+            } else if ([capabilities.schedule.timeRanges[0] isKindOfClass:[TLWeeklyTimeRange class]]) {
+                TLWeeklyTimeRange *weeklyTimeRange = (TLWeeklyTimeRange *)[capabilities.schedule.timeRanges objectAtIndex:0];
+             
+                TLTime *scheduleStartTime = weeklyTimeRange.start;
+                TLTime *scheduleEndTime = weeklyTimeRange.end;
+                
+                [message appendString:@"\n\n"];
+                [message appendString:TwinmeLocalizedString(@"create_external_call_view_controller_link_validity", nil)];
+                [message appendString:@"\n"];
+                [message appendString:TwinmeLocalizedString(@"show_call_view_controller_setting_start", nil)];
+                [message appendString:@" : "];
+                [message appendString:[scheduleStartTime formatTime]];
+                [message appendString:@"\n"];
+                [message appendString:TwinmeLocalizedString(@"show_call_view_controller_setting_end", nil)];
+                [message appendString:@" : "];
+                [message appendString:[scheduleEndTime formatTime]];
+                [message appendString:@"\n\n"];
+                
+                NSArray<NSString *> *symbols = dateFormatter.weekdaySymbols;
+                
+                for (NSNumber *dayOfWeek in weeklyTimeRange.days) {
+                    NSString *dayString = @"";
+                    switch ([dayOfWeek intValue]) {
+                        case MONDAY:
+                            dayString = symbols[1];
+                            break;
+                        case TUESDAY:
+                            dayString = symbols[2];
+                            break;
+                        case WEDNESDAY:
+                            dayString = symbols[3];
+                            break;
+                        case THURSDAY:
+                            dayString = symbols[4];
+                            break;
+                        case FRIDAY:
+                            dayString = symbols[5];
+                            break;
+                        case SATURDAY:
+                            dayString = symbols[6];
+                            break;
+                        case SUNDAY:
+                            dayString = symbols[0];
+                            break;
+                    }
+
+                    if (![dayString isEqualToString:@""]) {
+                        [message appendString:dayString];
+                        [message appendString:@"\n"];
+                    }
+                }
+            }
         }
     }
     
+    ShareItemSource *shareItem = [[ShareItemSource alloc] initWithMessage:message subject:self.callReceiver.name];
     NSArray *shareItems;
     if (scheduleUrl) {
-        shareItems = @[message, scheduleUrl];
+        shareItems = @[shareItem, scheduleUrl];
     } else {
-        shareItems = @[message];
+        shareItems = @[shareItem];
     }
     
     UIActivityViewController *activityViewController = [[UIActivityViewController alloc] initWithActivityItems:shareItems applicationActivities:nil];
@@ -825,6 +904,19 @@ static UIColor *DESIGN_GREEN_VIEW_COLOR;
     } else {
         self.messageLabel.text = TwinmeLocalizedString(@"invitation_call_view_controller_message", nil);
     }
+}
+
+- (NSString *)getDescriptionForICSFile {
+    DDLogVerbose(@"%@ getDescriptionForICSFile", LOG_TAG);
+    
+    NSString *callReceiverDescription = self.callReceiver.objectDescription;
+    callReceiverDescription = [callReceiverDescription stringByReplacingOccurrencesOfString:@"\\" withString:@"\\\\"];
+    callReceiverDescription = [callReceiverDescription stringByReplacingOccurrencesOfString:@";" withString:@"\\;"];
+    callReceiverDescription = [callReceiverDescription stringByReplacingOccurrencesOfString:@"," withString:@"\\,"];
+    callReceiverDescription = [callReceiverDescription stringByReplacingOccurrencesOfString:@"\r\n" withString:@"\n"];
+    callReceiverDescription = [callReceiverDescription stringByReplacingOccurrencesOfString:@"\r" withString:@"\n"];
+    callReceiverDescription = [callReceiverDescription stringByReplacingOccurrencesOfString:@"\n" withString:@"\\n"];
+    return callReceiverDescription;
 }
 
 - (void)updateFont {

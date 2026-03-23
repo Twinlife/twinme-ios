@@ -1,17 +1,16 @@
 /*
- *  Copyright (c) 2017-2021 twinlife SA.
+ *  Copyright (c) 2017-2026 twinlife SA.
  *  SPDX-License-Identifier: AGPL-3.0-only
  *
  *  Contributors:
  *   Christian Jacquemot (Christian.Jacquemot@twinlife-systems.com)
  *   Chedi Baccari (Chedi.Baccari@twinlife-systems.com)
+ *   Fabrice Trescartes (Fabrice.Trescartes@twin.life)
  */
 
 #import <Twinlife/TLConversationService.h>
 
 #import "TimeItem.h"
-
-static NSUUID *nullUUID;
 
 //
 // Implementation: TimeItem
@@ -19,14 +18,9 @@ static NSUUID *nullUUID;
 
 @implementation TimeItem
 
-+ (void)initialize {
-    
-    nullUUID = [[NSUUID alloc] initWithUUIDString:@"00000000-0000-0000-0000-000000000000"];
-}
-
 - (TimeItem*)initWithTimestamp:(int64_t)timestamp {
     
-    self = [super initWithType:ItemTypeTime descriptorId:[[TLDescriptorId alloc] initWithTwincodeOutboundId:nullUUID sequenceId:ITEM_DEFAULT_SEQUENCE_ID] timestamp:timestamp];
+    self = [super initWithType:ItemTypeTime descriptorId:[Item defaultDescriptorId] timestamp:timestamp];
     
     return self;
 }

@@ -47,6 +47,7 @@
 #import "UIViewController+ProgressIndicator.h"
 #import "UIView+Toast.h"
 #import "UIPremiumFeature.h"
+#import "AlertMessageView.h"
 
 #import <TwinmeCommon/ApplicationDelegate.h>
 #import <TwinmeCommon/CallsService.h>
@@ -389,11 +390,24 @@ static const int NB_CALL_RECEIVER = 3;
 - (void)onGetCallReceivers:(NSArray<TLCallReceiver *> *)callReceivers {
     DDLogVerbose(@"%@ onGetCallReceivers: %@", LOG_TAG, callReceivers);
     
+    NSCalendar *calendar = [NSCalendar currentCalendar];
+    NSCalendarUnit calendarUnit = NSCalendarUnitYear | NSCalendarUnitMonth |  NSCalendarUnitDay | NSCalendarUnitHour | NSCalendarUnitMinute;
+    NSDateComponents *dateComponents = [calendar components:calendarUnit fromDate:[NSDate date]];
+    TLDate *date = [[TLDate alloc]initWithYear:(int)dateComponents.year month:(int)dateComponents.month day:(int)dateComponents.day];
+    TLTime *time = [[TLTime alloc] initWithHour:(int)dateComponents.hour minute:(int)dateComponents.minute];
+    TLDateTime *dateTime = [[TLDateTime alloc] initWithDate:date time:time];
+    
     for (TLCallReceiver *callReceiver in callReceivers) {
-        UIContact *uiContact = [[UIContact alloc] initWithContact:callReceiver];
-        [self.uiContacts setObject:uiContact forKey:callReceiver.uuid];
-        [self.uiContacts setObject:uiContact forKey:callReceiver.twincodeOutboundId];
-        [self updateUICallReceiver:callReceiver avatar:nil];
+        TLDateTime *expireDateTime = [self getExpireDateTime:callReceiver];
+        
+        if (expireDateTime && [expireDateTime compare:dateTime] == NSOrderedAscending) {
+            [self.callsService deleteCallReceiverWithCallReceiver:callReceiver];
+        } else {
+            UIContact *uiContact = [[UIContact alloc] initWithContact:callReceiver];
+            [self.uiContacts setObject:uiContact forKey:callReceiver.uuid];
+            [self.uiContacts setObject:uiContact forKey:callReceiver.twincodeOutboundId];
+            [self updateUICallReceiver:callReceiver avatar:nil];
+        }
     }
 
     [self updateCalls];
@@ -527,7 +541,7 @@ static const int NB_CALL_RECEIVER = 3;
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
     DDLogVerbose(@"%@ tableView: %@ heightForHeaderInSection: %ld", LOG_TAG, tableView, (long)section);
-        
+            
     if (section == CREATE_EXTERNAL_CALL_SECTION) {
         return CGFLOAT_MIN;
     } else if (section == EXTERNAL_CALL_SECTION && self.nbCallReceivers > 0) {
@@ -609,7 +623,7 @@ static const int NB_CALL_RECEIVER = 3;
             }
             BOOL hideSeparator = indexPath.row + 1 == self.nbCallReceivers ? YES : NO;
 
-            [contactCell bindWithName:uiCallReceiver.name avatar:uiCallReceiver.avatar hideSeparator:hideSeparator hideSchedule:hideSchedule];
+            [contactCell bindWithName:uiCallReceiver.name avatar:uiCallReceiver.avatar hideSeparator:hideSeparator hideSchedule:hideSchedule conferenceCall:[uiCallReceiver.callReceiver isConference]];
         }
         
         return contactCell;
@@ -692,16 +706,27 @@ static const int NB_CALL_RECEIVER = 3;
         if (!self.twinmeApplication.inCall) {
             UICall *uiCall = [self.uiCalls objectAtIndex:indexPath.row];
             self.callDescriptor = [uiCall getLastCallDescriptor];
-            
-            if([(NSObject *)uiCall.uiContact.contact class] != [TLCallReceiver class]){
-                
-                self.callOriginator = uiCall.uiContact.contact;
-                
-                if (self.callOriginator.isGroup) {
-                    [self.callsService getGroupMembers:self.callOriginator];
-                } else {
-                    [self callAgain];
+
+            BOOL isCallReceiver = [uiCall.uiContact.contact isKindOfClass:[TLCallReceiver class]];
+            if (isCallReceiver) {
+                TLCallReceiver *callReceiver = (TLCallReceiver *)uiCall.uiContact.contact;
+                if (![callReceiver isConference]) {
+                    return;
                 }
+            }
+            
+            self.callOriginator = uiCall.uiContact.contact;
+            
+            if ([self hasSchedule]) {
+                [self showSchedule];
+                return;
+            }
+            
+
+            if (!isCallReceiver && self.callOriginator.isGroup) {
+                [self.callsService getGroupMembers:self.callOriginator];
+            } else {
+                [self callAgain];
             }
         }
     } else if (indexPath.section == EXTERNAL_CALL_SECTION) {
@@ -1030,10 +1055,24 @@ static const int NB_CALL_RECEIVER = 3;
     if (uiCallReceiver)  {
         [uiCallReceiver updateCallReceiver:callReceiver];
     } else {
-        uiCallReceiver = [[UICallReceiver alloc] initWithCallReceiver:callReceiver ];
-        [self.uiCallReceivers addObject:uiCallReceiver];
-    }
+        uiCallReceiver = [[UICallReceiver alloc] initWithCallReceiver:callReceiver];
         
+        BOOL added = NO;
+        NSInteger count = self.uiCallReceivers.count;
+        for (NSInteger i = 0; i < count; i++) {
+            UICallReceiver *lUICallRecevier = self.uiCallReceivers[i];
+            if (lUICallRecevier.callReceiver.creationDate < callReceiver.creationDate) {
+                [self.uiCallReceivers insertObject:uiCallReceiver atIndex:i];
+                added = YES;
+                break;
+            }
+        }
+        if (!added) {
+            [self.uiCallReceivers addObject:uiCallReceiver];
+        }
+    }
+    
+    
     void (^setAvatar)(UIImage *) = ^(UIImage *image) {
         uiCallReceiver.avatar = image;
         UIContact *uiContact = [self.uiContacts objectForKey:callReceiver.uuid];
@@ -1048,7 +1087,6 @@ static const int NB_CALL_RECEIVER = 3;
     } else {
         [self.callsService getImageWithCallReceiver:callReceiver withBlock:setAvatar];
     }
-    
 }
 
 - (void)startAudioCallWithPermissionCheck {
@@ -1229,9 +1267,10 @@ static const int NB_CALL_RECEIVER = 3;
 
 - (void)callAgain {
     DDLogVerbose(@"%@ callAgain", LOG_TAG);
-    
+
     ApplicationDelegate *delegate = (ApplicationDelegate *)[[UIApplication sharedApplication] delegate];
-    if (self.callOriginator.isGroup && ![delegate.twinmeApplication isSubscribedWithFeature:TLTwinmeApplicationFeatureGroupCall]) {
+    BOOL isCallReceiver = [self.callOriginator isKindOfClass:[TLCallReceiver class]];
+    if (!isCallReceiver && self.callOriginator.isGroup && ![delegate.twinmeApplication isSubscribedWithFeature:TLTwinmeApplicationFeatureGroupCall]) {
         PremiumFeatureConfirmView *premiumFeatureConfirmView = [[PremiumFeatureConfirmView alloc] init];
         premiumFeatureConfirmView.bottomSheetViewDelegate = self;
         [premiumFeatureConfirmView initWithPremiumFeature:[[UIPremiumFeature alloc]initWithFeatureType:FeatureTypeGroupCall spaceSettings:[self currentSpaceSettings]] parentViewController:self.tabBarController];
@@ -1239,7 +1278,7 @@ static const int NB_CALL_RECEIVER = 3;
         [premiumFeatureConfirmView showConfirmView];
     } else if ((!self.callDescriptor.isVideo && self.callOriginator.capabilities.hasAudio) || (self.callDescriptor.isVideo && self.callOriginator.capabilities.hasVideo)) {
         
-        if (self.callOriginator.isGroup) {
+        if (!isCallReceiver && self.callOriginator.isGroup) {
             [self.callsService getImageWithGroup:self.callOriginator withBlock:^(UIImage *image) {
                 [self showCallAgainConfirmView:image];
             }];
@@ -1253,6 +1292,98 @@ static const int NB_CALL_RECEIVER = 3;
             [[UIApplication sharedApplication].keyWindow makeToast:TwinmeLocalizedString(@"application_not_authorized_operation_by_your_contact",nil)];
         });
     }
+}
+
+- (BOOL)hasSchedule {
+    DDLogVerbose(@"%@ hasSchedule", LOG_TAG);
+    
+    if (self.callOriginator.capabilities.schedule && self.callOriginator.capabilities.schedule.enabled) {
+        return ![self.callOriginator.capabilities.schedule isNowInRange];
+    }
+    
+    return NO;
+}
+
+- (void)showSchedule {
+    DDLogVerbose(@"%@ showSchedule", LOG_TAG);
+    
+    NSString *message = @"";
+    
+    TLSchedule *schedule = self.callOriginator.capabilities.schedule;
+    
+    if (schedule && schedule.timeRanges.count > 0) {
+        if ([schedule.timeRanges[0] isKindOfClass:[TLWeeklyTimeRange class]]) {
+            TLWeeklyTimeRange *weeklyTimeRange = (TLWeeklyTimeRange *)[schedule.timeRanges objectAtIndex:0];
+                     
+            TLTime *scheduleStartTime = weeklyTimeRange.start;
+            TLTime *scheduleEndTime = weeklyTimeRange.end;
+            
+            NSDateFormatter *dateFormatter = [[NSDateFormatter alloc]init];
+            NSMutableString *validityMessage = [[NSMutableString alloc] initWithString:@""];
+            [validityMessage appendString:TwinmeLocalizedString(@"show_call_view_controller_setting_start", nil)];
+            [validityMessage appendString:@" : "];
+            [validityMessage appendString:[scheduleStartTime formatTime]];
+            [validityMessage appendString:@"\n"];
+            [validityMessage appendString:TwinmeLocalizedString(@"show_call_view_controller_setting_end", nil)];
+            [validityMessage appendString:@" : "];
+            [validityMessage appendString:[scheduleEndTime formatTime]];
+            [validityMessage appendString:@"\n\n"];
+            
+            NSArray<NSString *> *symbols = dateFormatter.weekdaySymbols;
+            
+            for (NSNumber *dayOfWeek in weeklyTimeRange.days) {
+                NSString *dayString = @"";
+                switch ([dayOfWeek intValue]) {
+                    case MONDAY:
+                        dayString = symbols[1];
+                        break;
+                    case TUESDAY:
+                        dayString = symbols[2];
+                        break;
+                    case WEDNESDAY:
+                        dayString = symbols[3];
+                        break;
+                    case THURSDAY:
+                        dayString = symbols[4];
+                        break;
+                    case FRIDAY:
+                        dayString = symbols[5];
+                        break;
+                    case SATURDAY:
+                        dayString = symbols[6];
+                        break;
+                    case SUNDAY:
+                        dayString = symbols[0];
+                        break;
+                }
+                
+                if (![dayString isEqualToString:@""]) {
+                    [validityMessage appendString:dayString];
+                    [validityMessage appendString:@"\n"];
+                }
+                
+                message = [validityMessage description];
+            }
+        } else {
+            TLDateTimeRange *dateTimeRange = (TLDateTimeRange *)[schedule.timeRanges objectAtIndex:0];
+                    
+            TLDateTime *start = dateTimeRange.start;
+            TLDateTime *end = dateTimeRange.end;
+            if ([start.date isEqual:end.date]) {
+                message = [NSString stringWithFormat:TwinmeLocalizedString(@"show_call_view_controller_schedule_from_to", nil), [start.date formatDate], [start.time formatTime], [end.time formatTime]];
+            } else {
+                message = [NSString stringWithFormat:@"%@ %@", [start formatDateTime], [end formatDateTime]];
+            }
+        }
+    } else {
+        message = TwinmeLocalizedString(@"show_call_view_controller_schedule_message", nil);
+    }
+                
+    AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
+    alertMessageView.alertMessageViewDelegate = self;
+    [alertMessageView initWithTitle:TwinmeLocalizedString(@"show_call_view_controller_schedule_call", nil) message:message];
+    [self.tabBarController.view addSubview:alertMessageView];
+    [alertMessageView showAlertView];
 }
 
 - (void)showCallAgainConfirmView:(UIImage *)avatar {
@@ -1273,6 +1404,42 @@ static const int NB_CALL_RECEIVER = 3;
     [self.tabBarController.view addSubview:callAgainConfirmView];
     [callAgainConfirmView showConfirmView];
 }
+
+- (nullable TLDateTime *)getExpireDateTime:(nonnull TLCallReceiver *)callReceiver {
+    DDLogVerbose(@"%@ getExpireDateTime: %@", LOG_TAG, callReceiver);
+    
+    if (callReceiver.capabilities.linkValidity == TLLinkValiditySingleUse) {
+        if (callReceiver.capabilities.schedule && callReceiver.capabilities.schedule.timeRanges.count > 0) {
+            if ([callReceiver.capabilities.schedule.timeRanges[0] isKindOfClass:[TLDateTimeRange class]]) {
+                TLDateTimeRange *dateTimeRange = (TLDateTimeRange *)[callReceiver.capabilities.schedule.timeRanges objectAtIndex:0];
+                TLDateTime *endDateTime = dateTimeRange.end;
+                
+                NSCalendar *calendar = [NSCalendar currentCalendar];
+                NSCalendarUnit calendarUnit = NSCalendarUnitYear | NSCalendarUnitMonth |  NSCalendarUnitDay | NSCalendarUnitHour | NSCalendarUnitMinute;
+    
+                NSDateComponents *dateComponents = [[NSDateComponents alloc] init];
+                dateComponents.day = endDateTime.date.day;
+                dateComponents.month = endDateTime.date.month;
+                dateComponents.year = endDateTime.date.year;
+                dateComponents.hour = endDateTime.time.hour;
+                dateComponents.minute = endDateTime.time.minute;
+                
+                NSDate *expireDateFromComponents = [calendar dateFromComponents:dateComponents];
+                expireDateFromComponents = [calendar dateByAddingUnit:NSCalendarUnitDay value:1 toDate:expireDateFromComponents options:0];
+                dateComponents = [calendar components:calendarUnit fromDate:expireDateFromComponents];
+
+                TLDate *expireDate = [[TLDate alloc]initWithYear:(int)dateComponents.year month:(int)dateComponents.month day:(int)dateComponents.day];
+                TLTime *expireTime = [[TLTime alloc] initWithHour:(int)dateComponents.hour minute:(int)dateComponents.minute];
+                TLDateTime *expireDateTime = [[TLDateTime alloc] initWithDate:expireDate time:expireTime];
+                
+                return expireDateTime;
+            }
+        }
+    }
+    
+    return nil;
+}
+
 
 - (void)reloadData {
     DDLogVerbose(@"%@ reloadData", LOG_TAG);

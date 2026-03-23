@@ -26,6 +26,8 @@ static const int ddLogLevel = DDLogLevelWarning;
 
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *valueLabelLeadingConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *valueLabelTrailingConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *valueLabelTopConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *valueLabelBottomConstraint;
 @property (weak, nonatomic) IBOutlet UILabel *valueLabel;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *checkMarkViewHeightConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *checkMarkViewTrailingConstraint;
@@ -57,6 +59,8 @@ static const int ddLogLevel = DDLogLevelWarning;
     
     self.valueLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
     self.valueLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
+    self.valueLabelTopConstraint.constant *= Design.HEIGHT_RATIO;
+    self.valueLabelBottomConstraint.constant *= Design.HEIGHT_RATIO;
     
     self.valueLabel.textColor = Design.FONT_COLOR_DEFAULT;
     self.valueLabel.font = Design.FONT_REGULAR34;
@@ -91,7 +95,7 @@ static const int ddLogLevel = DDLogLevelWarning;
     
     if (![subtitle isEqualToString:@""]) {
         [valueAttributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:@"\n"]];
-        [valueAttributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:subtitle attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_REGULAR32, NSFontAttributeName, Design.FONT_COLOR_GREY, NSForegroundColorAttributeName, nil]]];
+        [valueAttributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:subtitle attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_REGULAR30, NSFontAttributeName, Design.FONT_COLOR_GREY, NSForegroundColorAttributeName, nil]]];
     }
     
     self.valueLabel.attributedText = valueAttributedString;

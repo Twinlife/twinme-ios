@@ -16,8 +16,9 @@
 
 @interface UIOnboarding ()
 
+@property (nonatomic, nullable) NSString *title;
 @property (nonatomic) NSString *message;
-@property (nonatomic) UIImage *image;
+@property (nonatomic, nullable) UIImage *image;
 @property (nonatomic) BOOL hideActionView;
 
 @end
@@ -63,6 +64,7 @@
             [message appendString:@"    • "];
             [message appendString:TwinmeLocalizedString(@"create_external_call_view_controller_onboarding_part_1_message_6", nil)];
             self.image = [UIImage imageNamed:@"OnboardingClickToCall"];
+            self.title = nil;
             break;
             
         case OnboardingExternalCallPartTwo:
@@ -77,6 +79,7 @@
             [message appendString:@"    • "];
             [message appendString:TwinmeLocalizedString(@"create_external_call_view_controller_onboarding_part_2_message_4", nil)];
             self.image = [UIImage imageNamed:@"OnboardingClickToCall2"];
+            self.title = TwinmeLocalizedString(@"create_external_call_view_controller_onboarding_title_2", nil);
             break;
             
         case OnboardingExternalCallPartThree:
@@ -94,6 +97,7 @@
             [message appendString:@"    • "];
             [message appendString:TwinmeLocalizedString(@"create_external_call_view_controller_onboarding_part_3_message_5", nil)];
             self.image = [UIImage imageNamed:@"OnboardingClickToCall3"];
+            self.title = TwinmeLocalizedString(@"create_external_call_view_controller_onboarding_title_3", nil);
             break;
             
         case OnboardingExternalCallPartFour:
@@ -107,6 +111,7 @@
             [message appendString:@"\n\n"];
             [message appendString:TwinmeLocalizedString(@"create_external_call_view_controller_onboarding_part_4_message_4", nil)];
             self.image = [UIImage imageNamed:@"OnboardingClickToCall4"];
+            self.title = TwinmeLocalizedString(@"create_external_call_view_controller_onboarding_title_4", nil);
             break;
             
         default:
@@ -114,6 +119,11 @@
     }
     
     self.message = message;
+}
+
+- (nullable NSString *)getTitle {
+    
+    return self.title;
 }
 
 - (nonnull NSString *)getMessage {

@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2019 twinlife SA.
+ *  Copyright (c) 2019-2026 twinlife SA.
  *  SPDX-License-Identifier: AGPL-3.0-only
  *
  *  Contributors:
@@ -7,16 +7,9 @@
  */
 
 #import "Item.h"
-#import "ConversationViewController.h"
+#import "InfoDateItem.h"
 
-typedef enum {
-    InfoItemTypeSent,
-    InfoItemTypeReceived,
-    InfoItemTypeSeen,
-    InfoItemTypeDeleted,
-    InfoItemTypeEphemeral,
-    InfoItemTypeUpdated,
-} InfoItemType;
+#import "ConversationViewController.h"
 
 //
 // Interface: InfoDateItemCell
@@ -24,6 +17,6 @@ typedef enum {
 
 @interface InfoDateItemCell : UITableViewCell
 
-- (void)bindWithItem:(Item *)item infoItemType:(InfoItemType)infoItemType conversationViewController:(ConversationViewController *)conversationViewController;
+- (void)bindWithItem:(Item *)item infoDateItem:(InfoDateItem *)infoDateItem conversationViewController:(ConversationViewController *)conversationViewController;
 
 @end

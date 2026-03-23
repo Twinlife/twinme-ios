@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="DayCellIdentifier" id="gTV-IL-0wX" customClass="DayCell">
+            <rect key="frame" x="0.0" y="0.0" width="100" height="100"/>
+            <autoresizingMask key="autoresizingMask"/>
+            <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                <rect key="frame" x="0.0" y="0.0" width="100" height="100"/>
+                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                <subviews>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="aba-Ag-Mza">
+                        <rect key="frame" x="10" y="10" width="80" height="80"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="L" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Mze-6B-AD4">
+                                <rect key="frame" x="35.333333333333336" y="29.666666666666664" width="9.3333333333333357" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="80" id="J1U-Ke-lle"/>
+                            <constraint firstItem="Mze-6B-AD4" firstAttribute="centerY" secondItem="aba-Ag-Mza" secondAttribute="centerY" id="NPD-vW-oSC"/>
+                            <constraint firstAttribute="width" secondItem="aba-Ag-Mza" secondAttribute="height" multiplier="1:1" id="Q3N-ls-cRt"/>
+                            <constraint firstItem="Mze-6B-AD4" firstAttribute="centerX" secondItem="aba-Ag-Mza" secondAttribute="centerX" id="ZZd-be-062"/>
+                        </constraints>
+                    </view>
+                </subviews>
+            </view>
+            <viewLayoutGuide key="safeArea" id="SEy-5g-ep8"/>
+            <constraints>
+                <constraint firstItem="aba-Ag-Mza" firstAttribute="centerX" secondItem="gTV-IL-0wX" secondAttribute="centerX" id="iMN-uN-5zp"/>
+                <constraint firstItem="aba-Ag-Mza" firstAttribute="centerY" secondItem="gTV-IL-0wX" secondAttribute="centerY" id="pEF-9w-eoE"/>
+            </constraints>
+            <connections>
+                <outlet property="dayLabel" destination="Mze-6B-AD4" id="wGc-ZD-DVm"/>
+                <outlet property="roundedView" destination="aba-Ag-Mza" id="E79-a1-veH"/>
+                <outlet property="roundedViewHeightConstraint" destination="J1U-Ke-lle" id="O7n-0R-whr"/>
+            </connections>
+            <point key="canvasLocation" x="-263" y="-1"/>
+        </collectionViewCell>
+    </objects>
+    <resources>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+    </resources>
+</document>

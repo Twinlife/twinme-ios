@@ -362,7 +362,7 @@ typedef enum {
                 break;
         }
         
-        [cell bindWithTitle:TwinmeLocalizedString(@"side_menu_view_controller_application_settings", nil) icon:nil stateSwitch:stateSwitch tagSwitch:tag hiddenSwitch:NO disableSwitch:NO backgroundColor:Design.WHITE_COLOR hiddenSeparator:NO];
+        [cell bindWithTitle:TwinmeLocalizedString(@"side_menu_view_controller_application_settings", nil) subTitle:nil icon:nil stateSwitch:stateSwitch tagSwitch:tag hiddenSwitch:NO disableSwitch:NO backgroundColor:Design.WHITE_COLOR hiddenSeparator:NO];
         
         return cell;
     } else if ([self isUdpateDefaultValuePath:indexPath]) {
@@ -442,7 +442,7 @@ typedef enum {
                 break;
         }
         
-        [cell bindWithTitle:title icon:nil stateSwitch:switchState tagSwitch:tag hiddenSwitch:hiddenSwitch disableSwitch:disableSwitch backgroundColor:Design.WHITE_COLOR hiddenSeparator:NO];
+        [cell bindWithTitle:title subTitle:nil icon:nil stateSwitch:switchState tagSwitch:tag hiddenSwitch:hiddenSwitch disableSwitch:disableSwitch backgroundColor:Design.WHITE_COLOR hiddenSeparator:NO];
         
         return cell;
     }

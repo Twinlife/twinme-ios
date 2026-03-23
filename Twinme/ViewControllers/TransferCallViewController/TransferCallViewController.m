@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2023 twinlife SA.
+ *  Copyright (c) 2023-2026 twinlife SA.
  *  SPDX-License-Identifier: AGPL-3.0-only
  *
  *  Contributors:
@@ -9,7 +9,7 @@
 #import <CocoaLumberjack.h>
 
 #import "TransferCallViewController.h"
-#import "EditIdentityViewController.h"
+#import "EditExternalCallViewController.h"
 
 #import <TwinmeCommon/Design.h>
 
@@ -104,9 +104,9 @@ static const int ddLogLevel = DDLogLevelWarning;
     DDLogVerbose(@"%@ handleEditTransfertCallTapGesture: %@", LOG_TAG, sender);
     
     if (sender.state == UIGestureRecognizerStateEnded) {
-        EditIdentityViewController *editIdentityViewController = [[UIStoryboard storyboardWithName:@"iPhone" bundle:nil] instantiateViewControllerWithIdentifier:@"EditIdentityViewController"];
-        [editIdentityViewController initWithCallReceiver:self.callReceiver];
-        [self.navigationController pushViewController:editIdentityViewController animated:YES];
+        EditExternalCallViewController *editExternalCallViewController = [[UIStoryboard storyboardWithName:@"ExternalCall" bundle:nil] instantiateViewControllerWithIdentifier:@"EditExternalCallViewController"];
+        [editExternalCallViewController initWithCallReceiver:self.callReceiver];
+        [self.navigationController pushViewController:editExternalCallViewController animated:YES];
     }
 }
 

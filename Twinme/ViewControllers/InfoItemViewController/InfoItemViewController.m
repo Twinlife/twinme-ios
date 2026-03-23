@@ -44,6 +44,13 @@
 #import "NameItem.h"
 #import "ClearItem.h"
 #import "PeerClearItem.h"
+#import "InfoAnnotationItem.h"
+#import "InfoCopyItem.h"
+#import "InfoDateItem.h"
+#import "InfoDeletedItem.h"
+#import "InfoEphemeralItem.h"
+#import "InfoFileItem.h"
+#import "InfoSectionItem.h"
 
 #import "TimeItemCell.h"
 #import "MessageItemCell.h"
@@ -63,6 +70,7 @@
 #import "NameItemCell.h"
 #import "InfoDateItemCell.h"
 #import "InfoFileItemCell.h"
+#import "InfoIconItemCell.h"
 #import "CopyItemCell.h"
 #import "CallItemCell.h"
 #import "PeerCallItemCell.h"
@@ -109,6 +117,7 @@ static NSString *NAME_ITEM_CELL_IDENTIFIER = @"NameItemCellIdentifier";
 static NSString *INFO_DATE_ITEM_CELL_IDENTIFIER = @"InfoDateItemCellIdentifier";
 static NSString *COPY_ITEM_CELL_IDENTIFIER = @"CopyItemCellIdentifier";
 static NSString *INFO_FILE_ITEM_CELL_IDENTIFIER = @"InfoFileItemCellIdentifier";
+static NSString *INFO_ICON_ITEM_CELL_IDENTIFIER = @"InfoIconItemCellIdentifier";
 static NSString *CALL_ITEM_CELL_IDENTIFIER = @"CallItemCellIdentifier";
 static NSString *PEER_CALL_ITEM_CELL_IDENTIFIER = @"PeerCallItemCellIdentifier";
 static NSString *INVITATION_CONTACT_ITEM_CELL_IDENTIFIER = @"InvitationContactItemCellIdentifier";
@@ -121,15 +130,6 @@ static NSString *ANNOTATION_INFO_CELL_IDENTIFIER = @"AnnotationInfoCellIdentifie
 static NSString *HEADER_SETTINGS_CELL_IDENTIFIER = @"HeaderSettingsCellIdentifier";
 static NSString *SETTINGS_CELL_IDENTIFIER = @"SettingsCellIdentifier";
 
-static const int INFO_VIEW_SECTION_COUNT = 6;
-
-static const int ITEM_VIEW_SECTION = 0;
-static const int DATE_VIEW_SECTION = 1;
-static const int EPHEMERAL_VIEW_SECTION = 2;
-static const int COPY_VIEW_SECTION = 3;
-static const int FILE_VIEW_SECTION = 4;
-static const int ANNOTATIONS_SECTION = 5;
-
 //
 // Interface: InfoItemViewController ()
 //
@@ -140,14 +140,18 @@ static const int ANNOTATIONS_SECTION = 5;
 
 @property (nonatomic) id<TLOriginator> contact;
 @property (nonatomic) TLGroup *group;
+@property (nonatomic) NSMutableDictionary *groupMembers;
+
 @property (nonatomic) NSString *contactName;
 @property (nonatomic) UIImage *contactAvatar;
 @property (nonatomic) UIImage *identityAvatar;
 
 @property (nonatomic) AsyncManager *asyncLoaderManager;
-@property (nonatomic) NSMutableArray *annotationsArray;
 @property (nonatomic) InfoItemService *infoItemService;
 @property (nonatomic) BOOL canUpdateCopy;
+
+@property (nonatomic, nonnull) NSMutableArray *items;
+
 
 @end
 
@@ -168,8 +172,8 @@ static const int ANNOTATIONS_SECTION = 5;
     if (self) {
         _infoItemService = [[InfoItemService alloc] initWithTwinmeContext:self.twinmeContext delegate:self];
         _asyncLoaderManager = [[AsyncManager alloc] initWithTwinmeContext:self.twinmeContext delegate:self];
-        _annotationsArray = [[NSMutableArray alloc]init];
         _canUpdateCopy = YES;
+        _items = [[NSMutableArray alloc]init];
     }
     return self;
 }
@@ -188,8 +192,6 @@ static const int ANNOTATIONS_SECTION = 5;
     [super viewWillAppear:animated];
     
     [self.infoTableView reloadData];
-    
-    [self updateAnnotations];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -217,21 +219,34 @@ static const int ANNOTATIONS_SECTION = 5;
     [super viewDidDisappear:animated];
 }
 
-- (void)initWithContact:(id<TLOriginator>)contact andItem:(Item *)item {
+- (void)initWithContact:(nonnull id<TLOriginator>)contact andItem:(nonnull Item *)item groupMembers:(nullable NSMutableDictionary *)groupMembers {
     DDLogVerbose(@"%@ initWithContact: %@", LOG_TAG, contact);
     
     self.contact = contact;
     self.item = item;
+    self.groupMembers = groupMembers;
+    
     self.contactName = self.contact.name;
     if ([(NSObject*) contact class] == [TLGroupMember class]) {
         TLGroupMember *groupMember = (TLGroupMember *)contact;
         if ([groupMember.group isKindOfClass:[TLGroup class]]) {
             self.group = (TLGroup *)groupMember.group;
-            [self.infoItemService getImageWithGroup:self.group withBlock:^(UIImage *image) {
-                self.contactAvatar = image;
-            }];
+
+            if ([self.item isPeerItem] && [self.groupMembers objectForKey:self.item.peerTwincodeOutboundId]) {
+                [self.infoItemService getImageWithGroupMember:[self.groupMembers objectForKey:self.item.peerTwincodeOutboundId] withBlock:^(UIImage *image) {
+                    self.contactAvatar = image;
+                    [self updateItems];
+                }];
+            } else {
+                [self.infoItemService getImageWithGroup:self.group withBlock:^(UIImage *image) {
+                    self.contactAvatar = image;
+                    [self updateItems];
+                }];
+            }
+            
             [self.infoItemService getIdentityImageWithGroup:self.group withBlock:^(UIImage *image) {
                 self.identityAvatar = image;
+                [self updateItems];
             }];
 
         } else {
@@ -239,18 +254,31 @@ static const int ANNOTATIONS_SECTION = 5;
             self.contactName = self.contact.name;
             [self.infoItemService getImageWithContact:(TLContact *)self.contact withBlock:^(UIImage *image) {
                 self.contactAvatar = image;
+                [self updateItems];
             }];
             [self.infoItemService getIdentityImageWithContact:(TLContact *)self.contact withBlock:^(UIImage *image) {
                 self.identityAvatar = image;
+                [self updateItems];
             }];
         }
     } else if ([contact isGroup]) {
         self.group = (TLGroup *)contact;
-        [self.infoItemService getImageWithGroup:self.group withBlock:^(UIImage *image) {
-            self.contactAvatar = image;
-        }];
+        
+        if ([self.item isPeerItem] && [self.groupMembers objectForKey:self.item.peerTwincodeOutboundId]) {
+            [self.infoItemService getImageWithGroupMember:[self.groupMembers objectForKey:self.item.peerTwincodeOutboundId] withBlock:^(UIImage *image) {
+                self.contactAvatar = image;
+                [self updateItems];
+            }];
+        } else {
+            [self.infoItemService getImageWithGroup:self.group withBlock:^(UIImage *image) {
+                self.contactAvatar = image;
+                [self updateItems];
+            }];
+        }
+       
         [self.infoItemService getIdentityImageWithGroup:self.group withBlock:^(UIImage *image) {
             self.identityAvatar = image;
+            [self updateItems];
         }];
     } else {
         if (contact.peerTwincodeOutbound != nil && ![contact.peerTwincodeOutbound isSigned]) {
@@ -258,13 +286,16 @@ static const int ANNOTATIONS_SECTION = 5;
         }
         [self.infoItemService getImageWithContact:(TLContact *)contact withBlock:^(UIImage *image) {
             self.contactAvatar = image;
+            [self updateItems];
         }];
         [self.infoItemService getIdentityImageWithContact:(TLContact *)contact withBlock:^(UIImage *image) {
             self.identityAvatar = image;
+            [self updateItems];
         }];
     }
     
     [self.infoItemService initWithContact:contact];
+    [self updateItems];
 }
 
 #pragma mark - Async Loader
@@ -274,7 +305,7 @@ static const int ANNOTATIONS_SECTION = 5;
     
     if ([items containsObject:self.item]) {
         [items removeObject:self.item];
-        ItemCell *itemCell = (ItemCell *)[self.infoTableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:1 inSection:ITEM_VIEW_SECTION]];
+        ItemCell *itemCell = (ItemCell *)[self.infoTableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:1 inSection:0]];
         switch (self.item.type) {
             case ItemTypeAudio:
             case ItemTypePeerAudio:
@@ -327,16 +358,11 @@ static const int ANNOTATIONS_SECTION = 5;
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     DDLogVerbose(@"%@ numberOfSectionsInTableView: %@", LOG_TAG, tableView);
     
-    return INFO_VIEW_SECTION_COUNT;
+    return 1;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
     DDLogVerbose(@"%@ tableView: %@ heightForHeaderInSection: %ld", LOG_TAG, tableView, (long)section);
-    
-    if (section == ANNOTATIONS_SECTION && self.annotationsArray.count > 0) {
-        
-        return Design.SETTING_SECTION_HEIGHT;
-    }
     
     return CGFLOAT_MIN;
 }
@@ -350,7 +376,9 @@ static const int ANNOTATIONS_SECTION = 5;
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     DDLogVerbose(@"%@ tableView: %@ heightForRowAtIndexPath: %@", LOG_TAG, tableView, indexPath);
     
-    if (indexPath.section == ITEM_VIEW_SECTION || indexPath.section == FILE_VIEW_SECTION) {
+    Item *item = [self.items objectAtIndex:indexPath.row];
+    
+    if (item.type == ItemTypeInfoFile || indexPath.row == 1) {
         return UITableViewAutomaticDimension;
     }
     
@@ -359,338 +387,217 @@ static const int ANNOTATIONS_SECTION = 5;
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     DDLogVerbose(@"%@ tableView: %@ numberOfRowsInSection: %ld", LOG_TAG, tableView, (long)section);
-    
-    NSInteger numberOfRowsInSection;
-    switch (section) {
-        case ITEM_VIEW_SECTION:
-            numberOfRowsInSection = 2;
-            break;
-            
-        case DATE_VIEW_SECTION:
-            switch (self.item.type) {
-                case ItemTypeCall:
-                case ItemTypePeerCall:
-                    numberOfRowsInSection = 0;
-                    break;
-                default:
-                    numberOfRowsInSection = 3;
-                    if (self.item.peerDeletedTimestamp > 0) {
-                        numberOfRowsInSection++;
-                    }
-                    
-                    if ([self.item isEditedtem]) {
-                        numberOfRowsInSection++;
-                    }
-                    
-                    break;
-            }
-            break;
-            
-        case COPY_VIEW_SECTION:
-            switch (self.item.type) {
-                case ItemTypeInvitation:
-                case ItemTypePeerInvitation:
-                case ItemTypeInvitationContact:
-                case ItemTypePeerInvitationContact:
-                case ItemTypeCall:
-                case ItemTypePeerCall:
-                case ItemTypeClear:
-                case ItemTypePeerClear:
-                    numberOfRowsInSection = 0;
-                    break;
-                default:
-                    numberOfRowsInSection = 1;
-                    break;
-            }
-            break;
-            
-        case EPHEMERAL_VIEW_SECTION:
-            if (self.item.isEphemeralItem && self.item.readTimestamp > 0) {
-                numberOfRowsInSection = 1;
-            } else {
-                numberOfRowsInSection = 0;
-            }
-            break;
-            
-        case FILE_VIEW_SECTION:
-            switch (self.item.type) {
-                case ItemTypeMessage:
-                case ItemTypePeerMessage:
-                case ItemTypeLink:
-                case ItemTypePeerLink:
-                case ItemTypeInvitation:
-                case ItemTypePeerInvitation:
-                case ItemTypeInvitationContact:
-                case ItemTypePeerInvitationContact:
-                case ItemTypeLocation:
-                case ItemTypePeerLocation:
-                case ItemTypeClear:
-                case ItemTypePeerClear:
-                    numberOfRowsInSection = 0;
-                    break;
-                case ItemTypeImage:
-                case ItemTypePeerImage:
-                case ItemTypeVideo:
-                case ItemTypePeerVideo:
-                case ItemTypeAudio:
-                case ItemTypePeerAudio:
-                case ItemTypeFile:
-                case ItemTypePeerFile:
-                case ItemTypeCall:
-                case ItemTypePeerCall:
-                    numberOfRowsInSection = 1;
-                    break;
-                default:
-                    numberOfRowsInSection = 0;
-                    break;
-            }
-            break;
-            
-        case ANNOTATIONS_SECTION:
-            numberOfRowsInSection = self.annotationsArray.count;
-            break;
-            
-        default:
-            numberOfRowsInSection = 0;
-            break;
-    }
-    return numberOfRowsInSection;
-}
 
-- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-    DDLogVerbose(@"%@ tableView: %@ viewForHeaderInSection: %ld", LOG_TAG, tableView, (long)section);
-    
-    SettingsSectionHeaderCell *settingsSectionHeaderCell = (SettingsSectionHeaderCell *)[tableView dequeueReusableCellWithIdentifier:HEADER_SETTINGS_CELL_IDENTIFIER];
-    if (!settingsSectionHeaderCell) {
-        settingsSectionHeaderCell = [[SettingsSectionHeaderCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:HEADER_SETTINGS_CELL_IDENTIFIER];
-    }
-    
-    NSString *sectionName = @"";
-    if (section == ANNOTATIONS_SECTION && self.annotationsArray.count > 0) {
-        sectionName = TwinmeLocalizedString(@"info_item_view_controller_reactions", nil);
-    }
-    
-    [settingsSectionHeaderCell bindWithTitle:sectionName backgroundColor:Design.LIGHT_GREY_BACKGROUND_COLOR hideSeparator:YES uppercaseString:YES];
-    
-    return settingsSectionHeaderCell;
+    return self.items.count;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     DDLogVerbose(@"%@ tableView: %@ cellForRowAtIndexPath: %@", LOG_TAG, tableView, indexPath);
     
-    switch (indexPath.section) {
-        case ITEM_VIEW_SECTION:
-            if (indexPath.row == 0) {
-                TimeItem *timeItem = [[TimeItem alloc]initWithTimestamp:self.item.sentTimestamp > 0 ? self.item.sentTimestamp:self.item.createdTimestamp];
-                TimeItemCell *timeCell = [[TimeItemCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:TIME_CELL_IDENTIFIER topMargin:0 bottomMargin:0];
-                [timeCell bindWithItem:timeItem conversationViewController:self.conversationViewController];
-                timeCell.contentView.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
-                return timeCell;
-            }
+    Item *item = [self.items objectAtIndex:indexPath.row];
+    
+    self.item.replyAllowed = NO;
+    switch (item.type) {
+        case ItemTypeTime: {
+            TimeItem *timeItem = [[TimeItem alloc]initWithTimestamp:item.sentTimestamp > 0 ? item.sentTimestamp:item.createdTimestamp];
+            TimeItemCell *timeCell = [[TimeItemCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:TIME_CELL_IDENTIFIER topMargin:0 bottomMargin:0];
+            [timeCell bindWithItem:timeItem conversationViewController:self.conversationViewController];
+            timeCell.contentView.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
+            return timeCell;
+        }
             
-            self.item.replyAllowed = NO;
-            switch (self.item.type) {
-                case ItemTypeInfoPrivacy:
-                case ItemTypeTime:
-                case ItemTypeName:
-                    break;
-                    
-                case ItemTypeMessage: {
-                    MessageItem *messageItem = (MessageItem *)self.item;
-                    MessageItemCell *messageItemCell = (MessageItemCell *)[self.infoTableView dequeueReusableCellWithIdentifier:MESSAGE_ITEM_CELL_IDENTIFIER forIndexPath:indexPath];
-                    [messageItemCell bindWithItem:messageItem conversationViewController:self.conversationViewController asyncManager:self.asyncLoaderManager];
-                    messageItemCell.contentView.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
-                    return messageItemCell;
-                }
-                    
-                case ItemTypePeerMessage: {
-                    PeerMessageItem *peerMessageItem = (PeerMessageItem *)self.item;
-                    PeerMessageItemCell *peerMessageItemCell = (PeerMessageItemCell *)[self.infoTableView dequeueReusableCellWithIdentifier:PEER_MESSAGE_ITEM_CELL_IDENTIFIER forIndexPath:indexPath];
-                    [peerMessageItemCell bindWithItem:peerMessageItem conversationViewController:self.conversationViewController asyncManager:self.asyncLoaderManager];
-                    peerMessageItemCell.contentView.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
-                    return peerMessageItemCell;
-                }
-                    
-                case ItemTypeLink: {
-                    LinkItem *linkItem = (LinkItem *)self.item;
-                    LinkItemCell *linkItemCell = (LinkItemCell *)[self.infoTableView dequeueReusableCellWithIdentifier:LINK_ITEM_CELL_IDENTIFIER forIndexPath:indexPath];
-                    [linkItemCell bindWithItem:linkItem conversationViewController:self.conversationViewController asyncManager:self.asyncLoaderManager];
-                    linkItemCell.contentView.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
-                    return linkItemCell;
-                }
-                    
-                case ItemTypePeerLink: {
-                    PeerLinkItem *peerLinkItem = (PeerLinkItem *)self.item;
-                    PeerLinkItemCell *peerLinkItemCell = (PeerLinkItemCell *)[self.infoTableView dequeueReusableCellWithIdentifier:PEER_LINK_ITEM_CELL_IDENTIFIER forIndexPath:indexPath];
-                    [peerLinkItemCell bindWithItem:peerLinkItem conversationViewController:self.conversationViewController asyncManager:self.asyncLoaderManager];
-                    peerLinkItemCell.contentView.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
-                    return peerLinkItemCell;
-                }
-                    
-                case ItemTypeImage: {
-                    ImageItem *imageItem = (ImageItem *)self.item;
-                    ImageItemCell *imageItemCell = (ImageItemCell *)[self.infoTableView dequeueReusableCellWithIdentifier:IMAGE_ITEM_CELL_IDENTIFIER forIndexPath:indexPath];
-                    [imageItemCell bindWithItem:imageItem conversationViewController:self.conversationViewController asyncManager:self.asyncLoaderManager];
-                    imageItemCell.contentView.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
-                    return imageItemCell;
-                }
-                    
-                case ItemTypePeerImage: {
-                    PeerImageItem *peerImageItem = (PeerImageItem *)self.item;
-                    PeerImageItemCell *peerImageItemCell = (PeerImageItemCell *)[self.infoTableView dequeueReusableCellWithIdentifier:PEER_IMAGE_ITEM_CELL_IDENTIFIER forIndexPath:indexPath];
-                    [peerImageItemCell bindWithItem:peerImageItem conversationViewController:self.conversationViewController asyncManager:self.asyncLoaderManager];
-                    peerImageItemCell.contentView.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
-                    return peerImageItemCell;
-                }
-                    
-                case ItemTypeAudio: {
-                    AudioItem *audioItem = (AudioItem *)self.item;
-                    AudioItemCell *audioItemCell = (AudioItemCell *)[self.infoTableView dequeueReusableCellWithIdentifier:AUDIO_ITEM_CELL_IDENTIFIER forIndexPath:indexPath];
-                    [audioItemCell bindWithItem:audioItem conversationViewController:self.conversationViewController asyncManager:self.asyncLoaderManager];
-                    audioItemCell.contentView.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
-                    return audioItemCell;
-                }
-                    
-                case ItemTypePeerAudio: {
-                    PeerAudioItem *peerAudioItem = (PeerAudioItem *)self.item;
-                    PeerAudioItemCell *peerAudioItemCell = (PeerAudioItemCell *)[self.infoTableView dequeueReusableCellWithIdentifier:PEER_AUDIO_ITEM_CELL_IDENTIFIER forIndexPath:indexPath];
-                    [peerAudioItemCell bindWithItem:peerAudioItem conversationViewController:self.conversationViewController asyncManager:self.asyncLoaderManager];
-                    peerAudioItemCell.contentView.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
-                    return peerAudioItemCell;
-                }
-                    
-                case ItemTypeVideo: {
-                    VideoItem *videoItem = (VideoItem *)self.item;
-                    VideoItemCell *videoItemCell = (VideoItemCell *)[self.infoTableView dequeueReusableCellWithIdentifier:VIDEO_ITEM_CELL_IDENTIFIER forIndexPath:indexPath];
-                    [videoItemCell bindWithItem:videoItem conversationViewController:self.conversationViewController asyncManager:self.asyncLoaderManager];
-                    videoItemCell.contentView.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
-                    return videoItemCell;
-                }
-                    
-                case ItemTypePeerVideo: {
-                    PeerVideoItem *peerVideoItem = (PeerVideoItem *)self.item;
-                    PeerVideoItemCell *peerVideoItemCell = (PeerVideoItemCell *)[self.infoTableView dequeueReusableCellWithIdentifier:PEER_VIDEO_ITEM_CELL_IDENTIFIER forIndexPath:indexPath];
-                    [peerVideoItemCell bindWithItem:peerVideoItem conversationViewController:self.conversationViewController asyncManager:self.asyncLoaderManager];
-                    peerVideoItemCell.contentView.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
-                    return peerVideoItemCell;
-                }
-                    
-                case ItemTypeFile: {
-                    FileItem *fileItem = (FileItem *)self.item;
-                    FileItemCell *fileItemCell = (FileItemCell *)[self.infoTableView dequeueReusableCellWithIdentifier:FILE_ITEM_CELL_IDENTIFIER forIndexPath:indexPath];
-                    [fileItemCell bindWithItem:fileItem conversationViewController:self.conversationViewController asyncManager:self.asyncLoaderManager];
-                    fileItemCell.contentView.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
-                    return fileItemCell;
-                }
-                    
-                case ItemTypePeerFile: {
-                    PeerFileItem *peerFileItem = (PeerFileItem *)self.item;
-                    PeerFileItemCell *peerFileItemCell = (PeerFileItemCell *)[self.infoTableView dequeueReusableCellWithIdentifier:PEER_FILE_ITEM_CELL_IDENTIFIER forIndexPath:indexPath];
-                    [peerFileItemCell bindWithItem:peerFileItem conversationViewController:self.conversationViewController asyncManager:self.asyncLoaderManager];
-                    peerFileItemCell.contentView.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
-                    return peerFileItemCell;
-                }
-                    
-                case ItemTypeInvitation: {
-                    InvitationItem *invitationItem = (InvitationItem *)self.item;
-                    InvitationItemCell *invitationItemCell = (InvitationItemCell *)[self.infoTableView dequeueReusableCellWithIdentifier:INVITATION_ITEM_CELL_IDENTIFIER forIndexPath:indexPath];
-                    [invitationItemCell bindWithItem:invitationItem conversationViewController:self.conversationViewController];
-                    invitationItemCell.contentView.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
-                    return invitationItemCell;
-                }
-                    
-                case ItemTypePeerInvitation: {
-                    PeerInvitationItem *peerInvitationItem = (PeerInvitationItem *)self.item;
-                    PeerInvitationItemCell *peerInvitationItemCell = (PeerInvitationItemCell *)[self.infoTableView dequeueReusableCellWithIdentifier:PEER_INVITATION_ITEM_CELL_IDENTIFIER forIndexPath:indexPath];
-                    [peerInvitationItemCell bindWithItem:peerInvitationItem conversationViewController:self.conversationViewController];
-                    peerInvitationItemCell.contentView.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
-                    return peerInvitationItemCell;
-                }
-                    
-                case ItemTypeCall: {
-                    CallItem *callItem = (CallItem *)self.item;
-                    CallItemCell *callItemCell = (CallItemCell *)[self.infoTableView dequeueReusableCellWithIdentifier:CALL_ITEM_CELL_IDENTIFIER forIndexPath:indexPath];
-                    [callItemCell bindWithItem:callItem conversationViewController:self.conversationViewController];
-                    callItemCell.contentView.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
-                    return callItemCell;
-                }
-                    
-                case ItemTypePeerCall: {
-                    PeerCallItem *peerCallItem = (PeerCallItem *)self.item;
-                    PeerCallItemCell *peerCallItemCell = (PeerCallItemCell *)[self.infoTableView dequeueReusableCellWithIdentifier:PEER_CALL_ITEM_CELL_IDENTIFIER forIndexPath:indexPath];
-                    [peerCallItemCell bindWithItem:peerCallItem conversationViewController:self.conversationViewController];
-                    peerCallItemCell.contentView.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
-                    return peerCallItemCell;
-                }
-                    
-                case ItemTypeInvitationContact: {
-                    InvitationContactItem *invitationContactItem = (InvitationContactItem *)self.item;
-                    InvitationContactItemCell *invitationContactItemCell = (InvitationContactItemCell *)[self.infoTableView dequeueReusableCellWithIdentifier:INVITATION_CONTACT_ITEM_CELL_IDENTIFIER forIndexPath:indexPath];
-                    [invitationContactItemCell bindWithItem:invitationContactItem conversationViewController:self.conversationViewController];
-                    invitationContactItemCell.contentView.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
-                    return invitationContactItemCell;
-                }
-                    
-                case ItemTypePeerInvitationContact: {
-                    PeerInvitationContactItem *peerInvitationContactItem = (PeerInvitationContactItem *)self.item;
-                    PeerInvitationContactItemCell *peerInvitationContactItemCell = (PeerInvitationContactItemCell *)[self.infoTableView dequeueReusableCellWithIdentifier:PEER_INVITATION_CONTACT_ITEM_CELL_IDENTIFIER forIndexPath:indexPath];
-                    [peerInvitationContactItemCell bindWithItem:peerInvitationContactItem conversationViewController:self.conversationViewController];
-                    peerInvitationContactItemCell.contentView.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
-                    return peerInvitationContactItemCell;
-                }
-                    
-                case ItemTypeLocation: {
-                    LocationItem *locationItem = (LocationItem *)self.item;
-                    LocationItemCell *locationItemCell = (LocationItemCell *)[self.infoTableView dequeueReusableCellWithIdentifier:LOCATION_ITEM_CELL_IDENTIFIER forIndexPath:indexPath];
-                    [locationItemCell bindWithItem:locationItem conversationViewController:self.conversationViewController];
-                    locationItemCell.contentView.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
-                    return locationItemCell;
-                }
-                    
-                case ItemTypePeerLocation: {
-                    PeerLocationItem *peerLocationItem = (PeerLocationItem *)self.item;
-                    PeerLocationItemCell *peerLocationItemCell = (PeerLocationItemCell *)[self.infoTableView dequeueReusableCellWithIdentifier:PEER_LOCATION_ITEM_CELL_IDENTIFIER forIndexPath:indexPath];
-                    [peerLocationItemCell bindWithItem:peerLocationItem conversationViewController:self.conversationViewController];
-                    peerLocationItemCell.contentView.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
-                    return peerLocationItemCell;
-                }
-
-                case ItemTypeClear: {
-                    ClearItem *clearItem = (ClearItem *)self.item;
-                    ClearItemCell *clearItemCell = (ClearItemCell *)[self.infoTableView dequeueReusableCellWithIdentifier:CLEAR_ITEM_CELL_IDENTIFIER forIndexPath:indexPath];
-                    [clearItemCell bindWithItem:clearItem conversationViewController:self.conversationViewController];
-                    clearItemCell.contentView.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
-                    return clearItemCell;
-                }
-                    
-                case ItemTypePeerClear: {
-                    PeerClearItem *peerClearItem = (PeerClearItem *)self.item;
-                    PeerClearItemCell *peerClearItemCell = (PeerClearItemCell *)[self.infoTableView dequeueReusableCellWithIdentifier:PEER_CLEAR_ITEM_CELL_IDENTIFIER forIndexPath:indexPath];
-                    [peerClearItemCell bindWithItem:peerClearItem conversationViewController:self.conversationViewController];
-                    peerClearItemCell.contentView.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
-                    return peerClearItemCell;
-                }
-            }
+        case ItemTypeMessage: {
+            MessageItem *messageItem = (MessageItem *)item;
+            MessageItemCell *messageItemCell = (MessageItemCell *)[self.infoTableView dequeueReusableCellWithIdentifier:MESSAGE_ITEM_CELL_IDENTIFIER forIndexPath:indexPath];
+            [messageItemCell bindWithItem:messageItem conversationViewController:self.conversationViewController asyncManager:self.asyncLoaderManager];
+            messageItemCell.contentView.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
+            return messageItemCell;
+        }
             
-        case DATE_VIEW_SECTION: {
+        case ItemTypePeerMessage: {
+            PeerMessageItem *peerMessageItem = (PeerMessageItem *)item;
+            PeerMessageItemCell *peerMessageItemCell = (PeerMessageItemCell *)[self.infoTableView dequeueReusableCellWithIdentifier:PEER_MESSAGE_ITEM_CELL_IDENTIFIER forIndexPath:indexPath];
+            [peerMessageItemCell bindWithItem:peerMessageItem conversationViewController:self.conversationViewController asyncManager:self.asyncLoaderManager];
+            peerMessageItemCell.contentView.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
+            return peerMessageItemCell;
+        }
+            
+        case ItemTypeLink: {
+            LinkItem *linkItem = (LinkItem *)item;
+            LinkItemCell *linkItemCell = (LinkItemCell *)[self.infoTableView dequeueReusableCellWithIdentifier:LINK_ITEM_CELL_IDENTIFIER forIndexPath:indexPath];
+            [linkItemCell bindWithItem:linkItem conversationViewController:self.conversationViewController asyncManager:self.asyncLoaderManager];
+            linkItemCell.contentView.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
+            return linkItemCell;
+        }
+            
+        case ItemTypePeerLink: {
+            PeerLinkItem *peerLinkItem = (PeerLinkItem *)item;
+            PeerLinkItemCell *peerLinkItemCell = (PeerLinkItemCell *)[self.infoTableView dequeueReusableCellWithIdentifier:PEER_LINK_ITEM_CELL_IDENTIFIER forIndexPath:indexPath];
+            [peerLinkItemCell bindWithItem:peerLinkItem conversationViewController:self.conversationViewController asyncManager:self.asyncLoaderManager];
+            peerLinkItemCell.contentView.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
+            return peerLinkItemCell;
+        }
+            
+        case ItemTypeImage: {
+            ImageItem *imageItem = (ImageItem *)item;
+            ImageItemCell *imageItemCell = (ImageItemCell *)[self.infoTableView dequeueReusableCellWithIdentifier:IMAGE_ITEM_CELL_IDENTIFIER forIndexPath:indexPath];
+            [imageItemCell bindWithItem:imageItem conversationViewController:self.conversationViewController asyncManager:self.asyncLoaderManager];
+            imageItemCell.contentView.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
+            return imageItemCell;
+        }
+            
+        case ItemTypePeerImage: {
+            PeerImageItem *peerImageItem = (PeerImageItem *)item;
+            PeerImageItemCell *peerImageItemCell = (PeerImageItemCell *)[self.infoTableView dequeueReusableCellWithIdentifier:PEER_IMAGE_ITEM_CELL_IDENTIFIER forIndexPath:indexPath];
+            [peerImageItemCell bindWithItem:peerImageItem conversationViewController:self.conversationViewController asyncManager:self.asyncLoaderManager];
+            peerImageItemCell.contentView.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
+            return peerImageItemCell;
+        }
+            
+        case ItemTypeAudio: {
+            AudioItem *audioItem = (AudioItem *)item;
+            AudioItemCell *audioItemCell = (AudioItemCell *)[self.infoTableView dequeueReusableCellWithIdentifier:AUDIO_ITEM_CELL_IDENTIFIER forIndexPath:indexPath];
+            [audioItemCell bindWithItem:audioItem conversationViewController:self.conversationViewController asyncManager:self.asyncLoaderManager];
+            audioItemCell.contentView.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
+            return audioItemCell;
+        }
+            
+        case ItemTypePeerAudio: {
+            PeerAudioItem *peerAudioItem = (PeerAudioItem *)item;
+            PeerAudioItemCell *peerAudioItemCell = (PeerAudioItemCell *)[self.infoTableView dequeueReusableCellWithIdentifier:PEER_AUDIO_ITEM_CELL_IDENTIFIER forIndexPath:indexPath];
+            [peerAudioItemCell bindWithItem:peerAudioItem conversationViewController:self.conversationViewController asyncManager:self.asyncLoaderManager];
+            peerAudioItemCell.contentView.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
+            return peerAudioItemCell;
+        }
+            
+        case ItemTypeVideo: {
+            VideoItem *videoItem = (VideoItem *)item;
+            VideoItemCell *videoItemCell = (VideoItemCell *)[self.infoTableView dequeueReusableCellWithIdentifier:VIDEO_ITEM_CELL_IDENTIFIER forIndexPath:indexPath];
+            [videoItemCell bindWithItem:videoItem conversationViewController:self.conversationViewController asyncManager:self.asyncLoaderManager];
+            videoItemCell.contentView.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
+            return videoItemCell;
+        }
+            
+        case ItemTypePeerVideo: {
+            PeerVideoItem *peerVideoItem = (PeerVideoItem *)item;
+            PeerVideoItemCell *peerVideoItemCell = (PeerVideoItemCell *)[self.infoTableView dequeueReusableCellWithIdentifier:PEER_VIDEO_ITEM_CELL_IDENTIFIER forIndexPath:indexPath];
+            [peerVideoItemCell bindWithItem:peerVideoItem conversationViewController:self.conversationViewController asyncManager:self.asyncLoaderManager];
+            peerVideoItemCell.contentView.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
+            return peerVideoItemCell;
+        }
+            
+        case ItemTypeFile: {
+            FileItem *fileItem = (FileItem *)item;
+            FileItemCell *fileItemCell = (FileItemCell *)[self.infoTableView dequeueReusableCellWithIdentifier:FILE_ITEM_CELL_IDENTIFIER forIndexPath:indexPath];
+            [fileItemCell bindWithItem:fileItem conversationViewController:self.conversationViewController asyncManager:self.asyncLoaderManager];
+            fileItemCell.contentView.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
+            return fileItemCell;
+        }
+            
+        case ItemTypePeerFile: {
+            PeerFileItem *peerFileItem = (PeerFileItem *)item;
+            PeerFileItemCell *peerFileItemCell = (PeerFileItemCell *)[self.infoTableView dequeueReusableCellWithIdentifier:PEER_FILE_ITEM_CELL_IDENTIFIER forIndexPath:indexPath];
+            [peerFileItemCell bindWithItem:peerFileItem conversationViewController:self.conversationViewController asyncManager:self.asyncLoaderManager];
+            peerFileItemCell.contentView.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
+            return peerFileItemCell;
+        }
+            
+        case ItemTypeLocation: {
+            LocationItem *locationItem = (LocationItem *)self.item;
+            LocationItemCell *locationItemCell = (LocationItemCell *)[self.infoTableView dequeueReusableCellWithIdentifier:LOCATION_ITEM_CELL_IDENTIFIER forIndexPath:indexPath];
+            [locationItemCell bindWithItem:locationItem conversationViewController:self.conversationViewController];
+            locationItemCell.contentView.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
+            return locationItemCell;
+        }
+            
+        case ItemTypePeerLocation: {
+            PeerLocationItem *peerLocationItem = (PeerLocationItem *)self.item;
+            PeerLocationItemCell *peerLocationItemCell = (PeerLocationItemCell *)[self.infoTableView dequeueReusableCellWithIdentifier:PEER_LOCATION_ITEM_CELL_IDENTIFIER forIndexPath:indexPath];
+            [peerLocationItemCell bindWithItem:peerLocationItem conversationViewController:self.conversationViewController];
+            peerLocationItemCell.contentView.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
+            return peerLocationItemCell;
+        }
+            
+        case ItemTypeInvitation: {
+            InvitationItem *invitationItem = (InvitationItem *)item;
+            InvitationItemCell *invitationItemCell = (InvitationItemCell *)[self.infoTableView dequeueReusableCellWithIdentifier:INVITATION_ITEM_CELL_IDENTIFIER forIndexPath:indexPath];
+            [invitationItemCell bindWithItem:invitationItem conversationViewController:self.conversationViewController];
+            invitationItemCell.contentView.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
+            return invitationItemCell;
+        }
+            
+        case ItemTypePeerInvitation: {
+            PeerInvitationItem *peerInvitationItem = (PeerInvitationItem *)item;
+            PeerInvitationItemCell *peerInvitationItemCell = (PeerInvitationItemCell *)[self.infoTableView dequeueReusableCellWithIdentifier:PEER_INVITATION_ITEM_CELL_IDENTIFIER forIndexPath:indexPath];
+            [peerInvitationItemCell bindWithItem:peerInvitationItem conversationViewController:self.conversationViewController];
+            peerInvitationItemCell.contentView.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
+            return peerInvitationItemCell;
+        }
+            
+        case ItemTypeCall: {
+            CallItem *callItem = (CallItem *)item;
+            CallItemCell *callItemCell = (CallItemCell *)[self.infoTableView dequeueReusableCellWithIdentifier:CALL_ITEM_CELL_IDENTIFIER forIndexPath:indexPath];
+            [callItemCell bindWithItem:callItem conversationViewController:self.conversationViewController];
+            callItemCell.contentView.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
+            return callItemCell;
+        }
+            
+        case ItemTypePeerCall: {
+            PeerCallItem *peerCallItem = (PeerCallItem *)item;
+            PeerCallItemCell *peerCallItemCell = (PeerCallItemCell *)[self.infoTableView dequeueReusableCellWithIdentifier:PEER_CALL_ITEM_CELL_IDENTIFIER forIndexPath:indexPath];
+            [peerCallItemCell bindWithItem:peerCallItem conversationViewController:self.conversationViewController];
+            peerCallItemCell.contentView.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
+            return peerCallItemCell;
+        }
+            
+        case ItemTypeInvitationContact: {
+            InvitationContactItem *invitationContactItem = (InvitationContactItem *)item;
+            InvitationContactItemCell *invitationContactItemCell = (InvitationContactItemCell *)[self.infoTableView dequeueReusableCellWithIdentifier:INVITATION_CONTACT_ITEM_CELL_IDENTIFIER forIndexPath:indexPath];
+            [invitationContactItemCell bindWithItem:invitationContactItem conversationViewController:self.conversationViewController];
+            invitationContactItemCell.contentView.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
+            return invitationContactItemCell;
+        }
+            
+        case ItemTypePeerInvitationContact: {
+            PeerInvitationContactItem *peerInvitationContactItem = (PeerInvitationContactItem *)item;
+            PeerInvitationContactItemCell *peerInvitationContactItemCell = (PeerInvitationContactItemCell *)[self.infoTableView dequeueReusableCellWithIdentifier:PEER_INVITATION_CONTACT_ITEM_CELL_IDENTIFIER forIndexPath:indexPath];
+            [peerInvitationContactItemCell bindWithItem:peerInvitationContactItem conversationViewController:self.conversationViewController];
+            peerInvitationContactItemCell.contentView.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
+            return peerInvitationContactItemCell;
+        }
+            
+        case ItemTypeClear: {
+            ClearItem *clearItem = (ClearItem *)item;
+            ClearItemCell *clearItemCell = (ClearItemCell *)[self.infoTableView dequeueReusableCellWithIdentifier:CLEAR_ITEM_CELL_IDENTIFIER forIndexPath:indexPath];
+            [clearItemCell bindWithItem:clearItem conversationViewController:self.conversationViewController];
+            clearItemCell.contentView.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
+            return clearItemCell;
+        }
+            
+        case ItemTypePeerClear: {
+            PeerClearItem *peerClearItem = (PeerClearItem *)item;
+            PeerClearItemCell *peerClearItemCell = (PeerClearItemCell *)[self.infoTableView dequeueReusableCellWithIdentifier:PEER_CLEAR_ITEM_CELL_IDENTIFIER forIndexPath:indexPath];
+            [peerClearItemCell bindWithItem:peerClearItem conversationViewController:self.conversationViewController];
+            peerClearItemCell.contentView.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
+            return peerClearItemCell;
+        }
+            
+        case ItemTypeInfoDate: {
+            InfoDateItem *infoDateItem = (InfoDateItem *)item;
             InfoDateItemCell *infoDateItemCell = (InfoDateItemCell *)[self.infoTableView dequeueReusableCellWithIdentifier:INFO_DATE_ITEM_CELL_IDENTIFIER forIndexPath:indexPath];
-            InfoItemType infoItemType;
-            if (indexPath.row == 0) {
-                infoItemType = InfoItemTypeSent;
-            } else if (indexPath.row == 1) {
-                infoItemType = InfoItemTypeReceived;
-            } else if (indexPath.row == 2) {
-                infoItemType = InfoItemTypeSeen;
-            } else if (indexPath.row == 3) {
-                infoItemType = InfoItemTypeUpdated;
-            } else  {
-                infoItemType = InfoItemTypeDeleted;
-            }
-            [infoDateItemCell bindWithItem:self.item infoItemType:infoItemType conversationViewController:self.conversationViewController];
+            [infoDateItemCell bindWithItem:self.item infoDateItem:infoDateItem conversationViewController:self.conversationViewController];
             return infoDateItemCell;
         }
             
-        case COPY_VIEW_SECTION: {
+        case ItemTypeInfoDeleted:
+        case ItemTypeInfoEphemeral: {
+            InfoIconItemCell *infoIconItemCell = (InfoIconItemCell *)[self.infoTableView dequeueReusableCellWithIdentifier:INFO_ICON_ITEM_CELL_IDENTIFIER forIndexPath:indexPath];
+            [infoIconItemCell bindWithItem:self.item infoItemType:item.type == ItemTypeInfoDeleted ? InfoItemTypeDeleted : InfoItemTypeEphemeral conversationViewController:self.conversationViewController];
+            return infoIconItemCell;
+        }
+            
+        case ItemTypeInfoCopy: {
+            
             if (self.canUpdateCopy && (self.item.type == ItemTypeMessage || self.item.type == ItemTypeImage || self.item.type == ItemTypeVideo || self.item.type == ItemTypeAudio || self.item.type == ItemTypeFile || self.item.type == ItemTypeLink)) {
                 SettingsItemCell *cell = [tableView dequeueReusableCellWithIdentifier:SETTINGS_CELL_IDENTIFIER];
                 if (!cell) {
@@ -699,7 +606,7 @@ static const int ANNOTATIONS_SECTION = 5;
                 
                 cell.settingsActionDelegate = self;
             
-                [cell bindWithTitle:TwinmeLocalizedString(@"conversation_view_controller_send_menu_allow_copy", nil) icon:self.item.copyAllowed ? [UIImage imageNamed:@"SendOptionCopyAllowedIcon"]:[UIImage imageNamed:@"SendOptionCopyIcon"] stateSwitch:self.item.copyAllowed tagSwitch:0 hiddenSwitch:NO disableSwitch:NO backgroundColor:Design.WHITE_COLOR hiddenSeparator:NO];
+                [cell bindWithTitle:TwinmeLocalizedString(@"conversation_view_controller_send_menu_allow_copy", nil) subTitle:nil  icon:self.item.copyAllowed ? [UIImage imageNamed:@"SendOptionCopyAllowedIcon"]:[UIImage imageNamed:@"SendOptionCopyIcon"] stateSwitch:self.item.copyAllowed tagSwitch:0 hiddenSwitch:NO disableSwitch:NO backgroundColor:Design.WHITE_COLOR hiddenSeparator:NO];
                 
                 return cell;
             } else {
@@ -709,30 +616,51 @@ static const int ANNOTATIONS_SECTION = 5;
             }
         }
             
-        case EPHEMERAL_VIEW_SECTION: {
-            InfoDateItemCell *infoDateItemCell = (InfoDateItemCell *)[self.infoTableView dequeueReusableCellWithIdentifier:INFO_DATE_ITEM_CELL_IDENTIFIER forIndexPath:indexPath];
-            [infoDateItemCell bindWithItem:self.item infoItemType:InfoItemTypeEphemeral conversationViewController:self.conversationViewController];
-            return infoDateItemCell;
-        }
+        case ItemTypeInfoFile: {
             
-        case FILE_VIEW_SECTION: {
             InfoFileItemCell *infoFileItemCell = (InfoFileItemCell *)[self.infoTableView dequeueReusableCellWithIdentifier:INFO_FILE_ITEM_CELL_IDENTIFIER forIndexPath:indexPath];
             [infoFileItemCell bindWithItem:self.item originator:[self.conversationViewController getOriginator]];
             return infoFileItemCell;
         }
             
-        case ANNOTATIONS_SECTION: {
+        case ItemTypeInfoAnnotation: {
             AnnotationInfoCell *annotationInfoCell = [tableView dequeueReusableCellWithIdentifier:ANNOTATION_INFO_CELL_IDENTIFIER];
             if (!annotationInfoCell) {
                 annotationInfoCell = [[AnnotationInfoCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:ANNOTATION_INFO_CELL_IDENTIFIER];
             }
             
-            UIAnnotation *uiAnnotation = [self.annotationsArray objectAtIndex:indexPath.row];
-            BOOL hideSeparator = indexPath.row + 1 == self.annotationsArray.count ? YES : NO;
-            [annotationInfoCell bindWithAnnotation:uiAnnotation hideSeparator:hideSeparator];
+            InfoAnnotationItem *infoAnnotationItem = (InfoAnnotationItem *)item;
+            
+            BOOL hideSeparator = NO;
+            if (indexPath.row + 1 != self.items.count) {
+                Item *nextItem = [self.items objectAtIndex:indexPath.row + 1];
+                hideSeparator = nextItem.type != item.type;
+            } else if (indexPath.row + 1 == self.items.count) {
+                hideSeparator = YES;
+            }
+            
+            [annotationInfoCell bindWithAnnotation:infoAnnotationItem.annotation hideSeparator:hideSeparator backgroundColor:Design.WHITE_COLOR];
             return annotationInfoCell;
         }
+            
+        case ItemTypeInfoSection: {
+            
+            SettingsSectionHeaderCell *settingsSectionHeaderCell = (SettingsSectionHeaderCell *)[tableView dequeueReusableCellWithIdentifier:HEADER_SETTINGS_CELL_IDENTIFIER];
+            if (!settingsSectionHeaderCell) {
+                settingsSectionHeaderCell = [[SettingsSectionHeaderCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:HEADER_SETTINGS_CELL_IDENTIFIER];
+            }
+            
+            InfoSectionItem *infoSectionItem = (InfoSectionItem *)item;
+
+            [settingsSectionHeaderCell bindWithTitle:infoSectionItem.title backgroundColor:Design.LIGHT_GREY_BACKGROUND_COLOR hideSeparator:YES uppercaseString:YES];
+            
+            return settingsSectionHeaderCell;
+        }
+            
+        default:
+            break;
     }
+    
     return [[UITableViewCell alloc]init];
 }
 
@@ -741,13 +669,13 @@ static const int ANNOTATIONS_SECTION = 5;
 - (void)initViews {
     DDLogVerbose(@"%@ initViews", LOG_TAG);
     
-    self.view.backgroundColor = Design.WHITE_COLOR;
+    self.view.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
         
     [self setNavigationTitle:TwinmeLocalizedString(@"conversation_view_controller_menu_item_view_info_title", nil)];
     
     self.infoTableView.delegate = self;
     self.infoTableView.dataSource = self;
-    [self.infoTableView setBackgroundColor:Design.WHITE_COLOR];
+    [self.infoTableView setBackgroundColor:Design.LIGHT_GREY_BACKGROUND_COLOR];
     self.infoTableView.rowHeight = UITableViewAutomaticDimension;
     self.infoTableView.estimatedRowHeight = Design.SETTING_CELL_HEIGHT;
     self.infoTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
@@ -770,6 +698,7 @@ static const int ANNOTATIONS_SECTION = 5;
     [self.infoTableView registerNib:[UINib nibWithNibName:@"PeerCallItemCell" bundle:nil] forCellReuseIdentifier:PEER_CALL_ITEM_CELL_IDENTIFIER];
     [self.infoTableView registerNib:[UINib nibWithNibName:@"NameItemCell" bundle:nil] forCellReuseIdentifier:NAME_ITEM_CELL_IDENTIFIER];
     [self.infoTableView registerNib:[UINib nibWithNibName:@"InfoDateItemCell" bundle:nil] forCellReuseIdentifier:INFO_DATE_ITEM_CELL_IDENTIFIER];
+    [self.infoTableView registerNib:[UINib nibWithNibName:@"InfoIconItemCell" bundle:nil] forCellReuseIdentifier:INFO_ICON_ITEM_CELL_IDENTIFIER];
     [self.infoTableView registerNib:[UINib nibWithNibName:@"CopyItemCell" bundle:nil] forCellReuseIdentifier:COPY_ITEM_CELL_IDENTIFIER];
     [self.infoTableView registerNib:[UINib nibWithNibName:@"InfoFileItemCell" bundle:nil] forCellReuseIdentifier:INFO_FILE_ITEM_CELL_IDENTIFIER];
     [self.infoTableView registerNib:[UINib nibWithNibName:@"InvitationContactItemCell" bundle:nil] forCellReuseIdentifier:INVITATION_CONTACT_ITEM_CELL_IDENTIFIER];
@@ -803,26 +732,164 @@ static const int ANNOTATIONS_SECTION = 5;
     }
 }
 
+- (void)updateItems {
+    DDLogVerbose(@"%@ updateItems", LOG_TAG);
+    
+    if (self.item && self.contactAvatar && self.identityAvatar && self.items.count == 0) {
+        [self.items removeAllObjects];
+        
+        TimeItem *timeItem = [[TimeItem alloc]initWithTimestamp:self.item.sentTimestamp > 0 ? self.item.sentTimestamp:self.item.createdTimestamp];
+        [self.items addObject:timeItem];
+        [self.items addObject:self.item];
+        
+        [self.items addObject:[[InfoSectionItem alloc] initWithTitle:TwinmeLocalizedString(@"settings_view_controller_title", nil)]];
+
+        switch (self.item.type) {
+            case ItemTypeMessage:
+            case ItemTypePeerMessage:
+            case ItemTypeLink:
+            case ItemTypePeerLink:
+                [self.items addObject:[[InfoCopyItem alloc] init]];
+                break;
+                
+            case ItemTypeImage:
+            case ItemTypePeerImage:
+            case ItemTypeVideo:
+            case ItemTypePeerVideo:
+            case ItemTypeAudio:
+            case ItemTypePeerAudio:
+            case ItemTypeFile:
+            case ItemTypePeerFile:
+                [self.items addObject:[[InfoCopyItem alloc] init]];
+                [self.items addObject:[[InfoFileItem alloc] init]];
+                break;
+                
+            case ItemTypeCall:
+            case ItemTypePeerCall:
+            case ItemTypeLocation:
+            case ItemTypePeerLocation:
+                [self.items addObject:[[InfoFileItem alloc] init]];
+                break;
+                
+            default:
+                break;
+        }
+        
+        if (self.item.peerDeletedTimestamp > 0) {
+            [self.items addObject:[[InfoDeletedItem alloc] init]];
+        }
+        
+        if ([self.item isEphemeralItem] && self.item.readTimestamp > 0) {
+            [self.items addObject:[[InfoEphemeralItem alloc] init]];
+        }
+        
+        if (self.item.type != ItemTypeCall && self.item.type != ItemTypePeerCall) {
+            
+            [self.items addObject:[[InfoSectionItem alloc] initWithTitle:TwinmeLocalizedString(@"info_item_view_controller_sent", nil)]];
+            
+            if (!self.group) {
+                [self.items addObject:[[InfoDateItem alloc] initWithType:InfoItemTypeSent name:self.item.isPeerItem ? self.contact.name : self.contact.identityName image:self.item.isPeerItem ? self.contactAvatar : self.identityAvatar]];
+                
+                if ([self.item isEditedtem]) {
+                    [self.items addObject:[[InfoSectionItem alloc] initWithTitle:[NSString stringWithFormat:@"%@ :", TwinmeLocalizedString(@"info_item_view_controller_updated", nil)]]];
+                    [self.items addObject:[[InfoDateItem alloc] initWithType:InfoItemTypeUpdated name:self.item.isPeerItem ? self.contact.name : self.contact.identityName image:self.item.isPeerItem ? self.contactAvatar : self.identityAvatar]];
+                }
+                
+                if (self.item.readTimestamp > 0) {
+                    [self.items addObject:[[InfoSectionItem alloc] initWithTitle:TwinmeLocalizedString(@"info_item_view_controller_seen", nil)]];
+                    [self.items addObject:[[InfoDateItem alloc] initWithType:InfoItemTypeSeen name:self.item.isPeerItem ? self.contact.identityName : self.contact.name image:self.item.isPeerItem ? self.identityAvatar : self.contactAvatar]];
+                } else {
+                    [self.items addObject:[[InfoSectionItem alloc] initWithTitle:TwinmeLocalizedString(@"info_item_view_controller_received", nil)]];
+                    [self.items addObject:[[InfoDateItem alloc] initWithType:InfoItemTypeReceived name:self.item.isPeerItem ? self.contact.identityName : self.contact.name image:self.item.isPeerItem ? self.identityAvatar : self.contactAvatar]];
+                }
+            } else {
+                if ([self.item isPeerItem]) {
+                    TLGroupMember *member = [self.groupMembers objectForKey:self.item.peerTwincodeOutboundId];
+                    NSString *memberName = member ? member.name : @"";
+                    [self.items addObject:[[InfoDateItem alloc] initWithType:InfoItemTypeSent name:memberName image:self.contactAvatar]];
+
+                    if ([self.item isEditedtem]) {
+                        [self.items addObject:[[InfoSectionItem alloc] initWithTitle:[NSString stringWithFormat:@"%@ :", TwinmeLocalizedString(@"info_item_view_controller_updated", nil)]]];
+                        [self.items addObject:[[InfoDateItem alloc] initWithType:InfoItemTypeUpdated name:memberName image:self.contactAvatar]];
+                    }
+                    
+                    if (self.item.readTimestamp > 0) {
+                        [self.items addObject:[[InfoSectionItem alloc] initWithTitle:TwinmeLocalizedString(@"info_item_view_controller_seen", nil)]];
+                        [self.items addObject:[[InfoDateItem alloc] initWithType:InfoItemTypeSeen name:self.group.identityName image:self.identityAvatar]];
+                    } else {
+                        [self.items addObject:[[InfoSectionItem alloc] initWithTitle:TwinmeLocalizedString(@"info_item_view_controller_received", nil)]];
+                        [self.items addObject:[[InfoDateItem alloc] initWithType:InfoItemTypeReceived name:self.group.identityName image:self.identityAvatar]];
+                    }
+                } else {
+                    [self.items addObject:[[InfoDateItem alloc] initWithType:InfoItemTypeSent name:self.group.identityName image:self.identityAvatar]];
+
+                    if ([self.item isEditedtem]) {
+                        [self.items addObject:[[InfoSectionItem alloc] initWithTitle:TwinmeLocalizedString(@"info_item_view_controller_updated", nil)]];
+                        [self.items addObject:[[InfoDateItem alloc] initWithType:InfoItemTypeUpdated name:self.group.identityName image:self.identityAvatar]];
+                    }
+                }
+            }
+        }
+        
+        [self updateAnnotations];
+    }
+}
+
 - (void)updateAnnotations {
     DDLogVerbose(@"%@ updateAnnotations", LOG_TAG);
 
-    [self.infoItemService listAnnotationsWithDescriptorId:self.item.descriptorId withBlock:^(NSMutableDictionary<NSUUID *, TLDescriptorAnnotationPair *>* annotations) {
+    [self.infoItemService listAnnotationsWithDescriptorId:self.item.descriptorId withBlock:^(NSDictionary<NSUUID *, NSArray<TLDescriptorAnnotationPair *> *>* annotations) {
         // This code block is run by TwinlifeExecutor, so we can call the blocking getImageWithTwincode() variant.
         NSMutableArray<UIAnnotation *> *uiAnnotationList = [[NSMutableArray alloc] initWithCapacity:annotations.count];
         
         for (NSUUID *uuid in annotations.allKeys) {
-            TLDescriptorAnnotationPair *descriptorAnnotation = [annotations objectForKey:uuid];
-            if (descriptorAnnotation.annotation.type == TLDescriptorAnnotationTypeLike) {
-                UIReaction *uiReaction = [[UIReaction alloc]initWithDescriptorAnnotationValue:descriptorAnnotation.annotation.value];
-                NSString *name = descriptorAnnotation.twincodeOutbound.name;
-                UIImage *avatar = [self.infoItemService getImageWithTwincode:descriptorAnnotation.twincodeOutbound];
-                
-                UIAnnotation *uiAnnotation = [[UIAnnotation alloc]initWithReaction:uiReaction name:name avatar:avatar];
-                [uiAnnotationList addObject:uiAnnotation];
+            NSArray<TLDescriptorAnnotationPair *> *descriptorAnnotations = [annotations objectForKey:uuid];
+            
+            for (TLDescriptorAnnotationPair *descriptorAnnotation in descriptorAnnotations) {
+                if (descriptorAnnotation.annotation.type == TLDescriptorAnnotationTypeLike) {
+                    UIReaction *uiReaction = [[UIReaction alloc]initWithDescriptorAnnotationValue:descriptorAnnotation.annotation.value];
+                    NSString *name = descriptorAnnotation.twincodeOutbound.name;
+                    UIImage *avatar = [self.infoItemService getImageWithTwincode:descriptorAnnotation.twincodeOutbound];
+                    
+                    UIAnnotation *uiAnnotation = [[UIAnnotation alloc]initWithType:TLDescriptorAnnotationTypeLike reaction:uiReaction name:name avatar:avatar timestamp:-1];
+                    [uiAnnotationList addObject:uiAnnotation];
+                } else if (descriptorAnnotation.annotation.type == TLDescriptorAnnotationTypeReceived || descriptorAnnotation.annotation.type == TLDescriptorAnnotationTypeRead) {
+                    NSString *name = descriptorAnnotation.twincodeOutbound.name;
+                    UIImage *avatar = [self.infoItemService getImageWithTwincode:descriptorAnnotation.twincodeOutbound];
+                    
+                    UIAnnotation *uiAnnotation = [[UIAnnotation alloc]initWithType:descriptorAnnotation.annotation.type reaction:nil name:name avatar:avatar timestamp:descriptorAnnotation.annotation.value];
+                    [uiAnnotationList addObject:uiAnnotation];
+                }
             }
         }
+        
+        NSArray<UIAnnotation *> *sortedAnnotations = [uiAnnotationList sortedArrayUsingDescriptors:@[
+            [NSSortDescriptor sortDescriptorWithKey:@"orderPriority" ascending:YES]
+        ]];
+        
         dispatch_async(dispatch_get_main_queue(), ^{
-            self.annotationsArray = uiAnnotationList;
+            
+            for (int i = 0; i < sortedAnnotations.count; i++) {
+                UIAnnotation *uiAnnotation = [sortedAnnotations objectAtIndex:i];
+                
+                if (i == 0 || uiAnnotation.annotationType != [sortedAnnotations objectAtIndex:i-1].annotationType) {
+                    NSString *title = @"";
+                 
+                    TLDescriptorAnnotationType annotationType = uiAnnotation.annotationType;
+                    if (annotationType == TLDescriptorAnnotationTypeLike) {
+                        title = TwinmeLocalizedString(@"info_item_view_controller_reactions", nil);
+                    } else if (annotationType == TLDescriptorAnnotationTypeReceived) {
+                        title = TwinmeLocalizedString(@"info_item_view_controller_received", nil);
+                    } else if (annotationType == TLDescriptorAnnotationTypeRead) {
+                        title = TwinmeLocalizedString(@"info_item_view_controller_seen", nil);
+                    }
+                    
+                    [self.items addObject:[[InfoSectionItem alloc] initWithTitle:title]];
+                }
+                
+                [self.items addObject:[[InfoAnnotationItem alloc] initWithAnnotation:uiAnnotation]];
+            }
+            
             [self.infoTableView reloadData];
         });
     }];

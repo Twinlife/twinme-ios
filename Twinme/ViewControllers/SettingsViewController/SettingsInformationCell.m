@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2021 twinlife SA.
+ *  Copyright (c) 2021-2026 twinlife SA.
  *  SPDX-License-Identifier: AGPL-3.0-only
  *
  *  Contributors:
@@ -58,6 +58,11 @@ static const int ddLogLevel = DDLogLevelWarning;
     self.infoLabel.textColor = Design.FONT_COLOR_GREY;
 }
 
+- (void)resetMargins {
+    
+    self.infoLabelLeadingConstraint.constant = 0;
+}
+
 - (void)bindWithText:(NSString *)text {
     DDLogVerbose(@"%@ bindWithText: %@", LOG_TAG, text);
     
@@ -65,6 +70,15 @@ static const int ddLogLevel = DDLogLevelWarning;
     
     [self updateFont];
     [self updateColor];
+}
+
+- (void)bindWithText:(NSString *)text font:(UIFont *)font color:(UIColor *)color {
+    DDLogVerbose(@"%@ bindWithText: %@", LOG_TAG, text);
+    
+    self.infoLabel.text = text;
+    
+    self.infoLabel.font = font;
+    self.infoLabel.textColor = color;
 }
 
 - (void)updateFont {

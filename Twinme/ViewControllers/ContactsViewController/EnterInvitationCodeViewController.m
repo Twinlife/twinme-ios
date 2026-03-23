@@ -288,7 +288,11 @@ static const CGFloat DESIGN_TEXTFIELD_MARGIN = 20;
 }
 
 - (void)onGetTwincodeNotFound {
-    DDLogVerbose(@"%@ onGetDefaultProfileNotFound", LOG_TAG);
+    DDLogVerbose(@"%@ onGetTwincodeNotFound", LOG_TAG);
+}
+
+- (void)onGetTwincodeExpired {
+    DDLogVerbose(@"%@ onGetTwincodeExpired", LOG_TAG);
 }
 
 - (void)onGetTwincodeWithTwincode:(nonnull TLTwincodeOutbound *)twincode avatar:(nullable UIImage *)avatar {

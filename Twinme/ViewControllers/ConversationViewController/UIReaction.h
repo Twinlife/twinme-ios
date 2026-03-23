@@ -30,7 +30,7 @@ typedef enum {
 
 - (nonnull instancetype)initWithReaction:(ReactionType)reactionType image:(nonnull UIImage *)image;
 
-- (nonnull instancetype)initWithDescriptorAnnotationValue:(int)value;
+- (nonnull instancetype)initWithDescriptorAnnotationValue:(int64_t)value;
 
 + (nonnull UIImage *)getNotificationImageWithReactionType:(ReactionType)reactionType;
 
