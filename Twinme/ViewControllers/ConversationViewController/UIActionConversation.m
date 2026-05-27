@@ -15,6 +15,28 @@
 #import <TwinmeCommon/TwinmeApplication.h>
 
 //
+// Builds the menu icon for the GIF action at runtime so no extra asset is
+// required. The menu cell renders icons as a template tinted with iconColor,
+// so we just need the "GIF" glyph shape on a transparent background.
+//
+static UIImage *TwinmeGifIconImage(void) {
+    CGSize size = CGSizeMake(30, 30);
+    UIGraphicsBeginImageContextWithOptions(size, NO, 0.0);
+    NSString *text = @"GIF";
+    UIFont *font = [UIFont systemFontOfSize:13 weight:UIFontWeightHeavy];
+    NSDictionary *attributes = @{ NSFontAttributeName: font,
+                                  NSForegroundColorAttributeName: [UIColor blackColor] };
+    CGSize textSize = [text sizeWithAttributes:attributes];
+    CGRect rect = CGRectMake((size.width - textSize.width) / 2.0,
+                             (size.height - textSize.height) / 2.0,
+                             textSize.width, textSize.height);
+    [text drawInRect:rect withAttributes:attributes];
+    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    return image;
+}
+
+//
 // Implementation: UIActionConversation
 //
 
@@ -51,6 +73,12 @@
             self.title = TwinmeLocalizedString(@"application_photo_gallery", nil);
             self.icon = [UIImage imageNamed:@"ToolbarPictureGrey"];
             self.iconColor = [UIColor colorWithRed:241./255. green:154./255. blue:55./255. alpha:1];
+            break;
+
+        case ConversationActionTypeGif:
+            self.title = @"GIF";
+            self.icon = TwinmeGifIconImage();
+            self.iconColor = [UIColor colorWithRed:120./255. green:120./255. blue:236./255. alpha:1];
             break;
             
         case ConversationActionTypeFile:

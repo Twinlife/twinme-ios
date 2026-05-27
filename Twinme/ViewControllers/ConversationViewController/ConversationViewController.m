@@ -96,6 +96,8 @@
 #import "DecoratedLabel.h"
 #import "ReplyView.h"
 #import "MenuActionConversationView.h"
+#import "GifPickerViewController.h"
+#import "GifItem.h"
 #import "VoiceMessageRecorderView.h"
 #import "ItemSelectedActionView.h"
 #import "AnnotationsView.h"
@@ -231,7 +233,7 @@ typedef enum {
     ModeAudioRecorder
 } Mode;
 
-@interface ConversationViewController () <ConversationServiceDelegate, UITextViewDelegate, AlertMessageViewDelegate, AVAudioRecorderDelegate, AudioActionDelegate, ImageActionDelegate, VideoActionDelegate, FileActionDelegate, DeleteActionDelegate, MenuActionDelegate, GroupActionDelegate, CallActionDelegate, TwincodeActionDelegate, LinkActionDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIDocumentPickerDelegate, UIDocumentInteractionControllerDelegate, GroupInvitationServiceDelegate, GroupServiceDelegate, SwitchViewDelegate, ReplyViewDelegate, SelectItemDelegate, MenuItemDelegate, ReplyItemDelegate, AsyncLoaderDelegate, PreviewViewDelegate, CoachMarkDelegate, MenuReactionDelegate, ItemSelectedActionViewDelegate, ReactionViewDelegate, AnnotationsViewDelegate, BottomSheetViewDelegate, MenuActionConversationDelegate, MenuSendOptionsDelegate, MenuManageConversationViewDelegate, UITableViewDataSourcePrefetching, PHPickerViewControllerDelegate>
+@interface ConversationViewController () <ConversationServiceDelegate, UITextViewDelegate, AlertMessageViewDelegate, AVAudioRecorderDelegate, AudioActionDelegate, ImageActionDelegate, VideoActionDelegate, FileActionDelegate, DeleteActionDelegate, MenuActionDelegate, GroupActionDelegate, CallActionDelegate, TwincodeActionDelegate, LinkActionDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIDocumentPickerDelegate, UIDocumentInteractionControllerDelegate, GroupInvitationServiceDelegate, GroupServiceDelegate, SwitchViewDelegate, ReplyViewDelegate, SelectItemDelegate, MenuItemDelegate, ReplyItemDelegate, AsyncLoaderDelegate, PreviewViewDelegate, CoachMarkDelegate, MenuReactionDelegate, ItemSelectedActionViewDelegate, ReactionViewDelegate, AnnotationsViewDelegate, BottomSheetViewDelegate, MenuActionConversationDelegate, MenuSendOptionsDelegate, MenuManageConversationViewDelegate, UITableViewDataSourcePrefetching, PHPickerViewControllerDelegate, GifPickerViewControllerDelegate>
 
 @property (weak, nonatomic) IBOutlet UIView *safeAreaView;
 @property (weak, nonatomic) IBOutlet UIView *headerView;
@@ -4226,6 +4228,10 @@ typedef enum {
         case ConversationActionTypeGallery:
             [self openGallery];
             break;
+
+        case ConversationActionTypeGif:
+            [self openGifPicker];
+            break;
             
         case ConversationActionTypeFile:
             [self openFile];
@@ -6094,6 +6100,41 @@ typedef enum {
             break;
         }
     }
+}
+
+- (void)openGifPicker {
+    DDLogVerbose(@"%@ openGifPicker", LOG_TAG);
+
+    if (!self.sendAllowed) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [[UIApplication sharedApplication].keyWindow makeToast:TwinmeLocalizedString(@"conversation_view_controller_group_not_allowed_post_message", nil)];
+        });
+        return;
+    }
+
+    GifPickerViewController *gifPickerViewController = [[GifPickerViewController alloc] init];
+    gifPickerViewController.delegate = self;
+    UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:gifPickerViewController];
+    navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
+    [self presentViewController:navigationController animated:YES completion:nil];
+}
+
+#pragma mark - GifPickerViewControllerDelegate
+
+- (void)gifPickerViewController:(GifPickerViewController *)controller didSelectGifWithLocalPath:(NSString *)localPath gifItem:(GifItem *)gifItem {
+    DDLogVerbose(@"%@ gifPickerViewController:didSelectGifWithLocalPath: %@", LOG_TAG, localPath);
+
+    [controller dismissViewControllerAnimated:YES completion:^{
+        // The GIF was downloaded to a temporary file; send it as an image so it
+        // animates in the conversation (toBeDeleted:YES cleans up the temp file).
+        [self sendImage:localPath allowCopyFile:YES];
+    }];
+}
+
+- (void)gifPickerViewControllerDidCancel:(GifPickerViewController *)controller {
+    DDLogVerbose(@"%@ gifPickerViewControllerDidCancel", LOG_TAG);
+
+    [controller dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)openGallery {

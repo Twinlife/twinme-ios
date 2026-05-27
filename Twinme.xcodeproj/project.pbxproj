@@ -154,6 +154,15 @@
 		01EC60F0294D125200A0705B /* CoachMarkManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 01EC60EB294D125200A0705B /* CoachMarkManager.m */; };
 		01EC60F1294D125200A0705B /* CoachMark.m in Sources */ = {isa = PBXBuildFile; fileRef = 01EC60EC294D125200A0705B /* CoachMark.m */; };
 		01EC60F4294D127700A0705B /* CoachMarkViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 01EC60F3294D127700A0705B /* CoachMarkViewController.m */; };
+		10AC47C999592989B0932A82 /* GifCell.h in Headers */ = {isa = PBXBuildFile; fileRef = C8E3477AB075C72F42B34332 /* GifCell.h */; };
+		11844CD2AED83F9A9FD5B04C /* GifProvider.h in Headers */ = {isa = PBXBuildFile; fileRef = C41A40B99356626EE0FDF6FA /* GifProvider.h */; };
+		12C84C7EB0265A9DC35900D1 /* GifProvider.h in Headers */ = {isa = PBXBuildFile; fileRef = C41A40B99356626EE0FDF6FA /* GifProvider.h */; };
+		19A14880B62F18C9218E64D4 /* TenorGifProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 19DF4E22BEDF150772648D3B /* TenorGifProvider.m */; };
+		1F1446E98BE45309429E11D9 /* GifItem.h in Headers */ = {isa = PBXBuildFile; fileRef = 2BD346809D2C9B6735FDAD82 /* GifItem.h */; };
+		22994E3B8A8D8F693EB5527E /* GiphyGifProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 840B41D28ABACC6962AE620F /* GiphyGifProvider.m */; };
+		258A4120A58DFD32786C25B3 /* GifPickerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F8C44F1DB83938DE7C79F406 /* GifPickerViewController.m */; };
+		26DB4CF2BDE97B5C11E6C403 /* GifItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 0C4140428525C5630C3944E9 /* GifItem.m */; };
+		38544E999B8072ED8F6FCDCA /* GifService.h in Headers */ = {isa = PBXBuildFile; fileRef = 69BE45E69780517A62136565 /* GifService.h */; };
 		4704FABF248E7E3D009EB362 /* NotificationServiceExtension.m in Sources */ = {isa = PBXBuildFile; fileRef = 4704FABE248E7E3D009EB362 /* NotificationServiceExtension.m */; };
 		4704FAC4248E7E3D009EB362 /* NSE-twinme.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 4704FABB248E7E3D009EB362 /* NSE-twinme.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		4704FACC248E7FF9009EB362 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47BE16E41936234400440069 /* CoreData.framework */; };
@@ -780,6 +789,8 @@
 		47FF4C3C24A1C9F800C3CDDD /* twinme_connecting.caf in Resources */ = {isa = PBXBuildFile; fileRef = 475FD9D420DB939600CD7A9E /* twinme_connecting.caf */; };
 		47FF4C3D24A1CA0700C3CDDD /* twinme_notification.caf in Resources */ = {isa = PBXBuildFile; fileRef = 83D88D3D1EBCE55300AFD6F2 /* twinme_notification.caf */; };
 		47FF4C3E24A1CA0700C3CDDD /* twinme_video_call.caf in Resources */ = {isa = PBXBuildFile; fileRef = 83D88D411EBCE88900AFD6F2 /* twinme_video_call.caf */; };
+		4B8B4F2789C8E099BA8BBB4A /* GifPickerViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 57F24EECABC38B2AE3FB98B2 /* GifPickerViewController.h */; };
+		54C64411B118118B22843088 /* GifService.m in Sources */ = {isa = PBXBuildFile; fileRef = 4F174A8CA9A449C67B3176DA /* GifService.m */; };
 		57002C552DF95436003EDDC3 /* SearchSectionFooterCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 57002C532DF95436003EDDC3 /* SearchSectionFooterCell.m */; };
 		57002C562DF95436003EDDC3 /* SearchContentMessageCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 57002C4D2DF95436003EDDC3 /* SearchContentMessageCell.m */; };
 		57002C572DF95436003EDDC3 /* SearchSectionCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 57002C502DF95436003EDDC3 /* SearchSectionCell.m */; };
@@ -1069,6 +1080,11 @@
 		57C22AB32F17FC970011B88A /* UIBackupInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 57C22AB12F17FC970011B88A /* UIBackupInfo.m */; };
 		57D232B12F1FC6CF00514497 /* UIRestoreItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 57D232B02F1FC6CF00514497 /* UIRestoreItem.m */; };
 		57D232B22F1FC6CF00514497 /* UIRestoreItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 57D232B02F1FC6CF00514497 /* UIRestoreItem.m */; };
+		641047B4AF2206B977CC2D31 /* GifItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 0C4140428525C5630C3944E9 /* GifItem.m */; };
+		6A1747EDB9CE6F89191C698E /* GifCell.h in Headers */ = {isa = PBXBuildFile; fileRef = C8E3477AB075C72F42B34332 /* GifCell.h */; };
+		6B9D4AA992C1B34BBD869B7E /* GiphyGifProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 840B41D28ABACC6962AE620F /* GiphyGifProvider.m */; };
+		719643E69DB62FCDFCC76E3C /* GifCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 63804F08A7344E47CF133E42 /* GifCell.m */; };
+		77814A7FA2E03C357B417FDF /* GifService.h in Headers */ = {isa = PBXBuildFile; fileRef = 69BE45E69780517A62136565 /* GifService.h */; };
 		7A14ABF82CC79BB800478BA9 /* libTwinmeTwinme.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7A14ABE02CC79A7900478BA9 /* libTwinmeTwinme.a */; };
 		7A14ABF92CC79BD000478BA9 /* libTwinmeTwinme.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7A14ABE02CC79A7900478BA9 /* libTwinmeTwinme.a */; };
 		7A14ABFA2CC79BDE00478BA9 /* libTwinmeTwinme.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7A14ABE02CC79A7900478BA9 /* libTwinmeTwinme.a */; };
@@ -1583,8 +1599,18 @@
 		83F6A82D2167F2D7006D3AFD /* UIContact.m in Sources */ = {isa = PBXBuildFile; fileRef = 83F6A82B2167F2D6006D3AFD /* UIContact.m */; };
 		83F6A8322167F383006D3AFD /* InsideBorderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 83F6A8302167F383006D3AFD /* InsideBorderView.m */; };
 		83FB2F9321C18CFB009770B6 /* DeletedAccountViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 83FB2F9221C18CFB009770B6 /* DeletedAccountViewController.m */; };
+		8D564BFDBF2EE421904F4CB1 /* TenorGifProvider.h in Headers */ = {isa = PBXBuildFile; fileRef = FC2A43D9973E721A55304732 /* TenorGifProvider.h */; };
+		940A4202AE46F49566D55732 /* GifItem.h in Headers */ = {isa = PBXBuildFile; fileRef = 2BD346809D2C9B6735FDAD82 /* GifItem.h */; };
+		A7E3492D83732CDA9A40E3A3 /* TenorGifProvider.h in Headers */ = {isa = PBXBuildFile; fileRef = FC2A43D9973E721A55304732 /* TenorGifProvider.h */; };
+		A8DC4B9A82E638A5F2628DCF /* GiphyGifProvider.h in Headers */ = {isa = PBXBuildFile; fileRef = 127C42EA92E0B3D5B8721820 /* GiphyGifProvider.h */; };
+		A9C64C5198D08301EFA7E8C2 /* GifService.m in Sources */ = {isa = PBXBuildFile; fileRef = 4F174A8CA9A449C67B3176DA /* GifService.m */; };
+		C532410B956CA2B8D50379F6 /* GifPickerViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 57F24EECABC38B2AE3FB98B2 /* GifPickerViewController.h */; };
 		D2100FC1CCBD5495F32C3678 /* libPods-twinme.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4EB9EDBB608E7829FBC3D37D /* libPods-twinme.a */; };
+		DA62445FA24B3C13EA0C31E3 /* GiphyGifProvider.h in Headers */ = {isa = PBXBuildFile; fileRef = 127C42EA92E0B3D5B8721820 /* GiphyGifProvider.h */; };
 		DDE1E25DA73050DD1F366219 /* libPods-twinme.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4EB9EDBB608E7829FBC3D37D /* libPods-twinme.a */; };
+		E2D3485EB46E2D8ADFB97C36 /* GifCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 63804F08A7344E47CF133E42 /* GifCell.m */; };
+		F0184901955DB8C9D542A536 /* TenorGifProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 19DF4E22BEDF150772648D3B /* TenorGifProvider.m */; };
+		F1774B42AA570863CFEAFD9C /* GifPickerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F8C44F1DB83938DE7C79F406 /* GifPickerViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -2161,7 +2187,11 @@
 		01EC60EE294D125200A0705B /* CoachMarkView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoachMarkView.h; sourceTree = "<group>"; };
 		01EC60F2294D127700A0705B /* CoachMarkViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CoachMarkViewController.h; path = ViewControllers/CoachMarkViewController.h; sourceTree = "<group>"; };
 		01EC60F3294D127700A0705B /* CoachMarkViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CoachMarkViewController.m; path = ViewControllers/CoachMarkViewController.m; sourceTree = "<group>"; };
+		0C4140428525C5630C3944E9 /* GifItem.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = GifItem.m; path = Twinme/Services/GifService/GifItem.m; sourceTree = SOURCE_ROOT; };
 		11845FB437C4D4F9D9864B98 /* Pods-twinme.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-twinme.release.xcconfig"; path = "Target Support Files/Pods-twinme/Pods-twinme.release.xcconfig"; sourceTree = "<group>"; };
+		127C42EA92E0B3D5B8721820 /* GiphyGifProvider.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = GiphyGifProvider.h; path = Twinme/Services/GifService/GiphyGifProvider.h; sourceTree = SOURCE_ROOT; };
+		19DF4E22BEDF150772648D3B /* TenorGifProvider.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = TenorGifProvider.m; path = Twinme/Services/GifService/TenorGifProvider.m; sourceTree = SOURCE_ROOT; };
+		2BD346809D2C9B6735FDAD82 /* GifItem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = GifItem.h; path = Twinme/Services/GifService/GifItem.h; sourceTree = SOURCE_ROOT; };
 		4704FABB248E7E3D009EB362 /* NSE-twinme.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "NSE-twinme.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		4704FABD248E7E3D009EB362 /* NotificationServiceExtension.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NotificationServiceExtension.h; sourceTree = "<group>"; };
 		4704FABE248E7E3D009EB362 /* NotificationServiceExtension.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NotificationServiceExtension.m; sourceTree = "<group>"; };
@@ -2199,6 +2229,7 @@
 		47F8AD322E3BF53D00977CFA /* ApplicationAssertion.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ApplicationAssertion.h; sourceTree = "<group>"; };
 		47F8AD332E3BF5B400977CFA /* ApplicationAssertion.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ApplicationAssertion.m; sourceTree = "<group>"; };
 		4EB9EDBB608E7829FBC3D37D /* libPods-twinme.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-twinme.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		4F174A8CA9A449C67B3176DA /* GifService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = GifService.m; path = Twinme/Services/GifService/GifService.m; sourceTree = SOURCE_ROOT; };
 		57002C4C2DF95436003EDDC3 /* SearchContentMessageCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SearchContentMessageCell.h; sourceTree = "<group>"; };
 		57002C4D2DF95436003EDDC3 /* SearchContentMessageCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SearchContentMessageCell.m; sourceTree = "<group>"; };
 		57002C4E2DF95436003EDDC3 /* SearchContentMessageCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SearchContentMessageCell.xib; sourceTree = "<group>"; };
@@ -2467,7 +2498,10 @@
 		57C22AB12F17FC970011B88A /* UIBackupInfo.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UIBackupInfo.m; sourceTree = "<group>"; };
 		57D232AF2F1FC6CF00514497 /* UIRestoreItem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UIRestoreItem.h; sourceTree = "<group>"; };
 		57D232B02F1FC6CF00514497 /* UIRestoreItem.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UIRestoreItem.m; sourceTree = "<group>"; };
+		57F24EECABC38B2AE3FB98B2 /* GifPickerViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = GifPickerViewController.h; path = Twinme/ViewControllers/GifPickerViewController/GifPickerViewController.h; sourceTree = SOURCE_ROOT; };
 		603B08F0A36F34FEE1CE0F09 /* Pods-twinme.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-twinme.debug.xcconfig"; path = "Target Support Files/Pods-twinme/Pods-twinme.debug.xcconfig"; sourceTree = "<group>"; };
+		63804F08A7344E47CF133E42 /* GifCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = GifCell.m; path = Twinme/ViewControllers/GifPickerViewController/GifCell.m; sourceTree = SOURCE_ROOT; };
+		69BE45E69780517A62136565 /* GifService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = GifService.h; path = Twinme/Services/GifService/GifService.h; sourceTree = SOURCE_ROOT; };
 		7A61C5652C5CD3E100639854 /* bip39_wordlist_en.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = bip39_wordlist_en.txt; sourceTree = "<group>"; };
 		7A751D402E9F9B2F00BDB13D /* UIWelcome.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UIWelcome.h; sourceTree = "<group>"; };
 		7A751D412E9F9B2F00BDB13D /* UIWelcome.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UIWelcome.m; sourceTree = "<group>"; };
@@ -3080,6 +3114,11 @@
 		83F6A8312167F383006D3AFD /* InsideBorderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = InsideBorderView.h; path = Utilities/InsideBorderView.h; sourceTree = "<group>"; };
 		83FB2F9121C18CFB009770B6 /* DeletedAccountViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DeletedAccountViewController.h; sourceTree = "<group>"; };
 		83FB2F9221C18CFB009770B6 /* DeletedAccountViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DeletedAccountViewController.m; sourceTree = "<group>"; };
+		840B41D28ABACC6962AE620F /* GiphyGifProvider.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = GiphyGifProvider.m; path = Twinme/Services/GifService/GiphyGifProvider.m; sourceTree = SOURCE_ROOT; };
+		C41A40B99356626EE0FDF6FA /* GifProvider.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = GifProvider.h; path = Twinme/Services/GifService/GifProvider.h; sourceTree = SOURCE_ROOT; };
+		C8E3477AB075C72F42B34332 /* GifCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = GifCell.h; path = Twinme/ViewControllers/GifPickerViewController/GifCell.h; sourceTree = SOURCE_ROOT; };
+		F8C44F1DB83938DE7C79F406 /* GifPickerViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = GifPickerViewController.m; path = Twinme/ViewControllers/GifPickerViewController/GifPickerViewController.m; sourceTree = SOURCE_ROOT; };
+		FC2A43D9973E721A55304732 /* TenorGifProvider.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = TenorGifProvider.h; path = Twinme/Services/GifService/TenorGifProvider.h; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -3622,6 +3661,19 @@
 				83CD18FF1E46335E002F47BE /* WebRTC.xcodeproj */,
 				4741644E260B9363009814E1 /* Recovered References */,
 				74365FAA1B6940EA8015375A /* Pods */,
+				2BD346809D2C9B6735FDAD82 /* GifItem.h */,
+				0C4140428525C5630C3944E9 /* GifItem.m */,
+				C41A40B99356626EE0FDF6FA /* GifProvider.h */,
+				FC2A43D9973E721A55304732 /* TenorGifProvider.h */,
+				19DF4E22BEDF150772648D3B /* TenorGifProvider.m */,
+				127C42EA92E0B3D5B8721820 /* GiphyGifProvider.h */,
+				840B41D28ABACC6962AE620F /* GiphyGifProvider.m */,
+				69BE45E69780517A62136565 /* GifService.h */,
+				4F174A8CA9A449C67B3176DA /* GifService.m */,
+				C8E3477AB075C72F42B34332 /* GifCell.h */,
+				63804F08A7344E47CF133E42 /* GifCell.m */,
+				57F24EECABC38B2AE3FB98B2 /* GifPickerViewController.h */,
+				F8C44F1DB83938DE7C79F406 /* GifPickerViewController.m */,
 			);
 			sourceTree = "<group>";
 		};
@@ -4947,6 +4999,37 @@
 		};
 /* End PBXGroup section */
 
+/* Begin PBXHeadersBuildPhase section */
+		01A0492A919345FE4A54F469 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				940A4202AE46F49566D55732 /* GifItem.h in Headers */,
+				11844CD2AED83F9A9FD5B04C /* GifProvider.h in Headers */,
+				8D564BFDBF2EE421904F4CB1 /* TenorGifProvider.h in Headers */,
+				A8DC4B9A82E638A5F2628DCF /* GiphyGifProvider.h in Headers */,
+				77814A7FA2E03C357B417FDF /* GifService.h in Headers */,
+				6A1747EDB9CE6F89191C698E /* GifCell.h in Headers */,
+				C532410B956CA2B8D50379F6 /* GifPickerViewController.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3F5F490CBE4E537AAC62DFF1 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1F1446E98BE45309429E11D9 /* GifItem.h in Headers */,
+				12C84C7EB0265A9DC35900D1 /* GifProvider.h in Headers */,
+				A7E3492D83732CDA9A40E3A3 /* TenorGifProvider.h in Headers */,
+				DA62445FA24B3C13EA0C31E3 /* GiphyGifProvider.h in Headers */,
+				38544E999B8072ED8F6FCDCA /* GifService.h in Headers */,
+				10AC47C999592989B0932A82 /* GifCell.h in Headers */,
+				4B8B4F2789C8E099BA8BBB4A /* GifPickerViewController.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
 /* Begin PBXNativeTarget section */
 		4704FABA248E7E3D009EB362 /* NSE-twinme */ = {
 			isa = PBXNativeTarget;
@@ -4997,6 +5080,7 @@
 				47BA61701923D3140008C131 /* Resources */,
 				4704FAC3248E7E3D009EB362 /* Embed App Extensions */,
 				4704FAFF24913359009EB362 /* Embed Frameworks */,
+				01A0492A919345FE4A54F469 /* Headers */,
 			);
 			buildRules = (
 			);
@@ -5022,6 +5106,7 @@
 				47CD196E2E9CF7DB00F0E361 /* Resources */,
 				47CD1A6E2E9CF7DB00F0E361 /* Embed App Extensions */,
 				47CD1A712E9CF7DB00F0E361 /* Embed Frameworks */,
+				3F5F490CBE4E537AAC62DFF1 /* Headers */,
 			);
 			buildRules = (
 			);
@@ -5107,7 +5192,7 @@
 					};
 					47A4A86E26039F500082C182 = {
 						CreatedOnToolsVersion = 12.4;
-						TestTargetID = 47CD17E72E9CF7DB00F0E361;
+						TestTargetID = 47CD17E72E9CF7DB00F0E361 /* mytwinlife */;
 					};
 					47BA61711923D3140008C131 = {
 						LastSwiftMigration = 1620;
@@ -5126,7 +5211,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 47BA616D1923D3140008C131 /* Build configuration list for PBXProject "Twinme" */;
+			buildConfigurationList = 47BA616D1923D3140008C131 /* Build configuration list for PBXProject "twinme" */;
 			compatibilityVersion = "Xcode 12.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -6533,6 +6618,12 @@
 				5703BB2E2BC958D9001E3C65 /* AnnotationInfoCell.m in Sources */,
 				830400B41DE7384000A3CA39 /* SendButtonView.m in Sources */,
 				57B28B542B2AF28A000A8324 /* MenuDateTimeView.m in Sources */,
+				641047B4AF2206B977CC2D31 /* GifItem.m in Sources */,
+				19A14880B62F18C9218E64D4 /* TenorGifProvider.m in Sources */,
+				6B9D4AA992C1B34BBD869B7E /* GiphyGifProvider.m in Sources */,
+				A9C64C5198D08301EFA7E8C2 /* GifService.m in Sources */,
+				719643E69DB62FCDFCC76E3C /* GifCell.m in Sources */,
+				258A4120A58DFD32786C25B3 /* GifPickerViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -6945,6 +7036,12 @@
 				7A751E522E9FA43400BDB13D /* ResetInvitationConfirmView.m in Sources */,
 				7A751E5E2E9FA49000BDB13D /* UIPreviewMedia.m in Sources */,
 				47CD195D2E9CF7DB00F0E361 /* MenuDateTimeView.m in Sources */,
+				26DB4CF2BDE97B5C11E6C403 /* GifItem.m in Sources */,
+				F0184901955DB8C9D542A536 /* TenorGifProvider.m in Sources */,
+				22994E3B8A8D8F693EB5527E /* GiphyGifProvider.m in Sources */,
+				54C64411B118118B22843088 /* GifService.m in Sources */,
+				E2D3485EB46E2D8ADFB97C36 /* GifCell.m in Sources */,
+				F1774B42AA570863CFEAFD9C /* GifPickerViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -8025,7 +8122,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		47BA616D1923D3140008C131 /* Build configuration list for PBXProject "Twinme" */ = {
+		47BA616D1923D3140008C131 /* Build configuration list for PBXProject "twinme" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				47BA619C1923D3150008C131 /* Debug */,
