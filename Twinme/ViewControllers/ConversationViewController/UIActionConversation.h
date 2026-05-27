@@ -10,6 +10,7 @@ typedef enum {
     ConversationActionTypeCamera,
     ConversationActionTypeFile,
     ConversationActionTypeGallery,
+    ConversationActionTypeGif,
     ConversationActionTypeManageConversation,
     ConversationActionTypeMediasAndFiles,
     ConversationActionTypeReset
