@@ -99,7 +99,7 @@
 - (NSString *)getInformation {
     
     if ([self isClearLocalItem]) {
-        return TwinmeLocalizedString(@"conversation_view_controller_local_cleanup", nil);
+        return TwinmeLocalizedString(@"conversation_view_local_cleanup", nil);
     } else {
         NSMutableString *fileInfo = [[NSMutableString alloc] init];
         if ([self getExtension]) {

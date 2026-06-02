@@ -135,7 +135,7 @@ static const int SPACES_VIEW_SECTION_COUNT = 1;
     self.definesPresentationContext = YES;
     self.view.backgroundColor = Design.WHITE_COLOR;
     
-    [self setNavigationTitle:TwinmeLocalizedString(@"template_space_view_controller_template_title", nil).capitalizedString];
+    [self setNavigationTitle:TwinmeLocalizedString(@"template_space_view_template_title", nil).capitalizedString];
     
     self.spacesTableView.delegate = self;
     self.spacesTableView.dataSource = self;

@@ -48,10 +48,8 @@ static const int ddLogLevel = DDLogLevelWarning;
     ApplicationDelegate *delegate = (ApplicationDelegate *)[[UIApplication sharedApplication] delegate];
     TwinmeApplication *twinmeApplication = [delegate twinmeApplication];
     BOOL darkModeStyle = NO;
-    if (@available(iOS 13.0, *)) {
-        if ([UIScreen mainScreen].traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark){
-            darkModeStyle = YES;
-        }
+    if ([UIScreen mainScreen].traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark){
+        darkModeStyle = YES;
     }
     
     if (twinmeApplication.displayMode == DisplayModeLight && darkModeStyle) {

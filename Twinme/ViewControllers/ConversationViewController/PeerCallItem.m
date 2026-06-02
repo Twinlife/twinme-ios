@@ -41,36 +41,53 @@
     return self.createdTimestamp;
 }
 
+- (BOOL)showTerminateReason {
+    
+    switch (self.peerCallDescriptor.terminateReason) {
+        case TLPeerConnectionServiceTerminateReasonDecline:
+        case TLPeerConnectionServiceTerminateReasonGone:
+        case TLPeerConnectionServiceTerminateReasonBusy:
+        case TLPeerConnectionServiceTerminateReasonRevoked:
+        case TLPeerConnectionServiceTerminateReasonNotAuthorized:
+        case TLPeerConnectionServiceTerminateReasonCancel:
+        case TLPeerConnectionServiceTerminateReasonTimeout:
+            return YES;
+            
+        default:
+            return NO;
+    }
+}
+
 - (NSString *)getInformation:(NSString *)contactName {
     
     NSString *callStatus = @"";
     switch (self.peerCallDescriptor.terminateReason) {
         case TLPeerConnectionServiceTerminateReasonDecline:
-            callStatus = [NSString stringWithFormat:TwinmeLocalizedString(@"info_item_view_controller_call_terminated_reason_decline %@", nil), contactName];
+            callStatus = [NSString stringWithFormat:TwinmeLocalizedString(@"info_item_view_call_terminated_reason_decline", nil), contactName];
             break;
             
         case TLPeerConnectionServiceTerminateReasonGone:
-            callStatus = [NSString stringWithFormat:TwinmeLocalizedString(@"info_item_view_controller_call_terminated_reason_gone %@", nil), contactName];
+            callStatus = [NSString stringWithFormat:TwinmeLocalizedString(@"info_item_view_call_terminated_reason_gone", nil), contactName];
             break;
             
         case TLPeerConnectionServiceTerminateReasonBusy:
-            callStatus = [NSString stringWithFormat:TwinmeLocalizedString(@"info_item_view_controller_call_terminated_reason_busy %@", nil), contactName];
+            callStatus = [NSString stringWithFormat:TwinmeLocalizedString(@"info_item_view_call_terminated_reason_busy", nil), contactName];
             break;
             
         case TLPeerConnectionServiceTerminateReasonRevoked:
-            callStatus = [NSString stringWithFormat:TwinmeLocalizedString(@"info_item_view_controller_call_terminated_reason_revoked %@", nil), contactName];
+            callStatus = [NSString stringWithFormat:TwinmeLocalizedString(@"info_item_view_call_terminated_reason_revoked", nil), contactName];
             break;
             
         case TLPeerConnectionServiceTerminateReasonNotAuthorized:
-            callStatus = TwinmeLocalizedString(@"info_item_view_controller_call_terminated_reason_not_authorized", nil);
+            callStatus = TwinmeLocalizedString(@"info_item_view_call_terminated_reason_not_authorized", nil);
             break;
             
         case TLPeerConnectionServiceTerminateReasonCancel:
-            callStatus = [NSString stringWithFormat:TwinmeLocalizedString(@"info_item_view_controller_call_terminated_reason_cancel %@", nil), contactName];
+            callStatus = [NSString stringWithFormat:TwinmeLocalizedString(@"info_item_view_call_terminated_reason_cancel", nil), contactName];
             break;
             
         case TLPeerConnectionServiceTerminateReasonTimeout:
-            callStatus = [NSString stringWithFormat:TwinmeLocalizedString(@"info_item_view_controller_call_terminated_reason_timeout %@", nil), contactName];
+            callStatus = [NSString stringWithFormat:TwinmeLocalizedString(@"info_item_view_call_terminated_reason_timeout", nil), contactName];
             break;
             
         default:

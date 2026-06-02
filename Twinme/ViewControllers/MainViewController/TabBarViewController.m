@@ -143,7 +143,7 @@ static CGFloat DESIGN_TAB_ICON_INSET;
     
     ApplicationDelegate *delegate = (ApplicationDelegate *)[[UIApplication sharedApplication] delegate];
     TwinmeApplication *twinmeApplication = [delegate twinmeApplication];
-    [Utils hapticFeedback:UIImpactFeedbackStyleLight hapticFeedbackMode:twinmeApplication.hapticFeedbackMode];
+    [Utils hapticFeedback:UIImpactFeedbackStyleLight];
     
     if (item.tag == 0) {
         MainViewController *mainViewController = delegate.mainViewController;
@@ -191,28 +191,28 @@ static CGFloat DESIGN_TAB_ICON_INSET;
     self.spacesViewController = [[UIStoryboard storyboardWithName:@"Space" bundle:nil] instantiateViewControllerWithIdentifier:@"SpacesViewController"];
     self.spacesViewController.tabBarItem = [[UITabBarItem alloc] initWithTitle:nil image:[UIImage imageNamed:@"TabBarSpacesGrey"] tag:TabBarTypeSpaces];
     self.spacesViewController.tabBarItem.imageInsets = iconInset;
-    self.spacesViewController.tabBarItem.accessibilityLabel = TwinmeLocalizedString(@"settings_space_view_controller_space_category_title", nil);
+    self.spacesViewController.tabBarItem.accessibilityLabel = TwinmeLocalizedString(@"settings_space_view_space_category_title", nil);
     
     TwinmeNavigationController *spacesNavigationController = [[TwinmeNavigationController alloc]initWithRootViewController:self.spacesViewController];
     
     self.historyViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"HistoryViewController"];
     self.historyViewController.tabBarItem = [[UITabBarItem alloc] initWithTitle:nil image:[UIImage imageNamed:@"TabBarCallGrey"] tag:TabBarTypeRecents];
     self.historyViewController.tabBarItem.imageInsets = iconInset;
-    self.historyViewController.tabBarItem.accessibilityLabel = TwinmeLocalizedString(@"history_view_controller_title", nil);
+    self.historyViewController.tabBarItem.accessibilityLabel = TwinmeLocalizedString(@"calls_view_title", nil);
     
     TwinmeNavigationController *historyNavigationController = [[TwinmeNavigationController alloc]initWithRootViewController:self.historyViewController];
     
     self.contactsViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"ContactsViewController"];
     self.contactsViewController.tabBarItem = [[UITabBarItem alloc] initWithTitle:nil image:[UIImage imageNamed:@"TabBarContactsGrey"] tag:TabBarTypeContacts];
     self.contactsViewController.tabBarItem.imageInsets = iconInset;
-    self.contactsViewController.accessibilityLabel = TwinmeLocalizedString(@"contacts_view_controller_title", nil);
+    self.contactsViewController.accessibilityLabel = TwinmeLocalizedString(@"contacts_view_title", nil);
     
     TwinmeNavigationController *contactsNavigationController = [[TwinmeNavigationController alloc]initWithRootViewController:self.contactsViewController];
     
     self.conversationsViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"ConversationsViewController"];
     self.conversationsViewController.tabBarItem = [[UITabBarItem alloc] initWithTitle:nil image:[UIImage imageNamed:@"TabBarChatGrey"] tag:TabBarTypeConversations];
     self.conversationsViewController.tabBarItem.imageInsets = iconInset;
-    self.conversationsViewController.accessibilityLabel = TwinmeLocalizedString(@"conversations_view_controller_title", nil);
+    self.conversationsViewController.accessibilityLabel = TwinmeLocalizedString(@"conversations_view_title", nil);
     
     TwinmeNavigationController *conversationsNavigationController = [[TwinmeNavigationController alloc]initWithRootViewController:self.conversationsViewController];
     
@@ -279,19 +279,19 @@ static CGFloat DESIGN_TAB_ICON_INSET;
     UIEdgeInsets iconInset = UIEdgeInsetsMake(DESIGN_TAB_ICON_INSET, 0, -DESIGN_TAB_ICON_INSET, 0);
     self.spacesViewController.tabBarItem = [[UITabBarItem alloc] initWithTitle:nil image:[UIImage imageNamed:@"TabBarSpacesGrey"] tag:0];
     self.spacesViewController.tabBarItem.imageInsets = iconInset;
-    self.spacesViewController.tabBarItem.accessibilityLabel = TwinmeLocalizedString(@"settings_space_view_controller_space_category_title", nil);
+    self.spacesViewController.tabBarItem.accessibilityLabel = TwinmeLocalizedString(@"settings_space_view_space_category_title", nil);
     
     self.historyViewController.tabBarItem = [[UITabBarItem alloc] initWithTitle:nil image:[UIImage imageNamed:@"TabBarCallGrey"] tag:1];
     self.historyViewController.tabBarItem.imageInsets = iconInset;
-    self.historyViewController.tabBarItem.accessibilityLabel = TwinmeLocalizedString(@"history_view_controller_title", nil);
+    self.historyViewController.tabBarItem.accessibilityLabel = TwinmeLocalizedString(@"calls_view_title", nil);
     
     self.contactsViewController.tabBarItem = [[UITabBarItem alloc] initWithTitle:nil image:[UIImage imageNamed:@"TabBarContactsGrey"] tag:2];
     self.contactsViewController.tabBarItem.imageInsets = iconInset;
-    self.contactsViewController.accessibilityLabel = TwinmeLocalizedString(@"contacts_view_controller_title", nil);
+    self.contactsViewController.accessibilityLabel = TwinmeLocalizedString(@"contacts_view_title", nil);
     
     self.conversationsViewController.tabBarItem = [[UITabBarItem alloc] initWithTitle:nil image:[UIImage imageNamed:@"TabBarChatGrey"] tag:3];
     self.conversationsViewController.tabBarItem.imageInsets = iconInset;
-    self.conversationsViewController.accessibilityLabel = TwinmeLocalizedString(@"conversations_view_controller_title", nil);
+    self.conversationsViewController.accessibilityLabel = TwinmeLocalizedString(@"conversations_view_title", nil);
     
     UIImage *image = self.hasPendingNotifications ? [UIImage imageNamed:@"TabBarNotificationBadgeGrey"] : [UIImage imageNamed:@"TabBarNotificationGrey"];
     UIImage *selectedImage = self.hasPendingNotifications ? [self notificationBadgeImage] : [UIImage imageNamed:@"TabBarNotificationBlue"];
@@ -309,27 +309,24 @@ static CGFloat DESIGN_TAB_ICON_INSET;
     [self.tabBar setTintColor:Design.MAIN_COLOR];
     [self.tabBar setUnselectedItemTintColor:Design.UNSELECTED_TAB_COLOR];
     
-    if (@available(iOS 15.0, *)) {
-        UITabBarAppearance *tabBarAppearance = [self.tabBar standardAppearance];
-        [tabBarAppearance configureWithOpaqueBackground];
-        tabBarAppearance.backgroundColor = Design.WHITE_COLOR;
-        
-        UITabBarItemAppearance *tabBarItemAppearance = [tabBarAppearance compactInlineLayoutAppearance];
-        tabBarItemAppearance.selected.iconColor = Design.MAIN_COLOR;
-        tabBarItemAppearance.normal.iconColor = Design.UNSELECTED_TAB_COLOR;
-        
-        UITabBarItemAppearance *tabBarItemInlineAppearance = [tabBarAppearance inlineLayoutAppearance];
-        tabBarItemInlineAppearance.selected.iconColor = Design.MAIN_COLOR;
-        tabBarItemInlineAppearance.normal.iconColor = Design.UNSELECTED_TAB_COLOR;
-        
-        UITabBarItemAppearance *tabBarItemStackedAppearance = [tabBarAppearance stackedLayoutAppearance];
-        tabBarItemStackedAppearance.selected.iconColor = Design.MAIN_COLOR;
-        tabBarItemStackedAppearance.normal.iconColor = Design.UNSELECTED_TAB_COLOR;
-        
-        self.tabBar.standardAppearance = tabBarAppearance;
-        self.tabBar.scrollEdgeAppearance = tabBarAppearance;
-    }
+    UITabBarAppearance *tabBarAppearance = [self.tabBar standardAppearance];
+    [tabBarAppearance configureWithOpaqueBackground];
+    tabBarAppearance.backgroundColor = Design.WHITE_COLOR;
     
+    UITabBarItemAppearance *tabBarItemAppearance = [tabBarAppearance compactInlineLayoutAppearance];
+    tabBarItemAppearance.selected.iconColor = Design.MAIN_COLOR;
+    tabBarItemAppearance.normal.iconColor = Design.UNSELECTED_TAB_COLOR;
+    
+    UITabBarItemAppearance *tabBarItemInlineAppearance = [tabBarAppearance inlineLayoutAppearance];
+    tabBarItemInlineAppearance.selected.iconColor = Design.MAIN_COLOR;
+    tabBarItemInlineAppearance.normal.iconColor = Design.UNSELECTED_TAB_COLOR;
+    
+    UITabBarItemAppearance *tabBarItemStackedAppearance = [tabBarAppearance stackedLayoutAppearance];
+    tabBarItemStackedAppearance.selected.iconColor = Design.MAIN_COLOR;
+    tabBarItemStackedAppearance.normal.iconColor = Design.UNSELECTED_TAB_COLOR;
+    
+    self.tabBar.standardAppearance = tabBarAppearance;
+    self.tabBar.scrollEdgeAppearance = tabBarAppearance;
     [self.tabBar setTranslucent:NO];
     
     self.tabBar.barTintColor = Design.WHITE_COLOR;

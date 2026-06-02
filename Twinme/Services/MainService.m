@@ -390,7 +390,7 @@ static const int DELETE_LEVEL = 1 << 25;
 - (void)dispose {
     DDLogVerbose(@"%@ dispose", LOG_TAG);
     
-    [self.twinmeContext removeDelegate:self.twinmeContextDelegate];
+    [super dispose];
 }
 
 #pragma mark - Private methods

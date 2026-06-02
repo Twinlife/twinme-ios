@@ -303,7 +303,7 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     
     self.twincodeLabel.font = Design.FONT_MEDIUM36;
     self.twincodeLabel.textColor = [UIColor whiteColor];
-    self.twincodeLabel.text = TwinmeLocalizedString(@"show_profile_view_controller_twincode_title", nil);
+    self.twincodeLabel.text = TwinmeLocalizedString(@"profile_view_twincode_title", nil);
     
     [self.twincodeLabel setContentHuggingPriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisHorizontal];
     
@@ -316,7 +316,7 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     
     self.messageLabel.font = Design.FONT_REGULAR26;
     self.messageLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    self.messageLabel.text = TwinmeLocalizedString(@"show_profile_view_controller_message", nil);
+    self.messageLabel.text = TwinmeLocalizedString(@"profile_view_message", nil);
     
     self.nameLabel.text = TwinmeLocalizedString(@"application_profile", nil);
 }
@@ -365,16 +365,21 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
         
         if (!self.avatar) {
             [self.editIdentityService getImageWithProfile:self.profile withBlock:^(UIImage *image) {
-                self.avatar = image;
+                if (!self.avatar) {
+                    self.avatar = image;
+                }
+                
+                self.avatarView.image = self.avatar;
             }];
+        } else {
+            self.avatarView.image = self.avatar;
         }
         
-        self.avatarView.image = self.avatar;
         self.nameLabel.text = self.profile.name;
 
         self.identityDescription = self.profile.objectDescription;
         
-        if ([self.identityDescription isEqual:TwinmeLocalizedString(@"side_menu_view_controller_about", nil)]) {
+        if ([self.identityDescription isEqual:TwinmeLocalizedString(@"navigation_view_about_twinme", nil)]) {
             self.descriptionLabel.text = @"";
         } else {
             self.descriptionLabel.text = self.identityDescription;

@@ -144,7 +144,7 @@ static const int ddLogLevel = DDLogLevelWarning;
     self.callAgainLabelBottomConstraint.constant *= Design.HEIGHT_RATIO;
     self.callAgainLabel.font = Design.FONT_MEDIUM30;
     self.callAgainLabel.textColor = [UIColor whiteColor];
-    self.callAgainLabel.text = TwinmeLocalizedString(@"history_view_controller_call_again_title", nil);
+    self.callAgainLabel.text = TwinmeLocalizedString(@"calls_view_call_again_title", nil);
     
     self.callAgainImageViewLeadingConstraint.constant *= Design.WIDTH_RATIO;
     self.callAgainImageViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
@@ -224,9 +224,9 @@ static const int ddLogLevel = DDLogLevelWarning;
     self.contentCallViewBottomConstraint.constant = -[conversationViewController getBottomMarginWithMask:callItem.corners & ITEM_BOTTOM_RIGHT item:item];
     
     if (self.callDescriptor.isVideo) {
-        self.callTypeLabel.text = TwinmeLocalizedString(@"conversation_view_controller_video_call", nil);
+        self.callTypeLabel.text = TwinmeLocalizedString(@"conversation_view_video_call", nil);
     } else {
-        self.callTypeLabel.text = TwinmeLocalizedString(@"conversation_view_controller_audio_call", nil);
+        self.callTypeLabel.text = TwinmeLocalizedString(@"conversation_view_audio_call", nil);
     }
     
     self.callAvatarImageView.image = [conversationViewController getContactAvatarWithUUID:item.peerTwincodeOutboundId];

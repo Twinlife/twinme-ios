@@ -20,6 +20,7 @@
 #import "UICustomTab.h"
 
 #import <TwinmeCommon/Design.h>
+#import <TwinmeCommon/UIViewController+Utils.h>
 
 #if 0
 static const int ddLogLevel = DDLogLevelVerbose;
@@ -203,7 +204,7 @@ static NSString *EXPIRATION_DATE_CELL_IDENTIFIER = @"ExpirationDateCellIdentifie
     
     self.userInteractionEnabled = YES;
     
-    self.titleLabel.text = TwinmeLocalizedString(@"cleanup_view_controller_expiration", nil);
+    self.titleLabel.text = TwinmeLocalizedString(@"cleanup_view_expiration", nil);
     
     self.customTabViewTopConstraint.constant *= Design.HEIGHT_RATIO;
     self.customTabViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
@@ -242,7 +243,14 @@ static NSString *EXPIRATION_DATE_CELL_IDENTIFIER = @"ExpirationDateCellIdentifie
     UITapGestureRecognizer *cancelViewGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleCancelTapGesture:)];
     [self.cancelView addGestureRecognizer:cancelViewGestureRecognizer];
     
-    UIWindow *window = UIApplication.sharedApplication.keyWindow;
+    CGFloat safeAreaInset;
+    UIWindow *window = [UIViewController currentWindow];
+    if (window) {
+        safeAreaInset = window.safeAreaInsets.bottom;
+    } else {
+        safeAreaInset = self.safeAreaInsets.bottom;
+    }
+    
     self.cancelViewBottomConstraint.constant = window.safeAreaInsets.bottom;
     
     self.cancelLabel.font = Design.FONT_MEDIUM38;
@@ -263,8 +271,8 @@ static NSString *EXPIRATION_DATE_CELL_IDENTIFIER = @"ExpirationDateCellIdentifie
     
     NSMutableArray *customTabs = [[NSMutableArray alloc]init];
     
-    [customTabs addObject:[[UICustomTab alloc]initWithTitle:TwinmeLocalizedString(@"cleanup_view_controller_older_than", nil) tag:ExpirationTypeValue isSelected:self.uiCleanUpExpiration.expirationType == ExpirationTypeValue]];
-    [customTabs addObject:[[UICustomTab alloc]initWithTitle:TwinmeLocalizedString(@"cleanup_view_controller_prior_to", nil) tag:ExpirationTypeDate isSelected:self.uiCleanUpExpiration.expirationType == ExpirationTypeDate]];
+    [customTabs addObject:[[UICustomTab alloc]initWithTitle:TwinmeLocalizedString(@"cleanup_view_older_than", nil) tag:ExpirationTypeValue isSelected:self.uiCleanUpExpiration.expirationType == ExpirationTypeValue]];
+    [customTabs addObject:[[UICustomTab alloc]initWithTitle:TwinmeLocalizedString(@"cleanup_view_prior_to", nil) tag:ExpirationTypeDate isSelected:self.uiCleanUpExpiration.expirationType == ExpirationTypeDate]];
     
     self.customTabView = [[CustomTabView alloc] initWithCustomTab:customTabs];
     self.customTabView.customTabViewDelegate = self;

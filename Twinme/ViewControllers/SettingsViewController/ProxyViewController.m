@@ -237,7 +237,7 @@ static const CGFloat DESIGN_QRCODE_TOP_MARGIN = 60;
         
     self.view.backgroundColor = Design.GREY_BACKGROUND_COLOR;
     
-    [self setNavigationTitle:TwinmeLocalizedString(@"proxy_view_controller_title", nil)];
+    [self setNavigationTitle:TwinmeLocalizedString(@"proxy_view_title", nil)];
     
     self.containerViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     self.containerViewWidthConstraint.constant *= Design.WIDTH_RATIO;
@@ -346,7 +346,7 @@ static const CGFloat DESIGN_QRCODE_TOP_MARGIN = 60;
     UITapGestureRecognizer *proxyCopyGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleProxyCopyTapGesture:)];
     [self.proxyCopyView addGestureRecognizer:proxyCopyGestureRecognizer];
     self.proxyCopyView.isAccessibilityElement = YES;
-    self.proxyCopyView.accessibilityLabel = TwinmeLocalizedString(@"conversation_view_controller_menu_item_view_copy_title", nil);
+    self.proxyCopyView.accessibilityLabel = TwinmeLocalizedString(@"conversation_view_menu_item_view_copy_title", nil);
     
     self.proxyCopyRoundedViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     self.proxyCopyRoundedView.clipsToBounds = YES;
@@ -362,7 +362,7 @@ static const CGFloat DESIGN_QRCODE_TOP_MARGIN = 60;
     
     self.proxyCopyLabel.font = Design.FONT_MEDIUM28;
     self.proxyCopyLabel.textColor = [UIColor whiteColor];
-    self.proxyCopyLabel.text = TwinmeLocalizedString(@"conversation_view_controller_menu_item_view_copy_title", nil);
+    self.proxyCopyLabel.text = TwinmeLocalizedString(@"conversation_view_menu_item_view_copy_title", nil);
     
     self.shareViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     self.shareViewWidthConstraint.constant *= Design.WIDTH_RATIO;
@@ -373,7 +373,7 @@ static const CGFloat DESIGN_QRCODE_TOP_MARGIN = 60;
     self.shareView.layer.cornerRadius = self.shareViewHeightConstraint.constant * 0.5;
     self.shareView.clipsToBounds = YES;
     self.shareView.isAccessibilityElement = YES;
-    self.shareView.accessibilityLabel = TwinmeLocalizedString(@"share_view_controller_title", nil);
+    self.shareView.accessibilityLabel = TwinmeLocalizedString(@"share_view_title", nil);
     [self.shareView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleShareTapGesture:)]];
     
     self.shareImageViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
@@ -386,7 +386,7 @@ static const CGFloat DESIGN_QRCODE_TOP_MARGIN = 60;
     
     self.shareLabel.font = Design.FONT_MEDIUM36;
     self.shareLabel.textColor = [UIColor whiteColor];
-    self.shareLabel.text = TwinmeLocalizedString(@"share_view_controller_title", nil);
+    self.shareLabel.text = TwinmeLocalizedString(@"share_view_title", nil);
     
     [self.shareLabel setContentHuggingPriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisHorizontal];
     
@@ -396,7 +396,7 @@ static const CGFloat DESIGN_QRCODE_TOP_MARGIN = 60;
     
     self.shareSubLabel.font = Design.FONT_REGULAR24;
     self.shareSubLabel.textColor = Design.FONT_COLOR_GREY;
-    self.shareSubLabel.text = TwinmeLocalizedString(@"add_contact_view_controller_social_subtitle", nil);
+    self.shareSubLabel.text = TwinmeLocalizedString(@"add_contact_view_social_subtitle", nil);
     
     self.messageLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
     self.messageLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
@@ -404,7 +404,7 @@ static const CGFloat DESIGN_QRCODE_TOP_MARGIN = 60;
     
     [self.messageLabel setFont:Design.FONT_REGULAR30];
     self.messageLabel.textColor = [UIColor whiteColor];
-    self.messageLabel.text = TwinmeLocalizedString(@"proxy_view_controller_share_message", nil);
+    self.messageLabel.text = TwinmeLocalizedString(@"proxy_view_share_message", nil);
         
     self.removeViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     
@@ -508,7 +508,11 @@ static const CGFloat DESIGN_QRCODE_TOP_MARGIN = 60;
     if (sender.state == UIGestureRecognizerStateEnded) {
         [self hapticFeedBack:UIImpactFeedbackStyleHeavy];
         [[UIPasteboard generalPasteboard] setString:self.proxyDescriptor.proxyDescription];
-        [[UIApplication sharedApplication].keyWindow makeToast:TwinmeLocalizedString(@"conversation_view_controller_menu_item_view_copy_message",nil)];
+        
+        UIWindow *window = [self currentWindow];
+        if (window) {
+            [window makeToast:TwinmeLocalizedString(@"conversation_view_menu_item_view_copy_message",nil)];
+        }
     }
 }
 
@@ -543,7 +547,7 @@ static const CGFloat DESIGN_QRCODE_TOP_MARGIN = 60;
         
     NSString *urlString = [NSString stringWithFormat:@"%@/%@", TLTwincodeURI.PROXY_ACTION, self.proxyDescriptor.proxyDescription];
     
-    NSString *message = [NSString stringWithFormat:TwinmeLocalizedString(@"proxy_view_controller_share", nil), urlString];
+    NSString *message = [NSString stringWithFormat:TwinmeLocalizedString(@"proxy_view_share", nil), urlString];
     UIActivityViewController *activityViewController = [[UIActivityViewController alloc] initWithActivityItems:@[message] applicationActivities:nil];
     activityViewController.excludedActivityTypes = @[UIActivityTypeAirDrop,
                                                      UIActivityTypePrint,
@@ -569,23 +573,13 @@ static const CGFloat DESIGN_QRCODE_TOP_MARGIN = 60;
     PHAuthorizationStatus photoAuthorizationStatus = [DeviceAuthorization devicePhotoAuthorizationStatus];
     switch (photoAuthorizationStatus) {
         case PHAuthorizationStatusNotDetermined: {
-            if (@available(iOS 14, *)) {
-                [PHPhotoLibrary requestAuthorizationForAccessLevel:PHAccessLevelAddOnly handler:^(PHAuthorizationStatus authorizationStatus) {
-                    if ([DeviceAuthorization devicePhotoAuthorizationAccessGranted:authorizationStatus]) {
-                        dispatch_async(dispatch_get_main_queue(), ^(void) {
-                            [self saveQRCode];
-                        });
-                    }
-                }];
-            } else {
-                [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus authorizationStatus) {
-                    if ([DeviceAuthorization devicePhotoAuthorizationAccessGranted:authorizationStatus]) {
-                        dispatch_async(dispatch_get_main_queue(), ^(void) {
-                            [self saveQRCode];
-                        });
-                    }
-                }];
-            }
+            [PHPhotoLibrary requestAuthorizationForAccessLevel:PHAccessLevelAddOnly handler:^(PHAuthorizationStatus authorizationStatus) {
+                if ([DeviceAuthorization devicePhotoAuthorizationAccessGranted:authorizationStatus]) {
+                    dispatch_async(dispatch_get_main_queue(), ^(void) {
+                        [self saveQRCode];
+                    });
+                }
+            }];
             break;
         }
             
@@ -608,7 +602,7 @@ static const CGFloat DESIGN_QRCODE_TOP_MARGIN = 60;
     ProxyView *proxyView;
     
     if (self.proxyDescriptor) {
-        proxyView = [[ProxyView alloc] initWithProxy:self.proxyDescriptor.proxyDescription qrcode:self.qrcodeView.image message:TwinmeLocalizedString(@"proxy_view_controller_share_message", nil)];
+        proxyView = [[ProxyView alloc] initWithProxy:self.proxyDescriptor.proxyDescription qrcode:self.qrcodeView.image message:TwinmeLocalizedString(@"proxy_view_share_message", nil)];
         qrcodeToSave = [proxyView screenshot];
     }
     
@@ -638,7 +632,10 @@ static const CGFloat DESIGN_QRCODE_TOP_MARGIN = 60;
         if (success) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 self.saveQRCodeInGallery = NO;
-                [[UIApplication sharedApplication].keyWindow makeToast:TwinmeLocalizedString(@"capture_view_controller_qrcode_saved",nil)];
+                UIWindow *window = [self currentWindow];
+                if (window) {
+                    [window makeToast:TwinmeLocalizedString(@"capture_view_qrcode_saved",nil)];
+                }
             });
         }
     }];

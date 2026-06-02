@@ -356,7 +356,7 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
                 self.replyToImageContentView.hidden = YES;
                 self.replyViewTopConstraint.constant = topMargin;
                 [self.replyLabel setPaddingWithTop:heightPadding left:widthPadding bottom:heightPadding right:widthPadding];
-                self.replyLabel.text = TwinmeLocalizedString(@"conversation_view_controller_audio_message", nil);
+                self.replyLabel.text = TwinmeLocalizedString(@"conversation_view_audio_message", nil);
                 break;
             }
                 
@@ -452,7 +452,7 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
     self.bottomRightRadius = [conversationViewController getRadiusWithMask:corners & ITEM_BOTTOM_RIGHT];
     self.bottomLeftRadius = [conversationViewController getRadiusWithMask:corners & ITEM_BOTTOM_LEFT];
     
-    if (peerLocationItem.visibleAvatar) {
+    if (peerLocationItem.visibleAvatar && !conversationViewController.displayPeerItemAvatar) {
         self.avatarViewContainer.hidden = NO;
         self.avatarView.image = [conversationViewController getContactAvatarWithUUID:item.peerTwincodeOutboundId];
         
@@ -466,6 +466,17 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
     } else {
         self.avatarViewContainer.hidden = YES;
         self.avatarView.image = nil;
+        
+        if (conversationViewController.displayPeerItemAvatar) {
+            self.avatarViewContainerLeadingConstraint.constant = 0;
+            self.avatarViewContainerHeightConstraint.constant = 0;
+            
+            if ([conversationViewController isSelectItemMode]) {
+                self.mapViewLeadingConstraint.constant = self.checkMarkViewLeadingConstraint.constant + self.checkMarkViewLeadingConstraint.constant + Design.AVATAR_CONVERSATION_LEADING;
+            } else {
+                self.mapViewLeadingConstraint.constant = Design.AVATAR_CONVERSATION_LEADING;
+            }
+        }
     }
     
     if ([conversationViewController isMenuOpen]) {
@@ -554,8 +565,12 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
         return CGSizeMake(Design.ANNOTATION_CELL_WIDTH_NORMAL, self.annotationCollectionViewHeightConstraint.constant);
     }
 
-    TLDescriptorAnnotation *descriptorAnnotation = [self.item.likeDescriptorAnnotations objectAtIndex:indexPath.row];
-    return CGSizeMake([self annotationWidth:descriptorAnnotation], self.annotationCollectionViewHeightConstraint.constant);
+    if (indexPath.row < self.item.likeDescriptorAnnotations.count) {
+        AnnotationWithCount *annotation = [self.item.likeDescriptorAnnotations objectAtIndex:indexPath.row];
+        return CGSizeMake([self annotationWidth:annotation], self.annotationCollectionViewHeightConstraint.constant);
+    }
+    
+    return CGSizeZero;
 }
 
 - (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout minimumLineSpacingForSectionAtIndex:(NSInteger)section {
@@ -578,16 +593,16 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
         [annotationCell bindWithForwardedAnnotation:YES];
         return annotationCell;
     } else {
-        TLDescriptorAnnotation *descriptorAnnotation = [self.item.likeDescriptorAnnotations objectAtIndex:indexPath.row];
+        AnnotationWithCount *descriptorAnnotation = [self.item.likeDescriptorAnnotations objectAtIndex:indexPath.row];
         if (descriptorAnnotation.count == 1) {
             AnnotationCell *annotationCell = [collectionView dequeueReusableCellWithReuseIdentifier:ANNOTATION_CELL_IDENTIFIER forIndexPath:indexPath];
             annotationCell.annotationActionDelegate = self;
-            [annotationCell bindWithAnnotation:descriptorAnnotation descriptorId:self.item.descriptorId isPeerItem:YES];
+            [annotationCell bindWithAnnotation:descriptorAnnotation.annotation descriptorId:self.item.descriptorId isPeerItem:YES];
             return annotationCell;
         } else {
             AnnotationCountCell *annotationCountCell = [collectionView dequeueReusableCellWithReuseIdentifier:ANNOTATION_COUNT_CELL_IDENTIFIER forIndexPath:indexPath];
             annotationCountCell.annotationActionDelegate = self;
-            [annotationCountCell bindWithAnnotation:descriptorAnnotation descriptorId:self.item.descriptorId isPeerItem:YES];
+            [annotationCountCell bindWithAnnotation:descriptorAnnotation.annotation count:descriptorAnnotation.count descriptorId:self.item.descriptorId isPeerItem:YES];
             return annotationCountCell;
         }
     }

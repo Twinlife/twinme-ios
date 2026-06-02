@@ -97,14 +97,14 @@ static const NSString * VERSION_SEPARTOR = @"\n";
         [assetReader addOutput:trackOutput];
         
         UInt32 channelCount = 1;
-        float sampleRate = 0;
+        // float sampleRate = 0;
         NSArray *formatDescription = assetTrack.formatDescriptions;
         for (unsigned int i = 0; i < [formatDescription count]; ++i) {
             CMAudioFormatDescriptionRef item = (__bridge CMAudioFormatDescriptionRef)[formatDescription objectAtIndex:i];
             const AudioStreamBasicDescription* formatDescription = CMAudioFormatDescriptionGetStreamBasicDescription(item);
             if (formatDescription) {
                 channelCount = formatDescription->mChannelsPerFrame;
-                sampleRate = formatDescription->mSampleRate;
+                // sampleRate = formatDescription->mSampleRate;
             }
         }
         

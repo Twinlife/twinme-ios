@@ -218,12 +218,8 @@
 - (void)setCurrentMode:(DisplayMode)mode {
     
     if (mode == DisplayModeSystem) {
-        if (@available(iOS 13.0, *)) {
-            if ([UIScreen mainScreen].traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark){
-                mode = DisplayModeDark;
-            } else {
-                mode = DisplayModeLight;
-            }
+        if ([UIScreen mainScreen].traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark){
+            mode = DisplayModeDark;
         } else {
             mode = DisplayModeLight;
         }

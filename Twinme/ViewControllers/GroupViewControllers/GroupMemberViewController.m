@@ -417,11 +417,11 @@ static const int INVITATION_GROUP_VIEW_SECTION = 2;
     }
     
     if (section == CREATOR_GROUP_VIEW_SECTION) {
-        groupMemberSectionHeader.titleLabel.text = TwinmeLocalizedString(@"group_member_view_controller_section_administrator", nil);
+        groupMemberSectionHeader.titleLabel.text = TwinmeLocalizedString(@"group_member_view_section_administrator", nil);
     } else if (section == MEMBERS_GROUP_VIEW_SECTION) {
-        groupMemberSectionHeader.titleLabel.text = TwinmeLocalizedString(@"group_member_view_controller_section_member", nil);
+        groupMemberSectionHeader.titleLabel.text = TwinmeLocalizedString(@"group_member_view_section_member", nil);
     } else {
-        groupMemberSectionHeader.titleLabel.text = TwinmeLocalizedString(@"group_member_view_controller_section_invitation", nil);
+        groupMemberSectionHeader.titleLabel.text = TwinmeLocalizedString(@"group_member_view_section_invitation", nil);
     }
     
     return groupMemberSectionHeader;
@@ -492,13 +492,13 @@ static const int INVITATION_GROUP_VIEW_SECTION = 2;
 
         DefaultConfirmView *defaultConfirmView = [[DefaultConfirmView alloc] init];
         defaultConfirmView.bottomSheetViewDelegate = self;
-        [defaultConfirmView initWithTitle:self.selectedContact.name message:[NSString stringWithFormat:TwinmeLocalizedString(@"group_member_view_controller_invitation_message %@", nil), member.name] image:nil avatar:self.selectedContact.avatar action:TwinmeLocalizedString(@"add_contact_view_controller_invite", nil) actionColor:nil cancel:nil];
+        [defaultConfirmView initWithTitle:self.selectedContact.name message:[NSString stringWithFormat:TwinmeLocalizedString(@"group_member_view_invitation_message", nil), member.name] image:nil avatar:self.selectedContact.avatar action:TwinmeLocalizedString(@"add_contact_view_invite", nil) actionColor:nil cancel:nil];
         [self.tabBarController.view addSubview:defaultConfirmView];
         [defaultConfirmView showConfirmView];
     } else {
         AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
         alertMessageView.alertMessageViewDelegate = self;
-        [alertMessageView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:TwinmeLocalizedString(@"group_member_view_controller_admin_not_authorize", nil)];
+        [alertMessageView initWithTitle:TwinmeLocalizedString(@"deleted_account_view_warning", nil) message:TwinmeLocalizedString(@"group_member_view_admin_not_authorize", nil)];
         [self.tabBarController.view addSubview:alertMessageView];
         [alertMessageView showAlertView];
     }
@@ -515,7 +515,7 @@ static const int INVITATION_GROUP_VIEW_SECTION = 2;
         self.deleteConfirmView = [[DeleteConfirmView alloc] init];
         self.deleteConfirmView.bottomSheetViewDelegate = self;
         self.deleteConfirmView.deleteConfirmType = DeleteConfirmTypeGroupMember;
-        [self.deleteConfirmView initWithTitle:self.selectedContact.name message:TwinmeLocalizedString(@"group_member_view_controller_remove_message", nil) avatar:self.selectedContact.avatar icon:[UIImage imageNamed:@"ActionBarDelete"]];
+        [self.deleteConfirmView initWithTitle:self.selectedContact.name message:TwinmeLocalizedString(@"group_member_view_remove_message", nil) avatar:self.selectedContact.avatar icon:[UIImage imageNamed:@"ActionBarDelete"]];
        
         [self.navigationController.view addSubview:self.deleteConfirmView];
         [self.deleteConfirmView showConfirmView];
@@ -523,7 +523,7 @@ static const int INVITATION_GROUP_VIEW_SECTION = 2;
     } else {
         AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
         alertMessageView.alertMessageViewDelegate = self;
-        [alertMessageView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:TwinmeLocalizedString(@"group_member_view_controller_admin_not_authorize", nil)];
+        [alertMessageView initWithTitle:TwinmeLocalizedString(@"deleted_account_view_warning", nil) message:TwinmeLocalizedString(@"group_member_view_admin_not_authorize", nil)];
         [self.tabBarController.view addSubview:alertMessageView];
         [alertMessageView showAlertView];
     }
@@ -615,7 +615,7 @@ static const int INVITATION_GROUP_VIEW_SECTION = 2;
     
     self.view.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
     
-    [self setNavigationTitle:TwinmeLocalizedString(@"group_member_view_controller_title", nil)];
+    [self setNavigationTitle:TwinmeLocalizedString(@"group_member_view_title", nil)];
     
     self.addMemberBarButtonItem = [[UIBarButtonItem alloc]initWithImage:[UIImage imageNamed:@"ActionBarAddContact"] style:UIBarButtonItemStylePlain target:self action:@selector(handleAddMemberTapGesture:)];
     self.navigationItem.rightBarButtonItem = self.addMemberBarButtonItem;
@@ -653,7 +653,7 @@ static const int INVITATION_GROUP_VIEW_SECTION = 2;
     if (!self.canInvite) {
         AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
         alertMessageView.alertMessageViewDelegate = self;
-        [alertMessageView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:TwinmeLocalizedString(@"group_member_view_controller_admin_not_authorize", nil)];
+        [alertMessageView initWithTitle:TwinmeLocalizedString(@"deleted_account_view_warning", nil) message:TwinmeLocalizedString(@"group_member_view_admin_not_authorize", nil)];
         [self.tabBarController.view addSubview:alertMessageView];
         [alertMessageView showAlertView];
     } else {

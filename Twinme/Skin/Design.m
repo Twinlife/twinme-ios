@@ -202,6 +202,7 @@ static CGFloat DESIGN_SEPARATOR_HEIGHT;
 static CGFloat DESIGN_BORDER_WIDTH;
 static CGFloat DESIGN_AVATAR_HEIGHT;
 static CGFloat DESIGN_AVATAR_LEADING;
+static CGFloat DESIGN_AVATAR_CONVERSATION_LEADING;
 static CGFloat DESIGN_NAME_TRAILING;
 static CGFloat DESIGN_ACCESSORY_HEIGHT;
 static CGFloat DESIGN_CERTIFIED_HEIGHT;
@@ -346,6 +347,7 @@ alpha:1.0]
     DESIGN_BORDER_WIDTH = 2;
     DESIGN_AVATAR_HEIGHT = 86 * DESIGN_HEIGHT_RATIO;
     DESIGN_AVATAR_LEADING = 42 * DESIGN_WIDTH_RATIO;
+    DESIGN_AVATAR_CONVERSATION_LEADING = 26 * DESIGN_WIDTH_RATIO;
     DESIGN_NAME_TRAILING = 38 * DESIGN_WIDTH_RATIO;
     DESIGN_ACCESSORY_HEIGHT = 26 * DESIGN_HEIGHT_RATIO;
     DESIGN_CERTIFIED_HEIGHT = 28 * DESIGN_HEIGHT_RATIO;
@@ -357,8 +359,8 @@ alpha:1.0]
     
     DESIGN_TEXT_WIDTH_PADDING = 32 * DESIGN_WIDTH_RATIO;
     DESIGN_TEXT_HEIGHT_PADDING = 16 * DESIGN_HEIGHT_RATIO;
-    DESIGN_MESSAGE_CELL_MAX_WIDTH = ceil(502 * DESIGN_WIDTH_RATIO);
-    DESIGN_PEER_MESSAGE_CELL_MAX_WIDTH = ceil(408 * DESIGN_WIDTH_RATIO);
+    DESIGN_MESSAGE_CELL_MAX_WIDTH = ceil(510 * DESIGN_WIDTH_RATIO);
+    DESIGN_PEER_MESSAGE_CELL_MAX_WIDTH = ceil(510 * DESIGN_WIDTH_RATIO);
     DESIGN_REPLY_IMAGE_MAX_WIDTH = 290 * DESIGN_WIDTH_RATIO;
     DESIGN_REPLY_IMAGE_MAX_HEIGHT = 290 * DESIGN_HEIGHT_RATIO;
     DESIGN_REPLY_VIEW_IMAGE_TOP = 28 * DESIGN_HEIGHT_RATIO;
@@ -517,12 +519,8 @@ alpha:1.0]
     
     switch (displayMode) {
         case DisplayModeSystem:
-            if (@available(iOS 13.0, *)) {
-                if ([UIScreen mainScreen].traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark){
-                    [self setupDarkColors];
-                } else {
-                    [self setupLightColors];
-                }
+            if ([UIScreen mainScreen].traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark){
+                [self setupDarkColors];
             } else {
                 [self setupLightColors];
             }
@@ -579,12 +577,7 @@ alpha:1.0]
     DESIGN_MENU_BACKGROUND_COLOR = [UIColor colorWithRed:72./255. green:72./255. blue:72./255. alpha:1];
     DESIGN_MENU_REACTION_BACKGROUND_COLOR = [UIColor colorWithRed:72./255. green:72./255. blue:72./255. alpha:1];
     DESIGN_CUSTOM_TAB_BACKGROUND_COLOR = [UIColor colorWithRed:24./255. green:27./255. blue:34./255. alpha:1];
-    
-    if (@available(iOS 13.0, *)) {
-        DESIGN_SEGMENTED_CONTROL_TINT_COLOR = [UIColor blackColor];
-    } else {
-        DESIGN_SEGMENTED_CONTROL_TINT_COLOR = [UIColor whiteColor];
-    }
+    DESIGN_SEGMENTED_CONTROL_TINT_COLOR = [UIColor blackColor];
 }
 
 + (void)setupLightColors {
@@ -625,12 +618,7 @@ alpha:1.0]
     DESIGN_MENU_BACKGROUND_COLOR = [UIColor colorWithRed:249./255. green:249./255. blue:249./255. alpha:1];
     DESIGN_MENU_REACTION_BACKGROUND_COLOR = [UIColor blackColor];
     DESIGN_CUSTOM_TAB_BACKGROUND_COLOR = [UIColor whiteColor];
-    
-    if (@available(iOS 13.0, *)) {
-        DESIGN_SEGMENTED_CONTROL_TINT_COLOR = [UIColor colorWithRed:118./255. green:118./255. blue:128./255. alpha:0.12];
-    } else {
-        DESIGN_SEGMENTED_CONTROL_TINT_COLOR = [UIColor whiteColor];
-    }
+    DESIGN_SEGMENTED_CONTROL_TINT_COLOR = [UIColor colorWithRed:118./255. green:118./255. blue:128./255. alpha:0.12];
 }
 
 + (CGFloat)REFERENCE_HEIGHT {
@@ -914,10 +902,8 @@ alpha:1.0]
         
     switch (displayMode) {
         case DisplayModeSystem:
-            if (@available(iOS 13.0, *) ) {
-                if ([UIScreen mainScreen].traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark){
-                    backgroundColor = DESIGN_NAVIGATION_BACKGROUND_COLOR;
-                }
+            if ([UIScreen mainScreen].traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark) {
+                backgroundColor = DESIGN_NAVIGATION_BACKGROUND_COLOR;
             }
             break;
             
@@ -944,10 +930,8 @@ alpha:1.0]
         
     switch (displayMode) {
         case DisplayModeSystem:
-            if (@available(iOS 13.0, *) ) {
-                if ([UIScreen mainScreen].traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark){
-                    return YES;
-                }
+            if ([UIScreen mainScreen].traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark){
+                return YES;
             }
             return NO;
             break;
@@ -1379,39 +1363,6 @@ alpha:1.0]
     return DESIGN_BOLD88;
 }
 
-+ (void)scaleEdgeInsetVertically:(UIButton *)button {
-    
-    float width = button.frame.size.width;
-    float top = button.imageEdgeInsets.top;
-    float bottom = button.imageEdgeInsets.bottom;
-    float left = button.imageEdgeInsets.left;
-    float right = button.imageEdgeInsets.right;
-    float imageWidth = width - left - right;
-    float scaledWidth = width * DESIGN_WIDTH_RATIO;
-    float scaledImageWidth = imageWidth * DESIGN_HEIGHT_RATIO;
-    float scaledTop = top * DESIGN_HEIGHT_RATIO;
-    float scaledBottom = bottom * DESIGN_HEIGHT_RATIO;
-    float scaledLeft = left / (left + right) * (scaledWidth - scaledImageWidth);
-    float scaledRight = right / (left + right) * (scaledWidth - scaledImageWidth);
-    button.imageEdgeInsets = UIEdgeInsetsMake(scaledTop, scaledLeft, scaledBottom, scaledRight);
-}
-
-+ (void)scaleEdgeInsetHorizontally:(UIButton *)button {
-    
-    float height = button.frame.size.height;
-    float top = button.imageEdgeInsets.top;
-    float bottom = button.imageEdgeInsets.bottom;
-    float left = button.imageEdgeInsets.left;
-    float right = button.imageEdgeInsets.right;
-    float imageHeight = height - top - bottom;
-    float scaledHeight = height * DESIGN_HEIGHT_RATIO;
-    float scaledImageHeight = imageHeight * DESIGN_WIDTH_RATIO;
-    float scaledTop = top / (top + bottom) * (scaledHeight - scaledImageHeight);
-    float scaledBottom = bottom / (top + bottom) * (scaledHeight - scaledImageHeight);
-    float scaledLeft = left * DESIGN_WIDTH_RATIO;
-    float scaledRight = right * DESIGN_WIDTH_RATIO;
-    button.imageEdgeInsets = UIEdgeInsetsMake(scaledTop, scaledLeft, scaledBottom, scaledRight);
-}
 //
 // To be reviewed
 //
@@ -1478,6 +1429,12 @@ alpha:1.0]
     
     return DESIGN_AVATAR_LEADING;
 }
+
++ (CGFloat)AVATAR_CONVERSATION_LEADING {
+    
+    return DESIGN_AVATAR_CONVERSATION_LEADING;
+}
+
 
 + (CGFloat)NAME_TRAILING {
     
@@ -1802,12 +1759,7 @@ typedef uint8_t Pixel[4];
 + (UIFont *)getBackupWordFont {
     
     float adjustFontSize = [Design getAdjustFontSize];
-    
-    if (@available(iOS 13.0, *)) {
-        return [UIFont monospacedSystemFontOfSize:(32 * DESIGN_FONT_RATIO) + adjustFontSize weight:UIFontWeightRegular];
-    } else {
-        return [UIFont monospacedDigitSystemFontOfSize:(32 * DESIGN_FONT_RATIO) + adjustFontSize weight:UIFontWeightRegular];
-    }
+    return [UIFont monospacedSystemFontOfSize:(32 * DESIGN_FONT_RATIO) + adjustFontSize weight:UIFontWeightRegular];
 }
 
 //

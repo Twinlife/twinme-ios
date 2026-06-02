@@ -117,7 +117,7 @@ static const CGFloat DESIGN_AVATAR_RADIUS = 6;
     self.hangupView.clipsToBounds = YES;
     self.hangupView.backgroundColor = Design.BUTTON_RED_COLOR;
     self.hangupView.layer.cornerRadius = self.hangupViewHeightConstraint.constant * 0.5;
-    self.hangupView.accessibilityLabel = TwinmeLocalizedString(@"audio_call_view_controller_hangup", nil);
+    self.hangupView.accessibilityLabel = TwinmeLocalizedString(@"audio_call_view_hangup", nil);
     
     UITapGestureRecognizer *hangUpTapGestureRecognizer = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(handleHangupTapGesture:)];
     [self.hangupView addGestureRecognizer:hangUpTapGestureRecognizer];

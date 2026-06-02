@@ -177,11 +177,17 @@ static NSString *BACKUP_WORDS_CELL_IDENTIFIER = @"BackupWordsCellIdentifier";
     DDLogVerbose(@"%@ onGetAllBackupsWithErrorCode:%d backups:%@", LOG_TAG, errorCode, backups);
 }
 
-
 - (void)onTerminateRestoreWithTerminateReason:(TLBackupServiceTerminateReason)terminateReason { 
     DDLogVerbose(@"%@ onTerminateRestoreWithTerminateReason:%d", LOG_TAG, terminateReason);
 }
 
+- (void)onCheckFileSignatureWithResult:(BOOL)result {
+    DDLogVerbose(@"%@ onCheckFileSignatureWithResult: %@", LOG_TAG, result ? @"YES" : @"NO");
+}
+
+- (void)onTerminateVerifyWithReport:(nonnull RestoreReport *)report {
+    DDLogVerbose(@"%@ onTerminateVerifyWithReport: %@", LOG_TAG, report);
+}
 
 #pragma mark - UITableViewDataSource
 
@@ -223,7 +229,7 @@ static NSString *BACKUP_WORDS_CELL_IDENTIFIER = @"BackupWordsCellIdentifier";
         settingsSectionHeaderCell = [[SettingsSectionHeaderCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:HEADER_SETTINGS_CELL_IDENTIFIER];
     }
     
-    NSString *sectionTitle = TwinmeLocalizedStringFromTable(@"backup_view_controller_security", @"LocalizableBackup", nil);
+    NSString *sectionTitle = TwinmeLocalizedStringFromTable(@"backup_view_security", @"LocalizableBackup", nil);
     [settingsSectionHeaderCell bindWithTitle:sectionTitle backgroundColor:Design.LIGHT_GREY_BACKGROUND_COLOR hideSeparator:YES uppercaseString:YES];
     
     return settingsSectionHeaderCell;
@@ -238,7 +244,7 @@ static NSString *BACKUP_WORDS_CELL_IDENTIFIER = @"BackupWordsCellIdentifier";
     }
     
     backupFooterCell.backupFooterDelegate = self;
-    [backupFooterCell bindWithTitle:TwinmeLocalizedStringFromTable(@"backup_view_controller_backup", @"LocalizableBackup", nil) enable:self.confirmBackup backgroundColor:Design.LIGHT_GREY_BACKGROUND_COLOR];
+    [backupFooterCell bindWithTitle:TwinmeLocalizedStringFromTable(@"backup_view_backup", @"LocalizableBackup", nil) enable:self.confirmBackup backgroundColor:Design.LIGHT_GREY_BACKGROUND_COLOR];
     
     return backupFooterCell;
 }
@@ -252,7 +258,7 @@ static NSString *BACKUP_WORDS_CELL_IDENTIFIER = @"BackupWordsCellIdentifier";
             cell = [[SettingsInformationCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:SETTINGS_INFORMATION_CELL_IDENTIFIER];
         }
         
-        [cell bindWithText:TwinmeLocalizedStringFromTable(@"backup_view_controller_security_info", @"LocalizableBackup", nil)];
+        [cell bindWithText:TwinmeLocalizedStringFromTable(@"backup_view_security_info", @"LocalizableBackup", nil)];
         
         return cell;
     } else if (indexPath.row == 1) {
@@ -272,7 +278,7 @@ static NSString *BACKUP_WORDS_CELL_IDENTIFIER = @"BackupWordsCellIdentifier";
         
         cell.backupActionDelegate = self;
         
-        [cell bindWithTitle:TwinmeLocalizedString(@"conversation_view_controller_menu_item_view_copy_title", nil) rightTitle:TwinmeLocalizedStringFromTable(@"backup_view_controller_generate_word", @"LocalizableBackup", nil) leftImage:[UIImage imageNamed:@"CopyItem"] rightImage:[UIImage imageNamed:@"GenerateIcon"]];
+        [cell bindWithTitle:TwinmeLocalizedString(@"conversation_view_menu_item_view_copy_title", nil) rightTitle:TwinmeLocalizedStringFromTable(@"backup_view_generate_word", @"LocalizableBackup", nil) leftImage:[UIImage imageNamed:@"CopyItem"] rightImage:[UIImage imageNamed:@"GenerateIcon"]];
         
         return cell;
     } else {
@@ -301,7 +307,10 @@ static NSString *BACKUP_WORDS_CELL_IDENTIFIER = @"BackupWordsCellIdentifier";
     DDLogVerbose(@"%@ didTapLeftBackupAction: %@", LOG_TAG, backupActionCell);
     
     [[UIPasteboard generalPasteboard] setString:[self getWordsList]];
-    [[UIApplication sharedApplication].keyWindow makeToast:TwinmeLocalizedString(@"conversation_view_controller_menu_item_view_copy_message",nil)];
+    UIWindow *window = [self currentWindow];
+    if (window) {
+        [window makeToast:TwinmeLocalizedString(@"conversation_view_menu_item_view_copy_message",nil)];
+    }
 }
 
 - (void)didTapRightBackupAction:(nonnull BackupActionCell *)backupActionCell {
@@ -397,7 +406,7 @@ static NSString *BACKUP_WORDS_CELL_IDENTIFIER = @"BackupWordsCellIdentifier";
     
     self.view.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
     
-    [self setNavigationTitle:TwinmeLocalizedStringFromTable(@"backup_view_controller_title", @"LocalizableBackup", nil)];
+    [self setNavigationTitle:TwinmeLocalizedStringFromTable(@"backup_view_title", @"LocalizableBackup", nil)];
     
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     [self.tableView registerNib:[UINib nibWithNibName:@"SettingsSectionHeaderCell" bundle:nil] forCellReuseIdentifier:HEADER_SETTINGS_CELL_IDENTIFIER];
@@ -417,12 +426,8 @@ static NSString *BACKUP_WORDS_CELL_IDENTIFIER = @"BackupWordsCellIdentifier";
     self.overlayView.backgroundColor = Design.OVERLAY_COLOR;
     self.overlayView.hidden = YES;
     
-    if (@available(iOS 13.0, *)) {
-        self.activityIndicatorView = [[UIActivityIndicatorView alloc]initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleMedium];
-        self.activityIndicatorView.color = [UIColor whiteColor];
-    } else {
-        self.activityIndicatorView = [[UIActivityIndicatorView alloc]initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
-    }
+    self.activityIndicatorView = [[UIActivityIndicatorView alloc]initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleMedium];
+    self.activityIndicatorView.color = [UIColor whiteColor];
     self.activityIndicatorView.hidesWhenStopped = YES;
     
     [self.overlayView addSubview:self.activityIndicatorView];
@@ -504,12 +509,12 @@ static NSString *BACKUP_WORDS_CELL_IDENTIFIER = @"BackupWordsCellIdentifier";
     } else if (errorCode == TLBackupServiceErrorCodeKeyGenFailed && baseErrorCode == TLBaseServiceErrorCodeTwinlifeOffline) {
         message = TwinmeLocalizedString(@"application_connection_status_no_network_message", nil);
     } else {
-        message = TwinmeLocalizedString(@"cleanup_view_controller_error", nil);
+        message = TwinmeLocalizedString(@"cleanup_view_error", nil);
     }
     
     AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
     alertMessageView.alertMessageViewDelegate = self;
-    [alertMessageView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:message];
+    [alertMessageView initWithTitle:TwinmeLocalizedString(@"deleted_account_view_warning", nil) message:message];
     [self.navigationController.view addSubview:alertMessageView];
     [alertMessageView showAlertView];
 }

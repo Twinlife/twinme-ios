@@ -260,8 +260,11 @@ static CGFloat DESIGN_PROFILE_AVATAR_HEIGHT = 216;
 - (int)getActionViewHeight {
     DDLogVerbose(@"%@ getActionViewHeight", LOG_TAG);
     
-    UIWindow *window = UIApplication.sharedApplication.keyWindow;
-    CGFloat safeAreaInset = window.safeAreaInsets.bottom;
+    UIWindow *window = [self currentWindow];
+    CGFloat safeAreaInset = 0;
+    if (window) {
+        safeAreaInset = window.safeAreaInsets.bottom;
+    }    
     
     return self.cleanView.frame.origin.y + self.cleanViewHeightConstraint.constant + safeAreaInset - self.identityAvatarViewTopConstraint.constant;
 }
@@ -419,14 +422,14 @@ static CGFloat DESIGN_PROFILE_AVATAR_HEIGHT = 216;
 - (void)switchViewNeedsConfirm:(SwitchView *)switchView {
     DDLogVerbose(@"%@ switchViewDidTap: %@", LOG_TAG, switchView);
       
-    NSMutableString *message = [[NSMutableString alloc] initWithString:TwinmeLocalizedString(@"show_space_view_controller_secret_message", nil)];
+    NSMutableString *message = [[NSMutableString alloc] initWithString:TwinmeLocalizedString(@"show_space_view_secret_message", nil)];
     [message appendString:@"\n\n"];
-    [message appendString:TwinmeLocalizedString(@"show_space_view_controller_secret_message_confirm", nil)];
+    [message appendString:TwinmeLocalizedString(@"show_space_view_secret_message_confirm", nil)];
     
     SpaceActionConfirmView *spaceActionConfirmView = [[SpaceActionConfirmView alloc] init];
     spaceActionConfirmView.bottomSheetViewDelegate = self;
     spaceActionConfirmView.spaceActionConfirmType = SpaceActionConfirmTypeSecret;
-    [spaceActionConfirmView initWithTitle:TwinmeLocalizedString(@"application_are_you_sure", nil) message:message spaceName:self.space.settings.name spaceStyle:self.space.settings.style avatar:self.avatar icon:[UIImage imageNamed:@"PremiumSpaceDarkIcon4"] confirmTitle:TwinmeLocalizedString(@"show_space_view_controller_secret_confirm", nil) cancelTitle:TwinmeLocalizedString(@"application_cancel", nil)];
+    [spaceActionConfirmView initWithTitle:TwinmeLocalizedString(@"application_are_you_sure", nil) message:message spaceName:self.space.settings.name spaceStyle:self.space.settings.style avatar:self.avatar icon:[UIImage imageNamed:@"PremiumSpaceDarkIcon4"] confirmTitle:TwinmeLocalizedString(@"show_space_view_secret_confirm", nil) cancelTitle:TwinmeLocalizedString(@"application_cancel", nil)];
     [self.view addSubview:spaceActionConfirmView];
     [spaceActionConfirmView showConfirmView];
 }
@@ -452,7 +455,7 @@ static CGFloat DESIGN_PROFILE_AVATAR_HEIGHT = 216;
     
     [super initViews];
     
-    [self setNavigationTitle:TwinmeLocalizedString(@"settings_space_view_controller_space_category_title", nil).capitalizedString];
+    [self setNavigationTitle:TwinmeLocalizedString(@"settings_space_view_space_category_title", nil).capitalizedString];
     
     self.view.backgroundColor = Design.WHITE_COLOR;
     
@@ -489,7 +492,7 @@ static CGFloat DESIGN_PROFILE_AVATAR_HEIGHT = 216;
     
     self.twincodeLabel.font = Design.FONT_REGULAR30;
     self.twincodeLabel.textColor = [UIColor whiteColor];
-    self.twincodeLabel.text = TwinmeLocalizedString(@"show_profile_view_controller_twincode_title", nil);
+    self.twincodeLabel.text = TwinmeLocalizedString(@"profile_view_twincode_title", nil);
     
     [self.twincodeLabel setContentHuggingPriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisHorizontal];
     
@@ -502,7 +505,7 @@ static CGFloat DESIGN_PROFILE_AVATAR_HEIGHT = 216;
     
     self.contactsView.userInteractionEnabled = true;
     self.contactsView.isAccessibilityElement = YES;
-    self.contactsView.accessibilityLabel = TwinmeLocalizedString(@"create_space_view_controller_contact_list", nil);
+    self.contactsView.accessibilityLabel = TwinmeLocalizedString(@"create_space_view_contact_list", nil);
     self.contactsView.backgroundColor = Design.WHITE_COLOR;
     
     UITapGestureRecognizer *contactsViewGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleContactsTapGesture:)];
@@ -516,7 +519,7 @@ static CGFloat DESIGN_PROFILE_AVATAR_HEIGHT = 216;
     self.contactsLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
     self.contactsLabel.font = Design.FONT_REGULAR34;
     self.contactsLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    self.contactsLabel.text = TwinmeLocalizedString(@"create_space_view_controller_contact_list", nil);
+    self.contactsLabel.text = TwinmeLocalizedString(@"create_space_view_contact_list", nil);
     
     self.contactsListImageHeightConstraint.constant = Design.ACCESSORY_HEIGHT;
     self.contactsListImageTrailingConstraint.constant *= Design.WIDTH_RATIO;
@@ -529,7 +532,7 @@ static CGFloat DESIGN_PROFILE_AVATAR_HEIGHT = 216;
     
     self.settingsTitleLabel.font = Design.FONT_BOLD26;
     self.settingsTitleLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    self.settingsTitleLabel.text = TwinmeLocalizedString(@"show_space_view_controller_management", nil).uppercaseString;
+    self.settingsTitleLabel.text = TwinmeLocalizedString(@"show_space_view_management", nil).uppercaseString;
     
     self.configurationViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     self.configurationViewTopConstraint.constant *= Design.HEIGHT_RATIO;
@@ -539,7 +542,7 @@ static CGFloat DESIGN_PROFILE_AVATAR_HEIGHT = 216;
     self.configurationView.userInteractionEnabled = true;
     self.configurationView.backgroundColor = Design.WHITE_COLOR;
     self.configurationView.isAccessibilityElement = YES;
-    self.configurationView.accessibilityLabel = TwinmeLocalizedString(@"settings_view_controller_title", nil);
+    self.configurationView.accessibilityLabel = TwinmeLocalizedString(@"navigation_view_settings", nil);
     
     UITapGestureRecognizer *configurationViewGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleConfigurationTapGesture:)];
     [self.configurationView addGestureRecognizer:configurationViewGestureRecognizer];
@@ -548,7 +551,7 @@ static CGFloat DESIGN_PROFILE_AVATAR_HEIGHT = 216;
     self.configurationLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
     self.configurationLabel.font = Design.FONT_REGULAR34;
     self.configurationLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    self.configurationLabel.text = TwinmeLocalizedString(@"settings_view_controller_title", nil);
+    self.configurationLabel.text = TwinmeLocalizedString(@"navigation_view_settings", nil);
     
     self.configurationImageViewLeadingConstraint.constant *= Design.WIDTH_RATIO;
     self.configurationImageViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
@@ -565,7 +568,7 @@ static CGFloat DESIGN_PROFILE_AVATAR_HEIGHT = 216;
     
     self.secretView.backgroundColor = Design.WHITE_COLOR;
     self.secretView.isAccessibilityElement = YES;
-    self.secretView.accessibilityLabel = TwinmeLocalizedString(@"settings_space_view_controller_secret_title", nil);
+    self.secretView.accessibilityLabel = TwinmeLocalizedString(@"settings_space_view_secret_title", nil);
     
     [self.secretView setBorder:Design.SEPARATOR_COLOR_GREY borderWidth:Design.SEPARATOR_HEIGHT width:screenWidth  height:self.secretViewHeightConstraint.constant left:false right:false top:true bottom:true];
     
@@ -583,7 +586,7 @@ static CGFloat DESIGN_PROFILE_AVATAR_HEIGHT = 216;
     self.secretLabelWidthConstraint.constant *= Design.WIDTH_RATIO;
     self.secretLabelTopConstraint.constant *= Design.HEIGHT_RATIO;
     self.secretLabelBottomConstraint.constant *= Design.HEIGHT_RATIO;
-    self.secretLabel.text = TwinmeLocalizedString(@"settings_space_view_controller_secret_title", nil);
+    self.secretLabel.text = TwinmeLocalizedString(@"settings_space_view_secret_title", nil);
     self.secretLabel.font = Design.FONT_REGULAR34;
     self.secretLabel.textColor = Design.FONT_COLOR_DEFAULT;
     
@@ -600,13 +603,13 @@ static CGFloat DESIGN_PROFILE_AVATAR_HEIGHT = 216;
     
     self.conversationsTitleLabel.font = Design.FONT_BOLD28;
     self.conversationsTitleLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    self.conversationsTitleLabel.text = TwinmeLocalizedString(@"conversations_view_controller_title", nil).uppercaseString;
+    self.conversationsTitleLabel.text = TwinmeLocalizedString(@"conversations_view_title", nil).uppercaseString;
     
     self.exportViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     self.exportViewTopConstraint.constant *= Design.HEIGHT_RATIO;
     
     self.exportView.isAccessibilityElement = YES;
-    self.exportView.accessibilityLabel = TwinmeLocalizedString(@"show_contact_view_controller_export_contents", nil);
+    self.exportView.accessibilityLabel = TwinmeLocalizedString(@"show_contact_view_export_contents", nil);
     
     UITapGestureRecognizer *exportViewGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleExportTapGesture:)];
     [self.exportView addGestureRecognizer:exportViewGestureRecognizer];
@@ -621,7 +624,7 @@ static CGFloat DESIGN_PROFILE_AVATAR_HEIGHT = 216;
     self.exportLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
     self.exportLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
     
-    self.exportLabel.text = TwinmeLocalizedString(@"show_contact_view_controller_export_contents", nil);
+    self.exportLabel.text = TwinmeLocalizedString(@"show_contact_view_export_contents", nil);
     self.exportLabel.font = Design.FONT_REGULAR34;
     self.exportLabel.textColor = Design.FONT_COLOR_DEFAULT;
     
@@ -637,7 +640,7 @@ static CGFloat DESIGN_PROFILE_AVATAR_HEIGHT = 216;
     [self.cleanView addGestureRecognizer:cleanViewGestureRecognizer];
     
     self.cleanView.isAccessibilityElement = YES;
-    self.cleanView.accessibilityLabel = TwinmeLocalizedString(@"show_contact_view_controller_cleanup", nil);
+    self.cleanView.accessibilityLabel = TwinmeLocalizedString(@"show_contact_view_cleanup", nil);
     
     [self.cleanView setBorder:Design.SEPARATOR_COLOR_GREY borderWidth:Design.SEPARATOR_HEIGHT width:Design.DISPLAY_WIDTH height:self.cleanViewHeightConstraint.constant left:false right:false top:true bottom:true];
     
@@ -649,7 +652,7 @@ static CGFloat DESIGN_PROFILE_AVATAR_HEIGHT = 216;
     self.cleanLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
     self.cleanLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
     
-    self.cleanLabel.text = TwinmeLocalizedString(@"show_contact_view_controller_cleanup", nil);
+    self.cleanLabel.text = TwinmeLocalizedString(@"show_contact_view_cleanup", nil);
     self.cleanLabel.font = Design.FONT_REGULAR34;
     self.cleanLabel.textColor = Design.FONT_COLOR_DEFAULT;
     
@@ -686,7 +689,7 @@ static CGFloat DESIGN_PROFILE_AVATAR_HEIGHT = 216;
     if (longPressGesture.state == UIGestureRecognizerStateBegan) {
         AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
         alertMessageView.alertMessageViewDelegate = self;
-        [alertMessageView initWithTitle:TwinmeLocalizedString(@"settings_space_view_controller_secret_title", nil) message:TwinmeLocalizedString(@"settings_space_view_controller_secret_message", nil)];
+        [alertMessageView initWithTitle:TwinmeLocalizedString(@"settings_space_view_secret_title", nil) message:TwinmeLocalizedString(@"settings_space_view_secret_message", nil)];
         [self.tabBarController.view addSubview:alertMessageView];
         [alertMessageView showAlertView];
     }
@@ -698,7 +701,7 @@ static CGFloat DESIGN_PROFILE_AVATAR_HEIGHT = 216;
     if (sender.state == UIGestureRecognizerStateEnded && !self.secretSwitch.isEnabled) {
         AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
         alertMessageView.alertMessageViewDelegate = self;
-        [alertMessageView initWithTitle:TwinmeLocalizedString(@"settings_space_view_controller_secret_title", nil) message:TwinmeLocalizedString(@"show_space_view_controller_secret_disabled_message", nil)];
+        [alertMessageView initWithTitle:TwinmeLocalizedString(@"settings_space_view_secret_title", nil) message:TwinmeLocalizedString(@"show_space_view_secret_disabled_message", nil)];
         [self.tabBarController.view addSubview:alertMessageView];
         [alertMessageView showAlertView];
     }
@@ -755,7 +758,7 @@ static CGFloat DESIGN_PROFILE_AVATAR_HEIGHT = 216;
         if (self.space.profile && [mainViewController numberSpaces:YES] <= 1) {
             AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
             alertMessageView.alertMessageViewDelegate = self;
-            [alertMessageView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:TwinmeLocalizedString(@"show_space_view_controller_move_message", nil)];
+            [alertMessageView initWithTitle:TwinmeLocalizedString(@"deleted_account_view_warning", nil) message:TwinmeLocalizedString(@"show_space_view_move_message", nil)];
             [self.tabBarController.view addSubview:alertMessageView];
             [alertMessageView showAlertView];
         } else if (self.space.profile) {
@@ -766,7 +769,7 @@ static CGFloat DESIGN_PROFILE_AVATAR_HEIGHT = 216;
             SpaceActionConfirmView *spaceActionConfirmView = [[SpaceActionConfirmView alloc] init];
             spaceActionConfirmView.bottomSheetViewDelegate = self;
             spaceActionConfirmView.spaceActionConfirmType = SpaceActionConfirmTypeProfile;
-            [spaceActionConfirmView initWithTitle:TwinmeLocalizedString(@"show_profile_view_controller_create_profile", nil) message:TwinmeLocalizedString(@"create_space_view_controller_contacts_no_profile", nil) spaceName:self.space.settings.name spaceStyle:self.space.settings.style avatar:self.avatar icon:[UIImage imageNamed:@"ActionBarAddContact"] confirmTitle:TwinmeLocalizedString(@"application_now", nil) cancelTitle:TwinmeLocalizedString(@"application_later", nil)];
+            [spaceActionConfirmView initWithTitle:TwinmeLocalizedString(@"profile_view_create_profile", nil) message:TwinmeLocalizedString(@"create_space_view_contacts_no_profile", nil) spaceName:self.space.settings.name spaceStyle:self.space.settings.style avatar:self.avatar icon:[UIImage imageNamed:@"ActionBarAddContact"] confirmTitle:TwinmeLocalizedString(@"application_now", nil) cancelTitle:TwinmeLocalizedString(@"application_later", nil)];
             [self.view addSubview:spaceActionConfirmView];
             [spaceActionConfirmView showConfirmView];
         }
@@ -805,7 +808,7 @@ static CGFloat DESIGN_PROFILE_AVATAR_HEIGHT = 216;
     } else if (![self.currentSpace hasPermission:TLSpacePermissionTypeCreateContact]) {
         AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
         alertMessageView.alertMessageViewDelegate = self;
-        [alertMessageView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:TwinmeLocalizedString(@"spaces_view_controller_permission_not_allowed", nil)];
+        [alertMessageView initWithTitle:TwinmeLocalizedString(@"deleted_account_view_warning", nil) message:TwinmeLocalizedString(@"spaces_view_permission_not_allowed", nil)];
         [self.tabBarController.view addSubview:alertMessageView];
         [alertMessageView showAlertView];
     } else {
@@ -872,7 +875,7 @@ static CGFloat DESIGN_PROFILE_AVATAR_HEIGHT = 216;
             self.nameLabel.hidden = NO;
             self.identityLabel.text = self.space.profile.name;
             self.twincodeImageView.image = [UIImage imageNamed:@"QRCode"];
-            self.twincodeLabel.text = TwinmeLocalizedString(@"show_profile_view_controller_twincode_title", nil);
+            self.twincodeLabel.text = TwinmeLocalizedString(@"profile_view_twincode_title", nil);
             self.identityAvatarViewTopConstraint.constant = -(DESIGN_PROFILE_AVATAR_HEIGHT * Design.HEIGHT_RATIO * 0.5);
             self.identityNameViewTopConstraint.constant = (DESIGN_PROFILE_AVATAR_HEIGHT * Design.HEIGHT_RATIO * 0.5) + (DESIGN_HEADER_VIEW_TOP_MARGIN * Design.HEIGHT_RATIO);
             self.spaceLabelHeightConstraint.constant = self.nameLabel.font.lineHeight;
@@ -882,7 +885,7 @@ static CGFloat DESIGN_PROFILE_AVATAR_HEIGHT = 216;
             self.identityLabel.text = self.space.settings.name;
             self.nameLabel.hidden = YES;
             self.twincodeImageView.image = [UIImage imageNamed:@"ActionBarAddContact"];
-            self.twincodeLabel.text = TwinmeLocalizedString(@"profiles_view_controller_add_profile", nil);
+            self.twincodeLabel.text = TwinmeLocalizedString(@"profile_view_add_profile", nil);
             self.identityAvatarViewTopConstraint.constant = -(DESIGN_PROFILE_AVATAR_HEIGHT * Design.HEIGHT_RATIO);
             self.identityNameViewTopConstraint.constant = DESIGN_HEADER_VIEW_NO_PROFILE_TOP_MARGIN * Design.HEIGHT_RATIO;
             self.spaceLabelHeightConstraint.constant = 0;

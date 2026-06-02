@@ -103,6 +103,7 @@ static const CGFloat DESIGN_CUSTOM_PROGRESS_MARGIN = 10;
         _initViewHeight = NO;
         _showAllWhatsNew = NO;
         _updateMode = NO;
+        _currentVersion = NO;
         _currentWhatsNew = -1;
         _uiWhatsNew = [[NSMutableArray alloc]init];
         _imagesToDwonload = [[NSMutableArray alloc]init];
@@ -231,9 +232,13 @@ static const CGFloat DESIGN_CUSTOM_PROGRESS_MARGIN = 10;
     UITapGestureRecognizer *cancelViewGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleCloseTapGesture:)];
     [self.cancelView addGestureRecognizer:cancelViewGestureRecognizer];
     
-    UIWindow *window = UIApplication.sharedApplication.keyWindow;
-    self.cancelViewBottomConstraint.constant = window.safeAreaInsets.bottom;
-
+    UIWindow *window = [self currentWindow];
+    if (window) {
+        self.cancelViewBottomConstraint.constant = window.safeAreaInsets.bottom;
+    } else {
+        self.cancelViewBottomConstraint.constant = self.view.safeAreaInsets.bottom;
+    }
+    
     self.cancelLabel.font = Design.FONT_BOLD36;
     self.cancelLabel.textColor = Design.FONT_COLOR_DEFAULT;
     self.cancelLabel.text = TwinmeLocalizedString(@"application_later", nil);
@@ -375,7 +380,7 @@ static const CGFloat DESIGN_CUSTOM_PROGRESS_MARGIN = 10;
     }
     
     if (self.currentWhatsNew + 1 == self.uiWhatsNew.count) {
-        self.confirmLabel.text = self.updateMode ? TwinmeLocalizedString(@"update_app_view_controller_update_title", nil) : TwinmeLocalizedString(@"application_ok", nil);
+        self.confirmLabel.text = self.updateMode ? TwinmeLocalizedString(@"update_app_view_update_title", nil) : TwinmeLocalizedString(@"application_ok", nil);
         self.showAllWhatsNew = YES;
     }
 }
@@ -393,7 +398,7 @@ static const CGFloat DESIGN_CUSTOM_PROGRESS_MARGIN = 10;
     
     NSMutableArray *messages = [[NSMutableArray alloc]init];
     
-    if (self.updateMode || [self.twinmeApplication.lastVersionManager isMajorVersionWithUpdate:self.updateMode]) {
+    if (self.currentVersion || [self.twinmeApplication.lastVersionManager isMajorVersionWithUpdate:self.updateMode]) {
         [messages addObjectsFromArray:lastVersion.majorChanges];
     } else {
         [messages addObjectsFromArray:lastVersion.minorChanges];
@@ -437,7 +442,7 @@ static const CGFloat DESIGN_CUSTOM_PROGRESS_MARGIN = 10;
         self.progressContainerViewHeightConstraint.constant = 0;
         self.progressContainerViewTopConstraint.constant = 0;
         self.progressContainerView.hidden = YES;
-        self.confirmLabel.text = self.updateMode ? TwinmeLocalizedString(@"update_app_view_controller_update_title", nil) : TwinmeLocalizedString(@"application_ok", nil);
+        self.confirmLabel.text = self.updateMode ? TwinmeLocalizedString(@"update_app_view_update_title", nil) : TwinmeLocalizedString(@"application_ok", nil);
         
         CGRect messageRect = [uiWhatsNew.message boundingRectWithSize:CGSizeMake(textWidth, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin|NSStringDrawingUsesFontLeading attributes:@{
             NSFontAttributeName : Design.FONT_MEDIUM34
@@ -447,7 +452,7 @@ static const CGFloat DESIGN_CUSTOM_PROGRESS_MARGIN = 10;
         
     } else {
         self.progressContainerView.hidden = NO;
-        self.confirmLabel.text = TwinmeLocalizedString(@"welcome_view_controller_next", nil);
+        self.confirmLabel.text = TwinmeLocalizedString(@"welcome_view_next", nil);
         
         CGFloat customBarMargin = DESIGN_CUSTOM_PROGRESS_MARGIN * Design.WIDTH_RATIO;
         CGFloat customBarProgressWidth = (Design.DISPLAY_WIDTH - self.progressContainerViewLeadingConstraint.constant - self.progressContainerViewTrailingConstraint.constant - ((self.uiWhatsNew.count - 1) * customBarMargin)) / self.uiWhatsNew.count;

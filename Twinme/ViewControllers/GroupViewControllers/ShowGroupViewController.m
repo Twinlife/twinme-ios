@@ -342,7 +342,7 @@ static int MAX_GROUP_MEMBER = 5;
     self.fallbackView.hidden = NO;
     self.backClickableView.hidden = YES;
     self.navigationController.navigationBarHidden = NO;
-    [self setNavigationTitle:TwinmeLocalizedString(@"show_group_view_controller_title", nil)];
+    [self setNavigationTitle:TwinmeLocalizedString(@"show_group_view_title", nil)];
 }
 
 - (void)updateUIContact:(nonnull TLGroupMember *)groupMember avatar:(nullable UIImage *)avatar {
@@ -424,8 +424,8 @@ static int MAX_GROUP_MEMBER = 5;
 - (int)getActionViewHeight {
     DDLogVerbose(@"%@ getActionViewHeight", LOG_TAG);
     
-    UIWindow *window = UIApplication.sharedApplication.keyWindow;
-    CGFloat safeAreaInset = window.safeAreaInsets.bottom;
+    UIWindow *window = self.view.window ?: self.navigationController.view.window;
+    CGFloat safeAreaInset = window ? window.safeAreaInsets.bottom : self.view.safeAreaInsets.bottom;
     
     return self.cleanView.frame.origin.y + self.cleanViewHeightConstraint.constant + safeAreaInset;
 }
@@ -565,7 +565,7 @@ static int MAX_GROUP_MEMBER = 5;
     
     self.chatLabel.font = Design.FONT_REGULAR28;
     self.chatLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    self.chatLabel.text = TwinmeLocalizedString(@"show_contact_view_controller_chat", nil);
+    self.chatLabel.text = TwinmeLocalizedString(@"show_contact_view_chat", nil);
     
     self.videoViewWidthConstraint.constant *= Design.WIDTH_RATIO;
     self.videoViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
@@ -580,7 +580,7 @@ static int MAX_GROUP_MEMBER = 5;
     
     self.videoLabel.font = Design.FONT_REGULAR28;
     self.videoLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    self.videoLabel.text = TwinmeLocalizedString(@"show_contact_view_controller_video", nil);
+    self.videoLabel.text = TwinmeLocalizedString(@"show_contact_view_video", nil);
     
     self.audioViewWidthConstraint.constant *= Design.WIDTH_RATIO;
     self.audioViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
@@ -597,7 +597,7 @@ static int MAX_GROUP_MEMBER = 5;
     
     self.audioLabel.font = Design.FONT_REGULAR28;
     self.audioLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    self.audioLabel.text = TwinmeLocalizedString(@"show_contact_view_controller_audio", nil);
+    self.audioLabel.text = TwinmeLocalizedString(@"show_contact_view_audio", nil);
     
     CGFloat screenWidth = [[UIScreen mainScreen] bounds].size.width;
     
@@ -615,7 +615,7 @@ static int MAX_GROUP_MEMBER = 5;
     self.membersLabelWidthConstraint.constant *= Design.WIDTH_RATIO;
     self.membersLabel.font = Design.FONT_BOLD26;
     self.membersLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    self.membersLabel.text = TwinmeLocalizedString(@"group_member_view_controller_section_member", nil).uppercaseString;
+    self.membersLabel.text = TwinmeLocalizedString(@"group_member_view_section_member", nil).uppercaseString;
     
     self.inviteViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     self.inviteViewWidthConstraint.constant *= Design.WIDTH_RATIO;
@@ -626,7 +626,7 @@ static int MAX_GROUP_MEMBER = 5;
     
     self.inviteLabel.font = Design.FONT_BOLD28;
     self.inviteLabel.textColor = Design.MAIN_COLOR;
-    self.inviteLabel.text = [NSString stringWithFormat:@"+ %@", TwinmeLocalizedString(@"add_group_member_view_controller_add", nil)];
+    self.inviteLabel.text = [NSString stringWithFormat:@"+ %@", TwinmeLocalizedString(@"add_group_member_view_add", nil)];
     
     self.membersCollectionViewLeadingConstraint.constant *= Design.WIDTH_RATIO;
     self.membersCollectionViewTrailingConstraint.constant *= Design.WIDTH_RATIO;
@@ -719,7 +719,7 @@ static int MAX_GROUP_MEMBER = 5;
     self.permissionsLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
     self.permissionsLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
     
-    self.permissionsLabel.text = TwinmeLocalizedString(@"settings_view_controller_authorization_title", nil);
+    self.permissionsLabel.text = TwinmeLocalizedString(@"settings_view_authorization_title", nil);
     self.permissionsLabel.font = Design.FONT_REGULAR34;
     self.permissionsLabel.textColor = Design.FONT_COLOR_DEFAULT;
     
@@ -744,7 +744,7 @@ static int MAX_GROUP_MEMBER = 5;
     self.callsSettingsLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
     self.callsSettingsLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
     
-    self.callsSettingsLabel.text = TwinmeLocalizedString(@"contact_capabilities_view_controller_call_settings", nil);
+    self.callsSettingsLabel.text = TwinmeLocalizedString(@"contact_capabilities_view_call_settings", nil);
     self.callsSettingsLabel.font = Design.FONT_REGULAR34;
     self.callsSettingsLabel.textColor = Design.FONT_COLOR_DEFAULT;
     
@@ -760,7 +760,7 @@ static int MAX_GROUP_MEMBER = 5;
     
     self.historyTitleLabel.font = Design.FONT_BOLD26;
     self.historyTitleLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    self.historyTitleLabel.text = TwinmeLocalizedString(@"show_contact_view_controller_history_title", nil).uppercaseString;
+    self.historyTitleLabel.text = TwinmeLocalizedString(@"show_contact_view_history_title", nil).uppercaseString;
     
     self.lastCallAccessoryViewTrailingConstraint.constant *= Design.WIDTH_RATIO;
     self.lastCallAccessoryViewHeightConstraint.constant = Design.ACCESSORY_HEIGHT;
@@ -779,7 +779,7 @@ static int MAX_GROUP_MEMBER = 5;
     
     self.lastCallLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
     self.lastCallLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
-    self.lastCallLabel.text = TwinmeLocalizedString(@"show_contact_view_controller_last_calls", nil);
+    self.lastCallLabel.text = TwinmeLocalizedString(@"show_contact_view_last_calls", nil);
     self.lastCallLabel.font = Design.FONT_REGULAR34;
     self.lastCallLabel.textColor = Design.FONT_COLOR_DEFAULT;
     
@@ -789,7 +789,7 @@ static int MAX_GROUP_MEMBER = 5;
     
     self.conversationsTitleLabel.font = Design.FONT_BOLD26;
     self.conversationsTitleLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    self.conversationsTitleLabel.text = TwinmeLocalizedString(@"conversations_view_controller_title", nil).uppercaseString;
+    self.conversationsTitleLabel.text = TwinmeLocalizedString(@"conversations_view_title", nil).uppercaseString;
     
     self.filesViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     self.filesViewTopConstraint.constant *= Design.HEIGHT_RATIO;
@@ -807,7 +807,7 @@ static int MAX_GROUP_MEMBER = 5;
     self.filesLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
     self.filesLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
     
-    self.filesLabel.text = TwinmeLocalizedString(@"conversation_files_view_controller_title", nil);
+    self.filesLabel.text = TwinmeLocalizedString(@"conversation_files_view_title", nil);
     self.filesLabel.font = Design.FONT_REGULAR34;
     self.filesLabel.textColor = Design.FONT_COLOR_DEFAULT;
     
@@ -832,7 +832,7 @@ static int MAX_GROUP_MEMBER = 5;
     self.exportLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
     self.exportLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
     
-    self.exportLabel.text = TwinmeLocalizedString(@"show_contact_view_controller_export_contents", nil);
+    self.exportLabel.text = TwinmeLocalizedString(@"show_contact_view_export_contents", nil);
     self.exportLabel.font = Design.FONT_REGULAR34;
     self.exportLabel.textColor = Design.FONT_COLOR_DEFAULT;
     
@@ -857,7 +857,7 @@ static int MAX_GROUP_MEMBER = 5;
     self.cleanLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
     self.cleanLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
     
-    self.cleanLabel.text = TwinmeLocalizedString(@"show_contact_view_controller_cleanup", nil);
+    self.cleanLabel.text = TwinmeLocalizedString(@"show_contact_view_cleanup", nil);
     self.cleanLabel.font = Design.FONT_REGULAR34;
     self.cleanLabel.textColor = Design.FONT_COLOR_DEFAULT;
     
@@ -913,7 +913,7 @@ static int MAX_GROUP_MEMBER = 5;
         if (![self.group.space hasPermission:TLSpacePermissionTypeMoveGroup]) {
             AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
             alertMessageView.alertMessageViewDelegate = self;
-            [alertMessageView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:TwinmeLocalizedString(@"spaces_view_controller_permission_not_allowed", nil)];
+            [alertMessageView initWithTitle:TwinmeLocalizedString(@"deleted_account_view_warning", nil) message:TwinmeLocalizedString(@"spaces_view_permission_not_allowed", nil)];
             [self.tabBarController.view addSubview:alertMessageView];
             [alertMessageView showAlertView];
         } else {
@@ -948,12 +948,15 @@ static int MAX_GROUP_MEMBER = 5;
                 [self startVideoCallWithPermissionCheck:NO];
             } else if (!self.group.capabilities.hasVideo) {
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    [[UIApplication sharedApplication].keyWindow makeToast:TwinmeLocalizedString(@"application_not_authorized_operation_by_your_contact",nil)];
+                    UIWindow *window = [self currentWindow];
+                    if (window) {
+                        [window makeToast:TwinmeLocalizedString(@"application_not_authorized_operation_by_your_contact",nil)];
+                    }
                 });
             } else if (self.uiMembers.count > MAX_CALL_GROUP_PARTICIPANTS) {
                 AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
                 alertMessageView.alertMessageViewDelegate = self;
-                [alertMessageView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:[NSString stringWithFormat:TwinmeLocalizedString(@"call_view_controller_max_participant_message", nil), MAX_CALL_GROUP_PARTICIPANTS]];
+                [alertMessageView initWithTitle:TwinmeLocalizedString(@"deleted_account_view_warning", nil) message:[NSString stringWithFormat:TwinmeLocalizedString(@"call_view_max_participant_message", nil), MAX_CALL_GROUP_PARTICIPANTS]];
                 [self.tabBarController.view addSubview:alertMessageView];
                 [alertMessageView showAlertView];
             } else if ([self hasSchedule]) {
@@ -1079,13 +1082,14 @@ static int MAX_GROUP_MEMBER = 5;
                     }
                 }
             } else if (!self.group.capabilities.hasAudio) {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [[UIApplication sharedApplication].keyWindow makeToast:TwinmeLocalizedString(@"application_not_authorized_operation_by_your_contact",nil)];
-                });
+                UIWindow *window = [self currentWindow];
+                if (window) {
+                    [window makeToast:TwinmeLocalizedString(@"application_not_authorized_operation_by_your_contact",nil)];
+                }
             } else if (self.uiMembers.count > MAX_CALL_GROUP_PARTICIPANTS) {
                 AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
                 alertMessageView.alertMessageViewDelegate = self;
-                [alertMessageView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:[NSString stringWithFormat:TwinmeLocalizedString(@"call_view_controller_max_participant_message", nil), MAX_CALL_GROUP_PARTICIPANTS]];
+                [alertMessageView initWithTitle:TwinmeLocalizedString(@"deleted_account_view_warning", nil) message:[NSString stringWithFormat:TwinmeLocalizedString(@"call_view_max_participant_message", nil), MAX_CALL_GROUP_PARTICIPANTS]];
                 [self.tabBarController.view addSubview:alertMessageView];
                 [alertMessageView showAlertView];
             } else if ([self hasSchedule]) {
@@ -1134,7 +1138,7 @@ static int MAX_GROUP_MEMBER = 5;
         if (!self.canInvite) {
             AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
             alertMessageView.alertMessageViewDelegate = self;
-            [alertMessageView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:TwinmeLocalizedString(@"group_member_view_controller_admin_not_authorize", nil)];
+            [alertMessageView initWithTitle:TwinmeLocalizedString(@"deleted_account_view_warning", nil) message:TwinmeLocalizedString(@"group_member_view_admin_not_authorize", nil)];
             [self.tabBarController.view addSubview:alertMessageView];
             [alertMessageView showAlertView];
         } else {
@@ -1238,7 +1242,7 @@ static int MAX_GROUP_MEMBER = 5;
         groupDescription = self.group.peerDescription;
     }
     
-    if ([groupDescription isEqual:TwinmeLocalizedString(@"side_menu_view_controller_about", nil)]) {
+    if ([groupDescription isEqual:TwinmeLocalizedString(@"navigation_view_about_twinme", nil)]) {
         self.descriptionLabel.text = @"";
     } else {
         self.descriptionLabel.text = groupDescription;
@@ -1424,17 +1428,17 @@ static int MAX_GROUP_MEMBER = 5;
         TLDateTime *end = dateTimeRange.end;
         
         if ([start.date isEqual:end.date]) {
-            message = [NSString stringWithFormat:TwinmeLocalizedString(@"show_call_view_controller_schedule_from_to", nil), [start.date formatDate], [start.time formatTime], [end.time formatTime]];
+            message = [NSString stringWithFormat:TwinmeLocalizedString(@"show_call_view_schedule_from_to", nil), [start.date formatDate], [start.time formatTime], [end.time formatTime]];
         } else {
             message = [NSString stringWithFormat:@"%@ %@", [start formatDateTime], [end formatDateTime]];
         }
     } else {
-        message = TwinmeLocalizedString(@"show_call_view_controller_schedule_message", nil);
+        message = TwinmeLocalizedString(@"show_call_view_schedule_message", nil);
     }
             
     AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
     alertMessageView.alertMessageViewDelegate = self;
-    [alertMessageView initWithTitle:TwinmeLocalizedString(@"show_call_view_controller_schedule_call", nil) message:message];
+    [alertMessageView initWithTitle:TwinmeLocalizedString(@"show_call_view_schedule_call", nil) message:message];
     [self.tabBarController.view addSubview:alertMessageView];
     [alertMessageView showAlertView];
 }

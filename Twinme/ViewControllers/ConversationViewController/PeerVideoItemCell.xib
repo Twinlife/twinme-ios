@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="24765" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24743"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -161,7 +161,7 @@
                     <constraint firstItem="R1F-1t-qMb" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="36" id="8MJ-6e-D5P"/>
                     <constraint firstItem="2eJ-39-RBV" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="26" id="9QA-yk-SaN"/>
                     <constraint firstItem="59b-o7-fXk" firstAttribute="bottom" secondItem="H2p-sc-9uM" secondAttribute="bottom" constant="-18" id="9bC-E0-t4z"/>
-                    <constraint firstItem="2eJ-39-RBV" firstAttribute="trailing" secondItem="59b-o7-fXk" secondAttribute="leading" constant="-18" id="BAv-II-k8g"/>
+                    <constraint firstItem="59b-o7-fXk" firstAttribute="leading" secondItem="2eJ-39-RBV" secondAttribute="trailing" constant="18" id="BAv-II-k8g"/>
                     <constraint firstAttribute="bottom" secondItem="rAi-03-Li8" secondAttribute="bottom" id="BuA-Ld-6Xq"/>
                     <constraint firstItem="MJV-4f-RxZ" firstAttribute="bottom" secondItem="59b-o7-fXk" secondAttribute="bottom" id="G8g-1C-l0J"/>
                     <constraint firstItem="GtH-ba-mzy" firstAttribute="bottom" secondItem="59b-o7-fXk" secondAttribute="bottom" id="GCM-Ki-bq6"/>

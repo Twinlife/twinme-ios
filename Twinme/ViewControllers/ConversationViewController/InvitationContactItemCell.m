@@ -65,6 +65,9 @@ static const int ddLogLevel = DDLogLevelWarning;
 @property (weak, nonatomic) IBOutlet UIView *checkMarkView;
 @property (weak, nonatomic) IBOutlet UIImageView *checkMarkImageView;
 @property (weak, nonatomic) IBOutlet UIView *overlayView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *infoImageViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *infoImageViewTrailinConstraint;
+@property (weak, nonatomic) IBOutlet UIImageView *infoImageView;
 
 @property (nonatomic) TLTwincodeDescriptor *twincodeDescriptor;
 @property (nonatomic) CGFloat topLeftRadius;
@@ -136,7 +139,7 @@ static const int ddLogLevel = DDLogLevelWarning;
     self.invitationLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
     self.invitationLabel.font = Design.FONT_REGULAR26;
     self.invitationLabel.textColor = [UIColor whiteColor];
-    self.invitationLabel.text = TwinmeLocalizedString(@"conversation_view_controller_invitation_pending", nil);
+    self.invitationLabel.text = TwinmeLocalizedString(@"conversation_view_invitation_pending", nil);
     
     self.contentDeleteView.hidden = YES;
     self.contentDeleteView.alpha = 1.0;
@@ -166,6 +169,17 @@ static const int ddLogLevel = DDLogLevelWarning;
     self.checkMarkView.hidden = YES;
     self.checkMarkView.backgroundColor = [UIColor whiteColor];
     self.checkMarkImageView.tintColor = Design.MAIN_COLOR;
+    
+    self.infoImageViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    self.infoImageViewTrailinConstraint.constant *= Design.WIDTH_RATIO;
+    
+    self.infoImageView.hidden = YES;
+    self.infoImageView.userInteractionEnabled = YES;
+    self.infoImageView.tintColor = [UIColor orangeColor];
+    
+    UITapGestureRecognizer *infoTapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleInfoTapGestureRecognizer:)];
+    [self.infoImageView addGestureRecognizer:infoTapGesture];
+    [infoTapGesture requireGestureRecognizerToFail:longPressGesture];
 }
 
 - (void)prepareForReuse {
@@ -183,6 +197,7 @@ static const int ddLogLevel = DDLogLevelWarning;
     self.stateImageView.image = nil;
     self.contentDeleteView.hidden = YES;
     self.isDeleteAnimationStarted = NO;
+    self.infoImageView.hidden = YES;
     [self.contentDeleteView.layer removeAllAnimations];
 }
 
@@ -207,7 +222,7 @@ static const int ddLogLevel = DDLogLevelWarning;
     [style setLineSpacing:Design.INVITATION_LINE_SPACING];
     NSMutableAttributedString *invitationAttributedString = [[NSMutableAttributedString alloc] initWithString:self.name attributes:[NSDictionary dictionaryWithObject:Design.FONT_MEDIUM26 forKey:NSFontAttributeName]];
     [invitationAttributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:@"\n"]];
-    [invitationAttributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:TwinmeLocalizedString(@"conversation_view_controller_invitation_pending", nil) attributes:[NSDictionary dictionaryWithObject:Design.FONT_REGULAR26 forKey:NSFontAttributeName]]];
+    [invitationAttributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:TwinmeLocalizedString(@"conversation_view_invitation_pending", nil) attributes:[NSDictionary dictionaryWithObject:Design.FONT_REGULAR26 forKey:NSFontAttributeName]]];
     [invitationAttributedString addAttribute:NSParagraphStyleAttributeName value:style range:NSMakeRange(0, invitationAttributedString.length - 1)];
     self.invitationLabel.attributedText = invitationAttributedString;
 
@@ -218,6 +233,14 @@ static const int ddLogLevel = DDLogLevelWarning;
 
 - (void)onSwipeInsideContentView:(UIPanGestureRecognizer *)panGesture {
     DDLogVerbose(@"%@ onSwipeInsideContentView: %@", LOG_TAG, panGesture);
+}
+
+- (void)handleInfoTapGestureRecognizer:(UITapGestureRecognizer *)tapGesture {
+    DDLogVerbose(@"%@ handleInfoTapGestureRecognizer: %@", LOG_TAG, tapGesture);
+    
+    if ([self.infoItemDelegate respondsToSelector:@selector(didTapInfoItem:)]) {
+        [self.infoItemDelegate didTapInfoItem:self.item];
+    }
 }
 
 #pragma mark - ItemCell
@@ -259,6 +282,7 @@ static const int ddLogLevel = DDLogLevelWarning;
     
     self.stateImageView.backgroundColor = [UIColor clearColor];
     self.stateImageView.tintColor = [UIColor clearColor];
+    self.infoImageView.hidden = YES;
     
     int corners = invitationContactItem.corners;
     switch (invitationContactItem.state) {
@@ -299,6 +323,11 @@ static const int ddLogLevel = DDLogLevelWarning;
             self.stateImageView.hidden = NO;
             [self.stateImageView.layer removeAllAnimations];
             self.stateImageView.image = [UIImage imageNamed:@"ItemStateNotSent"];
+            
+            if (self.item.errorAnnotation && !self.isSelectItemMode) {
+                self.infoImageView.hidden = NO;
+            }
+            
             break;
             
         case ItemStateDeleted:
@@ -487,7 +516,7 @@ static const int ddLogLevel = DDLogLevelWarning;
         [style setLineSpacing:Design.INVITATION_LINE_SPACING];
         NSMutableAttributedString *invitationAttributedString = [[NSMutableAttributedString alloc] initWithString:self.name attributes:[NSDictionary dictionaryWithObject:Design.FONT_MEDIUM26 forKey:NSFontAttributeName]];
         [invitationAttributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:@"\n"]];
-        [invitationAttributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:TwinmeLocalizedString(@"conversation_view_controller_invitation_pending", nil) attributes:[NSDictionary dictionaryWithObject:Design.FONT_REGULAR26 forKey:NSFontAttributeName]]];
+        [invitationAttributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:TwinmeLocalizedString(@"conversation_view_invitation_pending", nil) attributes:[NSDictionary dictionaryWithObject:Design.FONT_REGULAR26 forKey:NSFontAttributeName]]];
         [invitationAttributedString addAttribute:NSParagraphStyleAttributeName value:style range:NSMakeRange(0, invitationAttributedString.length - 1)];
         self.invitationLabel.attributedText = invitationAttributedString;
     }

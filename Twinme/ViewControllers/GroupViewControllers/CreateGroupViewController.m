@@ -8,6 +8,9 @@
 
 #import <CocoaLumberjack.h>
 
+#import <Photos/Photos.h>
+#import <PhotosUI/PhotosUI.h>
+
 #import <Twinlife/TLConversationService.h>
 
 #import <Twinme/TLProfile.h>
@@ -51,7 +54,7 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
 // Interface: CreateGroupViewController ()
 //
 
-@interface CreateGroupViewController () <GroupServiceDelegate, AddGroupMemberDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIAdaptivePresentationControllerDelegate, UITextFieldDelegate, UITextViewDelegate, UICollectionViewDataSource, AlertMessageViewDelegate, MenuPhotoViewDelegate, SettingsGroupDelegate>
+@interface CreateGroupViewController () <GroupServiceDelegate, AddGroupMemberDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIAdaptivePresentationControllerDelegate, UITextFieldDelegate, UITextViewDelegate, UICollectionViewDataSource, AlertMessageViewDelegate, MenuPhotoViewDelegate, SettingsGroupDelegate, PHPickerViewControllerDelegate>
 
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *avatarPlaceholderImageViewHeightConstraint;
 @property (weak, nonatomic) IBOutlet UIImageView *avatarPlaceholderImageView;
@@ -272,7 +275,7 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     
     AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
     alertMessageView.alertMessageViewDelegate = self;
-    [alertMessageView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:[NSString stringWithFormat:TwinmeLocalizedString(@"application_group_limit_reached %@", nil), [NSString convertWithLocale:[NSString stringWithFormat:@"%d",[TLConversationService MAX_GROUP_MEMBERS]]]]];
+    [alertMessageView initWithTitle:TwinmeLocalizedString(@"deleted_account_view_warning", nil) message:[NSString stringWithFormat:TwinmeLocalizedString(@"application_group_limit_reached", nil), [NSString convertWithLocale:[NSString stringWithFormat:@"%d",[TLConversationService MAX_GROUP_MEMBERS]]]]];
     [self.navigationController.view addSubview:alertMessageView];
     [alertMessageView showAlertView];
 }
@@ -336,7 +339,7 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
 - (void)textViewDidBeginEditing:(UITextView *)textView {
     DDLogVerbose(@"%@ textViewDidBeginEditing: %@", LOG_TAG, textView);
     
-    if ([textView.text isEqualToString:TwinmeLocalizedString(@"side_menu_view_controller_about", nil)]) {
+    if ([textView.text isEqualToString:TwinmeLocalizedString(@"navigation_view_about_twinme", nil)]) {
         textView.text = @"";
         textView.textColor = Design.FONT_COLOR_DEFAULT;
     }
@@ -360,7 +363,7 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     DDLogVerbose(@"%@ textViewDidEndEditing: %@", LOG_TAG, textView);
     
     if ([textView.text isEqualToString:@""]) {
-        textView.text = TwinmeLocalizedString(@"side_menu_view_controller_about", nil);
+        textView.text = TwinmeLocalizedString(@"navigation_view_about_twinme", nil);
         textView.textColor = Design.PLACEHOLDER_COLOR;
     }
 }
@@ -385,6 +388,48 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     
     self.navigationController.navigationBarHidden = YES;
     [pickerController dismissViewControllerAnimated:YES completion:nil];
+}
+
+#pragma mark - PHPickerViewControllerDelegate
+
+- (void)picker:(PHPickerViewController *)pickerController didFinishPicking:(NSArray<PHPickerResult *> *)results API_AVAILABLE(ios(14)){
+    DDLogVerbose(@"%@ picker: %@", LOG_TAG, pickerController);
+        
+    [self showProgressIndicator];
+    
+    [pickerController dismissViewControllerAnimated:YES completion:^{
+        if (!results || results.count == 0) {
+            [self hideProgressIndicator];
+            return;
+        }
+    
+        PHPickerResult *result = results.firstObject;
+        if ([result.itemProvider hasItemConformingToTypeIdentifier:UTTypeImage.identifier]) {
+            [result.itemProvider loadDataRepresentationForTypeIdentifier:UTTypeImage.identifier
+                                                       completionHandler:^(NSData * _Nullable data,
+                                                                           NSError * _Nullable error) {
+                
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    if (!error) {
+                        [self hideProgressIndicator];
+                        self.avatarPlaceholderImageView.hidden = NO;
+                        self.avatarLarge = [UIImage imageWithData:data];
+                        self.avatar = [self.avatarLarge resizeImage];
+                        
+                        CATransition *animation = [CATransition animation];
+                        animation.type = kCATransitionFade;
+                        animation.subtype = kCATransitionFromTop;
+                        animation.duration = 0.5;
+                        [self.avatarView.layer addAnimation:animation forKey:nil];
+                        
+                        self.avatarView.image = self.avatarLarge;
+                    }
+                });
+            }];
+        } else {
+            [self hideProgressIndicator];
+        }
+    }];
 }
 
 #pragma mark - UIAdaptivePresentationControllerDelegate
@@ -495,7 +540,7 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     }
     
     NSString *updatedDescription =  [self.descriptionTextView.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
-    if ([updatedDescription isEqualToString:TwinmeLocalizedString(@"side_menu_view_controller_about", nil)]) {
+    if ([updatedDescription isEqualToString:TwinmeLocalizedString(@"navigation_view_about_twinme", nil)]) {
         updatedDescription = @"";
     }
     
@@ -526,7 +571,7 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     
     self.avatarPlaceholderImageViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     
-    self.nameLabel.text = TwinmeLocalizedString(@"create_group_view_controller_title", nil);
+    self.nameLabel.text = TwinmeLocalizedString(@"create_group_view_title", nil);
     
     self.nameViewTopConstraint.constant *= Design.HEIGHT_RATIO;
     self.nameViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
@@ -565,7 +610,7 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     self.descriptionTextView.textColor = Design.PLACEHOLDER_COLOR;
     self.descriptionTextView.tintColor = Design.FONT_COLOR_DEFAULT;
     self.descriptionTextView.delegate = self;
-    self.descriptionTextView.text = TwinmeLocalizedString(@"side_menu_view_controller_about", nil);
+    self.descriptionTextView.text = TwinmeLocalizedString(@"navigation_view_about_twinme", nil);
     self.descriptionTextView.textContainer.lineFragmentPadding = 0;
     self.descriptionTextView.textContainerInset = UIEdgeInsetsZero;
     
@@ -591,7 +636,7 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     self.membersLabelWidthConstraint.constant *= Design.WIDTH_RATIO;
     self.membersLabel.font = Design.FONT_BOLD26;
     self.membersLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    self.membersLabel.text = TwinmeLocalizedString(@"group_member_view_controller_section_member", nil).uppercaseString;
+    self.membersLabel.text = TwinmeLocalizedString(@"group_member_view_section_member", nil).uppercaseString;
     
     self.inviteViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     self.inviteViewWidthConstraint.constant *= Design.WIDTH_RATIO;
@@ -604,7 +649,7 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     
     self.inviteLabel.font = Design.FONT_BOLD28;
     self.inviteLabel.textColor = Design.MAIN_COLOR;
-    self.inviteLabel.text = [NSString stringWithFormat:@"+ %@", TwinmeLocalizedString(@"add_group_member_view_controller_add", nil)];
+    self.inviteLabel.text = [NSString stringWithFormat:@"+ %@", TwinmeLocalizedString(@"add_group_member_view_add", nil)];
     
     self.membersCollectionViewLeadingConstraint.constant *= Design.WIDTH_RATIO;
     self.membersCollectionViewTrailingConstraint.constant *= Design.WIDTH_RATIO;
@@ -625,7 +670,7 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     
     self.noMembersLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
     self.noMembersLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
-    self.noMembersLabel.text = TwinmeLocalizedString(@"add_group_member_view_controller_title", nil);
+    self.noMembersLabel.text = TwinmeLocalizedString(@"add_group_member_view_title", nil);
     
     self.noMembersAccessoryViewTrailingConstraint.constant *= Design.WIDTH_RATIO;
     self.noMembersAccessoryViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
@@ -651,7 +696,7 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     
     self.settingsLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
     self.settingsLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
-    self.settingsLabel.text = TwinmeLocalizedString(@"settings_view_controller_authorization_title", nil);
+    self.settingsLabel.text = TwinmeLocalizedString(@"settings_view_authorization_title", nil);
     self.settingsAccessoryViewTrailingConstraint.constant *= Design.WIDTH_RATIO;
     self.settingsAccessoryViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     self.settingsAccessoryView.tintColor = Design.ACCESSORY_COLOR;
@@ -855,22 +900,13 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
 - (void)selectPhoto {
     DDLogVerbose(@"%@ selectPhoto", LOG_TAG);
     
-    UIImagePickerController *picker = [[UIImagePickerController alloc] init];
-    picker.delegate = self;
-    picker.presentationController.delegate = self;
-    picker.allowsEditing = YES;
-    picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+    PHPickerConfiguration *config = [[PHPickerConfiguration alloc] init];
+    config.selectionLimit = 1;
+    config.filter = [PHPickerFilter imagesFilter];
     
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-        CGSize size = self.view.bounds.size;
-        picker.modalPresentationStyle = UIModalPresentationPopover;
-        picker.popoverPresentationController.sourceView = self.view;
-        picker.popoverPresentationController.sourceRect = CGRectMake(size.width * 0.5, size.height * 0.2, size.width * 0.6, size.height * 0.7);
-        picker.popoverPresentationController.permittedArrowDirections = UIPopoverArrowDirectionAny;
-        [self presentViewController:picker animated:YES completion:nil];
-    } else {
-        [self presentViewController:picker animated:YES completion:nil];
-    }
+    PHPickerViewController *pickerViewController = [[PHPickerViewController alloc] initWithConfiguration:config];
+    pickerViewController.delegate = self;
+    [self presentViewController:pickerViewController animated:YES completion:nil];
 }
 
 - (void)updateFont {
@@ -910,9 +946,9 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     self.settingsLabel.textColor = Design.FONT_COLOR_DEFAULT;
     self.noMembersLabel.textColor = Design.FONT_COLOR_DEFAULT;
     
-    self.nameTextField.attributedPlaceholder = [[NSAttributedString alloc]initWithString:TwinmeLocalizedString(@"create_group_view_controller_name_hint", nil) attributes:[NSDictionary dictionaryWithObject:Design.PLACEHOLDER_COLOR forKey:NSForegroundColorAttributeName]];
+    self.nameTextField.attributedPlaceholder = [[NSAttributedString alloc]initWithString:TwinmeLocalizedString(@"create_group_view_name_hint", nil) attributes:[NSDictionary dictionaryWithObject:Design.PLACEHOLDER_COLOR forKey:NSForegroundColorAttributeName]];
     
-    if ([self.descriptionTextView.text isEqualToString:TwinmeLocalizedString(@"side_menu_view_controller_about", nil)]) {
+    if ([self.descriptionTextView.text isEqualToString:TwinmeLocalizedString(@"navigation_view_about_twinme", nil)]) {
         self.descriptionTextView.textColor = Design.PLACEHOLDER_COLOR;
     } else {
         self.descriptionTextView.textColor = Design.FONT_COLOR_DEFAULT;

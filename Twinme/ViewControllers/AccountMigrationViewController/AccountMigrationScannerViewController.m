@@ -66,6 +66,7 @@ static const CGFloat DESIGN_HIGHLIGHT_VIEW_CORNER_RADIUS = 4;
 @property (weak, nonatomic) IBOutlet UILabel *messageNoPermissionScanLabel;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *messageLabelWidthConstraint;
 @property (weak, nonatomic) IBOutlet UILabel *messageLabel;
+@property (weak, nonatomic) IBOutlet UIActivityIndicatorView *activityIndicatorView;
 
 @property UIView *highlightView;
 @property AVCaptureSession *captureSession;
@@ -123,9 +124,9 @@ static const CGFloat DESIGN_HIGHLIGHT_VIEW_CORNER_RADIUS = 4;
 
         UIImage *image = [self.twinmeApplication darkModeEnable:[self currentSpaceSettings]] ? [UIImage imageNamed:@"OnboardingMigrationDark"] : [UIImage imageNamed:@"OnboardingMigration"];
         
-        [onboardingConfirmView initWithTitle:TwinmeLocalizedString(@"account_view_controller_migration_title", nil) message: TwinmeLocalizedString(@"account_view_controller_migration_message", nil) image:image action:TwinmeLocalizedString(@"application_ok", nil) actionColor:nil cancel:TwinmeLocalizedString(@"application_do_not_display", nil)];
+        [onboardingConfirmView initWithTitle:TwinmeLocalizedString(@"account_view_migration_title", nil) message: TwinmeLocalizedString(@"account_view_migration_message", nil) image:image action:TwinmeLocalizedString(@"application_ok", nil) actionColor:nil cancel:TwinmeLocalizedString(@"application_do_not_display", nil)];
         
-        NSMutableAttributedString *attributedTitle = [[NSMutableAttributedString alloc] initWithString:TwinmeLocalizedString(@"account_view_controller_migration_title", nil) attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_BOLD36, NSFontAttributeName, Design.FONT_COLOR_DEFAULT, NSForegroundColorAttributeName, nil]];
+        NSMutableAttributedString *attributedTitle = [[NSMutableAttributedString alloc] initWithString:TwinmeLocalizedString(@"account_view_migration_title", nil) attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_BOLD36, NSFontAttributeName, Design.FONT_COLOR_DEFAULT, NSForegroundColorAttributeName, nil]];
         [onboardingConfirmView updateTitle:attributedTitle];
         
         [self.navigationController.view addSubview:onboardingConfirmView];
@@ -334,7 +335,7 @@ static const CGFloat DESIGN_HIGHLIGHT_VIEW_CORNER_RADIUS = 4;
     
     [self.view setBackgroundColor:Design.GREY_BACKGROUND_COLOR];
     
-    [self setNavigationTitle:TwinmeLocalizedString(@"account_view_controller_migration_title", nil)];
+    [self setNavigationTitle:TwinmeLocalizedString(@"account_view_migration_title", nil)];
     
     self.accountViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     self.accountViewWidthConstraint.constant *= Design.WIDTH_RATIO;
@@ -367,7 +368,7 @@ static const CGFloat DESIGN_HIGHLIGHT_VIEW_CORNER_RADIUS = 4;
     self.messageScanLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
     [self.messageScanLabel setFont:Design.FONT_MEDIUM32];
     self.messageScanLabel.textColor = [UIColor whiteColor];
-    self.messageScanLabel.text = TwinmeLocalizedString(@"add_contact_view_controller_scan_code", nil);
+    self.messageScanLabel.text = TwinmeLocalizedString(@"add_contact_view_scan_code", nil);
     
     self.messageNoPermissionScanLabelWidthConstraint.constant *= Design.WIDTH_RATIO;
     
@@ -388,6 +389,12 @@ static const CGFloat DESIGN_HIGHLIGHT_VIEW_CORNER_RADIUS = 4;
     [self.captureView bringSubviewToFront:self.highlightView];
     self.captureView.hidden = YES;
     
+    self.activityIndicatorView.hidesWhenStopped = YES;
+    
+    if ([self.twinmeApplication darkModeEnable:[self.twinmeContext defaultSpaceSettings]]) {
+        self.activityIndicatorView.color = [UIColor whiteColor];
+    }
+    
     [self updateQRCode];
     
     if (self.fromCurrentDevice) {
@@ -396,11 +403,11 @@ static const CGFloat DESIGN_HIGHLIGHT_VIEW_CORNER_RADIUS = 4;
         
         [self setupCaptureSession];
         self.previewLayer.frame = self.captureView.bounds;
-        self.messageLabel.text = TwinmeLocalizedString(@"account_migration_scanner_view_controller_migration_start_from_current_device_message", nil);
+        self.messageLabel.text = TwinmeLocalizedString(@"account_migration_scanner_view_migration_start_from_current_device_message", nil);
     } else {
         self.captureView.hidden = YES;
         self.accountView.hidden = NO;
-        self.messageLabel.text = TwinmeLocalizedString(@"account_migration_scanner_view_controller_migration_start_from_another_device_message", nil);
+        self.messageLabel.text = TwinmeLocalizedString(@"account_migration_scanner_view_migration_start_from_another_device_message", nil);
     }
 }
 
@@ -437,7 +444,7 @@ static const CGFloat DESIGN_HIGHLIGHT_VIEW_CORNER_RADIUS = 4;
         
     AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
     alertMessageView.alertMessageViewDelegate = self;
-    [alertMessageView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:TwinmeLocalizedString(@"capture_view_controller_incorrect_qrcode", nil)];
+    [alertMessageView initWithTitle:TwinmeLocalizedString(@"deleted_account_view_warning", nil) message:TwinmeLocalizedString(@"capture_view_incorrect_qrcode", nil)];
     [self.tabBarController.view addSubview:alertMessageView];
     [alertMessageView showAlertView];
 }
@@ -583,16 +590,15 @@ static const CGFloat DESIGN_HIGHLIGHT_VIEW_CORNER_RADIUS = 4;
         
         NSString *message;
         if (peerVersion.major < supportedVersion.major) {
-            message = TwinmeLocalizedString(@"account_migration_scanner_view_controller_message_older_version_target", nil);
+            message = TwinmeLocalizedString(@"account_migration_scanner_view_message_older_version_target", nil);
         } else {
-            message = TwinmeLocalizedString(@"account_migration_scanner_view_controller_message_older_version", nil);
+            message = TwinmeLocalizedString(@"account_migration_scanner_view_message_older_version", nil);
         }
         
         DefaultConfirmView *migrationConfirmView = [[DefaultConfirmView alloc] init];
         migrationConfirmView.bottomSheetViewDelegate = self;
         UIImage *image = [self.twinmeApplication darkModeEnable:[self currentSpaceSettings]] ? [UIImage imageNamed:@"OnboardingMigrationDark"] : [UIImage imageNamed:@"OnboardingMigration"];
-        [migrationConfirmView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:message image:image avatar:nil action:TwinmeLocalizedString(@"account_migration_view_controller_start", nil) actionColor:nil cancel:nil];
-
+        [migrationConfirmView initWithTitle:TwinmeLocalizedString(@"deleted_account_view_warning", nil) message:message image:image avatar:nil action:TwinmeLocalizedString(@"account_migration_view_start", nil) actionColor:nil cancel:nil];
         [self.tabBarController.view addSubview:migrationConfirmView];
         [migrationConfirmView showConfirmView];
     }
@@ -604,10 +610,19 @@ static const CGFloat DESIGN_HIGHLIGHT_VIEW_CORNER_RADIUS = 4;
     if (!self.accountMigration || !self.accountMigrationLink) {
         return;
     }
-    
-    UIImage *qrCode = [Utils makeQRCodeWithUri:self.accountMigrationLink scale:10];
-    
-    self.qrcodeView.image = qrCode;
+        
+    [self.activityIndicatorView startAnimating];
+    __weak typeof(self) weakSelf = self;
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        UIImage *qrImage = [Utils makeQRCodeWithUri:weakSelf.accountMigrationLink scale:10];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (!weakSelf) {
+                return;
+            }
+            [self.activityIndicatorView stopAnimating];
+            self.qrcodeView.image = qrImage;
+        });
+    });
 }
 
 @end

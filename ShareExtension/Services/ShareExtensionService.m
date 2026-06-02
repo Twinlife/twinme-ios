@@ -324,13 +324,11 @@ static ShareExtensionService *INSTANCE;
     
     if (self.needSchedule) {
         self.needSchedule = NO;
-        if (@available(iOS 13.0, *)) {
-            NSError *error = NULL;
-            BGAppRefreshTaskRequest *request = [[BGAppRefreshTaskRequest alloc] initWithIdentifier:SCHEDULER_TASK_NAME];
-            request.earliestBeginDate = [[NSDate alloc] initWithTimeIntervalSinceNow:10.0];
-            [[BGTaskScheduler sharedScheduler] submitTaskRequest:request error:&error];
-            DDLogVerbose(@"%@ stop task scheduled at %@ error: %@", LOG_TAG, request.earliestBeginDate, error);
-        }
+        NSError *error = NULL;
+        BGAppRefreshTaskRequest *request = [[BGAppRefreshTaskRequest alloc] initWithIdentifier:SCHEDULER_TASK_NAME];
+        request.earliestBeginDate = [[NSDate alloc] initWithTimeIntervalSinceNow:10.0];
+        [[BGTaskScheduler sharedScheduler] submitTaskRequest:request error:&error];
+        DDLogVerbose(@"%@ stop task scheduled at %@ error: %@", LOG_TAG, request.earliestBeginDate, error);
     }
     
 
@@ -398,7 +396,7 @@ static ShareExtensionService *INSTANCE;
     
 }
 
-- (void)onUpdateAnnotationWithContact:(id<TLOriginator>)contact conversationId:(NSUUID *)conversationId descriptor:(TLDescriptor *)descriptor annotatingUser:(nonnull TLTwincodeOutbound *)annotatingUser {
+- (void)onUpdateAnnotationsWithContact:(id<TLOriginator>)contact conversationId:(NSUUID *)conversationId descriptor:(TLDescriptor *)descriptor annotatingUser:(nonnull TLTwincodeOutbound *)annotatingUser annotations:(nonnull NSSet<TLDescriptorAnnotation *> *)annotations {
     
 }
 

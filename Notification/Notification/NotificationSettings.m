@@ -114,13 +114,13 @@ static TLStringSharedConfigIdentifier *videoCallSoundConfig;
     
     switch (type) {
         case NotificationSoundTypeNotification:
-	return [[NotificationSoundSetting alloc] initWithType:NotificationSoundTypeNotification name:@"Skred Notification" soundId:0 soundPath:@"twinme_notification_default.caf" config:chatSoundConfig];
+            return [[NotificationSoundSetting alloc] initWithType:NotificationSoundTypeNotification name:@"Skred Notification" soundId:0 soundPath:@"twinme_notification_default.caf" config:chatSoundConfig];
             
         case NotificationSoundTypeAudioCall:
-	  return [[NotificationSoundSetting alloc] initWithType:NotificationSoundTypeAudioCall name:@"Skred audio call" soundId:0 soundPath:@"twinme_ringtone_default.caf" config:audioCallSoundConfig];
+            return [[NotificationSoundSetting alloc] initWithType:NotificationSoundTypeAudioCall name:@"Skred audio call" soundId:0 soundPath:@"twinme_ringtone_default.caf" config:audioCallSoundConfig];
             
         case NotificationSoundTypeVideoCall:
-	  return [[NotificationSoundSetting alloc] initWithType:NotificationSoundTypeVideoCall name:@"Skred video call" soundId:0 soundPath:@"twinme_ringtone_default.caf" config:videoCallSoundConfig];
+            return [[NotificationSoundSetting alloc] initWithType:NotificationSoundTypeVideoCall name:@"Skred video call" soundId:0 soundPath:@"twinme_ringtone_default.caf" config:videoCallSoundConfig];
             
         case NotificationSoundTypeAudioCalling:
             return [[NotificationSoundSetting alloc] initWithType:NotificationSoundTypeAudioCalling name:@"Skred calling" soundId:0 soundPath:@"twinme_connecting.caf"];
@@ -156,36 +156,28 @@ static TLStringSharedConfigIdentifier *videoCallSoundConfig;
         case NotificationSoundTypeAudioCall:
             return [[NSArray alloc] initWithObjects:
                     [[NotificationSoundSetting alloc] initWithType:NotificationSoundTypeAudioCall name:@"Skred call" soundId:0 soundPath:@"twinme_ringtone_default.caf"],
-                    [[NotificationSoundSetting alloc] initWithType:NotificationSoundTypeAudioCall name:@"twinme audio call" soundId:0 soundPath:@"twinme_audio_call.caf"],
-                    [[NotificationSoundSetting alloc] initWithType:NotificationSoundTypeAudioCall name:@"twinme video call" soundId:0 soundPath:@"twinme_video_call.caf"],
                     [[NotificationSoundSetting alloc] initWithType:NotificationSoundTypeAudioCall name:@"Arcade audio call" soundId:0 soundPath:@"mario_audio_call_ringtone.caf"],
-                    [[NotificationSoundSetting alloc] initWithType:NotificationSoundTypeAudioCall name:@"Arcade video call" soundId:0 soundPath:@"mario_video_call_ringtone.caf"],
                     [[NotificationSoundSetting alloc] initWithType:NotificationSoundTypeAudioCall name:@"BreakingNews" soundId:0 soundPath:@"audio_call_4_ringtone.caf"],
                     [[NotificationSoundSetting alloc] initWithType:NotificationSoundTypeAudioCall name:@"Cosmic" soundId:0 soundPath:@"audio_call_5_ringtone.caf"],
                     [[NotificationSoundSetting alloc] initWithType:NotificationSoundTypeAudioCall name:@"Office" soundId:0 soundPath:@"audio_call_6_ringtone.caf"],
                     [[NotificationSoundSetting alloc] initWithType:NotificationSoundTypeAudioCall name:@"Horizon" soundId:0 soundPath:@"audio_call_7_ringtone.caf"],
-                    [[NotificationSoundSetting alloc] initWithType:NotificationSoundTypeAudioCall name:@"Koto audio call" soundId:0 soundPath:@"nature_audio.caf"],
-                    [[NotificationSoundSetting alloc] initWithType:NotificationSoundTypeAudioCall name:@"Koto video call" soundId:0 soundPath:@"nature_video.caf"],
-                    [[NotificationSoundSetting alloc] initWithType:NotificationSoundTypeAudioCall name:@"Urban audio call" soundId:0 soundPath:@"hiphop_audio.caf"],
-                    [[NotificationSoundSetting alloc] initWithType:NotificationSoundTypeAudioCall name:@"Urban video call" soundId:0 soundPath:@"hiphop_video.caf"],
+                    [[NotificationSoundSetting alloc] initWithType:NotificationSoundTypeAudioCall name:@"Koto" soundId:0 soundPath:@"nature_audio.caf"],
+                    [[NotificationSoundSetting alloc] initWithType:NotificationSoundTypeAudioCall name:@"Urban" soundId:0 soundPath:@"hiphop_audio.caf"],
                     [[NotificationSoundSetting alloc] initWithType:NotificationSoundTypeAudioCall name:@"Aqua" soundId:0 soundPath:@"skype.caf"],
                     nil];
         case NotificationSoundTypeVideoCall:
             return [[NSArray alloc] initWithObjects:
                     [[NotificationSoundSetting alloc] initWithType:NotificationSoundTypeAudioCall name:@"Skred call" soundId:0 soundPath:@"twinme_ringtone_default.caf"],
-                    [[NotificationSoundSetting alloc] initWithType:NotificationSoundTypeAudioCall name:@"Arcade audio call" soundId:0 soundPath:@"mario_audio_call_ringtone.caf"],
-                    [[NotificationSoundSetting alloc] initWithType:NotificationSoundTypeAudioCall name:@"Arcade video call" soundId:0 soundPath:@"mario_video_call_ringtone.caf"],
+                    [[NotificationSoundSetting alloc] initWithType:NotificationSoundTypeAudioCall name:@"Arcade" soundId:0 soundPath:@"mario_video_call_ringtone.caf"],
                     [[NotificationSoundSetting alloc] initWithType:NotificationSoundTypeAudioCall name:@"BreakingNews" soundId:0 soundPath:@"audio_call_4_ringtone.caf"],
                     [[NotificationSoundSetting alloc] initWithType:NotificationSoundTypeAudioCall name:@"Cosmic" soundId:0 soundPath:@"audio_call_5_ringtone.caf"],
                     [[NotificationSoundSetting alloc] initWithType:NotificationSoundTypeAudioCall name:@"Office" soundId:0 soundPath:@"audio_call_6_ringtone.caf"],
                     [[NotificationSoundSetting alloc] initWithType:NotificationSoundTypeAudioCall name:@"Horizon" soundId:0 soundPath:@"audio_call_7_ringtone.caf"],
-                    [[NotificationSoundSetting alloc] initWithType:NotificationSoundTypeAudioCall name:@"Koto audio call" soundId:0 soundPath:@"nature_audio.caf"],
-                    [[NotificationSoundSetting alloc] initWithType:NotificationSoundTypeAudioCall name:@"Koto video call" soundId:0 soundPath:@"nature_video.caf"],
-                    [[NotificationSoundSetting alloc] initWithType:NotificationSoundTypeAudioCall name:@"Urban audio call" soundId:0 soundPath:@"hiphop_audio.caf"],
-                    [[NotificationSoundSetting alloc] initWithType:NotificationSoundTypeAudioCall name:@"Urban video call" soundId:0 soundPath:@"hiphop_video.caf"],
+                    [[NotificationSoundSetting alloc] initWithType:NotificationSoundTypeAudioCall name:@"Koto" soundId:0 soundPath:@"nature_video.caf"],
+                    [[NotificationSoundSetting alloc] initWithType:NotificationSoundTypeAudioCall name:@"Urban" soundId:0 soundPath:@"hiphop_video.caf"],
                     [[NotificationSoundSetting alloc] initWithType:NotificationSoundTypeAudioCall name:@"Aqua" soundId:0 soundPath:@"skype.caf"],
                     nil];
-        
+            
         case NotificationSoundTypeAudioCalling:
         case NotificationSoundTypeAudioRinging:
         case NotificationSoundTypeAudioCallEnd:
@@ -198,7 +190,7 @@ static TLStringSharedConfigIdentifier *videoCallSoundConfig;
 #pragma mark - Public methods
 
 - (nonnull instancetype)initWithType:(NotificationSoundType)soundType name:(nullable NSString *)name soundId:(SystemSoundID)soundId soundPath:(nullable NSString *)soundPath config:(nonnull TLStringSharedConfigIdentifier *)config {
-
+    
     self = [super init];
     if (self) {
         _soundType = soundType;
@@ -361,7 +353,7 @@ static TLStringSharedConfigIdentifier *videoCallSoundConfig;
 
 - (void)reload {
     DDLogVerbose(@"%@ reload", LOG_TAG);
-
+    
     self.chatNotificationSound = nil;
     self.audioCallNotificationSound = nil;
     self.videoCallNotificationSound = nil;
@@ -530,7 +522,7 @@ static TLStringSharedConfigIdentifier *videoCallSoundConfig;
 }
 
 - (void)setSoundEnableWithState:(BOOL)state {
-
+    
     soundEnableConfig.boolValue = state;
 }
 
@@ -570,21 +562,21 @@ static TLStringSharedConfigIdentifier *videoCallSoundConfig;
 }
 
 - (void)updateNotificationBadgeNumber:(NSInteger)applicationBadgeNumber {
-
+    
     NSUserDefaults *userDefaults = [TLTwinlife getAppSharedUserDefaults];
-
+    
     [userDefaults setInteger:applicationBadgeNumber forKey:NOTIFICATION_BADGE_NUMBER_KEY];
     [userDefaults synchronize];
 }
 
 - (NSInteger)getNotificationBadgeNumber {
-
+    
     NSUserDefaults *userDefaults = [TLTwinlife getAppSharedUserDefaults];
     id object = [userDefaults objectForKey:NOTIFICATION_BADGE_NUMBER_KEY];
     if (!object) {
         return 0;
     }
-
+    
     return [object integerValue];
 }
 
@@ -592,7 +584,7 @@ static TLStringSharedConfigIdentifier *videoCallSoundConfig;
 
 - (nonnull NotificationSoundSetting *)saveNotificationSoundWithConfig:(nonnull TLStringSharedConfigIdentifier *)config notificationSound:(nonnull NotificationSoundSetting *)notificationSound {
     DDLogVerbose(@"%@ saveNotificationSoundWithConfig: %@ notificationSound: %@", LOG_TAG, notificationSound, notificationSound);
-
+    
     NotificationSoundSetting *setting = [[NotificationSoundSetting alloc] initWithSettings:notificationSound config:config];
     [setting save];
     return setting;
@@ -635,7 +627,7 @@ static TLStringSharedConfigIdentifier *videoCallSoundConfig;
     if (!value) {
         return nil;
     }
-
+    
     NSArray<NSString *> *components = [value componentsSeparatedByString:SOUND_CONFIG_FIELD_SEPARATOR];
     if (components.count < 3) {
         return nil;
@@ -643,7 +635,7 @@ static TLStringSharedConfigIdentifier *videoCallSoundConfig;
     NSString *soundName = components[0];
     SystemSoundID soundId = (SystemSoundID) [components[1] integerValue];
     NSString *soundPath = components[2].length > 0 ? components[2] : nil;
-
+    
     return [[NotificationSoundSetting alloc] initWithType:soundType name:soundName soundId:soundId soundPath:soundPath];
 }
 

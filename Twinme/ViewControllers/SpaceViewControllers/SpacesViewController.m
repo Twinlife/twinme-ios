@@ -639,7 +639,7 @@ static const int SPACES_VIEW_SECTION_COUNT = 1;
             SpaceActionConfirmView *spaceActionConfirmView = [[SpaceActionConfirmView alloc] init];
             spaceActionConfirmView.bottomSheetViewDelegate = self;
             spaceActionConfirmView.spaceActionConfirmType = SpaceActionConfirmTypeProfile;
-            [spaceActionConfirmView initWithTitle:TwinmeLocalizedString(@"show_profile_view_controller_create_profile", nil) message:TwinmeLocalizedString(@"create_space_view_controller_contacts_no_profile", nil) spaceName:self.selectedSpace.settings.name spaceStyle:self.selectedSpace.settings.style avatar:uiSpace.avatarSpace icon:[UIImage imageNamed:@"ActionBarAddContact"] confirmTitle:TwinmeLocalizedString(@"application_now", nil) cancelTitle:TwinmeLocalizedString(@"application_later", nil)];
+            [spaceActionConfirmView initWithTitle:TwinmeLocalizedString(@"profile_view_create_profile", nil) message:TwinmeLocalizedString(@"create_space_view_contacts_no_profile", nil) spaceName:self.selectedSpace.settings.name spaceStyle:self.selectedSpace.settings.style avatar:uiSpace.avatarSpace icon:[UIImage imageNamed:@"ActionBarAddContact"] confirmTitle:TwinmeLocalizedString(@"application_now", nil) cancelTitle:TwinmeLocalizedString(@"application_later", nil)];
            
             if (self.pickerMode) {
                 [self.navigationController.view addSubview:spaceActionConfirmView];
@@ -650,7 +650,7 @@ static const int SPACES_VIEW_SECTION_COUNT = 1;
         } else if (![uiSpace.space hasPermission:TLSpacePermissionTypeCreateContact]) {
             AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
             alertMessageView.alertMessageViewDelegate = self;
-            [alertMessageView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:TwinmeLocalizedString(@"spaces_view_controller_permission_not_allowed", nil)];
+            [alertMessageView initWithTitle:TwinmeLocalizedString(@"deleted_account_view_warning", nil) message:TwinmeLocalizedString(@"spaces_view_permission_not_allowed", nil)];
             
             if (self.pickerMode) {
                 [self.navigationController.view addSubview:alertMessageView];
@@ -662,7 +662,7 @@ static const int SPACES_VIEW_SECTION_COUNT = 1;
         } else if ([self.contactToMove.space.uuid isEqual:uiSpace.space.uuid]) {
             AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
             alertMessageView.alertMessageViewDelegate = self;
-            [alertMessageView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:TwinmeLocalizedString(@"spaces_view_controller_move_contact_already_in_space", nil)];
+            [alertMessageView initWithTitle:TwinmeLocalizedString(@"deleted_account_view_warning", nil) message:TwinmeLocalizedString(@"spaces_view_move_contact_already_in_space", nil)];
             
             if (self.pickerMode) {
                 [self.navigationController.view addSubview:alertMessageView];
@@ -676,7 +676,7 @@ static const int SPACES_VIEW_SECTION_COUNT = 1;
             SpaceActionConfirmView *spaceActionConfirmView = [[SpaceActionConfirmView alloc] init];
             spaceActionConfirmView.bottomSheetViewDelegate = self;
             spaceActionConfirmView.spaceActionConfirmType = SpaceActionConfirmTypeMoveContact;
-            [spaceActionConfirmView initWithTitle:uiSpace.nameSpace message:TwinmeLocalizedString(@"contacts_space_view_controller_move_message", nil) spaceName:uiSpace.nameSpace spaceStyle:uiSpace.space.settings.style avatar:uiSpace.avatarSpace icon:[UIImage imageNamed:@"TabBarContactsGrey"] confirmTitle:TwinmeLocalizedString(@"contacts_space_view_controller_move_title", nil) cancelTitle:TwinmeLocalizedString(@"application_cancel", nil)];
+            [spaceActionConfirmView initWithTitle:uiSpace.nameSpace message:TwinmeLocalizedString(@"contact_space_view_move_message", nil) spaceName:uiSpace.nameSpace spaceStyle:uiSpace.space.settings.style avatar:uiSpace.avatarSpace icon:[UIImage imageNamed:@"TabBarContactsGrey"] confirmTitle:TwinmeLocalizedString(@"contact_space_view_move_title", nil) cancelTitle:TwinmeLocalizedString(@"application_cancel", nil)];
             if (self.pickerMode) {
                 [self.navigationController.view addSubview:spaceActionConfirmView];
             } else {
@@ -690,7 +690,7 @@ static const int SPACES_VIEW_SECTION_COUNT = 1;
             SpaceActionConfirmView *spaceActionConfirmView = [[SpaceActionConfirmView alloc] init];
             spaceActionConfirmView.bottomSheetViewDelegate = self;
             spaceActionConfirmView.spaceActionConfirmType = SpaceActionConfirmTypeProfile;
-            [spaceActionConfirmView initWithTitle:TwinmeLocalizedString(@"show_profile_view_controller_create_profile", nil) message:TwinmeLocalizedString(@"spaces_view_controller_move_group_no_profile", nil) spaceName:self.selectedSpace.settings.name spaceStyle:self.selectedSpace.settings.style avatar:uiSpace.avatarSpace icon:[UIImage imageNamed:@"ActionBarAddContact"] confirmTitle:TwinmeLocalizedString(@"application_now", nil) cancelTitle:TwinmeLocalizedString(@"application_later", nil)];
+            [spaceActionConfirmView initWithTitle:TwinmeLocalizedString(@"profile_view_create_profile", nil) message:TwinmeLocalizedString(@"spaces_view_move_group_no_profile", nil) spaceName:self.selectedSpace.settings.name spaceStyle:self.selectedSpace.settings.style avatar:uiSpace.avatarSpace icon:[UIImage imageNamed:@"ActionBarAddContact"] confirmTitle:TwinmeLocalizedString(@"application_now", nil) cancelTitle:TwinmeLocalizedString(@"application_later", nil)];
            
             if (self.pickerMode) {
                 [self.navigationController.view addSubview:spaceActionConfirmView];
@@ -701,7 +701,7 @@ static const int SPACES_VIEW_SECTION_COUNT = 1;
         } else if (![uiSpace.space hasPermission:TLSpacePermissionTypeCreateGroup]) {
             AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
             alertMessageView.alertMessageViewDelegate = self;
-            [alertMessageView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:TwinmeLocalizedString(@"spaces_view_controller_permission_not_allowed", nil)];
+            [alertMessageView initWithTitle:TwinmeLocalizedString(@"deleted_account_view_warning", nil) message:TwinmeLocalizedString(@"spaces_view_permission_not_allowed", nil)];
             
             if (self.pickerMode) {
                 [self.navigationController.view addSubview:alertMessageView];
@@ -713,7 +713,7 @@ static const int SPACES_VIEW_SECTION_COUNT = 1;
         } else if ([self.groupToMove.space.uuid isEqual:uiSpace.space.uuid]) {
             AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
             alertMessageView.alertMessageViewDelegate = self;
-            [alertMessageView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:TwinmeLocalizedString(@"spaces_view_controller_move_group_already_in_space", nil)];
+            [alertMessageView initWithTitle:TwinmeLocalizedString(@"deleted_account_view_warning", nil) message:TwinmeLocalizedString(@"spaces_view_move_group_already_in_space", nil)];
             
             if (self.pickerMode) {
                 [self.navigationController.view addSubview:alertMessageView];
@@ -728,7 +728,7 @@ static const int SPACES_VIEW_SECTION_COUNT = 1;
             SpaceActionConfirmView *spaceActionConfirmView = [[SpaceActionConfirmView alloc] init];
             spaceActionConfirmView.bottomSheetViewDelegate = self;
             spaceActionConfirmView.spaceActionConfirmType = SpaceActionConfirmTypeMoveContact;
-            [spaceActionConfirmView initWithTitle:uiSpace.nameSpace message:TwinmeLocalizedString(@"spaces_view_controller_move_message", nil) spaceName:uiSpace.nameSpace spaceStyle:uiSpace.space.settings.style avatar:uiSpace.avatarSpace icon:[UIImage imageNamed:@"TabBarContactsGrey"] confirmTitle:TwinmeLocalizedString(@"contacts_space_view_controller_move_title", nil) cancelTitle:TwinmeLocalizedString(@"application_cancel", nil)];
+            [spaceActionConfirmView initWithTitle:uiSpace.nameSpace message:TwinmeLocalizedString(@"spaces_view_move_message", nil) spaceName:uiSpace.nameSpace spaceStyle:uiSpace.space.settings.style avatar:uiSpace.avatarSpace icon:[UIImage imageNamed:@"TabBarContactsGrey"] confirmTitle:TwinmeLocalizedString(@"contact_space_view_move_title", nil) cancelTitle:TwinmeLocalizedString(@"application_cancel", nil)];
             if (self.pickerMode) {
                 [self.navigationController.view addSubview:spaceActionConfirmView];
             } else {
@@ -742,7 +742,7 @@ static const int SPACES_VIEW_SECTION_COUNT = 1;
             SpaceActionConfirmView *spaceActionConfirmView = [[SpaceActionConfirmView alloc] init];
             spaceActionConfirmView.bottomSheetViewDelegate = self;
             spaceActionConfirmView.spaceActionConfirmType = SpaceActionConfirmTypeProfile;
-            [spaceActionConfirmView initWithTitle:TwinmeLocalizedString(@"show_profile_view_controller_create_profile", nil) message:TwinmeLocalizedString(@"create_space_view_controller_contacts_no_profile", nil) spaceName:uiSpace.space.settings.name spaceStyle:uiSpace.space.settings.style avatar:uiSpace.avatarSpace icon:[UIImage imageNamed:@"ActionBarAddContact"] confirmTitle:TwinmeLocalizedString(@"application_now", nil) cancelTitle:TwinmeLocalizedString(@"application_later", nil)];
+            [spaceActionConfirmView initWithTitle:TwinmeLocalizedString(@"profile_view_create_profile", nil) message:TwinmeLocalizedString(@"create_space_view_contacts_no_profile", nil) spaceName:uiSpace.space.settings.name spaceStyle:uiSpace.space.settings.style avatar:uiSpace.avatarSpace icon:[UIImage imageNamed:@"ActionBarAddContact"] confirmTitle:TwinmeLocalizedString(@"application_now", nil) cancelTitle:TwinmeLocalizedString(@"application_later", nil)];
            
             if (self.pickerMode) {
                 [self.navigationController.view addSubview:spaceActionConfirmView];
@@ -765,7 +765,7 @@ static const int SPACES_VIEW_SECTION_COUNT = 1;
     self.definesPresentationContext = YES;
     self.view.backgroundColor = Design.WHITE_COLOR;
     
-    [self setNavigationTitle:TwinmeLocalizedString(@"spaces_view_controller_title", nil).capitalizedString];
+    [self setNavigationTitle:TwinmeLocalizedString(@"spaces_view_title", nil).capitalizedString];
     
     if (!self.pickerMode) {
         UIBarButtonItem *addSpaceBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ActionBarAddSpace"] style:UIBarButtonItemStylePlain target:self action:@selector(handleCreateSpaceGesture:)];
@@ -787,15 +787,11 @@ static const int SPACES_VIEW_SECTION_COUNT = 1;
     spaceSearchBar.backgroundColor = Design.NAVIGATION_BAR_BACKGROUND_COLOR;
     spaceSearchBar.delegate = self;
     
-    if (@available(iOS 13.0, *)) {
-        self.searchController.searchBar.backgroundColor = [UIColor clearColor];
-        self.searchController.searchBar.barTintColor = Design.FONT_COLOR_DEFAULT;
-        self.searchController.searchBar.searchTextField.backgroundColor = Design.POPUP_BACKGROUND_COLOR;
-        self.searchController.searchBar.translucent = NO;
-        self.navigationItem.searchController = self.searchController;
-    } else {
-        self.spacesTableView.tableHeaderView = self.searchController.searchBar;
-    }
+    self.searchController.searchBar.backgroundColor = [UIColor clearColor];
+    self.searchController.searchBar.barTintColor = Design.FONT_COLOR_DEFAULT;
+    self.searchController.searchBar.searchTextField.backgroundColor = Design.POPUP_BACKGROUND_COLOR;
+    self.searchController.searchBar.translucent = NO;
+    self.navigationItem.searchController = self.searchController;
     
     self.spacesTableView.delegate = self;
     self.spacesTableView.dataSource = self;
@@ -821,7 +817,7 @@ static const int SPACES_VIEW_SECTION_COUNT = 1;
     
     self.noSpaceMessageLabel.textColor = Design.FONT_COLOR_DEFAULT;
     self.noSpaceMessageLabel.font = Design.FONT_MEDIUM34;
-    self.noSpaceMessageLabel.text = TwinmeLocalizedString(@"spaces_view_controller_message", nil);
+    self.noSpaceMessageLabel.text = TwinmeLocalizedString(@"spaces_view_message", nil);
     
     self.createSpaceViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     self.createSpaceViewLeadingConstraint.constant *= Design.WIDTH_RATIO;
@@ -837,7 +833,7 @@ static const int SPACES_VIEW_SECTION_COUNT = 1;
     self.createSpaceLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
     self.createSpaceLabel.font = Design.FONT_MEDIUM34;
     self.createSpaceLabel.textColor = [UIColor whiteColor];
-    self.createSpaceLabel.text = TwinmeLocalizedString(@"spaces_view_controller_create_new_space", nil);
+    self.createSpaceLabel.text = TwinmeLocalizedString(@"spaces_view_create_new_space", nil);
     
     self.moreInfoViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     self.moreInfoViewBottomtConstraint.constant *= Design.HEIGHT_RATIO;
@@ -862,7 +858,7 @@ static const int SPACES_VIEW_SECTION_COUNT = 1;
     
     self.noResultFoundTitleLabel.font = Design.FONT_MEDIUM34;
     self.noResultFoundTitleLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    self.noResultFoundTitleLabel.text = TwinmeLocalizedString(@"conversations_view_controller_no_result_found", nil);
+    self.noResultFoundTitleLabel.text = TwinmeLocalizedString(@"conversations_view_no_result_found", nil);
     self.noResultFoundTitleLabel.hidden = YES;
 }
 
@@ -917,9 +913,9 @@ static const int SPACES_VIEW_SECTION_COUNT = 1;
     self.sampleSpaceFriendsView.layer.shadowColor = Design.SHADOW_COLOR_DEFAULT.CGColor;
     self.sampleSpaceFriendsView.backgroundColor = Design.POPUP_BACKGROUND_COLOR;
     
-    NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:TwinmeLocalizedString(@"spaces_view_controller_sample_friends", nil) attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_MEDIUM34, NSFontAttributeName, Design.FONT_COLOR_DEFAULT, NSForegroundColorAttributeName, nil]];
+    NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:TwinmeLocalizedString(@"spaces_view_sample_friends", nil) attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_MEDIUM34, NSFontAttributeName, Design.FONT_COLOR_DEFAULT, NSForegroundColorAttributeName, nil]];
     [attributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:@"\n"]];
-    [attributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:TwinmeLocalizedString(@"spaces_view_controller_sample_friends_name", nil) attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_MEDIUM32, NSFontAttributeName, Design.FONT_COLOR_PROFILE_GREY, NSForegroundColorAttributeName, nil]]];
+    [attributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:TwinmeLocalizedString(@"spaces_view_sample_friends_name", nil) attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_MEDIUM32, NSFontAttributeName, Design.FONT_COLOR_PROFILE_GREY, NSForegroundColorAttributeName, nil]]];
     self.sampleSpaceFriendsLabel.attributedText = attributedString;
     
     self.sampleSpaceFamilyView.layer.cornerRadius = Design.POPUP_RADIUS;
@@ -929,9 +925,9 @@ static const int SPACES_VIEW_SECTION_COUNT = 1;
     self.sampleSpaceFamilyView.layer.shadowColor = Design.SHADOW_COLOR_DEFAULT.CGColor;
     self.sampleSpaceFamilyView.backgroundColor = Design.POPUP_BACKGROUND_COLOR;
     
-    attributedString = [[NSMutableAttributedString alloc] initWithString:TwinmeLocalizedString(@"spaces_view_controller_sample_family", nil) attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_MEDIUM34, NSFontAttributeName, Design.FONT_COLOR_DEFAULT, NSForegroundColorAttributeName, nil]];
+    attributedString = [[NSMutableAttributedString alloc] initWithString:TwinmeLocalizedString(@"spaces_view_sample_family", nil) attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_MEDIUM34, NSFontAttributeName, Design.FONT_COLOR_DEFAULT, NSForegroundColorAttributeName, nil]];
     [attributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:@"\n"]];
-    [attributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:TwinmeLocalizedString(@"spaces_view_controller_sample_family_name", nil) attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_MEDIUM32, NSFontAttributeName, Design.FONT_COLOR_PROFILE_GREY, NSForegroundColorAttributeName, nil]]];
+    [attributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:TwinmeLocalizedString(@"spaces_view_sample_family_name", nil) attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_MEDIUM32, NSFontAttributeName, Design.FONT_COLOR_PROFILE_GREY, NSForegroundColorAttributeName, nil]]];
     self.sampleSpaceFamilyLabel.attributedText = attributedString;
     
     self.sampleSpaceBusinessView.layer.cornerRadius = Design.POPUP_RADIUS;
@@ -941,9 +937,9 @@ static const int SPACES_VIEW_SECTION_COUNT = 1;
     self.sampleSpaceBusinessView.layer.shadowColor = Design.SHADOW_COLOR_DEFAULT.CGColor;
     self.sampleSpaceBusinessView.backgroundColor = Design.POPUP_BACKGROUND_COLOR;
     
-    attributedString = [[NSMutableAttributedString alloc] initWithString:TwinmeLocalizedString(@"spaces_view_controller_sample_business", nil) attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_MEDIUM34, NSFontAttributeName, Design.FONT_COLOR_DEFAULT, NSForegroundColorAttributeName, nil]];
+    attributedString = [[NSMutableAttributedString alloc] initWithString:TwinmeLocalizedString(@"spaces_view_sample_business", nil) attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_MEDIUM34, NSFontAttributeName, Design.FONT_COLOR_DEFAULT, NSForegroundColorAttributeName, nil]];
     [attributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:@"\n"]];
-    [attributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:TwinmeLocalizedString(@"spaces_view_controller_sample_business_name", nil) attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_MEDIUM32, NSFontAttributeName, Design.FONT_COLOR_PROFILE_GREY, NSForegroundColorAttributeName, nil]]];
+    [attributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:TwinmeLocalizedString(@"spaces_view_sample_business_name", nil) attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_MEDIUM32, NSFontAttributeName, Design.FONT_COLOR_PROFILE_GREY, NSForegroundColorAttributeName, nil]]];
     self.sampleSpaceBusinessLabel.attributedText = attributedString;
 }
 
@@ -1019,7 +1015,7 @@ static const int SPACES_VIEW_SECTION_COUNT = 1;
     } else if (![self.currentSpace hasPermission:TLSpacePermissionTypeCreateContact]) {
         AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
         alertMessageView.alertMessageViewDelegate = self;
-        [alertMessageView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:TwinmeLocalizedString(@"spaces_view_controller_permission_not_allowed", nil)];
+        [alertMessageView initWithTitle:TwinmeLocalizedString(@"deleted_account_view_warning", nil) message:TwinmeLocalizedString(@"spaces_view_permission_not_allowed", nil)];
         
         if (self.pickerMode) {
             [self.navigationController.view addSubview:alertMessageView];
@@ -1071,9 +1067,7 @@ static const int SPACES_VIEW_SECTION_COUNT = 1;
         [self.navigationController.navigationBar setPrefersLargeTitles:NO];
         self.navigationItem.largeTitleDisplayMode = UINavigationItemLargeTitleDisplayModeNever;
         
-        if (@available(iOS 13.0, *)) {
-            self.navigationItem.searchController = nil;
-        }
+        self.navigationItem.searchController = nil;
     } else {
         self.noSpaceView.hidden = YES;
         self.spacesTableView.hidden = NO;
@@ -1083,14 +1077,12 @@ static const int SPACES_VIEW_SECTION_COUNT = 1;
             self.navigationItem.largeTitleDisplayMode = UINavigationItemLargeTitleDisplayModeAutomatic;
         }
         
-        if (@available(iOS 13.0, *)) {
-            self.navigationItem.searchController = self.searchController;
-        }
+        self.navigationItem.searchController = self.searchController;
         
         if (self.uiSpaces.count == 0 && self.searchController.active) {
             self.noResultFoundImageView.hidden = NO;
             self.noResultFoundTitleLabel.hidden = NO;
-            self.noResultFoundTitleLabel.text = [NSString stringWithFormat:TwinmeLocalizedString(@"conversations_view_controller_no_result_found", nil), self.searchController.searchBar.text];
+            self.noResultFoundTitleLabel.text = [NSString stringWithFormat:TwinmeLocalizedString(@"conversations_view_no_result_found", nil), self.searchController.searchBar.text];
         } else {
             self.noResultFoundImageView.hidden = YES;
             self.noResultFoundTitleLabel.hidden = YES;
@@ -1124,19 +1116,14 @@ static const int SPACES_VIEW_SECTION_COUNT = 1;
     self.noResultFoundTitleLabel.textColor = Design.FONT_COLOR_DEFAULT;
     
     self.searchController.searchBar.barTintColor = Design.NAVIGATION_BAR_BACKGROUND_COLOR;
+    self.searchController.searchBar.backgroundColor = [UIColor clearColor];
+    self.searchController.searchBar.searchTextField.backgroundColor = Design.POPUP_BACKGROUND_COLOR;
+    self.searchController.searchBar.searchTextField.tintColor = Design.FONT_COLOR_DEFAULT;
+    self.searchController.searchBar.searchTextField.textColor = Design.FONT_COLOR_DEFAULT;
     
-    if (@available(iOS 13.0, *)) {
-        self.searchController.searchBar.backgroundColor = [UIColor clearColor];
-        self.searchController.searchBar.searchTextField.backgroundColor = Design.POPUP_BACKGROUND_COLOR;
-        self.searchController.searchBar.searchTextField.tintColor = Design.FONT_COLOR_DEFAULT;
-        self.searchController.searchBar.searchTextField.textColor = Design.FONT_COLOR_DEFAULT;
-        
-        UIImageView *glassIconImageView = (UIImageView *)self.searchController.searchBar.searchTextField.leftView;
-        glassIconImageView.image = [glassIconImageView.image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-        glassIconImageView.tintColor = Design.PLACEHOLDER_COLOR;
-    } else {
-        self.searchController.searchBar.backgroundColor = Design.NAVIGATION_BAR_BACKGROUND_COLOR;
-    }
+    UIImageView *glassIconImageView = (UIImageView *)self.searchController.searchBar.searchTextField.leftView;
+    glassIconImageView.image = [glassIconImageView.image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    glassIconImageView.tintColor = Design.PLACEHOLDER_COLOR;
     
     if ([self.twinmeApplication darkModeEnable:[self currentSpaceSettings]]) {
         self.searchController.searchBar.keyboardAppearance = UIKeyboardAppearanceDark;

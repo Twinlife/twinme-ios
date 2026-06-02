@@ -33,6 +33,8 @@
 #import "PeerVideoItem.h"
 #import "FileItem.h"
 #import "PeerFileItem.h"
+#import "PollItem.h"
+#import "PeerPollItem.h"
 #import "InvitationItem.h"
 #import "PeerInvitationItem.h"
 #import "CallItem.h"
@@ -65,6 +67,8 @@
 #import "PeerVideoItemCell.h"
 #import "FileItemCell.h"
 #import "PeerFileItemCell.h"
+#import "PollItemCell.h"
+#import "PeerPollItemCell.h"
 #import "InvitationItemCell.h"
 #import "PeerInvitationItemCell.h"
 #import "NameItemCell.h"
@@ -76,6 +80,8 @@
 #import "PeerCallItemCell.h"
 #import "LocationItemCell.h"
 #import "PeerLocationItemCell.h"
+#import "LocationCoordinateItemCell.h"
+#import "PeerLocationCoordinateItemCell.h"
 #import "ClearItemCell.h"
 #import "PeerClearItemCell.h"
 #import "InvitationContactItemCell.h"
@@ -98,19 +104,21 @@ static const int ddLogLevel = DDLogLevelVerbose;
 static const int ddLogLevel = DDLogLevelWarning;
 #endif
 
+static NSString *TIME_ITEM_CELL_IDENTIFIER = @"TimeItemCellIdentifier";
 static NSString *MESSAGE_ITEM_CELL_IDENTIFIER = @"MessageItemCellIdentifier";
 static NSString *PEER_MESSAGE_ITEM_CELL_IDENTIFIER = @"PeerMessageItemCellIdentifier";
 static NSString *LINK_ITEM_CELL_IDENTIFIER = @"LinkItemCellIdentifier";
 static NSString *PEER_LINK_ITEM_CELL_IDENTIFIER = @"PeerLinkItemCellIdentifier";
 static NSString *IMAGE_ITEM_CELL_IDENTIFIER = @"ImageItemCellIdentifier";
 static NSString *PEER_IMAGE_ITEM_CELL_IDENTIFIER = @"PeerImageItemCellIdentifier";
-static NSString *TIME_CELL_IDENTIFIER = @"TimeCellIdentifier";
 static NSString *AUDIO_ITEM_CELL_IDENTIFIER = @"AudioItemCellIdentifier";
 static NSString *PEER_AUDIO_ITEM_CELL_IDENTIFIER = @"PeerAudioItemCellIdentifier";
 static NSString *VIDEO_ITEM_CELL_IDENTIFIER = @"VideoItemCellIdentifier";
 static NSString *PEER_VIDEO_ITEM_CELL_IDENTIFIER = @"PeerVideoItemCellIdentifier";
 static NSString *FILE_ITEM_CELL_IDENTIFIER = @"FileItemCellIdentifier";
 static NSString *PEER_FILE_ITEM_CELL_IDENTIFIER = @"PeerFileItemCellIdentifier";
+static NSString *POLL_ITEM_CELL_IDENTIFIER = @"PollItemCellIdentifier";
+static NSString *PEER_POLL_ITEM_CELL_IDENTIFIER = @"PeerPollItemCellIdentifier";
 static NSString *INVITATION_ITEM_CELL_IDENTIFIER = @"InvitationItemCellIdentifier";
 static NSString *PEER_INVITATION_ITEM_CELL_IDENTIFIER = @"PeerInvitationItemCellIdentifier";
 static NSString *NAME_ITEM_CELL_IDENTIFIER = @"NameItemCellIdentifier";
@@ -124,11 +132,15 @@ static NSString *INVITATION_CONTACT_ITEM_CELL_IDENTIFIER = @"InvitationContactIt
 static NSString *PEER_INVITATION_CONTACT_ITEM_CELL_IDENTIFIER = @"PeerInvitationContactItemCellIdentifier";
 static NSString *LOCATION_ITEM_CELL_IDENTIFIER = @"LocationItemCellIdentifier";
 static NSString *PEER_LOCATION_ITEM_CELL_IDENTIFIER = @"PeerLocationItemCellIdentifier";
+static NSString *LOCATION_COORDINATE_ITEM_CELL_IDENTIFIER = @"LocationCoordinateItemCellIdentifier";
+static NSString *PEER_LOCATION_COORDINATE_ITEM_CELL_IDENTIFIER = @"PeerLocationCoordinateItemCellIdentifier";
 static NSString *CLEAR_ITEM_CELL_IDENTIFIER = @"ClearItemCellIdentifier";
 static NSString *PEER_CLEAR_ITEM_CELL_IDENTIFIER = @"PeerClearItemCellIdentifier";
 static NSString *ANNOTATION_INFO_CELL_IDENTIFIER = @"AnnotationInfoCellIdentifier";
 static NSString *HEADER_SETTINGS_CELL_IDENTIFIER = @"HeaderSettingsCellIdentifier";
 static NSString *SETTINGS_CELL_IDENTIFIER = @"SettingsCellIdentifier";
+
+static CGFloat DESIGN_LEADING_DEFAULT_VALUE = 26.f;
 
 //
 // Interface: InfoItemViewController ()
@@ -400,10 +412,10 @@ static NSString *SETTINGS_CELL_IDENTIFIER = @"SettingsCellIdentifier";
     switch (item.type) {
         case ItemTypeTime: {
             TimeItem *timeItem = [[TimeItem alloc]initWithTimestamp:item.sentTimestamp > 0 ? item.sentTimestamp:item.createdTimestamp];
-            TimeItemCell *timeCell = [[TimeItemCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:TIME_CELL_IDENTIFIER topMargin:0 bottomMargin:0];
-            [timeCell bindWithItem:timeItem conversationViewController:self.conversationViewController];
-            timeCell.contentView.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
-            return timeCell;
+            TimeItemCell *timeItemCell = (TimeItemCell *)[self.infoTableView dequeueReusableCellWithIdentifier:TIME_ITEM_CELL_IDENTIFIER forIndexPath:indexPath];
+            [timeItemCell bindWithItem:timeItem conversationViewController:self.conversationViewController];
+            timeItemCell.contentView.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
+            return timeItemCell;
         }
             
         case ItemTypeMessage: {
@@ -502,20 +514,53 @@ static NSString *SETTINGS_CELL_IDENTIFIER = @"SettingsCellIdentifier";
             return peerFileItemCell;
         }
             
+        case ItemTypePoll: {
+            PollItem *pollItem = (PollItem *)item;
+            PollItemCell *pollItemCell = (PollItemCell *)[self.infoTableView dequeueReusableCellWithIdentifier:POLL_ITEM_CELL_IDENTIFIER forIndexPath:indexPath];
+            [pollItemCell bindWithItem:pollItem conversationViewController:self.conversationViewController];
+            pollItemCell.contentView.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
+            return pollItemCell;
+        }
+            
+        case ItemTypePeerPoll: {
+            PeerPollItem *peerPollItem = (PeerPollItem *)item;
+            PeerPollItemCell *peerPollItemCell = (PeerPollItemCell *)[self.infoTableView dequeueReusableCellWithIdentifier:PEER_POLL_ITEM_CELL_IDENTIFIER forIndexPath:indexPath];
+            [peerPollItemCell bindWithItem:peerPollItem conversationViewController:self.conversationViewController];
+            peerPollItemCell.contentView.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
+            return peerPollItemCell;
+        }
+            
         case ItemTypeLocation: {
             LocationItem *locationItem = (LocationItem *)self.item;
-            LocationItemCell *locationItemCell = (LocationItemCell *)[self.infoTableView dequeueReusableCellWithIdentifier:LOCATION_ITEM_CELL_IDENTIFIER forIndexPath:indexPath];
-            [locationItemCell bindWithItem:locationItem conversationViewController:self.conversationViewController];
-            locationItemCell.contentView.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
-            return locationItemCell;
+            
+            if ([self.twinmeApplication visualizationMap]) {
+                LocationItemCell *locationItemCell = (LocationItemCell *)[self.infoTableView dequeueReusableCellWithIdentifier:LOCATION_ITEM_CELL_IDENTIFIER forIndexPath:indexPath];
+                [locationItemCell bindWithItem:locationItem conversationViewController:self.conversationViewController];
+                locationItemCell.contentView.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
+                return locationItemCell;
+            } else {
+                LocationCoordinateItemCell *locationItemCell = (LocationCoordinateItemCell *)[self.infoTableView dequeueReusableCellWithIdentifier:LOCATION_COORDINATE_ITEM_CELL_IDENTIFIER forIndexPath:indexPath];
+                [locationItemCell bindWithItem:locationItem conversationViewController:self.conversationViewController];
+                locationItemCell.contentView.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
+                return locationItemCell;
+            }
         }
             
         case ItemTypePeerLocation: {
             PeerLocationItem *peerLocationItem = (PeerLocationItem *)self.item;
-            PeerLocationItemCell *peerLocationItemCell = (PeerLocationItemCell *)[self.infoTableView dequeueReusableCellWithIdentifier:PEER_LOCATION_ITEM_CELL_IDENTIFIER forIndexPath:indexPath];
-            [peerLocationItemCell bindWithItem:peerLocationItem conversationViewController:self.conversationViewController];
-            peerLocationItemCell.contentView.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
-            return peerLocationItemCell;
+            
+            if ([self.twinmeApplication visualizationMap]) {
+                PeerLocationItemCell *peerLocationItemCell = (PeerLocationItemCell *)[self.infoTableView dequeueReusableCellWithIdentifier:PEER_LOCATION_ITEM_CELL_IDENTIFIER forIndexPath:indexPath];
+                [peerLocationItemCell bindWithItem:peerLocationItem conversationViewController:self.conversationViewController];
+                peerLocationItemCell.contentView.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
+                return peerLocationItemCell;
+            } else {
+                PeerLocationCoordinateItemCell *peerLocationItemCell = (PeerLocationCoordinateItemCell *)[self.infoTableView dequeueReusableCellWithIdentifier:PEER_LOCATION_COORDINATE_ITEM_CELL_IDENTIFIER forIndexPath:indexPath];
+                [peerLocationItemCell bindWithItem:peerLocationItem conversationViewController:self.conversationViewController];
+                peerLocationItemCell.contentView.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
+                return peerLocationItemCell;
+            }
+            
         }
             
         case ItemTypeInvitation: {
@@ -598,16 +643,15 @@ static NSString *SETTINGS_CELL_IDENTIFIER = @"SettingsCellIdentifier";
             
         case ItemTypeInfoCopy: {
             
-            if (self.canUpdateCopy && (self.item.type == ItemTypeMessage || self.item.type == ItemTypeImage || self.item.type == ItemTypeVideo || self.item.type == ItemTypeAudio || self.item.type == ItemTypeFile || self.item.type == ItemTypeLink)) {
+            if (self.canUpdateCopy && (self.item.type == ItemTypeMessage || self.item.type == ItemTypeImage || self.item.type == ItemTypeVideo || self.item.type == ItemTypeAudio || self.item.type == ItemTypeFile || self.item.type == ItemTypeLink || self.item.type == ItemTypeLocation)) {
                 SettingsItemCell *cell = [tableView dequeueReusableCellWithIdentifier:SETTINGS_CELL_IDENTIFIER];
                 if (!cell) {
                     cell = [[SettingsItemCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:SETTINGS_CELL_IDENTIFIER];
                 }
                 
                 cell.settingsActionDelegate = self;
-            
-                [cell bindWithTitle:TwinmeLocalizedString(@"conversation_view_controller_send_menu_allow_copy", nil) subTitle:nil  icon:self.item.copyAllowed ? [UIImage imageNamed:@"SendOptionCopyAllowedIcon"]:[UIImage imageNamed:@"SendOptionCopyIcon"] stateSwitch:self.item.copyAllowed tagSwitch:0 hiddenSwitch:NO disableSwitch:NO backgroundColor:Design.WHITE_COLOR hiddenSeparator:NO];
-                
+                [cell bindWithTitle:TwinmeLocalizedString(@"conversation_view_send_menu_allow_copy", nil) subTitle:nil  icon:self.item.copyAllowed ? [UIImage imageNamed:@"SendOptionCopyAllowedIcon"]:[UIImage imageNamed:@"SendOptionCopyIcon"] stateSwitch:self.item.copyAllowed tagSwitch:0 hiddenSwitch:NO disableSwitch:NO backgroundColor:Design.WHITE_COLOR hiddenSeparator:NO];
+                [cell updateMargins:DESIGN_LEADING_DEFAULT_VALUE * Design.WIDTH_RATIO];
                 return cell;
             } else {
                 CopyItemCell *copyItemCell = (CopyItemCell *)[self.infoTableView dequeueReusableCellWithIdentifier:COPY_ITEM_CELL_IDENTIFIER forIndexPath:indexPath];
@@ -671,7 +715,7 @@ static NSString *SETTINGS_CELL_IDENTIFIER = @"SettingsCellIdentifier";
     
     self.view.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
         
-    [self setNavigationTitle:TwinmeLocalizedString(@"conversation_view_controller_menu_item_view_info_title", nil)];
+    [self setNavigationTitle:TwinmeLocalizedString(@"conversation_view_menu_item_view_info_title", nil)];
     
     self.infoTableView.delegate = self;
     self.infoTableView.dataSource = self;
@@ -679,6 +723,7 @@ static NSString *SETTINGS_CELL_IDENTIFIER = @"SettingsCellIdentifier";
     self.infoTableView.rowHeight = UITableViewAutomaticDimension;
     self.infoTableView.estimatedRowHeight = Design.SETTING_CELL_HEIGHT;
     self.infoTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+    [self.infoTableView registerNib:[UINib nibWithNibName:@"TimeItemCell" bundle:nil] forCellReuseIdentifier:TIME_ITEM_CELL_IDENTIFIER];
     [self.infoTableView registerNib:[UINib nibWithNibName:@"MessageItemCell" bundle:nil] forCellReuseIdentifier:MESSAGE_ITEM_CELL_IDENTIFIER];
     [self.infoTableView registerNib:[UINib nibWithNibName:@"PeerMessageItemCell" bundle:nil] forCellReuseIdentifier:PEER_MESSAGE_ITEM_CELL_IDENTIFIER];
     [self.infoTableView registerNib:[UINib nibWithNibName:@"LinkItemCell" bundle:nil] forCellReuseIdentifier:LINK_ITEM_CELL_IDENTIFIER];
@@ -687,13 +732,14 @@ static NSString *SETTINGS_CELL_IDENTIFIER = @"SettingsCellIdentifier";
     [self.infoTableView registerNib:[UINib nibWithNibName:@"PeerImageItemCell" bundle:nil] forCellReuseIdentifier:PEER_IMAGE_ITEM_CELL_IDENTIFIER];
     [self.infoTableView registerNib:[UINib nibWithNibName:@"AudioItemCell" bundle:nil] forCellReuseIdentifier:AUDIO_ITEM_CELL_IDENTIFIER];
     [self.infoTableView registerNib:[UINib nibWithNibName:@"PeerAudioItemCell" bundle:nil] forCellReuseIdentifier:PEER_AUDIO_ITEM_CELL_IDENTIFIER];
-    [self.infoTableView registerClass:[TimeItemCell class] forCellReuseIdentifier:TIME_CELL_IDENTIFIER];
     [self.infoTableView registerNib:[UINib nibWithNibName:@"VideoItemCell" bundle:nil] forCellReuseIdentifier:VIDEO_ITEM_CELL_IDENTIFIER];
     [self.infoTableView registerNib:[UINib nibWithNibName:@"PeerVideoItemCell" bundle:nil] forCellReuseIdentifier:PEER_VIDEO_ITEM_CELL_IDENTIFIER];
     [self.infoTableView registerNib:[UINib nibWithNibName:@"FileItemCell" bundle:nil] forCellReuseIdentifier:FILE_ITEM_CELL_IDENTIFIER];
     [self.infoTableView registerNib:[UINib nibWithNibName:@"PeerFileItemCell" bundle:nil] forCellReuseIdentifier:PEER_FILE_ITEM_CELL_IDENTIFIER];
     [self.infoTableView registerNib:[UINib nibWithNibName:@"InvitationItemCell" bundle:nil] forCellReuseIdentifier:INVITATION_ITEM_CELL_IDENTIFIER];
     [self.infoTableView registerNib:[UINib nibWithNibName:@"PeerInvitationItemCell" bundle:nil] forCellReuseIdentifier:PEER_INVITATION_ITEM_CELL_IDENTIFIER];
+    [self.infoTableView registerNib:[UINib nibWithNibName:@"PollItemCell" bundle:nil] forCellReuseIdentifier:POLL_ITEM_CELL_IDENTIFIER];
+    [self.infoTableView registerNib:[UINib nibWithNibName:@"PeerPollItemCell" bundle:nil] forCellReuseIdentifier:PEER_POLL_ITEM_CELL_IDENTIFIER];
     [self.infoTableView registerNib:[UINib nibWithNibName:@"CallItemCell" bundle:nil] forCellReuseIdentifier:CALL_ITEM_CELL_IDENTIFIER];
     [self.infoTableView registerNib:[UINib nibWithNibName:@"PeerCallItemCell" bundle:nil] forCellReuseIdentifier:PEER_CALL_ITEM_CELL_IDENTIFIER];
     [self.infoTableView registerNib:[UINib nibWithNibName:@"NameItemCell" bundle:nil] forCellReuseIdentifier:NAME_ITEM_CELL_IDENTIFIER];
@@ -705,6 +751,8 @@ static NSString *SETTINGS_CELL_IDENTIFIER = @"SettingsCellIdentifier";
     [self.infoTableView registerNib:[UINib nibWithNibName:@"PeerInvitationContactItemCell" bundle:nil] forCellReuseIdentifier:PEER_INVITATION_CONTACT_ITEM_CELL_IDENTIFIER];
     [self.infoTableView registerNib:[UINib nibWithNibName:@"LocationItemCell" bundle:nil] forCellReuseIdentifier:LOCATION_ITEM_CELL_IDENTIFIER];
     [self.infoTableView registerNib:[UINib nibWithNibName:@"PeerLocationItemCell" bundle:nil] forCellReuseIdentifier:PEER_LOCATION_ITEM_CELL_IDENTIFIER];
+    [self.infoTableView registerNib:[UINib nibWithNibName:@"LocationCoordinateItemCell" bundle:nil] forCellReuseIdentifier:LOCATION_COORDINATE_ITEM_CELL_IDENTIFIER];
+    [self.infoTableView registerNib:[UINib nibWithNibName:@"PeerLocationCoordinateItemCell" bundle:nil] forCellReuseIdentifier:PEER_LOCATION_COORDINATE_ITEM_CELL_IDENTIFIER];
     [self.infoTableView registerNib:[UINib nibWithNibName:@"ClearItemCell" bundle:nil] forCellReuseIdentifier:CLEAR_ITEM_CELL_IDENTIFIER];
     [self.infoTableView registerNib:[UINib nibWithNibName:@"PeerClearItemCell" bundle:nil] forCellReuseIdentifier:PEER_CLEAR_ITEM_CELL_IDENTIFIER];
     [self.infoTableView registerNib:[UINib nibWithNibName:@"AnnotationInfoCell" bundle:nil] forCellReuseIdentifier:ANNOTATION_INFO_CELL_IDENTIFIER];
@@ -742,13 +790,14 @@ static NSString *SETTINGS_CELL_IDENTIFIER = @"SettingsCellIdentifier";
         [self.items addObject:timeItem];
         [self.items addObject:self.item];
         
-        [self.items addObject:[[InfoSectionItem alloc] initWithTitle:TwinmeLocalizedString(@"settings_view_controller_title", nil)]];
-
         switch (self.item.type) {
             case ItemTypeMessage:
             case ItemTypePeerMessage:
             case ItemTypeLink:
             case ItemTypePeerLink:
+            case ItemTypePoll:
+            case ItemTypePeerPoll:
+                [self.items addObject:[[InfoSectionItem alloc] initWithTitle:TwinmeLocalizedString(@"navigation_view_settings", nil)]];
                 [self.items addObject:[[InfoCopyItem alloc] init]];
                 break;
                 
@@ -760,16 +809,35 @@ static NSString *SETTINGS_CELL_IDENTIFIER = @"SettingsCellIdentifier";
             case ItemTypePeerAudio:
             case ItemTypeFile:
             case ItemTypePeerFile:
+                [self.items addObject:[[InfoSectionItem alloc] initWithTitle:TwinmeLocalizedString(@"navigation_view_settings", nil)]];
                 [self.items addObject:[[InfoCopyItem alloc] init]];
                 [self.items addObject:[[InfoFileItem alloc] init]];
                 break;
                 
-            case ItemTypeCall:
-            case ItemTypePeerCall:
+                
             case ItemTypeLocation:
             case ItemTypePeerLocation:
+                [self.items addObject:[[InfoSectionItem alloc] initWithTitle:TwinmeLocalizedString(@"info_item_view_location", nil)]];
+                [self.items addObject:[[InfoCopyItem alloc] init]];
                 [self.items addObject:[[InfoFileItem alloc] init]];
                 break;
+                
+            case ItemTypePeerCall: {
+                BOOL addFileItem = NO;
+                if (self.item.type == ItemTypeCall) {
+                    CallItem *callItem = (CallItem *)self.item;
+                    addFileItem = [callItem showTerminateReason];
+                } else {
+                    PeerCallItem *peerCallItem = (PeerCallItem *)self.item;
+                    addFileItem = [peerCallItem showTerminateReason];
+                }
+                
+                if (addFileItem) {
+                    [self.items addObject:[[InfoFileItem alloc] init]];
+                }
+                
+                break;
+            }
                 
             default:
                 break;
@@ -783,59 +851,68 @@ static NSString *SETTINGS_CELL_IDENTIFIER = @"SettingsCellIdentifier";
             [self.items addObject:[[InfoEphemeralItem alloc] init]];
         }
         
+        NSUInteger annotationStart = self.items.count > 0 ? self.items.count : 0;
+        
         if (self.item.type != ItemTypeCall && self.item.type != ItemTypePeerCall) {
             
-            [self.items addObject:[[InfoSectionItem alloc] initWithTitle:TwinmeLocalizedString(@"info_item_view_controller_sent", nil)]];
-            
             if (!self.group) {
-                [self.items addObject:[[InfoDateItem alloc] initWithType:InfoItemTypeSent name:self.item.isPeerItem ? self.contact.name : self.contact.identityName image:self.item.isPeerItem ? self.contactAvatar : self.identityAvatar]];
-                
-                if ([self.item isEditedtem]) {
-                    [self.items addObject:[[InfoSectionItem alloc] initWithTitle:[NSString stringWithFormat:@"%@ :", TwinmeLocalizedString(@"info_item_view_controller_updated", nil)]]];
-                    [self.items addObject:[[InfoDateItem alloc] initWithType:InfoItemTypeUpdated name:self.item.isPeerItem ? self.contact.name : self.contact.identityName image:self.item.isPeerItem ? self.contactAvatar : self.identityAvatar]];
+                if (self.item.readTimestamp > 0) {
+                    [self.items addObject:[[InfoSectionItem alloc] initWithTitle:TwinmeLocalizedString(@"info_item_view_seen", nil)]];
+                    [self.items addObject:[[InfoDateItem alloc] initWithType:InfoItemTypeSeen name:self.item.isPeerItem ? self.contact.identityName : self.contact.name image:self.item.isPeerItem ? self.identityAvatar : self.contactAvatar]];
+                } else if (self.item.receivedTimestamp > 0) {
+                    [self.items addObject:[[InfoSectionItem alloc] initWithTitle:TwinmeLocalizedString(@"info_item_view_received", nil)]];
+                    [self.items addObject:[[InfoDateItem alloc] initWithType:InfoItemTypeReceived name:self.item.isPeerItem ? self.contact.identityName : self.contact.name image:self.item.isPeerItem ? self.identityAvatar : self.contactAvatar]];
                 }
                 
-                if (self.item.readTimestamp > 0) {
-                    [self.items addObject:[[InfoSectionItem alloc] initWithTitle:TwinmeLocalizedString(@"info_item_view_controller_seen", nil)]];
-                    [self.items addObject:[[InfoDateItem alloc] initWithType:InfoItemTypeSeen name:self.item.isPeerItem ? self.contact.identityName : self.contact.name image:self.item.isPeerItem ? self.identityAvatar : self.contactAvatar]];
-                } else {
-                    [self.items addObject:[[InfoSectionItem alloc] initWithTitle:TwinmeLocalizedString(@"info_item_view_controller_received", nil)]];
-                    [self.items addObject:[[InfoDateItem alloc] initWithType:InfoItemTypeReceived name:self.item.isPeerItem ? self.contact.identityName : self.contact.name image:self.item.isPeerItem ? self.identityAvatar : self.contactAvatar]];
+                if ([self.item isEditedtem]) {
+                    [self.items addObject:[[InfoSectionItem alloc] initWithTitle:[NSString stringWithFormat:@"%@ :", TwinmeLocalizedString(@"info_item_view_updated", nil)]]];
+                    [self.items addObject:[[InfoDateItem alloc] initWithType:InfoItemTypeUpdated name:self.item.isPeerItem ? self.contact.name : self.contact.identityName image:self.item.isPeerItem ? self.contactAvatar : self.identityAvatar]];
                 }
             } else {
                 if ([self.item isPeerItem]) {
                     TLGroupMember *member = [self.groupMembers objectForKey:self.item.peerTwincodeOutboundId];
                     NSString *memberName = member ? member.name : @"";
-                    [self.items addObject:[[InfoDateItem alloc] initWithType:InfoItemTypeSent name:memberName image:self.contactAvatar]];
 
-                    if ([self.item isEditedtem]) {
-                        [self.items addObject:[[InfoSectionItem alloc] initWithTitle:[NSString stringWithFormat:@"%@ :", TwinmeLocalizedString(@"info_item_view_controller_updated", nil)]]];
-                        [self.items addObject:[[InfoDateItem alloc] initWithType:InfoItemTypeUpdated name:memberName image:self.contactAvatar]];
-                    }
-                    
                     if (self.item.readTimestamp > 0) {
-                        [self.items addObject:[[InfoSectionItem alloc] initWithTitle:TwinmeLocalizedString(@"info_item_view_controller_seen", nil)]];
+                        [self.items addObject:[[InfoSectionItem alloc] initWithTitle:TwinmeLocalizedString(@"info_item_view_seen", nil)]];
                         [self.items addObject:[[InfoDateItem alloc] initWithType:InfoItemTypeSeen name:self.group.identityName image:self.identityAvatar]];
                     } else {
-                        [self.items addObject:[[InfoSectionItem alloc] initWithTitle:TwinmeLocalizedString(@"info_item_view_controller_received", nil)]];
+                        [self.items addObject:[[InfoSectionItem alloc] initWithTitle:TwinmeLocalizedString(@"info_item_view_received", nil)]];
                         [self.items addObject:[[InfoDateItem alloc] initWithType:InfoItemTypeReceived name:self.group.identityName image:self.identityAvatar]];
                     }
-                } else {
-                    [self.items addObject:[[InfoDateItem alloc] initWithType:InfoItemTypeSent name:self.group.identityName image:self.identityAvatar]];
-
+                    
                     if ([self.item isEditedtem]) {
-                        [self.items addObject:[[InfoSectionItem alloc] initWithTitle:TwinmeLocalizedString(@"info_item_view_controller_updated", nil)]];
+                        [self.items addObject:[[InfoSectionItem alloc] initWithTitle:[NSString stringWithFormat:@"%@ :", TwinmeLocalizedString(@"info_item_view_updated", nil)]]];
+                        [self.items addObject:[[InfoDateItem alloc] initWithType:InfoItemTypeUpdated name:memberName image:self.contactAvatar]];
+                    }
+                } else {
+                    if ([self.item isEditedtem]) {
+                        [self.items addObject:[[InfoSectionItem alloc] initWithTitle:TwinmeLocalizedString(@"info_item_view_updated", nil)]];
                         [self.items addObject:[[InfoDateItem alloc] initWithType:InfoItemTypeUpdated name:self.group.identityName image:self.identityAvatar]];
                     }
                 }
             }
+            
+            [self.items addObject:[[InfoSectionItem alloc] initWithTitle:TwinmeLocalizedString(@"info_item_view_sent", nil)]];
+            
+            if (!self.group) {
+                [self.items addObject:[[InfoDateItem alloc] initWithType:InfoItemTypeSent name:self.item.isPeerItem ? self.contact.name : self.contact.identityName image:self.item.isPeerItem ? self.contactAvatar : self.identityAvatar]];
+            } else {
+                if ([self.item isPeerItem]) {
+                    TLGroupMember *member = [self.groupMembers objectForKey:self.item.peerTwincodeOutboundId];
+                    NSString *memberName = member ? member.name : @"";
+                    [self.items addObject:[[InfoDateItem alloc] initWithType:InfoItemTypeSent name:memberName image:self.contactAvatar]];
+                } else {
+                    [self.items addObject:[[InfoDateItem alloc] initWithType:InfoItemTypeSent name:self.group.identityName image:self.identityAvatar]];
+                }
+            }
         }
         
-        [self updateAnnotations];
+        [self updateAnnotations:annotationStart];
     }
 }
 
-- (void)updateAnnotations {
+- (void)updateAnnotations:(NSUInteger)startIndex {
     DDLogVerbose(@"%@ updateAnnotations", LOG_TAG);
 
     [self.infoItemService listAnnotationsWithDescriptorId:self.item.descriptorId withBlock:^(NSDictionary<NSUUID *, NSArray<TLDescriptorAnnotationPair *> *>* annotations) {
@@ -851,13 +928,13 @@ static NSString *SETTINGS_CELL_IDENTIFIER = @"SettingsCellIdentifier";
                     NSString *name = descriptorAnnotation.twincodeOutbound.name;
                     UIImage *avatar = [self.infoItemService getImageWithTwincode:descriptorAnnotation.twincodeOutbound];
                     
-                    UIAnnotation *uiAnnotation = [[UIAnnotation alloc]initWithType:TLDescriptorAnnotationTypeLike reaction:uiReaction name:name avatar:avatar timestamp:-1];
+                    UIAnnotation *uiAnnotation = [[UIAnnotation alloc]initWithType:TLDescriptorAnnotationTypeLike reaction:uiReaction name:name avatar:avatar value:-1];
                     [uiAnnotationList addObject:uiAnnotation];
-                } else if (descriptorAnnotation.annotation.type == TLDescriptorAnnotationTypeReceived || descriptorAnnotation.annotation.type == TLDescriptorAnnotationTypeRead) {
+                } else if (descriptorAnnotation.annotation.type == TLDescriptorAnnotationTypeReceived || descriptorAnnotation.annotation.type == TLDescriptorAnnotationTypeRead || descriptorAnnotation.annotation.type == TLDescriptorAnnotationTypeError) {
                     NSString *name = descriptorAnnotation.twincodeOutbound.name;
                     UIImage *avatar = [self.infoItemService getImageWithTwincode:descriptorAnnotation.twincodeOutbound];
                     
-                    UIAnnotation *uiAnnotation = [[UIAnnotation alloc]initWithType:descriptorAnnotation.annotation.type reaction:nil name:name avatar:avatar timestamp:descriptorAnnotation.annotation.value];
+                    UIAnnotation *uiAnnotation = [[UIAnnotation alloc]initWithType:descriptorAnnotation.annotation.type reaction:nil name:name avatar:avatar value:descriptorAnnotation.annotation.value];
                     [uiAnnotationList addObject:uiAnnotation];
                 }
             }
@@ -869,6 +946,7 @@ static NSString *SETTINGS_CELL_IDENTIFIER = @"SettingsCellIdentifier";
         
         dispatch_async(dispatch_get_main_queue(), ^{
             
+            NSMutableArray *uiAnnotations = [[NSMutableArray alloc] init];
             for (int i = 0; i < sortedAnnotations.count; i++) {
                 UIAnnotation *uiAnnotation = [sortedAnnotations objectAtIndex:i];
                 
@@ -877,17 +955,24 @@ static NSString *SETTINGS_CELL_IDENTIFIER = @"SettingsCellIdentifier";
                  
                     TLDescriptorAnnotationType annotationType = uiAnnotation.annotationType;
                     if (annotationType == TLDescriptorAnnotationTypeLike) {
-                        title = TwinmeLocalizedString(@"info_item_view_controller_reactions", nil);
+                        title = TwinmeLocalizedString(@"info_item_view_reactions", nil);
                     } else if (annotationType == TLDescriptorAnnotationTypeReceived) {
-                        title = TwinmeLocalizedString(@"info_item_view_controller_received", nil);
+                        title = TwinmeLocalizedString(@"info_item_view_received", nil);
                     } else if (annotationType == TLDescriptorAnnotationTypeRead) {
-                        title = TwinmeLocalizedString(@"info_item_view_controller_seen", nil);
+                        title = TwinmeLocalizedString(@"info_item_view_seen", nil);
+                    } else if (annotationType == TLDescriptorAnnotationTypeError) {
+                        title = TwinmeLocalizedString(@"info_item_view_not_delivered", nil);
                     }
-                    
-                    [self.items addObject:[[InfoSectionItem alloc] initWithTitle:title]];
+                                        
+                    [uiAnnotations addObject:[[InfoSectionItem alloc] initWithTitle:title]];
                 }
                 
-                [self.items addObject:[[InfoAnnotationItem alloc] initWithAnnotation:uiAnnotation]];
+                [uiAnnotations addObject:[[InfoAnnotationItem alloc] initWithAnnotation:uiAnnotation]];
+            }
+            
+            if (uiAnnotations.count > 0) {
+                NSIndexSet *indexes = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(startIndex, uiAnnotations.count)];
+                [self.items insertObjects:uiAnnotations atIndexes:indexes];
             }
             
             [self.infoTableView reloadData];

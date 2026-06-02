@@ -14,6 +14,7 @@
 #import "MenuIconCell.h"
 
 #import <TwinmeCommon/Design.h>
+#import <TwinmeCommon/UIViewController+Utils.h>
 
 #if 0
 static const int ddLogLevel = DDLogLevelVerbose;
@@ -162,8 +163,13 @@ static NSString *MENU_ICON_CELL_IDENTIFIER = @"MenuIconCellIdentifier";
     
     self.titleLabel.text = TwinmeLocalizedString(@"application_profile_avatar_not_defined", nil);
     
-    UIWindow *window = UIApplication.sharedApplication.keyWindow;
-    CGFloat safeAreaInset = window.safeAreaInsets.bottom;
+    CGFloat safeAreaInset;
+    UIWindow *window = [UIViewController currentWindow];
+    if (window) {
+        safeAreaInset = window.safeAreaInsets.bottom;
+    } else {
+        safeAreaInset = self.safeAreaInsets.bottom;
+    }
     
     self.tableViewTopConstraint.constant *= Design.HEIGHT_RATIO;
     self.tableViewBottomConstraint.constant = safeAreaInset;

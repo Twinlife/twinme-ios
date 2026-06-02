@@ -55,7 +55,7 @@
     
     self.resetLabel.font = Design.FONT_REGULAR34;
     self.resetLabel.textColor = [UIColor whiteColor];
-    self.resetLabel.text = TwinmeLocalizedString(@"space_appareance_view_controller_default_value", nil);
+    self.resetLabel.text = TwinmeLocalizedString(@"space_appearance_view_default_value", nil);
 }
 
 @end

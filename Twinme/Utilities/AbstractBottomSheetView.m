@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2024-2025 twinlife SA.
+ *  Copyright (c) 2024-2026 twinlife SA.
  *  SPDX-License-Identifier: AGPL-3.0-only
  *
  *  Contributors:
@@ -13,6 +13,8 @@
 #import "AbstractBottomSheetView.h"
 
 #import <TwinmeCommon/Design.h>
+#import <TwinmeCommon/UIViewController+Utils.h>
+
 #import <Utils/NSString+Utils.h>
 #import "UIColor+Hex.h"
 
@@ -274,9 +276,13 @@ static const int ddLogLevel = DDLogLevelWarning;
     UITapGestureRecognizer *cancelViewGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleCancelTapGesture:)];
     [self.cancelView addGestureRecognizer:cancelViewGestureRecognizer];
     
-    UIWindow *window = UIApplication.sharedApplication.keyWindow;
-    self.cancelViewBottomConstraint.constant = window.safeAreaInsets.bottom;
-
+    UIWindow *window = [UIViewController currentWindow];
+    if (window) {
+        self.cancelViewBottomConstraint.constant = window.safeAreaInsets.bottom;
+    } else {
+        self.cancelViewBottomConstraint.constant = window.safeAreaInsets.bottom;
+    }
+    
     self.cancelLabel.font = Design.FONT_MEDIUM38;
     self.cancelLabel.textColor = Design.DELETE_COLOR_RED;
     self.cancelLabel.text = TwinmeLocalizedString(@"application_cancel", nil);

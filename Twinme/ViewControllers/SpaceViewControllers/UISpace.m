@@ -38,7 +38,7 @@
                 
         _nameSpace = _space.settings.name;
         if (!_nameSpace) {
-            _nameSpace = TwinmeLocalizedString(@"space_appearance_view_controller_general_title", nil);
+            _nameSpace = TwinmeLocalizedString(@"space_appearance_view_general_title", nil);
         }
         
         _nameProfile = _space.profile.name;

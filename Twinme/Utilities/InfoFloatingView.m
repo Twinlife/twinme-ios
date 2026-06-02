@@ -13,6 +13,8 @@
 #import "InfoFloatingView.h"
 
 #import <TwinmeCommon/Design.h>
+#import <TwinmeCommon/UIViewController+Utils.h>
+
 #import <Utils/NSString+Utils.h>
 #import <Lottie/Lottie.h>
 #import "UIAppInfo.h"
@@ -67,10 +69,15 @@ static CGFloat DESIGN_IMAGE_SIZE = 36;
 @implementation InfoFloatingView
 
 + (void)initialize {
-    
-    UIWindow *window = UIApplication.sharedApplication.keyWindow;
-    DESIGN_SAFE_AREA_WIDTH_INSET = window.safeAreaInsets.left + DESIGN_X_INSET * Design.WIDTH_RATIO;
-    DESIGN_SAFE_AREA_HEIGHT_INSET = window.safeAreaInsets.top + DESIGN_Y_INSET * Design.HEIGHT_RATIO;
+        
+    UIWindow *window = [UIViewController currentWindow];
+    if (window) {
+        DESIGN_SAFE_AREA_WIDTH_INSET = window.safeAreaInsets.left + DESIGN_X_INSET * Design.WIDTH_RATIO;
+        DESIGN_SAFE_AREA_HEIGHT_INSET = window.safeAreaInsets.top + DESIGN_Y_INSET * Design.HEIGHT_RATIO;
+    } else {
+        DESIGN_SAFE_AREA_WIDTH_INSET = DESIGN_X_INSET * Design.WIDTH_RATIO;;
+        DESIGN_SAFE_AREA_HEIGHT_INSET = DESIGN_Y_INSET * Design.HEIGHT_RATIO;
+    }    
 }
 
 - (void)setConnectionStatus:(TLConnectionStatus)connectionStatus {
@@ -88,6 +95,7 @@ static CGFloat DESIGN_IMAGE_SIZE = 36;
             break;
             
         case TLConnectionStatusNoService:
+        case TLConnectionStatusDisconnecting:
             self.uiAppInfo = [[UIAppInfo alloc]initWithInfoType:InfoFloatingViewTypeNoServices];
             break;
             

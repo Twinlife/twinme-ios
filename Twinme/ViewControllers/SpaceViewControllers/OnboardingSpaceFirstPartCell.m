@@ -98,14 +98,14 @@
     self.messageLabelTopConstraint.constant *= Design.HEIGHT_RATIO;
     self.messageLabelBottomConstraint.constant *= Design.HEIGHT_RATIO;
     
-    self.messageLabel.text = TwinmeLocalizedString(@"spaces_view_controller_message", nil);
+    self.messageLabel.text = TwinmeLocalizedString(@"spaces_view_message", nil);
 }
 
 - (void)bind {
     
-    NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:TwinmeLocalizedString(@"spaces_view_controller_sample_friends", nil) attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_MEDIUM34, NSFontAttributeName, Design.FONT_COLOR_DEFAULT, NSForegroundColorAttributeName, nil]];
+    NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:TwinmeLocalizedString(@"spaces_view_sample_friends", nil) attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_MEDIUM34, NSFontAttributeName, Design.FONT_COLOR_DEFAULT, NSForegroundColorAttributeName, nil]];
     [attributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:@"\n"]];
-    [attributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:TwinmeLocalizedString(@"spaces_view_controller_sample_friends_name", nil) attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_MEDIUM32, NSFontAttributeName, Design.FONT_COLOR_PROFILE_GREY, NSForegroundColorAttributeName, nil]]];
+    [attributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:TwinmeLocalizedString(@"spaces_view_sample_friends_name", nil) attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_MEDIUM32, NSFontAttributeName, Design.FONT_COLOR_PROFILE_GREY, NSForegroundColorAttributeName, nil]]];
     self.sampleSpaceFriendsLabel.attributedText = attributedString;
     
     self.sampleSpaceFamilyView.layer.cornerRadius = Design.POPUP_RADIUS;
@@ -115,9 +115,9 @@
     self.sampleSpaceFamilyView.layer.shadowColor = Design.SHADOW_COLOR_DEFAULT.CGColor;
     self.sampleSpaceFamilyView.backgroundColor = Design.POPUP_BACKGROUND_COLOR;
     
-    attributedString = [[NSMutableAttributedString alloc] initWithString:TwinmeLocalizedString(@"spaces_view_controller_sample_family", nil) attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_MEDIUM34, NSFontAttributeName, Design.FONT_COLOR_DEFAULT, NSForegroundColorAttributeName, nil]];
+    attributedString = [[NSMutableAttributedString alloc] initWithString:TwinmeLocalizedString(@"spaces_view_sample_family", nil) attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_MEDIUM34, NSFontAttributeName, Design.FONT_COLOR_DEFAULT, NSForegroundColorAttributeName, nil]];
     [attributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:@"\n"]];
-    [attributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:TwinmeLocalizedString(@"spaces_view_controller_sample_family_name", nil) attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_MEDIUM32, NSFontAttributeName, Design.FONT_COLOR_PROFILE_GREY, NSForegroundColorAttributeName, nil]]];
+    [attributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:TwinmeLocalizedString(@"spaces_view_sample_family_name", nil) attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_MEDIUM32, NSFontAttributeName, Design.FONT_COLOR_PROFILE_GREY, NSForegroundColorAttributeName, nil]]];
     self.sampleSpaceFamilyLabel.attributedText = attributedString;
     
     self.sampleSpaceBusinessView.layer.cornerRadius = Design.POPUP_RADIUS;
@@ -127,9 +127,9 @@
     self.sampleSpaceBusinessView.layer.shadowColor = Design.SHADOW_COLOR_DEFAULT.CGColor;
     self.sampleSpaceBusinessView.backgroundColor = Design.POPUP_BACKGROUND_COLOR;
     
-    attributedString = [[NSMutableAttributedString alloc] initWithString:TwinmeLocalizedString(@"spaces_view_controller_sample_business", nil) attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_MEDIUM34, NSFontAttributeName, Design.FONT_COLOR_DEFAULT, NSForegroundColorAttributeName, nil]];
+    attributedString = [[NSMutableAttributedString alloc] initWithString:TwinmeLocalizedString(@"spaces_view_sample_business", nil) attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_MEDIUM34, NSFontAttributeName, Design.FONT_COLOR_DEFAULT, NSForegroundColorAttributeName, nil]];
     [attributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:@"\n"]];
-    [attributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:TwinmeLocalizedString(@"spaces_view_controller_sample_business_name", nil) attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_MEDIUM32, NSFontAttributeName, Design.FONT_COLOR_PROFILE_GREY, NSForegroundColorAttributeName, nil]]];
+    [attributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:TwinmeLocalizedString(@"spaces_view_sample_business_name", nil) attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_MEDIUM32, NSFontAttributeName, Design.FONT_COLOR_PROFILE_GREY, NSForegroundColorAttributeName, nil]]];
     self.sampleSpaceBusinessLabel.attributedText = attributedString;
     
     self.messageLabel.textColor = Design.FONT_COLOR_DEFAULT;

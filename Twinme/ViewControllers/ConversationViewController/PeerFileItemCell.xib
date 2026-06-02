@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="22146" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="24765" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22122"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24743"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -173,6 +173,7 @@
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstItem="AtC-gQ-Cvn" firstAttribute="leading" secondItem="335-1P-QJD" secondAttribute="leading" id="2Qb-xK-FGo"/>
+                            <constraint firstAttribute="width" secondItem="335-1P-QJD" secondAttribute="height" multiplier="1:1" id="Dt4-4g-mIh"/>
                             <constraint firstItem="AtC-gQ-Cvn" firstAttribute="top" secondItem="335-1P-QJD" secondAttribute="top" id="Elr-c8-siF"/>
                             <constraint firstAttribute="trailing" secondItem="AtC-gQ-Cvn" secondAttribute="trailing" id="GPq-6U-Iy1"/>
                             <constraint firstAttribute="bottom" secondItem="AtC-gQ-Cvn" secondAttribute="bottom" id="Mux-ko-pVd"/>
@@ -185,7 +186,6 @@
                 <constraints>
                     <constraint firstAttribute="trailing" secondItem="wbd-u8-r9D" secondAttribute="trailing" id="Ayv-bh-wQg"/>
                     <constraint firstItem="wbd-u8-r9D" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" id="BV5-Gg-jg4"/>
-                    <constraint firstItem="335-1P-QJD" firstAttribute="width" secondItem="335-1P-QJD" secondAttribute="height" multiplier="1:1" id="Dt4-4g-mIh"/>
                     <constraint firstItem="S9H-jt-Gg9" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="Gzz-kD-OoT"/>
                     <constraint firstItem="1sx-0w-X15" firstAttribute="leading" secondItem="Wvl-Yq-OaL" secondAttribute="leading" id="Lwx-8T-EXe"/>
                     <constraint firstItem="arw-cf-mb9" firstAttribute="bottom" secondItem="Wvl-Yq-OaL" secondAttribute="bottom" id="OOz-Vt-ghm"/>
@@ -200,7 +200,7 @@
                     <constraint firstItem="Wvl-Yq-OaL" firstAttribute="top" relation="greaterThanOrEqual" secondItem="H2p-sc-9uM" secondAttribute="top" priority="750" constant="18" id="fxP-M0-X28"/>
                     <constraint firstItem="1sx-0w-X15" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" priority="750" constant="18" id="huz-ik-AZc"/>
                     <constraint firstItem="N31-OT-Hrj" firstAttribute="bottom" secondItem="Wvl-Yq-OaL" secondAttribute="top" id="kwR-OJ-lqj"/>
-                    <constraint firstItem="KNH-fg-ZJo" firstAttribute="trailing" secondItem="Wvl-Yq-OaL" secondAttribute="leading" constant="-18" id="lSh-WK-5gf"/>
+                    <constraint firstItem="Wvl-Yq-OaL" firstAttribute="leading" secondItem="KNH-fg-ZJo" secondAttribute="trailing" constant="18" id="lSh-WK-5gf"/>
                     <constraint firstItem="wbd-u8-r9D" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" id="lVF-vs-Bgl"/>
                     <constraint firstItem="Wvl-Yq-OaL" firstAttribute="bottom" secondItem="H2p-sc-9uM" secondAttribute="bottom" constant="-18" id="tDD-wc-iRv"/>
                     <constraint firstAttribute="leading" secondItem="S9H-jt-Gg9" secondAttribute="trailing" constant="40" id="wea-jx-ddd"/>
@@ -272,9 +272,6 @@
             <point key="canvasLocation" x="139" y="115"/>
         </tableViewCell>
     </objects>
-    <designables>
-        <designable name="N31-OT-Hrj"/>
-    </designables>
     <resources>
         <image name="CheckMarkGrey" width="22" height="22"/>
         <image name="ReplyItem" width="15" height="15"/>

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="32700.99.1234" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="24765" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22684"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24743"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -107,6 +107,12 @@
                             <constraint firstAttribute="width" constant="400" id="fhb-I4-6b4"/>
                         </constraints>
                     </view>
+                    <imageView hidden="YES" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="InfoItem" translatesAutoresizingMaskIntoConstraints="NO" id="td7-WL-VMU">
+                        <rect key="frame" x="640" y="263" width="38" height="38"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="38" id="8pw-hi-Vrr"/>
+                        </constraints>
+                    </imageView>
                     <label opaque="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rDj-4z-Rth" customClass="DecoratedLabel">
                         <rect key="frame" x="698" y="282" width="0.0" height="0.0"/>
                         <fontDescription key="fontDescription" type="system" pointSize="36"/>
@@ -172,11 +178,13 @@
                     <constraint firstItem="CaI-p9-Fts" firstAttribute="trailing" secondItem="H2p-sc-9uM" secondAttribute="trailing" constant="-18" id="7Ac-YY-Gff"/>
                     <constraint firstItem="paF-0u-6ft" firstAttribute="top" relation="greaterThanOrEqual" secondItem="H2p-sc-9uM" secondAttribute="top" constant="18" id="7DM-ih-T3T"/>
                     <constraint firstItem="rDj-4z-Rth" firstAttribute="trailing" secondItem="CaI-p9-Fts" secondAttribute="leading" constant="-10" id="7V1-Kd-Ic2"/>
+                    <constraint firstItem="td7-WL-VMU" firstAttribute="width" secondItem="td7-WL-VMU" secondAttribute="height" multiplier="1:1" id="7oZ-rp-inZ"/>
                     <constraint firstItem="Rvh-62-acm" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="Dl8-ma-E9P"/>
                     <constraint firstItem="rDj-4z-Rth" firstAttribute="bottom" secondItem="oL9-qa-Exc" secondAttribute="bottom" id="HmN-ol-eDD"/>
                     <constraint firstItem="AQh-It-AMt" firstAttribute="trailing" secondItem="rDj-4z-Rth" secondAttribute="trailing" id="IWU-na-eUo"/>
                     <constraint firstItem="Qy6-Za-K4h" firstAttribute="top" secondItem="rDj-4z-Rth" secondAttribute="bottom" id="IZ7-9r-eSn"/>
                     <constraint firstItem="24D-UK-eyC" firstAttribute="trailing" secondItem="rDj-4z-Rth" secondAttribute="trailing" id="J5i-Nh-k3o"/>
+                    <constraint firstItem="rDj-4z-Rth" firstAttribute="leading" secondItem="td7-WL-VMU" secondAttribute="trailing" constant="20" id="JTV-li-3Hw"/>
                     <constraint firstItem="AQh-It-AMt" firstAttribute="top" relation="greaterThanOrEqual" secondItem="H2p-sc-9uM" secondAttribute="top" priority="750" constant="18" id="Jfy-Q5-iCs"/>
                     <constraint firstItem="Qy6-Za-K4h" firstAttribute="trailing" secondItem="rDj-4z-Rth" secondAttribute="trailing" id="M2a-MN-8y0"/>
                     <constraint firstItem="fQl-V0-V75" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="Mbn-yu-EtR"/>
@@ -194,6 +202,7 @@
                     <constraint firstItem="lov-gE-eQV" firstAttribute="top" secondItem="rDj-4z-Rth" secondAttribute="top" id="eD1-tX-9gl"/>
                     <constraint firstItem="lov-gE-eQV" firstAttribute="leading" secondItem="rDj-4z-Rth" secondAttribute="leading" id="fLH-Gq-CIt"/>
                     <constraint firstItem="CaI-p9-Fts" firstAttribute="bottom" secondItem="rDj-4z-Rth" secondAttribute="bottom" id="gji-5r-zz5"/>
+                    <constraint firstItem="td7-WL-VMU" firstAttribute="centerY" secondItem="rDj-4z-Rth" secondAttribute="centerY" id="kaZ-qR-sdE"/>
                     <constraint firstAttribute="trailing" secondItem="KUG-eR-UfE" secondAttribute="trailing" id="n97-OP-uaJ"/>
                     <constraint firstItem="fQl-V0-V75" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="36" id="pd3-PW-rIA"/>
                     <constraint firstAttribute="bottom" secondItem="KUG-eR-UfE" secondAttribute="bottom" id="tdb-o9-cpC"/>
@@ -217,6 +226,9 @@
                 <outlet property="ephemeralViewBottomConstraint" destination="HmN-ol-eDD" id="Vug-Zx-DLq"/>
                 <outlet property="ephemeralViewHeightConstraint" destination="Edv-QT-kMk" id="VxP-i2-hfU"/>
                 <outlet property="ephemeralViewLeadingConstraint" destination="Rtq-20-acp" id="jJA-65-ivz"/>
+                <outlet property="infoImageView" destination="td7-WL-VMU" id="IA5-Ch-MfA"/>
+                <outlet property="infoImageViewHeightConstraint" destination="8pw-hi-Vrr" id="61o-yj-cQL"/>
+                <outlet property="infoImageViewTrailinConstraint" destination="JTV-li-3Hw" id="Yya-NR-OjG"/>
                 <outlet property="linkImageView" destination="ecN-cu-Zcb" id="k8a-gN-eXb"/>
                 <outlet property="linkImageViewHeightConstraint" destination="y58-ij-Tgf" id="ewK-9V-w1a"/>
                 <outlet property="linkView" destination="paF-0u-6ft" id="TUh-UY-iXg"/>
@@ -261,12 +273,9 @@
             <point key="canvasLocation" x="139" y="66"/>
         </tableViewCell>
     </objects>
-    <designables>
-        <designable name="rDj-4z-Rth"/>
-        <designable name="y1R-WA-Bpx"/>
-    </designables>
     <resources>
         <image name="CheckMarkGrey" width="22" height="22"/>
+        <image name="InfoItem" width="18" height="18"/>
         <image name="ReplyItem" width="15" height="15"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>

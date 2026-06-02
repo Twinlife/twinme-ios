@@ -23,7 +23,7 @@ typedef enum {
 
 @interface UIRestoreItem : NSObject
 
-- (instancetype)initWithType:(UIRestoreItemType)type text:(nullable NSString *)text icon:(nullable UIImage *)icon value:(int)value color:(nullable UIColor *)color;
+- (nonnull instancetype)initWithType:(UIRestoreItemType)type text:(nullable NSString *)text icon:(nullable UIImage *)icon value:(int)value color:(nullable UIColor *)color;
 
 - (UIRestoreItemType)getRestoreItemType;
 

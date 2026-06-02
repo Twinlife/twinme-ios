@@ -183,7 +183,7 @@ static CGFloat THUMBNAIL_PARTICIPANT_HEIGHT;
         participantX = [self getParticipantX:participantWidth];
         participantY = [self getParticipantY:participantHeight];
     }
-        
+            
     if (self.width != participantWidth || self.height != participantHeight || self.x != participantX || self.y != participantY) {
         self.width = participantWidth;
         self.height = participantHeight;
@@ -275,7 +275,7 @@ static CGFloat THUMBNAIL_PARTICIPANT_HEIGHT;
 - (CGFloat)getPortraitMainParticipantWidth {
     DDLogVerbose(@"%@ getPortraitMainParticipantWidth", LOG_TAG);
     
-    if (self.nbParticipants != 2 && self.nbParticipants % 2 == 0) {
+    if ((self.nbParticipants != 2 && self.nbParticipants % 2 == 0) || self.nbParticipants == 7) {
         return (Design.DISPLAY_WIDTH - (MARGIN_PARTICIPANT * 3)) * 0.5f ;
     }
 
@@ -315,7 +315,7 @@ static CGFloat THUMBNAIL_PARTICIPANT_HEIGHT;
 
     if (self.nbParticipants == 2 && self.isVideoCall && CALL_IS_ACTIVE(self.callStatus) && self.callParticipantViewMode != CallParticipantViewModeSplitScreen) {
         return self.parentViewHeight;
-    } else if (self.nbParticipants == 2 || self.nbParticipants == 4) {
+    } else if (self.nbParticipants == 2 || self.nbParticipants == 4 || self.nbParticipants == 7) {
         return (self.parentViewHeight - MARGIN_PARTICIPANT) * 0.5f;
     } else if (self.nbParticipants == 3) {
         return (self.parentViewHeight - MARGIN_PARTICIPANT) * 0.67f;
@@ -389,6 +389,8 @@ static CGFloat THUMBNAIL_PARTICIPANT_HEIGHT;
         return self.parentViewHeight;
     } else if (self.nbParticipants == 3) {
         return (self.parentViewHeight - MARGIN_PARTICIPANT) * 0.33f;
+    } else if (self.nbParticipants == 7) {
+        return (self.parentViewHeight - (MARGIN_PARTICIPANT * 3)) / 4.f;
     }
 
     return [self getMainParticipantHeight];
@@ -426,7 +428,9 @@ static CGFloat THUMBNAIL_PARTICIPANT_HEIGHT;
     } else if (self.nbParticipants == 2) {
         return MARGIN_PARTICIPANT;
     } else if (self.nbParticipants % 2 != 0) {
-        if (self.position % 2 == 0) {
+        if (self.position == 2 && self.nbParticipants == 7) {
+            return participantWidth + (MARGIN_PARTICIPANT * 2);
+        } else if (self.position % 2 == 0) {
             return MARGIN_PARTICIPANT;
         } else {
             return participantWidth + (MARGIN_PARTICIPANT * 2);
@@ -518,7 +522,9 @@ static CGFloat THUMBNAIL_PARTICIPANT_HEIGHT;
             return (participantHeight * 2) + (MARGIN_PARTICIPANT * 2);
         }
     } else if (self.nbParticipants == 7) {
-        if (self.position < 4) {
+        if (self.position == 2) {
+            return 0;
+        } else if (self.position < 4) {
             return participantHeight + MARGIN_PARTICIPANT;
         } else if (self.position < 6) {
             return (participantHeight * 2) + (MARGIN_PARTICIPANT * 2);

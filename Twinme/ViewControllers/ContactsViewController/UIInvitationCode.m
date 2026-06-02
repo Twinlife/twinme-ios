@@ -33,7 +33,7 @@
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
     [dateFormatter setDateFormat:@"YYYY/MM/dd HH:mm"];
     
-    NSMutableString *message = [[NSMutableString alloc] initWithString:TwinmeLocalizedString(@"invitation_code_view_controller_expiration", nil)];
+    NSMutableString *message = [[NSMutableString alloc] initWithString:TwinmeLocalizedString(@"invitation_code_view_expiration", nil)];
     [message appendString:@" "];
     [message appendString:[dateFormatter stringFromDate:[NSDate dateWithTimeIntervalSince1970:self.expirationDate]]];
 

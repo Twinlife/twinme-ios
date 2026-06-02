@@ -435,7 +435,7 @@ static CGFloat DESIGN_TABLE_VIEW_BOTTOM = 116;
     self.definesPresentationContext = YES;
     self.view.backgroundColor = Design.WHITE_COLOR;
     
-    [self setNavigationTitle:TwinmeLocalizedString(@"contacts_view_controller_title", nil)];
+    [self setNavigationTitle:TwinmeLocalizedString(@"contacts_view_title", nil)];
     
     self.contactsTableViewTopConstraint.constant *= Design.HEIGHT_RATIO;
     self.contactsTableViewBottomConstraint.constant = 0;
@@ -454,15 +454,11 @@ static CGFloat DESIGN_TABLE_VIEW_BOTTOM = 116;
     contactSearchBar.backgroundColor = Design.NAVIGATION_BAR_BACKGROUND_COLOR;
     contactSearchBar.delegate = self;
     
-    if (@available(iOS 13.0, *)) {
-        self.searchController.searchBar.backgroundColor = [UIColor clearColor];
-        self.searchController.searchBar.searchTextField.backgroundColor = Design.POPUP_BACKGROUND_COLOR;
-        self.searchController.searchBar.searchTextField.tintColor = [UIColor darkGrayColor];
-        self.searchController.searchBar.translucent = NO;
-        self.navigationItem.searchController = self.searchController;
-    } else {
-        self.contactsTableView.tableHeaderView = self.searchController.searchBar;
-    }
+    self.searchController.searchBar.backgroundColor = [UIColor clearColor];
+    self.searchController.searchBar.searchTextField.backgroundColor = Design.POPUP_BACKGROUND_COLOR;
+    self.searchController.searchBar.searchTextField.tintColor = [UIColor darkGrayColor];
+    self.searchController.searchBar.translucent = NO;
+    self.navigationItem.searchController = self.searchController;
     
     self.contactsTableView.delegate = self;
     self.contactsTableView.dataSource = self;
@@ -505,7 +501,7 @@ static CGFloat DESIGN_TABLE_VIEW_BOTTOM = 116;
     self.moveLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
     self.moveLabel.font = Design.FONT_REGULAR36;
     self.moveLabel.textColor = Design.FONT_COLOR_BLUE;
-    self.moveLabel.text = TwinmeLocalizedString(@"add_group_member_view_controller_add", nil);
+    self.moveLabel.text = TwinmeLocalizedString(@"add_group_member_view_add", nil);
 }
 
 - (void)finish {
@@ -532,7 +528,7 @@ static CGFloat DESIGN_TABLE_VIEW_BOTTOM = 116;
             SpaceActionConfirmView *spaceActionConfirmView = [[SpaceActionConfirmView alloc] init];
             spaceActionConfirmView.bottomSheetViewDelegate = self;
             spaceActionConfirmView.spaceActionConfirmType = SpaceActionConfirmTypeMoveContact;
-            [spaceActionConfirmView initWithTitle:self.space.settings.name message:TwinmeLocalizedString(@"contacts_space_view_controller_move_message", nil) spaceName:self.space.settings.name spaceStyle:self.space.settings.style avatar:image icon:[UIImage imageNamed:@"TabBarContactsGrey"] confirmTitle:TwinmeLocalizedString(@"create_space_view_controller_contact_list", nil) cancelTitle:TwinmeLocalizedString(@"application_cancel", nil)];
+            [spaceActionConfirmView initWithTitle:self.space.settings.name message:TwinmeLocalizedString(@"contact_space_view_move_message", nil) spaceName:self.space.settings.name spaceStyle:self.space.settings.style avatar:image icon:[UIImage imageNamed:@"TabBarContactsGrey"] confirmTitle:TwinmeLocalizedString(@"create_space_view_contact_list", nil) cancelTitle:TwinmeLocalizedString(@"application_cancel", nil)];
             [self.tabBarController.view addSubview:spaceActionConfirmView];
             [spaceActionConfirmView showConfirmView];
         }];
@@ -559,18 +555,14 @@ static CGFloat DESIGN_TABLE_VIEW_BOTTOM = 116;
     
     self.searchController.searchBar.barTintColor = Design.NAVIGATION_BAR_BACKGROUND_COLOR;
     
-    if (@available(iOS 13.0, *)) {
-        self.searchController.searchBar.backgroundColor = [UIColor clearColor];
-        self.searchController.searchBar.searchTextField.backgroundColor = Design.POPUP_BACKGROUND_COLOR;
-        self.searchController.searchBar.searchTextField.tintColor = Design.FONT_COLOR_DEFAULT;
-        self.searchController.searchBar.searchTextField.textColor = Design.FONT_COLOR_DEFAULT;
-        
-        UIImageView *glassIconImageView = (UIImageView *)self.searchController.searchBar.searchTextField.leftView;
-        glassIconImageView.image = [glassIconImageView.image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-        glassIconImageView.tintColor = Design.PLACEHOLDER_COLOR;
-    } else {
-        self.searchController.searchBar.backgroundColor = Design.NAVIGATION_BAR_BACKGROUND_COLOR;
-    }
+    self.searchController.searchBar.backgroundColor = [UIColor clearColor];
+    self.searchController.searchBar.searchTextField.backgroundColor = Design.POPUP_BACKGROUND_COLOR;
+    self.searchController.searchBar.searchTextField.tintColor = Design.FONT_COLOR_DEFAULT;
+    self.searchController.searchBar.searchTextField.textColor = Design.FONT_COLOR_DEFAULT;
+    
+    UIImageView *glassIconImageView = (UIImageView *)self.searchController.searchBar.searchTextField.leftView;
+    glassIconImageView.image = [glassIconImageView.image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    glassIconImageView.tintColor = Design.PLACEHOLDER_COLOR;
     
     if ([self.twinmeApplication darkModeEnable:[self currentSpaceSettings]]) {
         self.searchController.searchBar.keyboardAppearance = UIKeyboardAppearanceDark;

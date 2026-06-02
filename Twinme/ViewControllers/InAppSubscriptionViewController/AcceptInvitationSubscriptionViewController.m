@@ -154,16 +154,23 @@ static const CGFloat DESIGN_CANCEL_HEIGHT = 140;
     
     AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
     alertMessageView.alertMessageViewDelegate = self;
-    [alertMessageView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:TwinmeLocalizedString(@"accept_invitation_view_controller_incorrect_contact_information", nil)];
+    [alertMessageView initWithTitle:TwinmeLocalizedString(@"deleted_account_view_warning", nil) message:TwinmeLocalizedString(@"accept_invitation_view_incorrect_contact_information", nil)];
     [self.view addSubview:alertMessageView];
     [alertMessageView showAlertView];
 }
 
+- (void)onGetTwincodeExpired { 
+    DDLogVerbose(@"%@ onGetTwincodeExpired", LOG_TAG);
+}
+
 - (void)onSubscribeSuccess {
     DDLogVerbose(@"%@ onSubscribeSuccess", LOG_TAG);
-
+    
     dispatch_async(dispatch_get_main_queue(), ^{
-        [[UIApplication sharedApplication].keyWindow makeToast:TwinmeLocalizedString(@"in_app_subscription_view_controller_invitation_success",nil)];
+        UIWindow *window = [self currentWindow];
+        if (window) {
+            [window makeToast:TwinmeLocalizedString(@"in_app_subscription_view_invitation_success",nil)];
+        }
     });
     
     [self saveTwincodeAttribute];
@@ -173,7 +180,7 @@ static const CGFloat DESIGN_CANCEL_HEIGHT = 140;
 
 - (void)onSubscribeFailed:(TLBaseServiceErrorCode)errorCode {
     DDLogVerbose(@"%@ onSubscribeFailed errorCode: %d", LOG_TAG, errorCode);
-
+    
     [self.acceptInvitationSubscriptionDelegate invitationSubscriptionDidFinish:errorCode];
     [self finish];
 }
@@ -251,7 +258,7 @@ static const CGFloat DESIGN_CANCEL_HEIGHT = 140;
     self.actionView.layer.maskedCorners = kCALayerMinXMinYCorner | kCALayerMaxXMinYCorner;
     self.actionView.layer.cornerRadius = 40 * Design.HEIGHT_RATIO;
     self.actionView.clipsToBounds = YES;
-        
+    
     UISwipeGestureRecognizer *swipeGestureRecognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(handleCancelTapGesture:)];
     [swipeGestureRecognizer setDirection:(UISwipeGestureRecognizerDirectionDown)];
     [self.actionView addGestureRecognizer:swipeGestureRecognizer];
@@ -275,11 +282,11 @@ static const CGFloat DESIGN_CANCEL_HEIGHT = 140;
     
     if (self.contactName) {
         NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:self.contactName attributes:[NSDictionary dictionaryWithObjectsAndKeys: Design.FONT_BOLD44, NSFontAttributeName, Design.FONT_COLOR_DEFAULT, NSForegroundColorAttributeName, nil]];
-        if (![self.contactDescription isEqual:@""] && ![self.contactDescription isEqual:TwinmeLocalizedString(@"side_menu_view_controller_about", nil)]) {
+        if (![self.contactDescription isEqual:@""] && ![self.contactDescription isEqual:TwinmeLocalizedString(@"navigation_view_about_twinme", nil)]) {
             [attributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:@"\n"]];
             [attributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:self.contactDescription attributes:[NSDictionary dictionaryWithObjectsAndKeys: Design.FONT_MEDIUM30, NSFontAttributeName, Design.FONT_COLOR_GREY, NSForegroundColorAttributeName, nil]]];
         }
-
+        
         self.nameLabel.attributedText = attributedString;
     }
     
@@ -288,12 +295,12 @@ static const CGFloat DESIGN_CANCEL_HEIGHT = 140;
     
     self.messageLabel.font = Design.FONT_MEDIUM38;
     self.messageLabel.textColor = Design.FONT_COLOR_GREY;
-    self.messageLabel.text = [NSString stringWithFormat:TwinmeLocalizedString(@"accept_invitation_view_controller_message %@", nil), self.contactName];
+    self.messageLabel.text = [NSString stringWithFormat:TwinmeLocalizedString(@"accept_invitation_view_message", nil), self.contactName];
     
     self.confirmViewTopConstraint.constant *= Design.HEIGHT_RATIO;
     self.confirmViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     self.confirmViewWidthConstraint.constant *= Design.WIDTH_RATIO;
-        
+    
     self.confirmView.backgroundColor = Design.MAIN_COLOR;
     self.confirmView.userInteractionEnabled = YES;
     self.confirmView.layer.cornerRadius = Design.CONTAINER_RADIUS;
@@ -302,7 +309,7 @@ static const CGFloat DESIGN_CANCEL_HEIGHT = 140;
     [self.confirmView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleConfirmTapGesture:)]];
     
     self.confirmLabelWidthConstraint.constant *= Design.WIDTH_RATIO;
-        
+    
     self.confirmLabel.font = Design.FONT_BOLD36;
     self.confirmLabel.textColor = [UIColor whiteColor];
     self.confirmLabel.text = TwinmeLocalizedString(@"application_accept", nil);
@@ -312,9 +319,13 @@ static const CGFloat DESIGN_CANCEL_HEIGHT = 140;
     UITapGestureRecognizer *cancelViewGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleCancelTapGesture:)];
     [self.cancelView addGestureRecognizer:cancelViewGestureRecognizer];
     
-    UIWindow *window = UIApplication.sharedApplication.keyWindow;
-    self.cancelViewBottomConstraint.constant = window.safeAreaInsets.bottom;
-
+    UIWindow *window = [self currentWindow];
+    if (window) {
+        self.cancelViewBottomConstraint.constant = window.safeAreaInsets.bottom;
+    } else {
+        self.cancelViewBottomConstraint.constant = 0;
+    }
+    
     self.cancelLabel.font = Design.FONT_MEDIUM38;
     self.cancelLabel.textColor = Design.FONT_COLOR_DEFAULT;
     self.cancelLabel.text = TwinmeLocalizedString(@"application_cancel", nil);
@@ -344,7 +355,7 @@ static const CGFloat DESIGN_CANCEL_HEIGHT = 140;
     [self updateTwincode];
     self.actionView.frame = CGRectMake(0, Design.DISPLAY_HEIGHT, Design.DISPLAY_WIDTH, self.actionView.frame.size.height);
     self.actionView.hidden = NO;
-
+    
     [UIView animateWithDuration:Design.ANIMATION_VIEW_DURATION
                           delay:0
                         options:0
@@ -394,7 +405,7 @@ static const CGFloat DESIGN_CANCEL_HEIGHT = 140;
         if (!self.actionEnable) {
             return;
         }
-
+        
         self.actionEnable = NO;
         [self.acceptInvitationSubscriptionDelegate invitationSubscriptionDidCancel];
         [self closeActionView];
@@ -406,14 +417,14 @@ static const CGFloat DESIGN_CANCEL_HEIGHT = 140;
     
     AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
     alertMessageView.alertMessageViewDelegate = self;
-    [alertMessageView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:TwinmeLocalizedString(@"accept_invitation_view_controller_incorrect_contact_information", nil)];
+    [alertMessageView initWithTitle:TwinmeLocalizedString(@"deleted_account_view_warning", nil) message:TwinmeLocalizedString(@"accept_invitation_view_incorrect_contact_information", nil)];
     [self.view addSubview:alertMessageView];
     [alertMessageView showAlertView];
 }
 
 - (void)updateTwincode {
     DDLogVerbose(@"%@ updateTwincode", LOG_TAG);
-        
+    
     if (self.hasTwincode) {
         self.avatarViewHeightConstraint.constant = DESIGN_AVATAR_HEIGHT * Design.HEIGHT_RATIO;
         self.cancelViewHeightConstraint.constant = DESIGN_CANCEL_HEIGHT * Design.HEIGHT_RATIO;
@@ -424,15 +435,15 @@ static const CGFloat DESIGN_CANCEL_HEIGHT = 140;
         self.cancelView.hidden = NO;
         
         NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:self.contactName attributes:[NSDictionary dictionaryWithObjectsAndKeys: Design.FONT_BOLD44, NSFontAttributeName, Design.FONT_COLOR_DEFAULT, NSForegroundColorAttributeName, nil]];
-        if (self.contactDescription && ![self.contactDescription isEqual:@""] && ![self.contactDescription isEqual:TwinmeLocalizedString(@"side_menu_view_controller_about", nil)]) {
+        if (self.contactDescription && ![self.contactDescription isEqual:@""] && ![self.contactDescription isEqual:TwinmeLocalizedString(@"navigation_view_about_twinme", nil)]) {
             [attributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:@"\n"]];
             [attributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:self.contactDescription attributes:[NSDictionary dictionaryWithObjectsAndKeys: Design.FONT_MEDIUM30, NSFontAttributeName, Design.FONT_COLOR_GREY, NSForegroundColorAttributeName, nil]]];
         }
         
         self.nameLabel.attributedText = attributedString;
         self.avatarView.image = self.contactAvatar;
-            
-        self.messageLabel.text = [NSString stringWithFormat:TwinmeLocalizedString(@"in_app_subscription_view_controller_accept_invitation", nil), self.contactName];
+        
+        self.messageLabel.text = [NSString stringWithFormat:TwinmeLocalizedString(@"in_app_subscription_view_accept_invitation", nil), self.contactName];
     } else {
         self.avatarViewHeightConstraint.constant = 0;
         self.cancelViewHeightConstraint.constant = 0;
@@ -442,7 +453,7 @@ static const CGFloat DESIGN_CANCEL_HEIGHT = 140;
         self.confirmView.hidden = YES;
         self.cancelView.hidden = YES;
         
-        self.messageLabel.text = [NSString stringWithFormat:@"%@\n%@", TwinmeLocalizedString(@"accept_invitation_view_controller_being_transferred", nil), TwinmeLocalizedString(@"accept_invitation_view_controller_check_connection", nil)];
+        self.messageLabel.text = [NSString stringWithFormat:@"%@\n%@", TwinmeLocalizedString(@"accept_invitation_view_being_transferred", nil), TwinmeLocalizedString(@"accept_invitation_view_check_connection", nil)];
     }
 }
 
@@ -454,7 +465,7 @@ static const CGFloat DESIGN_CANCEL_HEIGHT = 140;
     NSError *error = nil;
     NSFileManager *fileManager = [NSFileManager defaultManager];
     NSURL *groupURL = [fileManager containerURLForSecurityApplicationGroupIdentifier:[TLTwinlife APP_GROUP_NAME]];
-   
+    
     NSString *subscriptionPath = [groupURL.path stringByAppendingPathComponent:@"/subscription"];
     
     if (![[NSFileManager defaultManager] fileExistsAtPath:subscriptionPath]) {

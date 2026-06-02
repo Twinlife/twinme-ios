@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2021 twinlife SA.
+ *  Copyright (c) 2021-2026 twinlife SA.
  *  SPDX-License-Identifier: AGPL-3.0-only
  *
  *  Contributors:
@@ -17,6 +17,7 @@
 #import "AccountViewController.h"
 #import "FeedbackViewController.h"
 #import "WebViewController.h"
+#import "FAQViewController.h"
 #import "WelcomeHelpViewController.h"
 #import "PremiumServicesViewController.h"
 #import "QualityOfServicesViewController.h"
@@ -25,13 +26,14 @@
 #import "OnboardingExternalCallViewController.h"
 #import "PremiumServicesViewController.h"
 
-#import "TwinmeSettingsItemCell.h"
+#import "SettingsIconCell.h"
 #import "SettingsSectionHeaderCell.h"
-#import "SettingsItemCell.h"
 #import "OnboardingConfirmView.h"
 
 #import <TwinmeCommon/Design.h>
 #import "SwitchView.h"
+#import "UIHelpItem.h"
+#import "UIHelpSection.h"
 
 #if 0
 static const int ddLogLevel = DDLogLevelVerbose;
@@ -40,26 +42,7 @@ static const int ddLogLevel = DDLogLevelWarning;
 #endif
 
 static NSString *HEADER_SETTINGS_CELL_IDENTIFIER = @"HeaderSettingsCellIdentifier";
-static NSString *TWINME_SETTINGS_CELL_IDENTIFIER = @"TwinmeSettingsCellIdentifier";
-static NSString *SETTINGS_CELL_IDENTIFIER = @"SettingsCellIdentifier";
-
-static const int HELP_VIEW_SECTION = 0;
-static const int INFORMATION_VIEW_SECTION = 1;
-
-static const int FAQ_ROW = 0;
-static const int BLOG_ROW = 1;
-static const int FEEDBACK_ROW = 2;
-
-static const int WELCOME_ROW = 0;
-static const int QUALITY_OF_SERVICES_ROW = 1;
-static const int PREMIUM_SERVICES_ROW = 2;
-static const int ONBOARDING_SPACES_ROW = 3;
-static const int ONBOARDING_PROFILE_ROW = 4;
-static const int ONBOARDING_CLICK_TO_CALL_ROW = 5;
-static const int ONBOARDING_CERTIFIED_RELATION_ROW = 6;
-static const int ONBOARDING_TRANSFER_ROW = 7;
-static const int ONBOARDING_PROXY_ROW = 8;
-static const int COACH_MARK_ROW = 9;
+static NSString *SETTINGS_ICON_CELL_IDENTIFIER = @"SettingsIconCellIdentifier";
 
 //
 // Interface: HelpViewController
@@ -68,6 +51,7 @@ static const int COACH_MARK_ROW = 9;
 @interface HelpViewController ()<UITableViewDelegate, UITableViewDataSource, SettingsActionDelegate, BottomSheetViewDelegate>
 
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
+@property (nonatomic) NSMutableArray<UIHelpSection *> *helpSections;
 
 @end
 
@@ -110,7 +94,7 @@ static const int COACH_MARK_ROW = 9;
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     DDLogVerbose(@"%@ numberOfSectionsInTableView: %@", LOG_TAG, tableView);
     
-    return 2;
+    return self.helpSections.count;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath  {
@@ -121,7 +105,8 @@ static const int COACH_MARK_ROW = 9;
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
     DDLogVerbose(@"%@ tableView: %@ heightForHeaderInSection: %ld", LOG_TAG, tableView, (long)section);
     
-    if (section == HELP_VIEW_SECTION) {
+    UIHelpSection *helpSection = [self.helpSections objectAtIndex:section];
+    if ([helpSection.title isEqual:@""]) {
         return CGFLOAT_MIN;
     }
     return Design.SETTING_SECTION_HEIGHT;
@@ -136,17 +121,15 @@ static const int COACH_MARK_ROW = 9;
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     DDLogVerbose(@"%@ tableView: %@ numberOfRowsInSection: %ld", LOG_TAG, tableView, (long)section);
     
-    if (section == HELP_VIEW_SECTION) {
-        return 3;
-    }
-    
-    return 9;
+    UIHelpSection *helpSection = [self.helpSections objectAtIndex:section];
+    return helpSection.items.count;
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
     DDLogVerbose(@"%@ tableView: %@ viewForHeaderInSection: %ld", LOG_TAG, tableView, (long)section);
     
-    if (section == HELP_VIEW_SECTION) {
+    UIHelpSection *helpSection = [self.helpSections objectAtIndex:section];
+    if ([helpSection.title isEqual:@""]) {
         return [[UIView alloc]init];
     }
     
@@ -155,7 +138,7 @@ static const int COACH_MARK_ROW = 9;
         settingsSectionHeaderCell = [[SettingsSectionHeaderCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:HEADER_SETTINGS_CELL_IDENTIFIER];
     }
     
-    [settingsSectionHeaderCell bindWithTitle:TwinmeLocalizedString(@"about_view_controller_information", nil) backgroundColor:Design.LIGHT_GREY_BACKGROUND_COLOR hideSeparator:NO uppercaseString:YES];
+    [settingsSectionHeaderCell bindWithTitle:helpSection.title backgroundColor:Design.LIGHT_GREY_BACKGROUND_COLOR hideSeparator:NO uppercaseString:YES];
     
     return settingsSectionHeaderCell;
 }
@@ -163,88 +146,16 @@ static const int COACH_MARK_ROW = 9;
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     DDLogVerbose(@"%@ tableView: %@ cellForRowAtIndexPath: %@", LOG_TAG, tableView, indexPath);
     
-    if (indexPath.section == INFORMATION_VIEW_SECTION && indexPath.row == COACH_MARK_ROW) {
-        SettingsItemCell *cell = [tableView dequeueReusableCellWithIdentifier:SETTINGS_CELL_IDENTIFIER];
-        if (!cell) {
-            cell = [[SettingsItemCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:SETTINGS_CELL_IDENTIFIER];
-        }
-        
-        cell.settingsActionDelegate = self;
-        
-        [cell bindWithTitle:TwinmeLocalizedString(@"coach_mark_view_controller_setting_title", nil) subTitle:nil  icon:nil stateSwitch:[self.twinmeApplication showCoachMark] tagSwitch:0 hiddenSwitch:NO disableSwitch:NO backgroundColor:Design.WHITE_COLOR hiddenSeparator:NO];
-        return cell;
-    } else {
-        TwinmeSettingsItemCell *cell = [tableView dequeueReusableCellWithIdentifier:TWINME_SETTINGS_CELL_IDENTIFIER];
-        if (!cell) {
-            cell = [[TwinmeSettingsItemCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:TWINME_SETTINGS_CELL_IDENTIFIER];
-        }
-        
-        NSString *title = @"";
-        
-        if (indexPath.section == HELP_VIEW_SECTION) {
-            switch (indexPath.row) {
-                case FAQ_ROW:
-                    title = TwinmeLocalizedString(@"side_menu_view_controller_faq", nil);
-                    break;
-                    
-                case BLOG_ROW:
-                    title = TwinmeLocalizedString(@"side_menu_view_controller_blog", nil);
-                    break;
-                    
-                case FEEDBACK_ROW:
-                    title = TwinmeLocalizedString(@"feedback_view_controller_title", nil);
-                    break;
-                    
-                default:
-                    break;
-            }
-        } else {
-            switch (indexPath.row) {
-                case WELCOME_ROW:
-                    title = TwinmeLocalizedString(@"settings_view_controller_welcome_screen_category_title", nil).capitalizedString;
-                    break;
-                    
-                case QUALITY_OF_SERVICES_ROW:
-                    title = TwinmeLocalizedString(@"about_view_controller_quality_of_service", nil);
-                    break;
-                    
-                case PREMIUM_SERVICES_ROW:
-                    title = TwinmeLocalizedString(@"about_view_controller_premium_services", nil);
-                    break;
-                    
-                case ONBOARDING_SPACES_ROW:
-                    title = TwinmeLocalizedString(@"premium_services_view_controller_space_title", nil);
-                    break;
-                    
-                case ONBOARDING_PROFILE_ROW:
-                    title = TwinmeLocalizedString(@"application_profile", nil);
-                    break;
-                    
-                case ONBOARDING_CLICK_TO_CALL_ROW:
-                    title = TwinmeLocalizedString(@"premium_services_view_controller_click_to_call_title", nil);
-                    break;
-                    
-                case ONBOARDING_CERTIFIED_RELATION_ROW:
-                    title = TwinmeLocalizedString(@"authentified_relation_view_controller_title", nil);
-                    break;
-                    
-                case ONBOARDING_TRANSFER_ROW:
-                    title = TwinmeLocalizedString(@"account_view_controller_transfer_between_devices", nil);
-                    break;
-                    
-                case ONBOARDING_PROXY_ROW:
-                    title = TwinmeLocalizedString(@"proxy_view_controller_title", nil);
-                    break;
-                    
-                default:
-                    break;
-            }
-        }
-        
-        [cell bindWithTitle:title hiddenAccessory:NO disableSetting:NO color:Design.FONT_COLOR_DEFAULT];
-        
-        return cell;
+    UIHelpSection *helpSection = [self.helpSections objectAtIndex:indexPath.section];
+    UIHelpItem *helpItem = [helpSection.items objectAtIndex:indexPath.row];
+    
+    SettingsIconCell *cell = [tableView dequeueReusableCellWithIdentifier:SETTINGS_ICON_CELL_IDENTIFIER];
+    if (!cell) {
+        cell = [[SettingsIconCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:SETTINGS_ICON_CELL_IDENTIFIER];
     }
+    
+    [cell bindWithTitle:helpItem.title icon:helpItem.icon textColor:Design.FONT_COLOR_DEFAULT iconTintColor:Design.BLACK_COLOR hideSeparator:NO];
+    return cell;
 }
 
 #pragma mark - UITableViewDelegate
@@ -252,45 +163,96 @@ static const int COACH_MARK_ROW = 9;
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     DDLogVerbose(@"%@ tableView: %@ didSelectRowAtIndexPath: %@", LOG_TAG, tableView, indexPath);
     
-    if (indexPath.section == HELP_VIEW_SECTION) {
-        if (indexPath.row == FAQ_ROW) {
-            SFSafariViewController *safariViewController = [[SFSafariViewController alloc]initWithURL:[NSURL URLWithString: TwinmeLocalizedString(@"faq_url", nil)]];
-            [self.navigationController presentViewController:safariViewController animated:YES completion:nil];
-        } else if (indexPath.row == BLOG_ROW) {
+    UIHelpSection *helpSection = [self.helpSections objectAtIndex:indexPath.section];
+    UIHelpItem *helpItem = [helpSection.items objectAtIndex:indexPath.row];
+    
+    switch (helpItem.helpItemType) {
+        case HelpItemTypeGettingStarted: {
+            WebViewController *webViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"WebViewController"];
+            webViewController.fileName = TwinmeLocalizedString(@"help_url", nil);
+            webViewController.name = TwinmeLocalizedString(@"navigation_view_help", nil);
+            [self.navigationController pushViewController:webViewController animated:YES];
+            break;
+        }
+            
+        case HelpItemTypeFAQ: {
+            FAQViewController *faqViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"FAQViewController"];
+            [self.navigationController pushViewController:faqViewController animated:YES];
+            break;
+        }
+            
+        case HelpItemTypeBlog: {
             SFSafariViewController *safariViewController = [[SFSafariViewController alloc]initWithURL:[NSURL URLWithString: TwinmeLocalizedString(@"blog_url", nil)]];
             [self.navigationController presentViewController:safariViewController animated:YES completion:nil];
-        } else if (indexPath.row == FEEDBACK_ROW) {
+            break;
+        }
+            
+        case HelpItemTypeFeedback: {
             FeedbackViewController *feedbackViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"FeedbackViewController"];
             [self.navigationController pushViewController:feedbackViewController animated:YES];
+            break;
         }
-    } else {
-        if (indexPath.row == WELCOME_ROW) {
+            
+        case HelpItemTypeWelcome: {
             WelcomeHelpViewController *welcomeViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"WelcomeHelpViewController"];
             [welcomeViewController showInView:self.navigationController];
-        } else if (indexPath.row == QUALITY_OF_SERVICES_ROW) {
+            break;
+        }
+            
+        case HelpItemTypeProfile: {
+            [self startOnboarding:HelpItemTypeProfile];
+            break;
+        }
+            
+        case HelpItemTypeCertifiedRelation: {
+            [self startOnboarding:HelpItemTypeCertifiedRelation];
+            break;
+        }
+            
+        case HelpItemTypeQualityOfServices: {
             QualityOfServicesViewController *qualityOfServicesViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"QualityOfServicesViewController"];
             [qualityOfServicesViewController showInView:self.navigationController];
-        } else if (indexPath.row == PREMIUM_SERVICES_ROW) {
+            break;
+        }
+            
+        case HelpItemTypeAccountTransfer: {
+            [self startOnboarding:HelpItemTypeAccountTransfer];
+            break;
+        }
+            
+        case HelpItemTypeAdditionalFunctions: {
             PremiumServicesViewController *premiumServicesViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"PremiumServicesViewController"];
             premiumServicesViewController.hideDoNotShow = YES;
             [self.navigationController presentViewController:premiumServicesViewController animated:YES completion:nil];
-        } else if (indexPath.row == ONBOARDING_PROFILE_ROW) {
-            [self startOnboarding:ONBOARDING_PROFILE_ROW];
-        } else if (indexPath.row == ONBOARDING_SPACES_ROW) {
+            break;
+        }
+            
+        case HelpItemTypeSpaces: {
             OnboardingSpaceViewController *onboardingSpaceViewController = [[UIStoryboard storyboardWithName:@"Space" bundle:nil] instantiateViewControllerWithIdentifier:@"OnboardingSpaceViewController"];
             onboardingSpaceViewController.startFromSupportSection = YES;
             [onboardingSpaceViewController showInView:self.navigationController hideFirstPart:NO];
-        } else if (indexPath.row == ONBOARDING_CLICK_TO_CALL_ROW) {
+            break;
+        }
+            
+        case HelpItemTypeClickToCall: {
             OnboardingExternalCallViewController *onboardingExternalCallViewController = [[UIStoryboard storyboardWithName:@"ExternalCall" bundle:nil] instantiateViewControllerWithIdentifier:@"OnboardingExternalCallViewController"];
             onboardingExternalCallViewController.startFromSupportSection = YES;
             [onboardingExternalCallViewController showInView:self.navigationController];
-        } else if (indexPath.row == ONBOARDING_CERTIFIED_RELATION_ROW) {
-            [self startOnboarding:ONBOARDING_CERTIFIED_RELATION_ROW];
-        } else if (indexPath.row == ONBOARDING_TRANSFER_ROW) {
-            [self startOnboarding:ONBOARDING_TRANSFER_ROW];
-        } else if (indexPath.row == ONBOARDING_PROXY_ROW) {
-            [self startOnboarding:ONBOARDING_PROXY_ROW];
+            break;
         }
+            
+        case HelpItemTypeBackup: {
+            [self startOnboarding:HelpItemTypeBackup];
+            break;
+        }
+            
+        case HelpItemTypeProxy: {
+            [self startOnboarding:HelpItemTypeProxy];
+            break;
+        }
+            
+        default:
+            break;
     }
 }
 
@@ -327,12 +289,23 @@ static const int COACH_MARK_ROW = 9;
     
     self.view.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
     
-    [self setNavigationTitle:TwinmeLocalizedString(@"side_menu_view_controller_help", nil)];
+    [self setNavigationTitle:TwinmeLocalizedString(@"navigation_view_help", nil)];
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+    [self.tableView registerNib:[UINib nibWithNibName:@"SettingsIconCell" bundle:nil] forCellReuseIdentifier:SETTINGS_ICON_CELL_IDENTIFIER];
     [self.tableView registerNib:[UINib nibWithNibName:@"SettingsSectionHeaderCell" bundle:nil] forCellReuseIdentifier:HEADER_SETTINGS_CELL_IDENTIFIER];
-    [self.tableView registerNib:[UINib nibWithNibName:@"TwinmeSettingsItemCell" bundle:nil] forCellReuseIdentifier:TWINME_SETTINGS_CELL_IDENTIFIER];
-    [self.tableView registerNib:[UINib nibWithNibName:@"SettingsItemCell" bundle:nil] forCellReuseIdentifier:SETTINGS_CELL_IDENTIFIER];
     self.tableView.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
+    
+    [self initSections];
+}
+
+- (void)initSections {
+    DDLogVerbose(@"%@ initSections", LOG_TAG);
+    
+    self.helpSections = [[NSMutableArray alloc] init];
+    [self.helpSections addObject:[[UIHelpSection alloc]initWithType:HelpSectionTypeGeneral]];
+    [self.helpSections addObject:[[UIHelpSection alloc]initWithType:HelpSectionTypeStandardServices]];
+    [self.helpSections addObject:[[UIHelpSection alloc]initWithType:HelpSectionTypePremiumServices]];
+    [self.helpSections addObject:[[UIHelpSection alloc]initWithType:HelpSectionTypeAdvancedServices]];
 }
 
 - (void)updateFont {
@@ -341,8 +314,8 @@ static const int COACH_MARK_ROW = 9;
     [self.tableView reloadData];
 }
 
-- (void)startOnboarding:(int)row {
-    DDLogVerbose(@"%@ startOnboarding: %d", LOG_TAG, row);
+- (void)startOnboarding:(HelpItemType)helpItemType {
+    DDLogVerbose(@"%@ startOnboarding: %d", LOG_TAG, helpItemType);
     
     OnboardingConfirmView *onboardingConfirmView = [[OnboardingConfirmView alloc] init];
     onboardingConfirmView.bottomSheetViewDelegate = self;
@@ -351,33 +324,45 @@ static const int COACH_MARK_ROW = 9;
     NSString *title;
     NSString *message;
     
-    if (row == ONBOARDING_PROFILE_ROW) {
+    if (helpItemType == HelpItemTypeProfile) {
         
         title =  TwinmeLocalizedString(@"application_profile", nil);
         
-        NSMutableString *mutableString = [[NSMutableString alloc] initWithString:TwinmeLocalizedString(@"create_profile_view_controller_onboarding_message_part_1", nil)];
+        NSMutableString *mutableString = [[NSMutableString alloc] initWithString:TwinmeLocalizedString(@"create_profile_view_onboarding_message_part_1", nil)];
         [mutableString appendString:@"\n\n"];
-        [mutableString appendString:TwinmeLocalizedString(@"create_profile_view_controller_onboarding_message_part_2", nil)];
+        [mutableString appendString:TwinmeLocalizedString(@"create_profile_view_onboarding_message_part_2", nil)];
         [mutableString appendString:@"\n\n"];
-        [mutableString appendString:TwinmeLocalizedString(@"create_profile_view_controller_onboarding_message_part_3", nil)];
+        [mutableString appendString:TwinmeLocalizedString(@"create_profile_view_onboarding_message_part_3", nil)];
         [mutableString appendString:@"\n\n"];
-        [mutableString appendString:TwinmeLocalizedString(@"create_profile_view_controller_onboarding_message_part_4", nil)];
+        [mutableString appendString:TwinmeLocalizedString(@"create_profile_view_onboarding_message_part_4", nil)];
         
         message = mutableString;
         
         image = [self.twinmeApplication darkModeEnable:[self currentSpaceSettings]] ? [UIImage imageNamed:@"OnboardingAddProfileDark"] : [UIImage imageNamed:@"OnboardingAddProfile"];
-    } else if (row == ONBOARDING_CERTIFIED_RELATION_ROW) {
-        title =  TwinmeLocalizedString(@"authentified_relation_view_controller_title", nil);
-        message =  TwinmeLocalizedString(@"authentified_relation_view_controller_onboarding_message", nil);
+    } else if (helpItemType == HelpItemTypeCertifiedRelation) {
+        title =  TwinmeLocalizedString(@"authentified_relation_view_title", nil);
+        message =  TwinmeLocalizedString(@"authentified_relation_view_onboarding_message", nil);
         image = [self.twinmeApplication darkModeEnable:[self currentSpaceSettings]] ? [UIImage imageNamed:@"OnboardingAuthentifiedRelationDark"] : [UIImage imageNamed:@"OnboardingAuthentifiedRelation"];
-    } else if (row == ONBOARDING_TRANSFER_ROW) {
-        title =  TwinmeLocalizedString(@"account_view_controller_transfer_between_devices", nil);
-        message = TwinmeLocalizedString(@"account_view_controller_migration_message", nil);
+    } else if (helpItemType == HelpItemTypeAccountTransfer) {
+        title =  TwinmeLocalizedString(@"account_view_transfer_between_devices", nil);
+        message = TwinmeLocalizedString(@"account_view_migration_message", nil);
         image = [self.twinmeApplication darkModeEnable:[self currentSpaceSettings]] ? [UIImage imageNamed:@"OnboardingMigrationDark"] : [UIImage imageNamed:@"OnboardingMigration"];
-    } else if (row == ONBOARDING_PROXY_ROW) {
-        title =  TwinmeLocalizedString(@"proxy_view_controller_title", nil);
-        message = TwinmeLocalizedString(@"proxy_view_controller_onboarding", nil);
+    } else if (helpItemType == HelpItemTypeProxy) {
+        title =  TwinmeLocalizedString(@"proxy_view_title", nil);
+        message = TwinmeLocalizedString(@"proxy_view_onboarding", nil);
         image = [UIImage imageNamed:@"OnboardingProxy"];
+    } else if (helpItemType == HelpItemTypeBackup) {
+        title = TwinmeLocalizedStringFromTable(@"account_view_backup_restore", @"LocalizableBackup", nil);
+        
+        NSMutableString *mutableString = [[NSMutableString alloc] initWithString:@""];
+        [mutableString appendString:TwinmeLocalizedStringFromTable(@"backup_view_beta_message_part_1", @"LocalizableBackup", nil)];
+        [mutableString appendString:@"\n\n"];
+        [mutableString appendString:TwinmeLocalizedStringFromTable(@"backup_view_beta_message_part_2", @"LocalizableBackup", nil)];
+        [mutableString appendString:@"\n\n"];
+        [mutableString appendString:TwinmeLocalizedStringFromTable(@"backup_view_beta_message_part_3", @"LocalizableBackup", nil)];
+        message = mutableString;
+        
+        image = [UIImage imageNamed:@"OnboardingBackup"];
     }
     
     [onboardingConfirmView initWithTitle:title message:message image:image action:TwinmeLocalizedString(@"application_ok", nil) actionColor:nil cancel:nil];

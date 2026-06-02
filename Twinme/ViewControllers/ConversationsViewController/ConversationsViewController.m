@@ -688,6 +688,13 @@ static int LAST_USED_CONVERSATION_COUNT = 99999;
         return;
     }
     
+    if (descriptor.getType == TLDescriptorTypeCallDescriptor) {
+        TLCallDescriptor *callDescriptor = (TLCallDescriptor *)descriptor;
+        if (![callDescriptor isTerminated]) {
+            return;
+        }
+    }
+    
     if ([conversation conformsToProtocol:@protocol(TLGroupMemberConversation)]) {
         conversation = [(id<TLGroupMemberConversation>)conversation groupConversation];
     }
@@ -725,13 +732,20 @@ static int LAST_USED_CONVERSATION_COUNT = 99999;
         return;
     }
     
+    if (descriptor.getType == TLDescriptorTypeCallDescriptor) {
+        TLCallDescriptor *callDescriptor = (TLCallDescriptor *)descriptor;
+        if (![callDescriptor isTerminated]) {
+            return;
+        }
+    }
+    
     if ([conversation conformsToProtocol:@protocol(TLGroupMemberConversation)]) {
         conversation = [(id<TLGroupMemberConversation>)conversation groupConversation];
     }
     
     UIConversation *uiConversation = self.uiConversationsMap[conversation.uuid];
     if (uiConversation) {
-        if (uiConversation.lastDescriptor && [uiConversation.lastDescriptor.descriptorId isEqual:descriptor.descriptorId]) {
+        if ((uiConversation.lastDescriptor && [uiConversation.lastDescriptor.descriptorId isEqual:descriptor.descriptorId]) || !uiConversation.lastDescriptor || (uiConversation.lastDescriptor && uiConversation.lastDescriptor.createdTimestamp < descriptor.createdTimestamp && descriptor.getType == TLDescriptorTypeCallDescriptor)) {
             [uiConversation setLastDescriptor:descriptor];
             [self updateUIConversation:uiConversation];
             if (!self.searchController.isActive || [self.searchController.searchBar.text isEqualToString:@""]) {
@@ -1010,14 +1024,14 @@ static int LAST_USED_CONVERSATION_COUNT = 99999;
     if (tableView == self.conversationsTableView) {
         // Get the UI conversation now since the list could change while contextualActionWithStyle executes.
         UIConversation *uiConversation = [self.filteredConversations objectAtIndex:indexPath.row];
-        UIContextualAction *deleteAction = [UIContextualAction contextualActionWithStyle:UIContextualActionStyleNormal title:TwinmeLocalizedString(@"main_view_controller_reset_conversation", nil) handler:^(UIContextualAction * _Nonnull action, __kindof UIView * _Nonnull sourceView, void (^ _Nonnull completionHandler)(BOOL)) {
+        UIContextualAction *deleteAction = [UIContextualAction contextualActionWithStyle:UIContextualActionStyleNormal title:TwinmeLocalizedString(@"main_view_reset_conversation", nil) handler:^(UIContextualAction * _Nonnull action, __kindof UIView * _Nonnull sourceView, void (^ _Nonnull completionHandler)(BOOL)) {
             
             // And record the UI conversatation instance to make sure we reset the correct one (using indexPath here is incorrect).
             self.resetConversation = uiConversation;
             [self openResetConversationConfirmView:self.resetConversation.uiContact.avatar];
         }];
         
-        CellActionView *deleteActionView = [[CellActionView alloc]initWithTitle:TwinmeLocalizedString(@"main_view_controller_reset_conversation", nil) icon:@"ToolbarTrash" backgroundColor:[UIColor clearColor] iconWidth:32 iconHeight:38 iconTopMargin:28];
+        CellActionView *deleteActionView = [[CellActionView alloc]initWithTitle:TwinmeLocalizedString(@"main_view_reset_conversation", nil) icon:@"ToolbarTrash" backgroundColor:[UIColor clearColor] iconWidth:32 iconHeight:38 iconTopMargin:28];
         deleteAction.image = [deleteActionView imageFromView];
         deleteAction.backgroundColor = Design.DELETE_COLOR_RED;
         
@@ -1245,24 +1259,21 @@ static int LAST_USED_CONVERSATION_COUNT = 99999;
     self.definesPresentationContext = YES;
     self.view.backgroundColor = Design.WHITE_COLOR;
     
-    [self setNavigationTitle:TwinmeLocalizedString(@"conversations_view_controller_title", nil).capitalizedString];
+    [self setNavigationTitle:TwinmeLocalizedString(@"conversations_view_title", nil).capitalizedString];
     
-    self.segmentedControl = [[UISegmentedControl alloc]initWithItems:@[TwinmeLocalizedString(@"history_view_controller_all_call_segmented_control", nil), TwinmeLocalizedString(@"share_view_controller_group_list_title", nil)]];
+    self.segmentedControl = [[UISegmentedControl alloc]initWithItems:@[TwinmeLocalizedString(@"calls_view_all_call_segmented_control", nil), TwinmeLocalizedString(@"share_view_group_list", nil)]];
     [self.segmentedControl setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys: Design.FONT_REGULAR32, NSFontAttributeName, [UIColor whiteColor], NSForegroundColorAttributeName, nil] forState:UIControlStateNormal];
     [self.segmentedControl setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys: Design.FONT_REGULAR32, NSFontAttributeName, Design.MAIN_COLOR, NSForegroundColorAttributeName, nil] forState:UIControlStateSelected];
     self.segmentedControl.selectedSegmentIndex = 0;
     self.segmentedControl.tintColor = [UIColor whiteColor];
-    
-    if (@available(iOS 13.0, *)) {
-        self.segmentedControl.selectedSegmentTintColor = [UIColor whiteColor];
-    }
+    self.segmentedControl.selectedSegmentTintColor = [UIColor whiteColor];
     
     [self.segmentedControl addTarget:self action:@selector(segmentedControlValueDidChange:) forControlEvents:UIControlEventValueChanged];
     
     self.navigationItem.titleView = self.segmentedControl;
     
     self.addChatBarButtonItem = [[UIBarButtonItem alloc]initWithImage:[UIImage imageNamed:@"ActionBarNewChat"] style:UIBarButtonItemStylePlain target:self action:@selector(handleAddChatTapGesture:)];
-    self.addChatBarButtonItem.accessibilityLabel = TwinmeLocalizedString(@"conversations_view_controller_title", nil);
+    self.addChatBarButtonItem.accessibilityLabel = TwinmeLocalizedString(@"conversations_view_title", nil);
     self.navigationItem.rightBarButtonItem = self.addChatBarButtonItem;
     
     self.searchController = [[UISearchController alloc]initWithSearchResultsController:nil];
@@ -1284,17 +1295,12 @@ static int LAST_USED_CONVERSATION_COUNT = 99999;
     
     self.searchController.searchBar.translucent = YES;
     self.searchController.searchBar.delegate = self;
-    
-    if (@available(iOS 13.0, *)) {
-        self.searchController.searchBar.backgroundColor = [UIColor clearColor];
-        self.searchController.searchBar.searchTextField.backgroundColor = Design.POPUP_BACKGROUND_COLOR;
-        self.searchController.searchBar.searchTextField.tintColor = [UIColor darkGrayColor];
-        self.searchController.searchBar.translucent = YES;
-        self.searchController.searchBar.delegate = self;
-        self.navigationItem.searchController = self.searchController;
-    } else {
-        self.conversationsTableView.tableHeaderView = self.searchController.searchBar;
-    }
+    self.searchController.searchBar.backgroundColor = [UIColor clearColor];
+    self.searchController.searchBar.searchTextField.backgroundColor = Design.POPUP_BACKGROUND_COLOR;
+    self.searchController.searchBar.searchTextField.tintColor = [UIColor darkGrayColor];
+    self.searchController.searchBar.translucent = YES;
+    self.searchController.searchBar.delegate = self;
+    self.navigationItem.searchController = self.searchController;
     
     self.conversationsTableView.delegate = self;
     self.conversationsTableView.dataSource = self;
@@ -1318,7 +1324,7 @@ static int LAST_USED_CONVERSATION_COUNT = 99999;
     self.noConversationLabel.font = Design.FONT_MEDIUM34;
     self.noConversationLabel.textColor = Design.FONT_COLOR_DEFAULT;
     [self.noConversationLabel setAdjustsFontSizeToFitWidth:YES];
-    self.noConversationLabel.text = TwinmeLocalizedString(@"conversations_view_controller_no_conversation_message", nil);
+    self.noConversationLabel.text = TwinmeLocalizedString(@"conversations_view_no_conversation_message", nil);
     self.noConversationLabel.hidden = YES;
     
     self.inviteContactViewBottomConstraint.constant *= Design.HEIGHT_RATIO;
@@ -1332,7 +1338,7 @@ static int LAST_USED_CONVERSATION_COUNT = 99999;
     self.inviteContactView.clipsToBounds = YES;
     self.inviteContactView.hidden = YES;
     self.inviteContactView.isAccessibilityElement = YES;
-    self.inviteContactView.accessibilityLabel = TwinmeLocalizedString(@"contacts_view_controller_invite_contact_title", nil);
+    self.inviteContactView.accessibilityLabel = TwinmeLocalizedString(@"contacts_view_invite_contact_title", nil);
     [self.inviteContactView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleAddContactTapGesture:)]];
     
     self.inviteContactLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
@@ -1340,7 +1346,7 @@ static int LAST_USED_CONVERSATION_COUNT = 99999;
     
     self.inviteContactLabel.font = Design.FONT_MEDIUM34;
     self.inviteContactLabel.textColor = [UIColor whiteColor];
-    self.inviteContactLabel.text = TwinmeLocalizedString(@"contacts_view_controller_invite_contact_title", nil);
+    self.inviteContactLabel.text = TwinmeLocalizedString(@"contacts_view_invite_contact_title", nil);
     
     self.transferLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
     self.transferLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
@@ -1349,7 +1355,7 @@ static int LAST_USED_CONVERSATION_COUNT = 99999;
     self.transferLabel.font = Design.FONT_REGULAR26;
     self.transferLabel.textColor = Design.FONT_COLOR_DEFAULT;
     
-    NSMutableAttributedString *transferAttributedString = [[NSMutableAttributedString alloc] initWithString:TwinmeLocalizedString(@"account_view_controller_transfer_from_another_device", nil)];
+    NSMutableAttributedString *transferAttributedString = [[NSMutableAttributedString alloc] initWithString:TwinmeLocalizedString(@"account_view_transfer_from_another_device", nil)];
     [transferAttributedString addAttribute:NSUnderlineStyleAttributeName value:@1 range:NSMakeRange(0,
                                                                                                     [transferAttributedString length])];
     [self.transferLabel setAttributedText:transferAttributedString];
@@ -1371,7 +1377,7 @@ static int LAST_USED_CONVERSATION_COUNT = 99999;
     self.startConversationView.clipsToBounds = YES;
     self.startConversationView.hidden = YES;
     self.startConversationView.isAccessibilityElement = YES;
-    self.startConversationView.accessibilityLabel = TwinmeLocalizedString(@"conversations_view_controller_start", nil);
+    self.startConversationView.accessibilityLabel = TwinmeLocalizedString(@"conversations_view_start", nil);
     [self.startConversationView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleAddChatTapGesture:)]];
     
     self.startConversationLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
@@ -1379,7 +1385,7 @@ static int LAST_USED_CONVERSATION_COUNT = 99999;
 
     self.startConversationLabel.font = Design.FONT_MEDIUM34;
     self.startConversationLabel.textColor = [UIColor whiteColor];
-    self.startConversationLabel.text = TwinmeLocalizedString(@"conversations_view_controller_start", nil);
+    self.startConversationLabel.text = TwinmeLocalizedString(@"conversations_view_start", nil);
     
     self.searchTableViewBottomConstraint.constant *= Design.HEIGHT_RATIO;
     
@@ -1411,7 +1417,7 @@ static int LAST_USED_CONVERSATION_COUNT = 99999;
     
     self.noResultFoundTitleLabel.font = Design.FONT_MEDIUM34;
     self.noResultFoundTitleLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    self.noResultFoundTitleLabel.text = TwinmeLocalizedString(@"conversations_view_controller_no_result_found", nil);
+    self.noResultFoundTitleLabel.text = TwinmeLocalizedString(@"conversations_view_no_result_found", nil);
     self.noResultFoundTitleLabel.hidden = YES;
     
     self.noResultFoundLabelWidthConstraint.constant *= Design.WIDTH_RATIO;
@@ -1419,13 +1425,13 @@ static int LAST_USED_CONVERSATION_COUNT = 99999;
     
     self.noResultFoundLabel.font = Design.FONT_MEDIUM28;
     self.noResultFoundLabel.textColor = Design.FONT_COLOR_DESCRIPTION;
-    self.noResultFoundLabel.text = TwinmeLocalizedString(@"conversations_view_controller_no_result_found_message", nil);;
+    self.noResultFoundLabel.text = TwinmeLocalizedString(@"conversations_view_no_result_found_message", nil);;
     self.noResultFoundLabel.hidden = YES;
         
     [self.customTabs addObject:[[UICustomTab alloc]initWithTitle:TwinmeLocalizedString(@"application_all", nil) tag:SearchFilterAll isSelected:YES]];
-    [self.customTabs addObject:[[UICustomTab alloc]initWithTitle:TwinmeLocalizedString(@"contacts_view_controller_title", nil) tag:SearchFilterContacts isSelected:NO]];
-    [self.customTabs addObject:[[UICustomTab alloc]initWithTitle:TwinmeLocalizedString(@"share_view_controller_group_list_title", nil) tag:SearchFilterGroup isSelected:NO]];
-    [self.customTabs addObject:[[UICustomTab alloc]initWithTitle:TwinmeLocalizedString(@"settings_view_controller_chat_category_title", nil) tag:SearchFilterMessage isSelected:NO]];
+    [self.customTabs addObject:[[UICustomTab alloc]initWithTitle:TwinmeLocalizedString(@"contacts_view_title", nil) tag:SearchFilterContacts isSelected:NO]];
+    [self.customTabs addObject:[[UICustomTab alloc]initWithTitle:TwinmeLocalizedString(@"share_view_group_list", nil) tag:SearchFilterGroup isSelected:NO]];
+    [self.customTabs addObject:[[UICustomTab alloc]initWithTitle:TwinmeLocalizedString(@"settings_view_chat_category_title", nil) tag:SearchFilterMessage isSelected:NO]];
     
     self.customTabView = [[CustomTabView alloc] initWithCustomTab:self.customTabs];
     self.customTabView.customTabViewDelegate = self;
@@ -1581,7 +1587,7 @@ static int LAST_USED_CONVERSATION_COUNT = 99999;
     } else if (![self.currentSpace hasPermission:TLSpacePermissionTypeCreateGroup]) {
         AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
         alertMessageView.alertMessageViewDelegate = self;
-        [alertMessageView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:TwinmeLocalizedString(@"spaces_view_controller_permission_not_allowed", nil)];
+        [alertMessageView initWithTitle:TwinmeLocalizedString(@"deleted_account_view_warning", nil) message:TwinmeLocalizedString(@"spaces_view_permission_not_allowed", nil)];
         [self.tabBarController.view addSubview:alertMessageView];
         [alertMessageView showAlertView];
     } else {
@@ -1647,7 +1653,8 @@ static int LAST_USED_CONVERSATION_COUNT = 99999;
     DDLogVerbose(@"%@ showOriginator: %@", LOG_TAG, uiConversation);
     
     if (uiConversation.uiContact.contact) {
-        [ConversationsViewController showViewWithSubject:uiConversation.uiContact.contact navigationController:self.navigationController];
+        TwinmeNavigationController *navigationController = (TwinmeNavigationController *) self.navigationController;
+        [ConversationsViewController showViewWithSubject:uiConversation.uiContact.contact navigationController:navigationController];
     }
 }
 
@@ -1670,16 +1677,13 @@ static int LAST_USED_CONVERSATION_COUNT = 99999;
         self.inviteContactView.hidden = NO;
         self.noConversationImageViewHeightConstraint.constant = DESIGN_NO_CONTACT_IMAGE_HEIGHT * Design.HEIGHT_RATIO;
         self.noConversationImageView.image = [self.twinmeApplication darkModeEnable:[self currentSpaceSettings]] ? [UIImage imageNamed:@"OnboardingStep3Dark"] : [UIImage imageNamed:@"OnboardingStep3"];
-        self.noConversationLabel.text = TwinmeLocalizedString(@"add_contact_view_controller_onboarding_message", nil);
+        self.noConversationLabel.text = TwinmeLocalizedString(@"add_contact_view_onboarding_message", nil);
         
         self.navigationItem.titleView = nil;
-        [self setNavigationTitle:TwinmeLocalizedString(@"conversations_view_controller_title", nil).capitalizedString];
+        [self setNavigationTitle:TwinmeLocalizedString(@"conversations_view_title", nil).capitalizedString];
         [self.navigationController.navigationBar setPrefersLargeTitles:NO];
         self.navigationItem.largeTitleDisplayMode = UINavigationItemLargeTitleDisplayModeNever;
-        
-        if (@available(iOS 13.0, *)) {
-            self.navigationItem.searchController = nil;
-        }
+        self.navigationItem.searchController = nil;
     } else if (self.uiConversations.count == 0 && !self.searchController.active) {
         self.addChatBarButtonItem.enabled = YES;
         self.noConversationImageView.hidden = NO;
@@ -1690,17 +1694,14 @@ static int LAST_USED_CONVERSATION_COUNT = 99999;
         self.startConversationView.hidden = NO;
         self.noConversationImageViewHeightConstraint.constant = DESIGN_NO_CONVERSATION_IMAGE_HEIGHT * Design.HEIGHT_RATIO;
         self.noConversationImageView.image = [self.twinmeApplication darkModeEnable:[self currentSpaceSettings]] ? [UIImage imageNamed:@"OnboardingStep2Dark"] : [UIImage imageNamed:@"OnboardingStep2"];
-        self.noConversationLabel.text = TwinmeLocalizedString(@"conversations_view_controller_no_conversation_message", nil);
+        self.noConversationLabel.text = TwinmeLocalizedString(@"conversations_view_no_conversation_message", nil);
         
         self.navigationItem.titleView = nil;
-        [self setNavigationTitle:TwinmeLocalizedString(@"conversations_view_controller_title", nil).capitalizedString];
+        [self setNavigationTitle:TwinmeLocalizedString(@"conversations_view_title", nil).capitalizedString];
         
         [self.navigationController.navigationBar setPrefersLargeTitles:NO];
         self.navigationItem.largeTitleDisplayMode = UINavigationItemLargeTitleDisplayModeNever;
-        
-        if (@available(iOS 13.0, *)) {
-            self.navigationItem.searchController = nil;
-        }
+        self.navigationItem.searchController = nil;
     } else {
         self.addChatBarButtonItem.enabled = YES;
         self.noConversationImageView.hidden = YES;
@@ -1713,10 +1714,7 @@ static int LAST_USED_CONVERSATION_COUNT = 99999;
         self.navigationItem.titleView = self.segmentedControl;
         [self.navigationController.navigationBar setPrefersLargeTitles:YES];
         self.navigationItem.largeTitleDisplayMode = UINavigationItemLargeTitleDisplayModeAutomatic;
-        
-        if (@available(iOS 13.0, *)) {
-            self.navigationItem.searchController = self.searchController;
-        }
+        self.navigationItem.searchController = self.searchController;
     }
     
     [self.conversationsTableView reloadData];
@@ -1740,7 +1738,7 @@ static int LAST_USED_CONVERSATION_COUNT = 99999;
                 self.customTabContainerView.hidden = YES;
                 self.noResultFoundImageView.hidden = NO;
                 self.noResultFoundTitleLabel.hidden = NO;
-                self.noResultFoundTitleLabel.text = [NSString stringWithFormat:TwinmeLocalizedString(@"conversations_view_controller_no_result_found", nil), self.searchController.searchBar.text];
+                self.noResultFoundTitleLabel.text = [NSString stringWithFormat:TwinmeLocalizedString(@"conversations_view_no_result_found", nil), self.searchController.searchBar.text];
                 self.noResultFoundLabel.hidden = YES;
             }
         } else {
@@ -1756,7 +1754,7 @@ static int LAST_USED_CONVERSATION_COUNT = 99999;
         self.customTabContainerView.hidden = NO;
         self.noResultFoundImageView.hidden = NO;
         self.noResultFoundTitleLabel.hidden = NO;
-        self.noResultFoundTitleLabel.text = [NSString stringWithFormat:TwinmeLocalizedString(@"conversations_view_controller_no_result_found", nil), self.searchController.searchBar.text];
+        self.noResultFoundTitleLabel.text = [NSString stringWithFormat:TwinmeLocalizedString(@"conversations_view_no_result_found", nil), self.searchController.searchBar.text];
         self.noResultFoundLabel.hidden = YES;
     } else {
         self.searchTableView.hidden = NO;
@@ -1808,19 +1806,19 @@ static int LAST_USED_CONVERSATION_COUNT = 99999;
 - (void)openResetConversationConfirmView:(UIImage *)avatar {
     DDLogVerbose(@"%@ openResetConversationConfirmView", LOG_TAG);
         
-    NSString *alertMessage = TwinmeLocalizedString(@"main_view_controller_reset_conversation_message", nil);
+    NSString *alertMessage = TwinmeLocalizedString(@"main_view_reset_conversation_message", nil);
     if ([self.resetConversation.uiContact.contact isGroup]) {
         TLGroup *group = (TLGroup *)self.resetConversation.uiContact.contact;
         if (group.isOwner) {
-            alertMessage = TwinmeLocalizedString(@"main_view_controller_reset_group_conversation_admin_message", nil);
+            alertMessage = TwinmeLocalizedString(@"main_view_reset_group_conversation_admin_message", nil);
         } else {
-            alertMessage = TwinmeLocalizedString(@"main_view_controller_reset_group_conversation_message", nil);
+            alertMessage = TwinmeLocalizedString(@"main_view_reset_group_conversation_message", nil);
         }
     }
     
     self.resetConversationConfirmView = [[ResetConversationConfirmView alloc] init];
     self.resetConversationConfirmView.bottomSheetViewDelegate = self;
-    [self.resetConversationConfirmView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:alertMessage avatar:avatar icon:[UIImage imageNamed:@"ActionBarDelete"]];
+    [self.resetConversationConfirmView initWithTitle:TwinmeLocalizedString(@"deleted_account_view_warning", nil) message:alertMessage avatar:avatar icon:[UIImage imageNamed:@"ActionBarDelete"]];
     [self.tabBarController.view addSubview:self.resetConversationConfirmView];
     [self.resetConversationConfirmView showConfirmView];
 }
@@ -1866,19 +1864,14 @@ static int LAST_USED_CONVERSATION_COUNT = 99999;
     self.searchTableView.backgroundColor = Design.WHITE_COLOR;
     
     self.searchController.searchBar.barTintColor = Design.NAVIGATION_BAR_BACKGROUND_COLOR;
+    self.searchController.searchBar.backgroundColor = [UIColor clearColor];
+    self.searchController.searchBar.searchTextField.backgroundColor = Design.POPUP_BACKGROUND_COLOR;
+    self.searchController.searchBar.searchTextField.tintColor = Design.FONT_COLOR_DEFAULT;
+    self.searchController.searchBar.searchTextField.textColor = Design.FONT_COLOR_DEFAULT;
     
-    if (@available(iOS 13.0, *)) {
-        self.searchController.searchBar.backgroundColor = [UIColor clearColor];
-        self.searchController.searchBar.searchTextField.backgroundColor = Design.POPUP_BACKGROUND_COLOR;
-        self.searchController.searchBar.searchTextField.tintColor = Design.FONT_COLOR_DEFAULT;
-        self.searchController.searchBar.searchTextField.textColor = Design.FONT_COLOR_DEFAULT;
-        
-        UIImageView *glassIconImageView = (UIImageView *)self.searchController.searchBar.searchTextField.leftView;
-        glassIconImageView.image = [glassIconImageView.image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-        glassIconImageView.tintColor = Design.PLACEHOLDER_COLOR;
-    } else {
-        self.searchController.searchBar.backgroundColor = Design.NAVIGATION_BAR_BACKGROUND_COLOR;
-    }
+    UIImageView *glassIconImageView = (UIImageView *)self.searchController.searchBar.searchTextField.leftView;
+    glassIconImageView.image = [glassIconImageView.image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    glassIconImageView.tintColor = Design.PLACEHOLDER_COLOR;
     
     if ([self.twinmeApplication darkModeEnable:[self currentSpaceSettings]]) {
         self.searchController.searchBar.keyboardAppearance = UIKeyboardAppearanceDark;

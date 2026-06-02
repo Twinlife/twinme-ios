@@ -58,31 +58,37 @@
             break;
             
         case ConversationActionTypeFile:
-            self.title = TwinmeLocalizedString(@"export_view_controller_files", nil).capitalizedString;
+            self.title = TwinmeLocalizedString(@"export_view_files", nil).capitalizedString;
             self.icon = [UIImage imageNamed:@"ToolbarFileGrey"];
             self.iconColor = [UIColor colorWithRed:200./255. green:200./255. blue:200./255. alpha:1];
             break;
             
         case ConversationActionTypeManageConversation:
-            self.title = TwinmeLocalizedString(@"conversation_view_controller_manage_conversation", nil);
+            self.title = TwinmeLocalizedString(@"conversation_view_manage_conversation", nil);
             self.icon = [UIImage imageNamed:@"SettingsIcon"];
             self.iconColor = darkMode ? [UIColor colorWithRed:230./255. green:230./255. blue:230./255. alpha:1] : [UIColor colorWithRed:110./255. green:110./255. blue:110./255. alpha:1];
             break;
             
         case ConversationActionTypeLocation:
-            self.title = TwinmeLocalizedString(@"call_view_controller_location_share", nil).capitalizedString;
+            self.title = TwinmeLocalizedString(@"call_view_location_share", nil).capitalizedString;
             self.icon = [UIImage imageNamed:@"ToolbarLocationGrey"];
             self.iconColor = [UIColor colorWithRed:210./255. green:218./255. blue:119./255. alpha:1];
             break;
             
+        case ConversationActionTypePoll:
+            self.title = TwinmeLocalizedString(@"poll_view_title", nil);
+            self.icon = [UIImage imageNamed:@"PollIcon"];
+            self.iconColor = [UIColor colorWithRed:0./255. green:89./255. blue:255./255. alpha:1];
+            break;
+            
         case ConversationActionTypeMediasAndFiles:
-            self.title = TwinmeLocalizedString(@"conversation_files_view_controller_title", nil);
+            self.title = TwinmeLocalizedString(@"conversation_files_view_title", nil);
             self.icon = [UIImage imageNamed:@"SelectFile"];
             self.iconColor = [UIColor colorWithRed:78./255. green:171./255. blue:241./255. alpha:1];
             break;
             
         case ConversationActionTypeReset:
-            self.title = TwinmeLocalizedString(@"main_view_controller_reset_conversation_title", nil);
+            self.title = TwinmeLocalizedString(@"main_view_reset_conversation_title", nil);
             self.icon = [UIImage imageNamed:@"ActionBarDelete"];
             self.iconColor = Design.DELETE_COLOR_RED;
             break;

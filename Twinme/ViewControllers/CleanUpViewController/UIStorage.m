@@ -41,15 +41,15 @@
     
     switch (self.storageType) {
         case StorageTypeTotal:
-            title = TwinmeLocalizedString(@"cleanup_view_controller_total", nil);
+            title = TwinmeLocalizedString(@"cleanup_view_total", nil);
             break;
             
         case StorageTypeUsed:
-            title = TwinmeLocalizedString(@"cleanup_view_controller_used", nil);
+            title = TwinmeLocalizedString(@"cleanup_view_used", nil);
             break;
             
         case StorageTypeFree:
-            title = TwinmeLocalizedString(@"cleanup_view_controller_free", nil);
+            title = TwinmeLocalizedString(@"cleanup_view_free", nil);
             break;
             
         case StorageTypeApp:
@@ -60,7 +60,7 @@
             if (self.conversationName) {
                 title = _conversationName;
             } else {
-                title = TwinmeLocalizedString(@"conversations_view_controller_title", nil);
+                title = TwinmeLocalizedString(@"conversations_view_title", nil);
             }
             break;
             

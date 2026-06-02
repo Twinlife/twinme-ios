@@ -26,6 +26,7 @@
 
 #import <TwinmeCommon/AsyncVideoLoader.h>
 #import <TwinmeCommon/AsyncImageLoader.h>
+#import <TwinmeCommon/UIViewController+Utils.h>
 #import "DecoratedLabel.h"
 #import <TwinmeCommon/Design.h>
 #import "UIView+Toast.h"
@@ -97,6 +98,9 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
 @property (weak, nonatomic) IBOutlet UIView *checkMarkView;
 @property (weak, nonatomic) IBOutlet UIImageView *checkMarkImageView;
 @property (weak, nonatomic) IBOutlet UIView *overlayView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *infoImageViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *infoImageViewTrailinConstraint;
+@property (weak, nonatomic) IBOutlet UIImageView *infoImageView;
 
 @property (nonatomic) TLVideoDescriptor *videoDescriptor;
 @property (nonatomic) CGFloat topLeftRadius;
@@ -263,6 +267,17 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
     self.checkMarkView.hidden = YES;
     self.checkMarkView.backgroundColor = [UIColor whiteColor];
     self.checkMarkImageView.tintColor = Design.MAIN_COLOR;
+    
+    self.infoImageViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    self.infoImageViewTrailinConstraint.constant *= Design.WIDTH_RATIO;
+    
+    self.infoImageView.hidden = YES;
+    self.infoImageView.userInteractionEnabled = YES;
+    self.infoImageView.tintColor = [UIColor orangeColor];
+    
+    UITapGestureRecognizer *infoTapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleInfoTapGestureRecognizer:)];
+    [self.infoImageView addGestureRecognizer:infoTapGesture];
+    [infoTapGesture requireGestureRecognizerToFail:longPressGesture];
 }
 
 - (void)prepareForReuse {
@@ -289,6 +304,7 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
     self.replyView.hidden = YES;
     self.replyToImageContentView.hidden = YES;
     self.replyLabel.text = nil;
+    self.infoImageView.hidden = YES;
 }
 
 #pragma mark - ItemCell
@@ -396,7 +412,7 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
                 self.replyToImageContentView.hidden = YES;
                 self.replyViewTopConstraint.constant = topMargin;
                 [self.replyLabel setPaddingWithTop:heightPadding left:widthPadding bottom:heightPadding right:widthPadding];
-                self.replyLabel.text = TwinmeLocalizedString(@"conversation_view_controller_audio_message", nil);
+                self.replyLabel.text = TwinmeLocalizedString(@"conversation_view_audio_message", nil);
                 break;
             }
                 
@@ -474,7 +490,7 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
         self.replyViewTopConstraint.constant = 0;
         self.replyToImageContentViewTopConstraint.constant = 0;
     }
-    
+
     if (self.item.isEphemeralItem) {
         self.gradientBottomView.hidden = NO;
         
@@ -493,6 +509,7 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
     
     self.stateImageView.backgroundColor = [UIColor clearColor];
     self.stateImageView.tintColor = [UIColor clearColor];
+    self.infoImageView.hidden = YES;
     
     int corners = videoItem.corners;
     switch (videoItem.state) {
@@ -534,6 +551,11 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
             self.stateImageView.hidden = NO;
             [self.stateImageView.layer removeAllAnimations];
             self.stateImageView.image = [UIImage imageNamed:@"ItemStateNotSent"];
+            
+            if (self.item.errorAnnotation && !self.isSelectItemMode) {
+                self.infoImageView.hidden = NO;
+            }
+            
             break;
             
         case ItemStateDeleted:
@@ -688,8 +710,12 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
         return CGSizeMake(Design.ANNOTATION_CELL_WIDTH_NORMAL, self.annotationCollectionViewHeightConstraint.constant);
     }
 
-    TLDescriptorAnnotation *descriptorAnnotation = [self.item.likeDescriptorAnnotations objectAtIndex:indexPath.row];
-    return CGSizeMake([self annotationWidth:descriptorAnnotation], self.annotationCollectionViewHeightConstraint.constant);
+    if (indexPath.row < self.item.likeDescriptorAnnotations.count) {
+        AnnotationWithCount *annotation = [self.item.likeDescriptorAnnotations objectAtIndex:indexPath.row];
+        return CGSizeMake([self annotationWidth:annotation], self.annotationCollectionViewHeightConstraint.constant);
+    }
+    
+    return CGSizeZero;
 }
 
 - (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout minimumLineSpacingForSectionAtIndex:(NSInteger)section {
@@ -712,16 +738,16 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
         [annotationCell bindWithForwardedAnnotation:NO];
         return annotationCell;
     } else {
-        TLDescriptorAnnotation *descriptorAnnotation = [self.item.likeDescriptorAnnotations objectAtIndex:indexPath.row];
+        AnnotationWithCount *descriptorAnnotation = [self.item.likeDescriptorAnnotations objectAtIndex:indexPath.row];
         if (descriptorAnnotation.count == 1) {
             AnnotationCell *annotationCell = [collectionView dequeueReusableCellWithReuseIdentifier:ANNOTATION_CELL_IDENTIFIER forIndexPath:indexPath];
             annotationCell.annotationActionDelegate = self;
-            [annotationCell bindWithAnnotation:descriptorAnnotation descriptorId:self.item.descriptorId isPeerItem:NO];
+            [annotationCell bindWithAnnotation:descriptorAnnotation.annotation descriptorId:self.item.descriptorId isPeerItem:NO];
             return annotationCell;
         } else {
             AnnotationCountCell *annotationCountCell = [collectionView dequeueReusableCellWithReuseIdentifier:ANNOTATION_COUNT_CELL_IDENTIFIER forIndexPath:indexPath];
             annotationCountCell.annotationActionDelegate = self;
-            [annotationCountCell bindWithAnnotation:descriptorAnnotation descriptorId:self.item.descriptorId isPeerItem:NO];
+            [annotationCountCell bindWithAnnotation:descriptorAnnotation.annotation count:descriptorAnnotation.count descriptorId:self.item.descriptorId isPeerItem:NO];
             return annotationCountCell;
         }
     }
@@ -750,7 +776,10 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
     }
     
     if ([self.item isClearLocalItem]) {
-        [[UIApplication sharedApplication].keyWindow makeToast:TwinmeLocalizedString(@"conversation_view_controller_local_cleanup", nil)];
+        UIWindow *window = [UIViewController currentWindow];
+        if (window) {
+            [window makeToast:TwinmeLocalizedString(@"conversation_view_local_cleanup", nil)];
+        }
     } else if (![self.item isDeletedItem] && self.contentImageView.image && [self.videoActionDelegate respondsToSelector:@selector(fullscreenVideoWithVideoDescriptor:)]) {
         [self.videoActionDelegate fullscreenVideoWithVideoDescriptor:self.videoDescriptor];
     }
@@ -783,6 +812,14 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
     
     if ([self.replyItemDelegate respondsToSelector:@selector(didSelectReplyTo:)]) {
         [self.replyItemDelegate didSelectReplyTo:self.item.replyTo];
+    }
+}
+
+- (void)handleInfoTapGestureRecognizer:(UITapGestureRecognizer *)tapGesture {
+    DDLogVerbose(@"%@ handleInfoTapGestureRecognizer: %@", LOG_TAG, tapGesture);
+    
+    if ([self.infoItemDelegate respondsToSelector:@selector(didTapInfoItem:)]) {
+        [self.infoItemDelegate didTapInfoItem:self.item];
     }
 }
 

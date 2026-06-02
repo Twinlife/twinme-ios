@@ -91,7 +91,7 @@ static int checkCharCode = 0x2713;
     self.subscribeEnableLabel.textColor = DESIGN_SUBSCRIBE_COLOR;
     
     NSString *checkString = [[NSString alloc] initWithBytes:&checkCharCode length:4 encoding:NSUTF32LittleEndianStringEncoding];
-    self.subscribeEnableLabel.text = [checkString stringByAppendingString: TwinmeLocalizedString(@"side_menu_view_controller_subscribe_enable", nil)];
+    self.subscribeEnableLabel.text = [checkString stringByAppendingString: TwinmeLocalizedString(@"navigation_view_subscribe_enable", nil)];
     self.accessoryImageViewHeightConstraint.constant = Design.ACCESSORY_HEIGHT;
     self.accessoryImageViewTrailingConstraint.constant *= Design.WIDTH_RATIO;
     self.accessoryImageView.tintColor = Design.ACCESSORY_COLOR;
@@ -106,10 +106,10 @@ static int checkCharCode = 0x2713;
     
     if (subscribeEnable) {
         self.subscribeView.hidden = NO;
-        self.title.text = TwinmeLocalizedString(@"in_app_subscription_view_controller_title", nil);
+        self.title.text = TwinmeLocalizedString(@"in_app_subscription_view_title", nil);
     } else {
         self.subscribeView.hidden = YES;
-        self.title.text = TwinmeLocalizedString(@"side_menu_view_controller_subscribe", nil);
+        self.title.text = TwinmeLocalizedString(@"navigation_view_subscribe", nil);
     }
     
     [self updateFont];

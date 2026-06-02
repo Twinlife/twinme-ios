@@ -180,7 +180,7 @@ static const CGFloat DESIGN_NAME_TRAILING = 20;
    
     self.tagLabel.font = Design.FONT_REGULAR28;
     self.tagLabel.textColor = [UIColor colorWithRed:255./255. green:147./255. blue:0./255. alpha:1];
-    self.tagLabel.text = TwinmeLocalizedString(@"show_contact_view_controller_pending", nil);
+    self.tagLabel.text = TwinmeLocalizedString(@"show_contact_view_pending", nil);
     
     self.certifiedRelationImageViewHeightConstraint.constant = Design.CERTIFIED_HEIGHT;
     self.certifiedRelationImageViewLeadingConstraint.constant *= Design.WIDTH_RATIO;

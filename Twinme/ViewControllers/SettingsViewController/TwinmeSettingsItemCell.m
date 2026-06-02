@@ -99,7 +99,7 @@ static const int ddLogLevel = DDLogLevelWarning;
     [self.badgeLabel addGestureRecognizer:badgeViewGestureRecognizer];
 }
 
-- (void)bindWithTitle:(NSString *)title hiddenAccessory:(BOOL)hiddenAccessory disableSetting:(BOOL)disableSetting color:(UIColor *)color {
+- (void)bindWithTitle:(nonnull NSString *)title hiddenAccessory:(BOOL)hiddenAccessory disableSetting:(BOOL)disableSetting color:(nonnull UIColor *)color {
     DDLogVerbose(@"%@ bindWithTitle: %@ hiddenAccessory: %d disableSetting: %d", LOG_TAG, title, hiddenAccessory, disableSetting);
     
     self.title.text = title;
@@ -121,14 +121,29 @@ static const int ddLogLevel = DDLogLevelWarning;
     [self updateColor];
 }
 
-- (void)bindWithTitle:(NSString *)title hiddenAccessory:(BOOL)hiddenAccessory disableSetting:(BOOL)disableSetting updateAvailable:(BOOL)updateAvailable color:(UIColor *)color {
+- (void)bindWithTitle:(nonnull NSString *)title subTitle:(nullable NSString *)subTitle hiddenAccessory:(BOOL)hiddenAccessory disableSetting:(BOOL)disableSetting color:(nonnull UIColor *)color {
+    DDLogVerbose(@"%@ bindWithTitle: %@ subTitle: %@ hiddenAccessory: %d disableSetting: %d", LOG_TAG, title, subTitle, hiddenAccessory, disableSetting);
+    
+    [self bindWithTitle:title hiddenAccessory:hiddenAccessory disableSetting:disableSetting color:color];
+    
+    if (subTitle && subTitle.length > 0) {
+        NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:@""];
+        [attributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:title attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_REGULAR32, NSFontAttributeName, Design.FONT_COLOR_DEFAULT, NSForegroundColorAttributeName, nil]]];
+        [attributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:@"\n"]];
+        [attributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:subTitle attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_REGULAR32, NSFontAttributeName, Design.FONT_COLOR_GREY, NSForegroundColorAttributeName, nil]]];
+        
+        self.title.attributedText = attributedString;
+    }
+}
+
+- (void)bindWithTitle:(nonnull NSString *)title hiddenAccessory:(BOOL)hiddenAccessory disableSetting:(BOOL)disableSetting updateAvailable:(BOOL)updateAvailable color:(nonnull UIColor *)color {
     
     [self bindWithTitle:title hiddenAccessory:hiddenAccessory disableSetting:disableSetting color:color];
     
     self.notificationView.hidden = !updateAvailable;
 }
 
-- (void)bindWithTitle:(NSString *)title hiddenAccessory:(BOOL)hiddenAccessory disableSetting:(BOOL)disableSetting color:(UIColor *)color badgeTitle:(NSString *)badgeTitle {
+- (void)bindWithTitle:(nonnull NSString *)title hiddenAccessory:(BOOL)hiddenAccessory disableSetting:(BOOL)disableSetting color:(nonnull UIColor *)color badgeTitle:(nullable NSString *)badgeTitle showNotification:(BOOL)showNotification {
     
     [self bindWithTitle:title hiddenAccessory:hiddenAccessory disableSetting:disableSetting color:color];
         
@@ -138,6 +153,8 @@ static const int ddLogLevel = DDLogLevelWarning;
     } else {
         self.badgeLabel.hidden = YES;
     }
+    
+    self.notificationView.hidden = !showNotification;
 }
 
 - (void)handleBadgeTapGesture:(UITapGestureRecognizer *)sender {

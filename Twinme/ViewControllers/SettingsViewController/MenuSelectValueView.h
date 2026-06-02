@@ -30,11 +30,11 @@ typedef enum {
 
 @protocol MenuSelectValueDelegate <NSObject>
 
-- (void)cancelMenuSelectValue:(MenuSelectValueView *)menuSelectValueView;
+- (void)cancelMenuSelectValue:(nonnull MenuSelectValueView *)menuSelectValueView;
 
-@optional - (void)selectValue:(MenuSelectValueView *)menuSelectValueView value:(int)value;
+@optional - (void)selectValue:(nonnull MenuSelectValueView *)menuSelectValueView value:(int)value;
 
-@optional - (void)selectTimeout:(MenuSelectValueView *)menuSelectValueView uiTimeout:(UITimeout *)uiTimeout;
+@optional - (void)selectTimeout:(nonnull MenuSelectValueView *)menuSelectValueView uiTimeout:(nonnull UITimeout *)uiTimeout;
 
 @end
 

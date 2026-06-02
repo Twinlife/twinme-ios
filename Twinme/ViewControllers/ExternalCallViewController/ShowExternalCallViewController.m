@@ -198,9 +198,14 @@ static NSString *SETTINGS_INFORMATION_CELL_IDENTIFIER = @"SettingsInformationCel
 - (int)getActionViewHeight {
     DDLogVerbose(@"%@ getActionViewHeight", LOG_TAG);
     
-    UIWindow *window = UIApplication.sharedApplication.keyWindow;
-    CGFloat safeAreaInset = window.safeAreaInsets.bottom;
-    
+    UIWindow *window = [self currentWindow];
+    CGFloat safeAreaInset;
+    if (window) {
+        safeAreaInset = window.safeAreaInsets.bottom;
+    } else {
+        safeAreaInset = self.view.safeAreaInsets.bottom;
+    }
+
     return self.lastCallView.frame.origin.y + self.lastCallViewHeightConstraint.constant + safeAreaInset;
 }
 
@@ -309,7 +314,7 @@ static NSString *SETTINGS_INFORMATION_CELL_IDENTIFIER = @"SettingsInformationCel
         settingsSectionHeaderCell = [[SettingsSectionHeaderCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:HEADER_SETTINGS_CELL_IDENTIFIER];
     }
         
-    NSString *title = TwinmeLocalizedString(@"create_external_call_view_controller_call_configuration", nil);
+    NSString *title = TwinmeLocalizedString(@"create_external_call_view_call_configuration", nil);
     [settingsSectionHeaderCell bindWithTitle:title backgroundColor:Design.WHITE_COLOR hideSeparator:YES uppercaseString:YES];
     
     return settingsSectionHeaderCell;
@@ -382,7 +387,7 @@ static NSString *SETTINGS_INFORMATION_CELL_IDENTIFIER = @"SettingsInformationCel
                 cell = [[SettingsInformationCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:SETTINGS_INFORMATION_CELL_IDENTIFIER];
             }
             
-            [cell bindWithText:TwinmeLocalizedString(@"create_external_call_view_controller_delete_link_setting", nil) font:Design.FONT_REGULAR30 color:Design.FONT_COLOR_DEFAULT];
+            [cell bindWithText:TwinmeLocalizedString(@"create_external_call_view_delete_link_setting", nil) font:Design.FONT_REGULAR30 color:Design.FONT_COLOR_DEFAULT];
             
             return cell;
         }
@@ -658,7 +663,7 @@ static NSString *SETTINGS_INFORMATION_CELL_IDENTIFIER = @"SettingsInformationCel
     self.shareView.isAccessibilityElement = YES;
     UITapGestureRecognizer *shareViewGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTwincodeTapGesture:)];
     [self.shareView addGestureRecognizer:shareViewGestureRecognizer];
-    [self.shareView setAccessibilityLabel:TwinmeLocalizedString(@"conversation_view_controller_menu_item_view_share_title", nil)];
+    [self.shareView setAccessibilityLabel:TwinmeLocalizedString(@"conversation_view_menu_item_view_share_title", nil)];
     
     self.shareRoundedView.backgroundColor = Design.FONT_COLOR_GREY;
     self.shareRoundedView.layer.cornerRadius = self.shareViewWidthConstraint.constant * 0.5;
@@ -667,7 +672,7 @@ static NSString *SETTINGS_INFORMATION_CELL_IDENTIFIER = @"SettingsInformationCel
     
     self.shareLabel.font = Design.FONT_REGULAR28;
     self.shareLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    self.shareLabel.text = TwinmeLocalizedString(@"conversation_view_controller_menu_item_view_share_title", nil);
+    self.shareLabel.text = TwinmeLocalizedString(@"conversation_view_menu_item_view_share_title", nil);
     
     self.videoViewWidthConstraint.constant *= Design.WIDTH_RATIO;
     self.videoViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
@@ -675,7 +680,7 @@ static NSString *SETTINGS_INFORMATION_CELL_IDENTIFIER = @"SettingsInformationCel
     self.videoView.isAccessibilityElement = YES;
     UITapGestureRecognizer *videoViewGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleVideoTapGesture:)];
     [self.videoView addGestureRecognizer:videoViewGestureRecognizer];
-    [self.videoView setAccessibilityLabel:TwinmeLocalizedString(@"conversation_view_controller_video_call", nil)];
+    [self.videoView setAccessibilityLabel:TwinmeLocalizedString(@"conversation_view_video_call", nil)];
     
     self.videoRoundedView.backgroundColor = Design.VIDEO_CALL_COLOR;
     self.videoRoundedView.layer.cornerRadius = self.videoViewWidthConstraint.constant * 0.5;
@@ -684,7 +689,7 @@ static NSString *SETTINGS_INFORMATION_CELL_IDENTIFIER = @"SettingsInformationCel
     
     self.videoLabel.font = Design.FONT_REGULAR28;
     self.videoLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    self.videoLabel.text = TwinmeLocalizedString(@"show_contact_view_controller_video", nil);
+    self.videoLabel.text = TwinmeLocalizedString(@"show_contact_view_video", nil);
     
     self.audioViewWidthConstraint.constant *= Design.WIDTH_RATIO;
     self.audioViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
@@ -694,7 +699,7 @@ static NSString *SETTINGS_INFORMATION_CELL_IDENTIFIER = @"SettingsInformationCel
     self.audioView.isAccessibilityElement = YES;
     UITapGestureRecognizer *audioViewGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleAudioTapGesture:)];
     [self.audioView addGestureRecognizer:audioViewGestureRecognizer];
-    [self.audioView setAccessibilityLabel:TwinmeLocalizedString(@"conversation_view_controller_audio_call", nil)];
+    [self.audioView setAccessibilityLabel:TwinmeLocalizedString(@"conversation_view_audio_call", nil)];
     
     self.audioRoundedView.backgroundColor = Design.AUDIO_CALL_COLOR;
     self.audioRoundedView.layer.cornerRadius = self.audioViewWidthConstraint.constant * 0.5;
@@ -703,11 +708,11 @@ static NSString *SETTINGS_INFORMATION_CELL_IDENTIFIER = @"SettingsInformationCel
     
     self.audioLabel.font = Design.FONT_REGULAR28;
     self.audioLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    self.audioLabel.text = TwinmeLocalizedString(@"show_contact_view_controller_audio", nil);
+    self.audioLabel.text = TwinmeLocalizedString(@"show_contact_view_audio", nil);
     
     self.nameLabel.text = TwinmeLocalizedString(@"application_profile", nil);
     
-    self.identityTitleLabel.text = TwinmeLocalizedString(@"show_call_view_controller_meeting_organizer", nil).uppercaseString;
+    self.identityTitleLabel.text = TwinmeLocalizedString(@"show_call_view_meeting_organizer", nil).uppercaseString;
     
     self.settingsTableViewTopConstraint.constant *= Design.WIDTH_RATIO;
     self.settingsTableViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
@@ -733,7 +738,7 @@ static NSString *SETTINGS_INFORMATION_CELL_IDENTIFIER = @"SettingsInformationCel
     
     self.historyTitleLabel.font = Design.FONT_BOLD26;
     self.historyTitleLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    self.historyTitleLabel.text = TwinmeLocalizedString(@"show_contact_view_controller_history_title", nil).uppercaseString;
+    self.historyTitleLabel.text = TwinmeLocalizedString(@"show_contact_view_history_title", nil).uppercaseString;
     
     self.lastCallAccessoryViewTrailingConstraint.constant *= Design.WIDTH_RATIO;
     self.lastCallAccessoryViewHeightConstraint.constant = Design.ACCESSORY_HEIGHT;
@@ -752,7 +757,7 @@ static NSString *SETTINGS_INFORMATION_CELL_IDENTIFIER = @"SettingsInformationCel
     
     self.lastCallLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
     self.lastCallLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
-    self.lastCallLabel.text = TwinmeLocalizedString(@"show_contact_view_controller_last_calls", nil);
+    self.lastCallLabel.text = TwinmeLocalizedString(@"show_contact_view_last_calls", nil);
     self.lastCallLabel.font = Design.FONT_REGULAR34;
     self.lastCallLabel.textColor = Design.FONT_COLOR_DEFAULT;
     
@@ -798,7 +803,10 @@ static NSString *SETTINGS_INFORMATION_CELL_IDENTIFIER = @"SettingsInformationCel
         [self startVideoCallWithPermissionCheck:NO];
     } else if (!self.configExternalCall.allowVideoCall) {
         dispatch_async(dispatch_get_main_queue(), ^{
-            [[UIApplication sharedApplication].keyWindow makeToast:TwinmeLocalizedString(@"application_not_authorized_operation_by_your_contact",nil)];
+            UIWindow *window = [self currentWindow];
+            if (window) {
+                [window makeToast:TwinmeLocalizedString(@"application_not_authorized_operation_by_your_contact",nil)];
+            }
         });
     } else if ([self hasSchedule]) {
         [self showSchedule];
@@ -917,7 +925,10 @@ static NSString *SETTINGS_INFORMATION_CELL_IDENTIFIER = @"SettingsInformationCel
         }
     } else if (!self.callReceiver.capabilities.hasAudio) {
         dispatch_async(dispatch_get_main_queue(), ^{
-            [[UIApplication sharedApplication].keyWindow makeToast:TwinmeLocalizedString(@"application_not_authorized_operation_by_your_contact",nil)];
+            UIWindow *window = [self currentWindow];
+            if (window) {
+                [window makeToast:TwinmeLocalizedString(@"application_not_authorized_operation_by_your_contact",nil)];
+            }
         });
     } else if ([self hasSchedule]) {
         [self showSchedule];
@@ -952,7 +963,7 @@ static NSString *SETTINGS_INFORMATION_CELL_IDENTIFIER = @"SettingsInformationCel
         self.shareViewLeadingConstraint.constant = 0;
     }
     
-    if ([self.callReceiverDescription isEqual:TwinmeLocalizedString(@"side_menu_view_controller_about", nil)]) {
+    if ([self.callReceiverDescription isEqual:TwinmeLocalizedString(@"navigation_view_about_twinme", nil)]) {
         self.descriptionLabel.text = @"";
     } else {
         self.descriptionLabel.text = self.callReceiverDescription;
@@ -1087,11 +1098,11 @@ static NSString *SETTINGS_INFORMATION_CELL_IDENTIFIER = @"SettingsInformationCel
             
             NSDateFormatter *dateFormatter = [[NSDateFormatter alloc]init];
             NSMutableString *validityMessage = [[NSMutableString alloc] initWithString:@""];
-            [validityMessage appendString:TwinmeLocalizedString(@"show_call_view_controller_setting_start", nil)];
+            [validityMessage appendString:TwinmeLocalizedString(@"show_call_view_settings_start", nil)];
             [validityMessage appendString:@" : "];
             [validityMessage appendString:[scheduleStartTime formatTime]];
             [validityMessage appendString:@"\n"];
-            [validityMessage appendString:TwinmeLocalizedString(@"show_call_view_controller_setting_end", nil)];
+            [validityMessage appendString:TwinmeLocalizedString(@"show_call_view_settings_end", nil)];
             [validityMessage appendString:@" : "];
             [validityMessage appendString:[scheduleEndTime formatTime]];
             [validityMessage appendString:@"\n\n"];
@@ -1137,18 +1148,18 @@ static NSString *SETTINGS_INFORMATION_CELL_IDENTIFIER = @"SettingsInformationCel
             TLDateTime *start = dateTimeRange.start;
             TLDateTime *end = dateTimeRange.end;
             if ([start.date isEqual:end.date]) {
-                message = [NSString stringWithFormat:TwinmeLocalizedString(@"show_call_view_controller_schedule_from_to", nil), [start.date formatDate], [start.time formatTime], [end.time formatTime]];
+                message = [NSString stringWithFormat:TwinmeLocalizedString(@"show_call_view_schedule_from_to", nil), [start.date formatDate], [start.time formatTime], [end.time formatTime]];
             } else {
                 message = [NSString stringWithFormat:@"%@ %@", [start formatDateTime], [end formatDateTime]];
             }
         }
     } else {
-        message = TwinmeLocalizedString(@"show_call_view_controller_schedule_message", nil);
+        message = TwinmeLocalizedString(@"show_call_view_schedule_message", nil);
     }
                 
     AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
     alertMessageView.alertMessageViewDelegate = self;
-    [alertMessageView initWithTitle:TwinmeLocalizedString(@"show_call_view_controller_schedule_call", nil) message:message];
+    [alertMessageView initWithTitle:TwinmeLocalizedString(@"show_call_view_schedule_call", nil) message:message];
     [self.tabBarController.view addSubview:alertMessageView];
     [alertMessageView showAlertView];
 }

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="24765" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24743"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -54,6 +54,12 @@
                             <constraint firstItem="8Oq-fA-N6O" firstAttribute="top" secondItem="DxO-ib-gBW" secondAttribute="top" constant="28" id="kgd-DZ-y8U"/>
                         </constraints>
                     </view>
+                    <imageView hidden="YES" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="InfoItem" translatesAutoresizingMaskIntoConstraints="NO" id="Wed-XA-QEy">
+                        <rect key="frame" x="60" y="370" width="38" height="38"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="38" id="geB-PP-PMw"/>
+                        </constraints>
+                    </imageView>
                     <view contentMode="scaleToFill" semanticContentAttribute="playback" translatesAutoresizingMaskIntoConstraints="NO" id="eGc-ya-KBF">
                         <rect key="frame" x="118" y="322" width="580" height="134"/>
                         <subviews>
@@ -209,11 +215,14 @@
                     <constraint firstItem="eGc-ya-KBF" firstAttribute="trailing" secondItem="zLu-mQ-mq5" secondAttribute="leading" constant="-10" id="KuN-tb-nBs"/>
                     <constraint firstItem="eGc-ya-KBF" firstAttribute="top" secondItem="8Oq-fA-N6O" secondAttribute="bottom" id="Lxm-Nb-GcA"/>
                     <constraint firstItem="y90-k9-cQV" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" id="Ni7-re-g3f"/>
+                    <constraint firstItem="Wed-XA-QEy" firstAttribute="width" secondItem="Wed-XA-QEy" secondAttribute="height" multiplier="1:1" id="RBL-bk-33D"/>
                     <constraint firstItem="wpH-fg-4Le" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="TuR-xm-jhk"/>
                     <constraint firstAttribute="trailing" secondItem="5tr-lB-wUT" secondAttribute="leading" constant="-40" id="WRe-aX-b5J"/>
+                    <constraint firstItem="Wed-XA-QEy" firstAttribute="centerY" secondItem="eGc-ya-KBF" secondAttribute="centerY" id="Xru-Zr-Ge3"/>
                     <constraint firstItem="y90-k9-cQV" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" id="Xvf-Fv-pxP"/>
                     <constraint firstItem="DxO-ib-gBW" firstAttribute="top" relation="greaterThanOrEqual" secondItem="H2p-sc-9uM" secondAttribute="top" priority="750" constant="18" id="Ykl-Tc-4yN"/>
                     <constraint firstItem="07O-Ug-lLy" firstAttribute="top" relation="greaterThanOrEqual" secondItem="H2p-sc-9uM" secondAttribute="top" priority="750" constant="18" id="Z9E-xp-e1D"/>
+                    <constraint firstItem="eGc-ya-KBF" firstAttribute="leading" secondItem="Wed-XA-QEy" secondAttribute="trailing" constant="20" id="cWH-cg-S1T"/>
                     <constraint firstItem="Xoa-fE-Dfz" firstAttribute="top" secondItem="eGc-ya-KBF" secondAttribute="top" id="cjW-0e-134"/>
                     <constraint firstAttribute="trailing" secondItem="y90-k9-cQV" secondAttribute="trailing" id="elI-cd-QsJ"/>
                     <constraint firstItem="umk-m1-1XG" firstAttribute="top" secondItem="eGc-ya-KBF" secondAttribute="bottom" id="gC3-Ns-bNJ"/>
@@ -253,6 +262,9 @@
                 <outlet property="ephemeralView" destination="TCh-Li-bqq" id="Wrl-no-zSc"/>
                 <outlet property="ephemeralViewHeightConstraint" destination="bC2-ou-NZz" id="iQF-Xc-go6"/>
                 <outlet property="ephemeralViewTrailingConstraint" destination="fEM-mX-VhT" id="lXn-kH-LCj"/>
+                <outlet property="infoImageView" destination="Wed-XA-QEy" id="bna-xJ-8qx"/>
+                <outlet property="infoImageViewHeightConstraint" destination="geB-PP-PMw" id="Nto-5S-rt3"/>
+                <outlet property="infoImageViewTrailinConstraint" destination="cWH-cg-S1T" id="l1q-b8-Yww"/>
                 <outlet property="overlayView" destination="y90-k9-cQV" id="VXi-Xm-heB"/>
                 <outlet property="pauseImageView" destination="UuS-FD-ory" id="Lok-RX-8dZ"/>
                 <outlet property="pauseImageViewHeightConstraint" destination="7X1-VV-awV" id="8tB-cO-MUk"/>
@@ -304,6 +316,7 @@
         <image name="AudioItemPlayerPause" width="9" height="14"/>
         <image name="AudioItemPlayerPlay" width="11" height="14"/>
         <image name="CheckMarkGrey" width="22" height="22"/>
+        <image name="InfoItem" width="18" height="18"/>
         <image name="ReplyItem" width="15" height="15"/>
     </resources>
 </document>

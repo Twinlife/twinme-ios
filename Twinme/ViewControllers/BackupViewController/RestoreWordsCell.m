@@ -100,7 +100,7 @@ static const CGFloat DESIGN_COMPLETION_HEIGHT = 80;
     
     self.messageLabel.font = Design.FONT_REGULAR32;
     self.messageLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    self.messageLabel.text = TwinmeLocalizedStringFromTable(@"restore_view_controller_enter_words", @"LocalizableBackup", nil);
+    self.messageLabel.text = TwinmeLocalizedStringFromTable(@"restore_view_enter_words", @"LocalizableBackup", nil);
     
     self.containerViewLeadingConstraint.constant *= Design.WIDTH_RATIO;
     self.containerViewTrailingConstraint.constant *= Design.WIDTH_RATIO;
@@ -153,7 +153,7 @@ static const CGFloat DESIGN_COMPLETION_HEIGHT = 80;
     self.pasteWordViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     
     self.pasteWordView.userInteractionEnabled = YES;
-    self.pasteWordView.accessibilityLabel = TwinmeLocalizedStringFromTable(@"restore_view_controller_paste", @"LocalizableBackup", nil);
+    self.pasteWordView.accessibilityLabel = TwinmeLocalizedStringFromTable(@"restore_view_paste", @"LocalizableBackup", nil);
     UITapGestureRecognizer *pasteWordsGestureRecognizer = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(handleCopyWordsTapGesture:)];
     [self.pasteWordView addGestureRecognizer:pasteWordsGestureRecognizer];
     
@@ -168,7 +168,7 @@ static const CGFloat DESIGN_COMPLETION_HEIGHT = 80;
     
     self.pasteWordLabel.font = Design.FONT_MEDIUM30;
     self.pasteWordLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    self.pasteWordLabel.text = TwinmeLocalizedStringFromTable(@"restore_view_controller_paste", @"LocalizableBackup", nil);
+    self.pasteWordLabel.text = TwinmeLocalizedStringFromTable(@"restore_view_paste", @"LocalizableBackup", nil);
 }
 
 - (void)bind:(MnemonicCodeUtils *)mnemonicCodeUtils words:(NSArray *)words {

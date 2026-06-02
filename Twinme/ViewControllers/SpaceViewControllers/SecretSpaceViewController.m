@@ -172,7 +172,7 @@ static const int ddLogLevel = DDLogLevelWarning;
     [self.nameTextField setReturnKeyType:UIReturnKeyDone];
     self.nameTextField.delegate = self;
     [self.nameTextField addTarget:self action:@selector(textFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
-    self.nameTextField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:TwinmeLocalizedString(@"settings_space_view_controller_space_category_title", nil) attributes:[NSDictionary dictionaryWithObject:Design.PLACEHOLDER_COLOR forKey:NSForegroundColorAttributeName]];
+    self.nameTextField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:TwinmeLocalizedString(@"settings_space_view_space_category_title", nil) attributes:[NSDictionary dictionaryWithObject:Design.PLACEHOLDER_COLOR forKey:NSForegroundColorAttributeName]];
     
     self.sendButtonTrailingConstraint.constant *= Design.WIDTH_RATIO;
     self.sendButtonBottomConstraint.constant *= Design.HEIGHT_RATIO;

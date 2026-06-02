@@ -148,26 +148,17 @@ static CGFloat DESIGN_CELL_HEIGHT = 144;
     
     UIColor *backgroundColor = DesignExtension.NAVIGATION_BACKGROUND_COLOR;
     
-    if (@available(iOS 13.0, *)) {
-        UINavigationBarAppearance *navBarAppearance = [self.navigationController.navigationBar standardAppearance];
-        [navBarAppearance configureWithOpaqueBackground];
-        navBarAppearance.titleTextAttributes = @{NSFontAttributeName: DesignExtension.FONT_BOLD34, NSForegroundColorAttributeName: [UIColor whiteColor]};
-        navBarAppearance.largeTitleTextAttributes = @{NSFontAttributeName: DesignExtension.FONT_BOLD68, NSForegroundColorAttributeName: [UIColor whiteColor]};
-        navBarAppearance.backgroundColor = backgroundColor;
-        self.navigationController.navigationBar.standardAppearance = navBarAppearance;
-        self.navigationController.navigationBar.scrollEdgeAppearance = navBarAppearance;
-        self.navigationController.navigationBar.compactAppearance = navBarAppearance;
-        self.navigationController.navigationBar.tintColor = [UIColor whiteColor];
-    } else {
-        self.navigationController.navigationBar.translucent = NO;
-        self.navigationController.navigationBar.barTintColor = backgroundColor;
-        self.navigationController.navigationBar.tintColor = [UIColor whiteColor];
-        self.navigationController.navigationBar.backgroundColor = backgroundColor;
-        [self.navigationController.navigationBar setTitleTextAttributes:@{NSFontAttributeName: DesignExtension.FONT_REGULAR34, NSForegroundColorAttributeName: [UIColor whiteColor]}];
-        [self.navigationController.navigationBar setTitleTextAttributes:@{NSFontAttributeName: DesignExtension.FONT_BOLD34, NSForegroundColorAttributeName: [UIColor whiteColor]}];
-    }
+    UINavigationBarAppearance *navBarAppearance = [self.navigationController.navigationBar standardAppearance];
+    [navBarAppearance configureWithOpaqueBackground];
+    navBarAppearance.titleTextAttributes = @{NSFontAttributeName: DesignExtension.FONT_BOLD34, NSForegroundColorAttributeName: [UIColor whiteColor]};
+    navBarAppearance.largeTitleTextAttributes = @{NSFontAttributeName: DesignExtension.FONT_BOLD68, NSForegroundColorAttributeName: [UIColor whiteColor]};
+    navBarAppearance.backgroundColor = backgroundColor;
+    self.navigationController.navigationBar.standardAppearance = navBarAppearance;
+    self.navigationController.navigationBar.scrollEdgeAppearance = navBarAppearance;
+    self.navigationController.navigationBar.compactAppearance = navBarAppearance;
+    self.navigationController.navigationBar.tintColor = [UIColor whiteColor];
     
-    self.navigationItem.title = TwinmeLocalizedString(@"spaces_view_controller_title", nil).capitalizedString;
+    self.navigationItem.title = TwinmeLocalizedString(@"spaces_view_title", nil).capitalizedString;
     
     self.view.backgroundColor = [UIColor whiteColor];
     self.navigationItem.hidesSearchBarWhenScrolling = NO;

@@ -62,15 +62,15 @@
     self.onboardingTextView.textContainerInset = UIEdgeInsetsZero;
     self.onboardingTextView.textContainer.lineFragmentPadding = 0;
     
-    NSMutableString *message = [[NSMutableString alloc] initWithString:TwinmeLocalizedString(@"create_space_view_controller_onboarding_message_part_4", nil)];
+    NSMutableString *message = [[NSMutableString alloc] initWithString:TwinmeLocalizedString(@"create_space_view_onboarding_message_part_4", nil)];
     [message appendString:@"\n\n"];
-    [message appendString:TwinmeLocalizedString(@"create_space_view_controller_onboarding_message_part_5", nil)];
+    [message appendString:TwinmeLocalizedString(@"create_space_view_onboarding_message_part_5", nil)];
     [message appendString:@"\n\n"];
-    [message appendString:TwinmeLocalizedString(@"create_space_view_controller_onboarding_message_part_6", nil)];
+    [message appendString:TwinmeLocalizedString(@"create_space_view_onboarding_message_part_6", nil)];
     [message appendString:@"\n\n"];
-    [message appendString:TwinmeLocalizedString(@"create_space_view_controller_onboarding_message_part_7", nil)];
+    [message appendString:TwinmeLocalizedString(@"create_space_view_onboarding_message_part_7", nil)];
     [message appendString:@"\n\n"];
-    [message appendString:TwinmeLocalizedString(@"create_space_view_controller_onboarding_message_part_8", nil)];
+    [message appendString:TwinmeLocalizedString(@"create_space_view_onboarding_message_part_8", nil)];
     self.onboardingTextView.text = message;
     
     self.createViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
@@ -87,7 +87,7 @@
     self.createLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
     self.createLabel.font = Design.FONT_BOLD36;
     self.createLabel.textColor = [UIColor whiteColor];
-    self.createLabel.text = TwinmeLocalizedString(@"spaces_view_controller_create_new_space", nil);
+    self.createLabel.text = TwinmeLocalizedString(@"spaces_view_create_new_space", nil);
     
     self.doNotShowLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
     self.doNotShowLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
@@ -110,7 +110,7 @@
         self.doNotShowView.hidden = YES;
         self.doNotShowViewHeightConstraint.constant = 0;
     } else {
-        self.createLabel.text = TwinmeLocalizedString(@"spaces_view_controller_create_new_space", nil);
+        self.createLabel.text = TwinmeLocalizedString(@"spaces_view_create_new_space", nil);
     }
     
     [self updateColor];

@@ -82,6 +82,7 @@ static NSString *MENU_ACTION_CONVERSATION_CELL_IDENTIFIER = @"MenuActionConversa
     [self.actions addObject:[[UIActionConversation alloc]initWithConversationActionType:ConversationActionTypeCamera spaceSettings:self.spaceSettings enabled:self.sendAllowed]];
     [self.actions addObject:[[UIActionConversation alloc]initWithConversationActionType:ConversationActionTypeGallery spaceSettings:self.spaceSettings enabled:self.sendAllowed]];
     [self.actions addObject:[[UIActionConversation alloc]initWithConversationActionType:ConversationActionTypeFile spaceSettings:self.spaceSettings enabled:self.sendAllowed]];
+    [self.actions addObject:[[UIActionConversation alloc]initWithConversationActionType:ConversationActionTypePoll spaceSettings:self.spaceSettings enabled:self.sendAllowed]];
     [self.actions addObject:[[UIActionConversation alloc]initWithConversationActionType:ConversationActionTypeLocation spaceSettings:self.spaceSettings enabled:self.sendAllowed]];
     [self.actions addObject:[[UIActionConversation alloc]initWithConversationActionType:ConversationActionTypeMediasAndFiles spaceSettings:self.spaceSettings enabled:YES]];
     [self.actions addObject:[[UIActionConversation alloc]initWithConversationActionType:ConversationActionTypeManageConversation spaceSettings:self.spaceSettings enabled:YES]];
@@ -177,7 +178,6 @@ static NSString *MENU_ACTION_CONVERSATION_CELL_IDENTIFIER = @"MenuActionConversa
     
     ApplicationDelegate *delegate = (ApplicationDelegate *)[[UIApplication sharedApplication] delegate];
     TwinmeApplication *twinmeApplication = [delegate twinmeApplication];
-    TLTwinmeContext *twinmeContext = [delegate twinmeContext];
     
     if ([twinmeApplication darkModeEnable:self.spaceSettings]) {
         blurEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark];

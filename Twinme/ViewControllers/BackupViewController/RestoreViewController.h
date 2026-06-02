@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2025 twinlife SA.
+ *  Copyright (c) 2025-2026 twinlife SA.
  *  SPDX-License-Identifier: AGPL-3.0-only
  *
  *  Contributors:
@@ -14,6 +14,6 @@
 
 @interface RestoreViewController : AbstractTwinmeViewController
 
-- (void)initWithFilePath:(NSURL *)filePath verifyMode:(BOOL)verifyMode;
+- (void)initWithFileURL:(NSURL *)filePath verifyMode:(BOOL)verifyMode pickFileInApp:(BOOL)pickFileInApp;
 
 @end

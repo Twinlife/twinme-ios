@@ -63,13 +63,13 @@ static const int ddLogLevel = DDLogLevelWarning;
     self.actionView.layer.cornerRadius = Design.CONTAINER_RADIUS;
     self.actionView.clipsToBounds = YES;
     self.actionView.isAccessibilityElement = YES;
-    self.actionView.accessibilityLabel = TwinmeLocalizedStringFromTable(@"backup_view_controller_backup", @"LocalizableBackup", nil);
+    self.actionView.accessibilityLabel = TwinmeLocalizedStringFromTable(@"backup_view_backup", @"LocalizableBackup", nil);
     [self.actionView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleActionTapGesture:)]];
     
     self.actionLabelWidthConstraint.constant *= Design.WIDTH_RATIO;
     self.actionLabel.font = Design.FONT_BOLD36;
     self.actionLabel.textColor = [UIColor whiteColor];
-    self.actionLabel.text = TwinmeLocalizedStringFromTable(@"backup_view_controller_backup", @"LocalizableBackup", nil);
+    self.actionLabel.text = TwinmeLocalizedStringFromTable(@"backup_view_backup", @"LocalizableBackup", nil);
 }
 
 - (void)bindWithTitle:(NSString *)title enable:(BOOL)enable backgroundColor:(UIColor *)backgroundColor {

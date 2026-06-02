@@ -93,7 +93,7 @@ static const CGFloat DESIGN_CORNER_RADIUS = 14;
     DDLogVerbose(@"%@ send: %@ allowCopyFile: %@ timeout: %lld", LOG_TAG, allowCopyText ? @"YES" : @"NO", allowCopyFile ? @"YES" : @"NO", timeout);
     
     NSString *message = self.messageTextView.text;
-    if ([self.messageTextView.text isEqualToString:TwinmeLocalizedString(@"conversation_view_controller_message", nil)]) {
+    if ([self.messageTextView.text isEqualToString:TwinmeLocalizedString(@"conversation_view_message", nil)]) {
         message = @"";
     }
     
@@ -102,6 +102,12 @@ static const CGFloat DESIGN_CORNER_RADIUS = 14;
     }
     
     [self finish];
+}
+
+- (BOOL)shareLocation {
+    DDLogVerbose(@"%@ shareLocation", LOG_TAG);
+    
+    return YES;
 }
 
 - (void)initWithAvatar:(UIImage *)avatar {
@@ -184,10 +190,11 @@ static const CGFloat DESIGN_CORNER_RADIUS = 14;
 }
 
 #pragma mark - CLLocationManagerDelegate
-- (void)locationManager:(CLLocationManager *)manager didChangeAuthorizationStatus:(CLAuthorizationStatus)status {
-    DDLogVerbose(@"%@ locationManager: %@ didChangeAuthorizationStatus: %d", LOG_TAG, manager, status);
+
+- (void)locationManagerDidChangeAuthorization:(CLLocationManager *)manager {
+    DDLogVerbose(@"%@ locationManagerDidChangeAuthorization: %@", LOG_TAG, manager);
     
-    if (status == kCLAuthorizationStatusAuthorizedWhenInUse || status == kCLAuthorizationStatusAuthorizedAlways) {
+    if (manager.authorizationStatus == kCLAuthorizationStatusAuthorizedWhenInUse || manager.authorizationStatus == kCLAuthorizationStatusAuthorizedAlways) {
         [self.locationManager startUpdatingLocation];
     }
 }

@@ -218,7 +218,7 @@ static CGFloat FEATURE_CELL_HEIGHT;
     self.updateView.backgroundColor = Design.MAIN_COLOR;
     self.updateView.userInteractionEnabled = YES;
     self.updateView.isAccessibilityElement = YES;
-    self.updateView.accessibilityLabel = TwinmeLocalizedString(@"side_menu_view_controller_subscribe", nil);
+    self.updateView.accessibilityLabel = TwinmeLocalizedString(@"navigation_view_subscribe", nil);
     self.updateView.layer.cornerRadius = Design.CONTAINER_RADIUS;
     self.updateView.clipsToBounds = YES;
     [self.updateView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleUpdateTapGesture:)]];
@@ -226,8 +226,7 @@ static CGFloat FEATURE_CELL_HEIGHT;
     self.updateLabelWidthConstraint.constant *= Design.WIDTH_RATIO;
     self.updateLabel.font = Design.FONT_BOLD36;
     self.updateLabel.textColor = [UIColor whiteColor];
-    self.updateLabel.text = TwinmeLocalizedString(@"side_menu_view_controller_subscribe", nil);
-    self.updateLabel.adjustsFontSizeToFitWidth = YES;
+    self.updateLabel.text = TwinmeLocalizedString(@"navigation_view_subscribe", nil);
     
     self.featureCollectionView.backgroundColor = [UIColor blackColor];
     self.featureCollectionView.dataSource = self;

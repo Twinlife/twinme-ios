@@ -62,9 +62,9 @@
     
     switch (self.templateType) {
         case TemplateExternalCallTypeClassifiedAd:
-            self.name = TwinmeLocalizedString(@"template_click_to_call_view_controller_template_classified_ad", nil);
-            self.placeholder = TwinmeLocalizedString(@"template_click_to_call_view_controller_template_classified_ad_placeholder", nil);
-            self.message = TwinmeLocalizedString(@"template_click_to_call_view_controller_template_classified_ad_description", nil);
+            self.name = TwinmeLocalizedString(@"template_click_to_call_view_template_classified_ad", nil);
+            self.placeholder = TwinmeLocalizedString(@"template_click_to_call_view_template_classified_ad_placeholder", nil);
+            self.message = TwinmeLocalizedString(@"template_click_to_call_view_template_classified_ad_description", nil);
             self.imageURL = @"https://twin.me/download/click_to_call_sample_classified_ad_2026.jpg";
             self.image = [UIImage imageNamed:@"ClickToCallSampleClassifiedAd"];
             self.typeCall = ConfigExternalCallTypeCallDirect;
@@ -78,9 +78,9 @@
             break;
             
         case TemplateExternalCallTypeJob:
-            self.name = TwinmeLocalizedString(@"template_click_to_call_view_controller_template_job", nil);
-            self.placeholder = TwinmeLocalizedString(@"template_click_to_call_view_controller_template_job_placeholder", nil);
-            self.message = TwinmeLocalizedString(@"template_click_to_call_view_controller_template_job_description", nil);
+            self.name = TwinmeLocalizedString(@"template_click_to_call_view_template_job", nil);
+            self.placeholder = TwinmeLocalizedString(@"template_click_to_call_view_template_job_placeholder", nil);
+            self.message = TwinmeLocalizedString(@"template_click_to_call_view_template_job_description", nil);
             self.imageURL = @"https://twin.me/download/click_to_call_sample_job_2026.jpg";
             self.image = [UIImage imageNamed:@"ClickToCallSampleJob"];
             self.typeCall = ConfigExternalCallTypeCallDirect;
@@ -94,9 +94,9 @@
             break;
             
         case TemplateExternalCallTypeHelp:
-            self.name = TwinmeLocalizedString(@"template_click_to_call_view_controller_template_help", nil);
-            self.placeholder = TwinmeLocalizedString(@"template_click_to_call_view_controller_template_help_placeholder", nil);
-            self.message = TwinmeLocalizedString(@"template_click_to_call_view_controller_template_help_description", nil);
+            self.name = TwinmeLocalizedString(@"template_click_to_call_view_template_help", nil);
+            self.placeholder = TwinmeLocalizedString(@"template_click_to_call_view_template_help_placeholder", nil);
+            self.message = TwinmeLocalizedString(@"template_click_to_call_view_template_help_description", nil);
             self.imageURL = @"https://twin.me/download/click_to_call_sample_help_2026.jpg";
             self.image = [UIImage imageNamed:@"ClickToCallSampleHelp"];
             self.typeCall = ConfigExternalCallTypeCallDirect;
@@ -110,9 +110,9 @@
             break;
             
         case TemplateExternalCallTypeMeeting:
-            self.name = TwinmeLocalizedString(@"template_click_to_call_view_controller_template_meeting", nil);
-            self.placeholder = TwinmeLocalizedString(@"template_click_to_call_view_controller_template_meeting_placeholder", nil);
-            self.message = TwinmeLocalizedString(@"template_click_to_call_view_controller_template_meeting_description", nil);
+            self.name = TwinmeLocalizedString(@"template_click_to_call_view_template_meeting", nil);
+            self.placeholder = TwinmeLocalizedString(@"template_click_to_call_view_template_meeting_placeholder", nil);
+            self.message = TwinmeLocalizedString(@"template_click_to_call_view_template_meeting_description", nil);
             self.imageURL = @"https://twin.me/download/click_to_call_sample_meeting_2026.jpg";
             self.image = [UIImage imageNamed:@"ClickToCallSampleMeeting"];
             self.typeCall = ConfigExternalCallTypeCallConference;
@@ -126,9 +126,9 @@
             break;
             
         case TemplateExternalCallTypeVideoBell:
-            self.name = TwinmeLocalizedString(@"template_click_to_call_view_controller_template_video_bell", nil);
-            self.placeholder = TwinmeLocalizedString(@"template_click_to_call_view_controller_template_video_bell_placeholder", nil);
-            self.message = TwinmeLocalizedString(@"template_click_to_call_view_controller_template_video_bell_description", nil);
+            self.name = TwinmeLocalizedString(@"template_click_to_call_view_template_video_bell", nil);
+            self.placeholder = TwinmeLocalizedString(@"template_click_to_call_view_template_video_bell_placeholder", nil);
+            self.message = TwinmeLocalizedString(@"template_click_to_call_view_template_video_bell_description", nil);
             self.imageURL = @"https://twin.me/download/click_to_call_sample_video_bell.jpg";
             self.image = [UIImage imageNamed:@"ClickToCallSampleVideoBell"];
             self.typeCall = ConfigExternalCallTypeCallDirect;
@@ -142,9 +142,9 @@
             break;
             
         case TemplateExternalCallTypeOther:
-            self.name = TwinmeLocalizedString(@"premium_services_view_controller_click_to_call_title", nil);
-            self.placeholder = TwinmeLocalizedString(@"create_external_call_view_controller_placeholder", nil);
-            self.message = TwinmeLocalizedString(@"template_click_to_call_view_controller_template_default_description", nil);
+            self.name = TwinmeLocalizedString(@"premium_services_view_click_to_call_title", nil);
+            self.placeholder = TwinmeLocalizedString(@"create_external_call_view_placeholder", nil);
+            self.message = TwinmeLocalizedString(@"template_click_to_call_view_template_default_description", nil);
             self.imageURL = nil;
             self.image = nil;
             self.typeCall = ConfigExternalCallTypeCallDirect;
@@ -158,9 +158,9 @@
             break;
             
         case TemplateExternalCallTypeProfile:
-            self.name = TwinmeLocalizedString(@"premium_services_view_controller_click_to_call_title", nil);
-            self.placeholder = TwinmeLocalizedString(@"create_external_call_view_controller_placeholder", nil);
-            self.message = TwinmeLocalizedString(@"template_click_to_call_view_controller_template_profile_description", nil);
+            self.name = TwinmeLocalizedString(@"premium_services_view_click_to_call_title", nil);
+            self.placeholder = TwinmeLocalizedString(@"create_external_call_view_placeholder", nil);
+            self.message = TwinmeLocalizedString(@"template_click_to_call_view_template_profile_description", nil);
             self.imageURL = nil;
             self.image = nil;
             self.typeCall = ConfigExternalCallTypeCallDirect;

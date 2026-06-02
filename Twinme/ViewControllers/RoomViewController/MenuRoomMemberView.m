@@ -13,6 +13,8 @@
 #import "MenuRoomMemberView.h"
 
 #import <TwinmeCommon/Design.h>
+#import <TwinmeCommon/UIViewController+Utils.h>
+
 #import "UIRoomMember.h"
 
 #if 0
@@ -122,9 +124,9 @@ static const int ddLogLevel = DDLogLevelWarning;
         self.removeViewHeightConstraint.constant = Design.SETTING_CELL_HEIGHT;
         
         if (self.removeAdmin) {
-            self.adminLabel.text = TwinmeLocalizedString(@"room_members_view_controller_remove_admin_title", nil);
+            self.adminLabel.text = TwinmeLocalizedString(@"room_members_view_remove_admin_title", nil);
         } else {
-            self.adminLabel.text = TwinmeLocalizedString(@"room_members_view_controller_change_admin_title", nil);
+            self.adminLabel.text = TwinmeLocalizedString(@"room_members_view_change_admin_title", nil);
         }
     } else {
         self.adminView.hidden = YES;
@@ -196,7 +198,7 @@ static const int ddLogLevel = DDLogLevelWarning;
     
     self.inviteLabel.textColor = Design.FONT_COLOR_DEFAULT;
     self.inviteLabel.font = Design.FONT_MEDIUM34;
-    self.inviteLabel.text = TwinmeLocalizedString(@"group_member_view_controller_invite_personnal_relation", nil);
+    self.inviteLabel.text = TwinmeLocalizedString(@"group_member_view_invite_personnal_relation", nil);
     
     self.separatorAdminViewHeightConstraint.constant = Design.SEPARATOR_HEIGHT;
     self.separatorAdminView.backgroundColor = Design.SEPARATOR_COLOR_GREY;
@@ -220,15 +222,20 @@ static const int ddLogLevel = DDLogLevelWarning;
     
     self.adminLabel.textColor = Design.FONT_COLOR_DEFAULT;
     self.adminLabel.font = Design.FONT_MEDIUM34;
-    self.adminLabel.text = TwinmeLocalizedString(@"room_members_view_controller_change_admin_title", nil);
+    self.adminLabel.text = TwinmeLocalizedString(@"room_members_view_change_admin_title", nil);
     
     self.separatorRemoveViewHeightConstraint.constant = Design.SEPARATOR_HEIGHT;
     self.separatorRemoveView.backgroundColor = Design.SEPARATOR_COLOR_GREY;
     
     self.removeViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     
-    UIWindow *window = UIApplication.sharedApplication.keyWindow;
-    CGFloat safeAreaInset = window.safeAreaInsets.bottom;
+    UIWindow *window = [UIViewController currentWindow];
+    CGFloat safeAreaInset;
+    if (window) {
+        safeAreaInset = window.safeAreaInsets.bottom;
+    } else {
+        safeAreaInset = self.window.safeAreaInsets.bottom;
+    }
     
     self.removeViewBottomConstraint.constant = safeAreaInset;
     

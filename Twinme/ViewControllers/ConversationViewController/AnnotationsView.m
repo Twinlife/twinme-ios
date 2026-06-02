@@ -14,6 +14,7 @@
 #import "AnnotationInfoCell.h"
 
 #import <TwinmeCommon/Design.h>
+#import <TwinmeCommon/UIViewController+Utils.h>
 
 #import "UIAnnotation.h"
 
@@ -124,8 +125,13 @@ static NSString *ANNOTATION_INFO_CELL_IDENTIFIER = @"AnnotationInfoCellIdentifie
     
     [super initViews];
         
-    UIWindow *window = UIApplication.sharedApplication.keyWindow;
-    CGFloat safeAreaInset = window.safeAreaInsets.bottom;
+    CGFloat safeAreaInset;
+    UIWindow *window = [UIViewController currentWindow];
+    if (window) {
+        safeAreaInset = window.safeAreaInsets.bottom;
+    } else {
+        safeAreaInset = self.safeAreaInsets.bottom;
+    }
     
     self.tableViewTopConstraint.constant *= Design.HEIGHT_RATIO;
     self.tableViewBottomConstraint.constant = safeAreaInset;

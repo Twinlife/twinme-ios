@@ -124,7 +124,7 @@ static const int ddLogLevel = DDLogLevelWarning;
     
     ClearItem *clearItem = (ClearItem *)item;
     
-    self.clearLabel.text = TwinmeLocalizedString(@"conversation_view_controller_reset_conversation", nil);
+    self.clearLabel.text = TwinmeLocalizedString(@"conversation_view_reset_conversation", nil);
     
     self.stateImageView.hidden = YES;
     [self.stateImageView.layer removeAllAnimations];

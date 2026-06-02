@@ -147,7 +147,7 @@ static NSString *ONBOARDING_CELL_IDENTIFIER = @"OnboardingExternalCallCellIdenti
     if ([uiOnboarding getTitle]) {
         self.titleLabel.text = [uiOnboarding getTitle];
     } else {
-        self.titleLabel.text = TwinmeLocalizedString(@"premium_services_view_controller_click_to_call_title", nil);
+        self.titleLabel.text = TwinmeLocalizedString(@"premium_services_view_click_to_call_title", nil);
     }
 }
 
@@ -252,7 +252,7 @@ static NSString *ONBOARDING_CELL_IDENTIFIER = @"OnboardingExternalCallCellIdenti
     
     self.titleLabel.font = Design.FONT_BOLD36;
     self.titleLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    self.titleLabel.text = TwinmeLocalizedString(@"premium_services_view_controller_click_to_call_title", nil);
+    self.titleLabel.text = TwinmeLocalizedString(@"premium_services_view_click_to_call_title", nil);
         
     self.onboardingCollectionViewTopConstraint.constant *= Design.HEIGHT_RATIO;
     self.onboardingCollectionViewBottomConstraint.constant *= Design.HEIGHT_RATIO;

@@ -26,7 +26,6 @@
 #import "TwincodeView.h"
 #import "UIView+Toast.h"
 
-static CGFloat DESIGN_AVATAR_BORDER_WIDTH = 6;
 static const CGFloat DESIGN_QRCODE_TOP_MARGIN = 60;
 
 #if 0
@@ -102,6 +101,7 @@ static const int ddLogLevel = DDLogLevelWarning;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *messageLabelTrailingConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *messageLabelTopConstraint;
 @property (weak, nonatomic) IBOutlet UILabel *messageLabel;
+@property (weak, nonatomic) IBOutlet UIActivityIndicatorView *activityIndicatorView;
 
 @property (nonatomic) TLContact *room;
 @property (nonatomic, nullable) TLTwincodeURI *uri;
@@ -196,14 +196,14 @@ static const int ddLogLevel = DDLogLevelWarning;
     
     [self.view setBackgroundColor:Design.LIGHT_GREY_BACKGROUND_COLOR];
     
-    [self setNavigationTitle:TwinmeLocalizedString(@"show_room_view_controller_invite_participants", nil)];
+    [self setNavigationTitle:TwinmeLocalizedString(@"show_room_view_invite_participants", nil)];
     
     self.roomViewTopConstraint.constant *= Design.HEIGHT_RATIO;
     self.roomViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     self.roomViewWidthConstraint.constant *= Design.WIDTH_RATIO;
-        
+    
     self.roomView.userInteractionEnabled = NO;
-        
+    
     self.avatarView.clipsToBounds = YES;
     self.avatarView.layer.cornerRadius = self.roomViewHeightConstraint.constant * 0.5;
     
@@ -236,7 +236,7 @@ static const int ddLogLevel = DDLogLevelWarning;
     self.qrcodeView.backgroundColor = [UIColor whiteColor];
     
     [self.qrcodeView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleQRCodeTapGesture:)]];
-        
+    
     self.zoomViewTopConstraint.constant *= Design.HEIGHT_RATIO;
     self.zoomViewTrailingConstraint.constant *= Design.WIDTH_RATIO;
     self.zoomViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
@@ -281,7 +281,7 @@ static const int ddLogLevel = DDLogLevelWarning;
     self.saveRoundedView.layer.cornerRadius = self.saveRoundedViewHeightConstraint.constant * 0.5;
     self.saveRoundedView.layer.borderColor = Design.GREY_ITEM.CGColor;
     self.saveRoundedView.layer.borderWidth = 1.0;
-
+    
     self.saveImageViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     self.saveImageView.tintColor =Design.BLACK_COLOR;
     
@@ -297,7 +297,7 @@ static const int ddLogLevel = DDLogLevelWarning;
     UITapGestureRecognizer *roomCopyGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleCopyTapGesture:)];
     [self.roomCopyView addGestureRecognizer:roomCopyGestureRecognizer];
     self.roomCopyView.isAccessibilityElement = YES;
-    self.roomCopyView.accessibilityLabel = TwinmeLocalizedString(@"conversation_view_controller_menu_item_view_copy_title", nil);
+    self.roomCopyView.accessibilityLabel = TwinmeLocalizedString(@"conversation_view_menu_item_view_copy_title", nil);
     
     self.roomCopyRoundedViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     self.roomCopyRoundedView.clipsToBounds = YES;
@@ -313,7 +313,7 @@ static const int ddLogLevel = DDLogLevelWarning;
     
     self.roomCopyLabel.font = Design.FONT_MEDIUM28;
     self.roomCopyLabel.textColor = [UIColor whiteColor];
-    self.roomCopyLabel.text = TwinmeLocalizedString(@"conversation_view_controller_menu_item_view_copy_title", nil);
+    self.roomCopyLabel.text = TwinmeLocalizedString(@"conversation_view_menu_item_view_copy_title", nil);
     
     self.shareViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     self.shareViewWidthConstraint.constant *= Design.WIDTH_RATIO;
@@ -324,7 +324,7 @@ static const int ddLogLevel = DDLogLevelWarning;
     self.shareView.layer.cornerRadius = self.shareViewHeightConstraint.constant * 0.5;
     self.shareView.clipsToBounds = YES;
     self.shareView.isAccessibilityElement = YES;
-    self.shareView.accessibilityLabel = TwinmeLocalizedString(@"share_view_controller_title", nil);
+    self.shareView.accessibilityLabel = TwinmeLocalizedString(@"share_view_title", nil);
     [self.shareView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleShareTapGesture:)]];
     
     self.shareImageViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
@@ -337,7 +337,7 @@ static const int ddLogLevel = DDLogLevelWarning;
     
     self.shareLabel.font = Design.FONT_MEDIUM36;
     self.shareLabel.textColor = [UIColor whiteColor];
-    self.shareLabel.text = TwinmeLocalizedString(@"share_view_controller_title", nil);
+    self.shareLabel.text = TwinmeLocalizedString(@"share_view_title", nil);
     
     [self.shareLabel setContentHuggingPriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisHorizontal];
     
@@ -347,7 +347,7 @@ static const int ddLogLevel = DDLogLevelWarning;
     
     self.shareSubLabel.font = Design.FONT_REGULAR24;
     self.shareSubLabel.textColor = Design.FONT_COLOR_GREY;
-    self.shareSubLabel.text = TwinmeLocalizedString(@"add_contact_view_controller_social_subtitle", nil);
+    self.shareSubLabel.text = TwinmeLocalizedString(@"add_contact_view_social_subtitle", nil);
     
     self.messageLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
     self.messageLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
@@ -355,11 +355,17 @@ static const int ddLogLevel = DDLogLevelWarning;
     
     [self.messageLabel setFont:Design.FONT_REGULAR30];
     self.messageLabel.textColor = [UIColor whiteColor];
-    self.messageLabel.text = TwinmeLocalizedString(@"invitation_room_view_controller_message", nil);
-        
+    self.messageLabel.text = TwinmeLocalizedString(@"invitation_room_view_message", nil);
+    
     self.qrCodeInitialHeight = self.qrcodeViewHeightConstraint.constant;
     self.qrCodeInitialTop = self.qrcodeViewTopConstraint.constant;
     self.qrCodeMaxHeight = self.containerViewWidthConstraint.constant - self.roomLabelLeadingConstraint.constant - self.roomLabelTrailingConstraint.constant;
+
+    self.activityIndicatorView.hidesWhenStopped = YES;
+    
+    if ([self.twinmeApplication darkModeEnable:[self.twinmeContext defaultSpaceSettings]]) {
+        self.activityIndicatorView.color = [UIColor whiteColor];
+    }
 }
 
 - (void)finish {
@@ -434,7 +440,7 @@ static const int ddLogLevel = DDLogLevelWarning;
         // hyperlink recognition and forwarding.  Even cut&paste will not allow to follow such link.
         NSString *name = [self.room.name stringByReplacingOccurrencesOfString:@"." withString:@"\u2024"];
         name = [name stringByReplacingOccurrencesOfString:@":" withString:@"\u02d0"];
-        NSString *message = [NSString stringWithFormat:TwinmeLocalizedString(@"add_contact_view_controller_invite_message %@ %@", nil), self.uri.uri, name];
+        NSString *message = [NSString stringWithFormat:TwinmeLocalizedString(@"add_contact_view_invite_message", nil), self.uri.uri, name];
         
         UIActivityViewController *activityViewController = [[UIActivityViewController alloc] initWithActivityItems:@[message] applicationActivities:nil];
         activityViewController.excludedActivityTypes = @[UIActivityTypeAirDrop,
@@ -471,7 +477,11 @@ static const int ddLogLevel = DDLogLevelWarning;
         [self hapticFeedBack:UIImpactFeedbackStyleHeavy];
         
         [[UIPasteboard generalPasteboard] setString:self.uri.uri];
-        [[UIApplication sharedApplication].keyWindow makeToast:TwinmeLocalizedString(@"conversation_view_controller_menu_item_view_copy_message",nil)];
+        
+        UIWindow *window = [self currentWindow];
+        if (window) {
+            [window makeToast:TwinmeLocalizedString(@"conversation_view_menu_item_view_copy_message",nil)];
+        }
     }
 }
 
@@ -492,23 +502,13 @@ static const int ddLogLevel = DDLogLevelWarning;
     PHAuthorizationStatus photoAuthorizationStatus = [DeviceAuthorization devicePhotoAuthorizationStatus];
     switch (photoAuthorizationStatus) {
         case PHAuthorizationStatusNotDetermined: {
-            if (@available(iOS 14, *)) {
-                [PHPhotoLibrary requestAuthorizationForAccessLevel:PHAccessLevelAddOnly handler:^(PHAuthorizationStatus authorizationStatus) {
-                    if ([DeviceAuthorization devicePhotoAuthorizationAccessGranted:authorizationStatus]) {
-                        dispatch_async(dispatch_get_main_queue(), ^(void) {
-                            [self saveQRCode];
-                        });
-                    }
-                }];
-            } else {
-                [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus authorizationStatus) {
-                    if ([DeviceAuthorization devicePhotoAuthorizationAccessGranted:authorizationStatus]) {
-                        dispatch_async(dispatch_get_main_queue(), ^(void) {
-                            [self saveQRCode];
-                        });
-                    }
-                }];
-            }
+            [PHPhotoLibrary requestAuthorizationForAccessLevel:PHAccessLevelAddOnly handler:^(PHAuthorizationStatus authorizationStatus) {
+                if ([DeviceAuthorization devicePhotoAuthorizationAccessGranted:authorizationStatus]) {
+                    dispatch_async(dispatch_get_main_queue(), ^(void) {
+                        [self saveQRCode];
+                    });
+                }
+            }];
             break;
         }
             
@@ -567,7 +567,10 @@ static const int ddLogLevel = DDLogLevelWarning;
         if (success) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 self.saveQRCodeInGallery = NO;
-                [[UIApplication sharedApplication].keyWindow makeToast:TwinmeLocalizedString(@"capture_view_controller_qrcode_saved",nil)];
+                UIWindow *window = [self currentWindow];
+                if (window) {
+                    [window makeToast:TwinmeLocalizedString(@"capture_view_qrcode_saved",nil)];
+                }
             });
         }
     }];
@@ -578,7 +581,19 @@ static const int ddLogLevel = DDLogLevelWarning;
     DDLogVerbose(@"%@ updateRoom", LOG_TAG);
     
     self.roomLabel.text = [self.room.publicPeerTwincodeOutboundId  UUIDString];
-    self.qrcodeView.image = [Utils makeQRCodeWithUri:self.uri scale:10];
+    [self.activityIndicatorView startAnimating];
+    __weak typeof(self) weakSelf = self;
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        UIImage *qrImage = [Utils makeQRCodeWithUri:weakSelf.uri scale:10];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (!weakSelf) {
+                return;
+            }
+            [self.activityIndicatorView stopAnimating];
+            self.qrcodeView.image = qrImage;
+        });
+    });
+    
     self.nameLabel.text = self.room.name;
     [self.invitationRoomService getImageWithContact:self.room withBlock:^(UIImage *image) {
         self.avatarView.image = image;

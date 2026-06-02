@@ -225,7 +225,7 @@ static NSString *STREAMING_MUSIC_CELL_IDENTIFIER = @"StreamingMusicCellIdentifie
     self.definesPresentationContext = YES;
     self.view.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
     
-    [self setNavigationTitle:TwinmeLocalizedString(@"streaming_audio_view_controller_title", nil)];
+    [self setNavigationTitle:TwinmeLocalizedString(@"streaming_audio_view_title", nil)];
             
     self.cancelBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:TwinmeLocalizedString(@"application_cancel", nil) style:UIBarButtonItemStylePlain target:self action:@selector(handleCancelTapGesture:)];
     [self.cancelBarButtonItem setTitleTextAttributes: @{NSFontAttributeName: Design.FONT_BOLD36, NSForegroundColorAttributeName: [UIColor whiteColor]} forState:UIControlStateNormal];
@@ -254,15 +254,11 @@ static NSString *STREAMING_MUSIC_CELL_IDENTIFIER = @"StreamingMusicCellIdentifie
     contactSearchBar.backgroundColor = Design.NAVIGATION_BAR_BACKGROUND_COLOR;
     contactSearchBar.delegate = self;
     
-    if (@available(iOS 13.0, *)) {
-        self.searchController.searchBar.backgroundColor = [UIColor clearColor];
-        self.searchController.searchBar.searchTextField.backgroundColor = Design.POPUP_BACKGROUND_COLOR;
-        self.searchController.searchBar.searchTextField.tintColor = [UIColor darkGrayColor];
-        self.searchController.searchBar.translucent = NO;
-        self.navigationItem.searchController = self.searchController;
-    } else {
-        self.songsTableView.tableHeaderView = self.searchController.searchBar;
-    }
+    self.searchController.searchBar.backgroundColor = [UIColor clearColor];
+    self.searchController.searchBar.searchTextField.backgroundColor = Design.POPUP_BACKGROUND_COLOR;
+    self.searchController.searchBar.searchTextField.tintColor = [UIColor darkGrayColor];
+    self.searchController.searchBar.translucent = NO;
+    self.navigationItem.searchController = self.searchController;
     
     self.songsTableView.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
     self.songsTableView.delegate = self;
@@ -281,7 +277,7 @@ static NSString *STREAMING_MUSIC_CELL_IDENTIFIER = @"StreamingMusicCellIdentifie
     
     self.noMusicTitleLabel.font = Design.FONT_MEDIUM34;
     self.noMusicTitleLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    self.noMusicTitleLabel.text = TwinmeLocalizedString(@"streaming_audio_view_controller_no_music_title", nil);
+    self.noMusicTitleLabel.text = TwinmeLocalizedString(@"streaming_audio_view_no_music_title", nil);
     self.noMusicTitleLabel.hidden = YES;
     
     self.noMusicLabelWidthConstraint.constant *= Design.WIDTH_RATIO;
@@ -289,7 +285,7 @@ static NSString *STREAMING_MUSIC_CELL_IDENTIFIER = @"StreamingMusicCellIdentifie
     
     self.noMusicLabel.font = Design.FONT_MEDIUM28;
     self.noMusicLabel.textColor = Design.FONT_COLOR_DESCRIPTION;
-    self.noMusicLabel.text = TwinmeLocalizedString(@"streaming_audio_view_controller_no_music_message", nil);
+    self.noMusicLabel.text = TwinmeLocalizedString(@"streaming_audio_view_no_music_message", nil);
     self.noMusicLabel.hidden = YES;
 }
 
@@ -389,18 +385,14 @@ static NSString *STREAMING_MUSIC_CELL_IDENTIFIER = @"StreamingMusicCellIdentifie
     self.noMusicTitleLabel.textColor = Design.FONT_COLOR_DEFAULT;
     self.noMusicLabel.textColor = Design.FONT_COLOR_DESCRIPTION;
     
-    if (@available(iOS 13.0, *)) {
-        self.searchController.searchBar.backgroundColor = [UIColor clearColor];
-        self.searchController.searchBar.searchTextField.backgroundColor = Design.POPUP_BACKGROUND_COLOR;
-        self.searchController.searchBar.searchTextField.tintColor = Design.FONT_COLOR_DEFAULT;
-        self.searchController.searchBar.searchTextField.textColor = Design.FONT_COLOR_DEFAULT;
-        
-        UIImageView *glassIconImageView = (UIImageView *)self.searchController.searchBar.searchTextField.leftView;
-        glassIconImageView.image = glassIconImageView.image = [glassIconImageView.image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-        glassIconImageView.tintColor = Design.PLACEHOLDER_COLOR;
-    } else {
-        self.searchController.searchBar.backgroundColor = Design.NAVIGATION_BAR_BACKGROUND_COLOR;
-    }
+    self.searchController.searchBar.backgroundColor = [UIColor clearColor];
+    self.searchController.searchBar.searchTextField.backgroundColor = Design.POPUP_BACKGROUND_COLOR;
+    self.searchController.searchBar.searchTextField.tintColor = Design.FONT_COLOR_DEFAULT;
+    self.searchController.searchBar.searchTextField.textColor = Design.FONT_COLOR_DEFAULT;
+    
+    UIImageView *glassIconImageView = (UIImageView *)self.searchController.searchBar.searchTextField.leftView;
+    glassIconImageView.image = glassIconImageView.image = [glassIconImageView.image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    glassIconImageView.tintColor = Design.PLACEHOLDER_COLOR;
     
     if ([self.twinmeApplication darkModeEnable:[self currentSpaceSettings]]) {
         self.searchController.searchBar.keyboardAppearance = UIKeyboardAppearanceDark;

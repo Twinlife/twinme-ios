@@ -166,7 +166,7 @@ typedef enum {
         settingsSectionHeaderCell = [[SettingsSectionHeaderCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:HEADER_SETTINGS_CELL_IDENTIFIER];
     }
     
-    NSString *sectionTitle = TwinmeLocalizedStringFromTable(@"backup_view_controller_security", @"LocalizableBackup", nil);
+    NSString *sectionTitle = TwinmeLocalizedStringFromTable(@"backup_view_security", @"LocalizableBackup", nil);
     [settingsSectionHeaderCell bindWithTitle:sectionTitle backgroundColor:Design.LIGHT_GREY_BACKGROUND_COLOR hideSeparator:YES uppercaseString:YES];
     
     return settingsSectionHeaderCell;
@@ -181,7 +181,7 @@ typedef enum {
             cell = [[SettingsInformationCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:SETTINGS_INFORMATION_CELL_IDENTIFIER];
         }
         
-        [cell bindWithText:TwinmeLocalizedStringFromTable(@"backup_view_controller_security_info", @"LocalizableBackup", nil)];
+        [cell bindWithText:TwinmeLocalizedStringFromTable(@"backup_view_security_info", @"LocalizableBackup", nil)];
         
         return cell;
     } else if ([self isActionPath:indexPath]) {
@@ -194,9 +194,9 @@ typedef enum {
         cell.backupActionDelegate = self;
         
         if (indexPath.section == SECTION_INFO) {
-            [cell bindWithTitle:TwinmeLocalizedString(@"application_save", nil) rightTitle:TwinmeLocalizedString(@"share_view_controller_title", nil) leftImage:[UIImage imageNamed:@"SaveItem"] rightImage:[UIImage imageNamed:@"ShareItem"]];
+            [cell bindWithTitle:TwinmeLocalizedString(@"application_save", nil) rightTitle:TwinmeLocalizedString(@"share_view_title", nil) leftImage:[UIImage imageNamed:@"SaveItem"] rightImage:[UIImage imageNamed:@"ShareItem"]];
         } else {
-            [cell bindWithTitle:TwinmeLocalizedString(@"conversation_view_controller_menu_item_view_copy_title", nil) rightTitle:nil leftImage:[UIImage imageNamed:@"CopyItem"] rightImage:nil];
+            [cell bindWithTitle:TwinmeLocalizedString(@"conversation_view_menu_item_view_copy_title", nil) rightTitle:nil leftImage:[UIImage imageNamed:@"CopyItem"] rightImage:nil];
         }
         
         return cell;
@@ -241,11 +241,12 @@ typedef enum {
     NSNumber *value = nil;
     NSURL *url = [urls firstObject];
     [url getResourceValue:&value forKey:NSURLIsPackageKey error:nil];
-    if (controller.documentPickerMode == UIDocumentPickerModeExportToService) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [[UIApplication sharedApplication].keyWindow makeToast:TwinmeLocalizedString(@"conversation_view_controller_menu_item_view_save_message", nil)];
-        });
-    }
+    dispatch_async(dispatch_get_main_queue(), ^{
+        UIWindow *window = [self currentWindow];
+        if (window) {
+            [window makeToast:TwinmeLocalizedString(@"conversation_view_menu_item_view_save_message", nil)];
+        }
+    });
 }
 
 - (void)documentPickerWasCancelled:(UIDocumentPickerViewController *)controller {
@@ -306,11 +307,11 @@ typedef enum {
     
     self.view.backgroundColor = Design.WHITE_COLOR;
     
-    [self setNavigationTitle:TwinmeLocalizedStringFromTable(@"backup_view_controller_title", @"LocalizableBackup", nil)];
+    [self setNavigationTitle:TwinmeLocalizedStringFromTable(@"backup_view_title", @"LocalizableBackup", nil)];
     
     UIBarButtonItem *infoBarButtonItem =  [[UIBarButtonItem alloc]initWithImage:[UIImage imageNamed:@"OnboardingInfoIcon"] style:UIBarButtonItemStylePlain target:self action:@selector(infoAction:)];
     infoBarButtonItem.tintColor = [UIColor whiteColor];
-    infoBarButtonItem.accessibilityLabel = TwinmeLocalizedString(@"conversation_view_controller_menu_item_view_info_title", nil);
+    infoBarButtonItem.accessibilityLabel = TwinmeLocalizedString(@"conversation_view_menu_item_view_info_title", nil);
     self.navigationItem.rightBarButtonItem = infoBarButtonItem;
     
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
@@ -359,7 +360,10 @@ typedef enum {
     DDLogVerbose(@"%@ copyWords", LOG_TAG);
     
     [[UIPasteboard generalPasteboard] setString:[self getWordsList]];
-    [[UIApplication sharedApplication].keyWindow makeToast:TwinmeLocalizedString(@"conversation_view_controller_menu_item_view_copy_message",nil)];
+    UIWindow *window = [self currentWindow];
+    if (window) {
+        [window makeToast:TwinmeLocalizedString(@"conversation_view_menu_item_view_copy_message",nil)];
+    }
 }
 
 - (void)shareBackup {
@@ -390,14 +394,7 @@ typedef enum {
     
     NSURL *urlToSave = [NSURL fileURLWithPath:self.backupPath];
     if (urlToSave) {
-        UIDocumentPickerViewController *documentPickerViewController;
-        
-        if (@available(iOS 14.0, *)) {
-            documentPickerViewController = [[UIDocumentPickerViewController alloc]initForExportingURLs:@[urlToSave] asCopy:YES];
-        } else {
-            documentPickerViewController = [[UIDocumentPickerViewController alloc]initWithURL:urlToSave inMode:UIDocumentPickerModeExportToService];
-        }
-        
+        UIDocumentPickerViewController *documentPickerViewController = [[UIDocumentPickerViewController alloc]initForExportingURLs:@[urlToSave] asCopy:YES];
         documentPickerViewController.delegate = self;
         documentPickerViewController.modalPresentationStyle = UIModalPresentationFormSheet;
         [self presentViewController:documentPickerViewController animated:YES completion:nil];
@@ -430,8 +427,8 @@ typedef enum {
     onboardingConfirmView.bottomSheetViewDelegate = self;
 
     UIImage *image = [UIImage imageNamed:@"OnboardingBackup"];
-    NSString *title = TwinmeLocalizedStringFromTable(@"backup_view_controller_success", @"LocalizableBackup", nil);
-    NSString *message = [NSString stringWithFormat:@"%@\n\n%@", TwinmeLocalizedStringFromTable(@"backup_view_controller_save_file_message", @"LocalizableBackup", nil), TwinmeLocalizedStringFromTable(@"backup_view_controller_verify_message", @"LocalizableBackup", nil)];
+    NSString *title = TwinmeLocalizedStringFromTable(@"backup_view_success", @"LocalizableBackup", nil);
+    NSString *message = [NSString stringWithFormat:@"%@\n\n%@", TwinmeLocalizedStringFromTable(@"backup_view_save_file_message", @"LocalizableBackup", nil), TwinmeLocalizedStringFromTable(@"backup_view_verify_message", @"LocalizableBackup", nil)];
     NSString *action = TwinmeLocalizedString(@"application_save", nil);
     
     [onboardingConfirmView initWithTitle:title message:message image:image action:action actionColor:nil cancel:nil];

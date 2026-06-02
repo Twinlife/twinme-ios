@@ -160,7 +160,7 @@ static NSString *RESET_SETTINGS_CELL_IDENTIFIER = @"ResetSettingsCellIdentifier"
     
     self.view.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
     
-    [self setNavigationTitle:TwinmeLocalizedString(@"settings_advanced_view_controller_developers_settings", nil)];
+    [self setNavigationTitle:TwinmeLocalizedString(@"settings_advanced_view_developer_settings", nil)];
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     self.tableView.rowHeight = UITableViewAutomaticDimension;
     self.tableView.estimatedRowHeight = Design.SETTING_CELL_HEIGHT * Design.HEIGHT_RATIO;
@@ -186,49 +186,49 @@ static NSString *RESET_SETTINGS_CELL_IDENTIFIER = @"ResetSettingsCellIdentifier"
     
     switch (onboardingType) {
         case OnboardingTypeCertifiedRelation:
-            return TwinmeLocalizedString(@"authentified_relation_view_controller_title", nil);
+            return TwinmeLocalizedString(@"authentified_relation_view_title", nil);
             
         case OnboardingTypeExternalCall:
-            return TwinmeLocalizedString(@"premium_services_view_controller_click_to_call_title", nil);
+            return TwinmeLocalizedString(@"premium_services_view_click_to_call_title", nil);
             
         case OnboardingTypeProfile:
             return TwinmeLocalizedString(@"application_profile", nil);
             
         case OnboardingTypeSpace:
-            return TwinmeLocalizedString(@"premium_services_view_controller_space_title", nil);
+            return TwinmeLocalizedString(@"premium_services_view_space_title", nil);
             
         case OnboardingTypeTransfer:
-            return TwinmeLocalizedString(@"account_view_controller_transfer_between_devices", nil);
+            return TwinmeLocalizedString(@"account_view_transfer_between_devices", nil);
             
         case OnboardingTypeEnterMiniCode:
-            return TwinmeLocalizedString(@"enter_invitation_code_view_controller_enter_code", nil);
+            return TwinmeLocalizedString(@"enter_invitation_code_view_enter_code", nil);
             
         case OnboardingTypeMiniCode:
-            return TwinmeLocalizedString(@"invitation_code_view_controller_create_code", nil);
+            return TwinmeLocalizedString(@"invitation_code_view_create_code", nil);
             
         case OnboardingTypeRemoteCamera:
-            return TwinmeLocalizedString(@"call_view_controller_camera_control", nil);
+            return TwinmeLocalizedString(@"call_view_camera_control", nil);
             
         case OnboardingTypeRemoteCameraSettings:
-            return [NSString stringWithFormat:@"%@ - %@", TwinmeLocalizedString(@"call_view_controller_camera_control", nil), TwinmeLocalizedString(@"settings_view_controller_title", nil)];
+            return [NSString stringWithFormat:@"%@ - %@", TwinmeLocalizedString(@"call_view_camera_control", nil), TwinmeLocalizedString(@"navigation_view_settings", nil)];
             
         case OnboardingTypeTransferCall:
-            return TwinmeLocalizedString(@"premium_services_view_controller_transfert_title", nil);
+            return TwinmeLocalizedString(@"premium_services_view_transfert_title", nil);
             
         case OnboardingTypeProxy:
-            return TwinmeLocalizedString(@"proxy_view_controller_title", nil);
+            return TwinmeLocalizedString(@"proxy_view_title", nil);
 
         case OnboardingTypeBackup:
-            return TwinmeLocalizedStringFromTable(@"account_view_controller_backup", @"LocalizableBackup", nil);
+            return TwinmeLocalizedStringFromTable(@"account_view_backup", @"LocalizableBackup", nil);
             
         case OnboardingTypeRestore:
-            return TwinmeLocalizedStringFromTable(@"account_view_controller_restore", @"LocalizableBackup", nil);
+            return TwinmeLocalizedStringFromTable(@"account_view_restore", @"LocalizableBackup", nil);
             
         case OnboardingTypeVerifyBackup:
-            return TwinmeLocalizedStringFromTable(@"account_view_controller_backup_verify",  @"LocalizableBackup", nil);
+            return TwinmeLocalizedStringFromTable(@"account_view_backup_verify",  @"LocalizableBackup", nil);
             
         case OnboardingTypeBackupBeta:
-            return [NSString stringWithFormat:@"%@ - %@", TwinmeLocalizedStringFromTable(@"account_view_controller_backup_restore", @"LocalizableBackup", nil), TwinmeLocalizedString(@"application_beta", nil)];
+            return [NSString stringWithFormat:@"%@ - %@", TwinmeLocalizedStringFromTable(@"account_view_backup_restore", @"LocalizableBackup", nil), TwinmeLocalizedString(@"application_beta", nil)];
             
         default:
             return @"";

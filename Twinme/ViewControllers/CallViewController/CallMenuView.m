@@ -411,7 +411,7 @@ static const CGFloat DESIGN_ICON_RESUME_CALL_HEIGHT = 40;
     CALayer *hangupButtonLayer = self.hangupButton.layer;
     hangupButtonLayer.cornerRadius = self.hangupViewHeightConstraint.constant * 0.5;
     hangupButtonLayer.masksToBounds = NO;
-    self.hangupButton.accessibilityLabel = TwinmeLocalizedString(@"audio_call_view_controller_hangup", nil);
+    self.hangupButton.accessibilityLabel = TwinmeLocalizedString(@"audio_call_view_hangup", nil);
     
     self.hangupImageViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     self.hangupImageView.image = [self.hangupImageView.image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
@@ -440,7 +440,7 @@ static const CGFloat DESIGN_ICON_RESUME_CALL_HEIGHT = 40;
     invitationButtonLayer.cornerRadius = self.invitationViewHeightConstraint.constant * 0.5;
     invitationButtonLayer.masksToBounds = NO;
     
-    self.streamingAudioView.accessibilityLabel = TwinmeLocalizedString(@"streaming_audio_view_controller_title", nil);
+    self.streamingAudioView.accessibilityLabel = TwinmeLocalizedString(@"streaming_audio_view_title", nil);
 
     self.streamingAudioViewLeadingConstraint.constant *= Design.WIDTH_RATIO;
     self.streamingAudioViewHeightConstraint.constant *= Design.HEIGHT_RATIO;

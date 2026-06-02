@@ -8,6 +8,9 @@
 
 #import <CocoaLumberjack.h>
 
+#import <Photos/Photos.h>
+#import <PhotosUI/PhotosUI.h>
+
 #import <Twinme/TLProfile.h>
 #import <Twinme/TLCallReceiver.h>
 #import <Twinme/TLContact.h>
@@ -46,7 +49,7 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
 // Interface: EditProfileViewController ()
 //
 
-@interface EditProfileViewController () <EditIdentityServiceDelegate, UITextFieldDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate, UITextViewDelegate, UIAdaptivePresentationControllerDelegate, MenuSelectValueDelegate, MenuPhotoViewDelegate, BottomSheetViewDelegate>
+@interface EditProfileViewController () <EditIdentityServiceDelegate, UITextFieldDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate, UITextViewDelegate, UIAdaptivePresentationControllerDelegate, MenuSelectValueDelegate, MenuPhotoViewDelegate, BottomSheetViewDelegate, PHPickerViewControllerDelegate>
 
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *avatarPlaceholderImageViewHeightConstraint;
 @property (weak, nonatomic) IBOutlet UIImageView *avatarPlaceholderImageView;
@@ -249,7 +252,7 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
 - (void)textViewDidBeginEditing:(UITextView *)textView {
     DDLogVerbose(@"%@ textViewDidBeginEditing: %@", LOG_TAG, textView);
     
-    if ([textView.text isEqualToString:TwinmeLocalizedString(@"side_menu_view_controller_about", nil)]) {
+    if ([textView.text isEqualToString:TwinmeLocalizedString(@"navigation_view_about_twinme", nil)]) {
         textView.text = @"";
         textView.textColor = Design.FONT_COLOR_DEFAULT;
     }
@@ -273,7 +276,7 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     DDLogVerbose(@"%@ textViewDidEndEditing: %@", LOG_TAG, textView);
     
     if ([textView.text isEqualToString:@""]) {
-        textView.text = TwinmeLocalizedString(@"side_menu_view_controller_about", nil);
+        textView.text = TwinmeLocalizedString(@"navigation_view_about_twinme", nil);
         textView.textColor = Design.PLACEHOLDER_COLOR;
     }
 }
@@ -300,6 +303,51 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     
     self.navigationController.navigationBarHidden = YES;
     [pickerController dismissViewControllerAnimated:YES completion:nil];
+}
+
+#pragma mark - PHPickerViewControllerDelegate
+
+- (void)picker:(PHPickerViewController *)pickerController didFinishPicking:(NSArray<PHPickerResult *> *)results API_AVAILABLE(ios(14)){
+    DDLogVerbose(@"%@ picker: %@", LOG_TAG, pickerController);
+        
+    [self showProgressIndicator];
+    
+    [pickerController dismissViewControllerAnimated:YES completion:^{
+        if (!results || results.count == 0) {
+            [self hideProgressIndicator];
+            return;
+        }
+    
+        PHPickerResult *result = results.firstObject;
+        if ([result.itemProvider hasItemConformingToTypeIdentifier:UTTypeImage.identifier]) {
+            [result.itemProvider loadDataRepresentationForTypeIdentifier:UTTypeImage.identifier
+                                                       completionHandler:^(NSData * _Nullable data,
+                                                                           NSError * _Nullable error) {
+                
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    if (!error) {
+                        [self hideProgressIndicator];
+       
+                        self.avatarPlaceholderImageView.hidden = NO;
+                        self.updatedIdentityLargeAvatar = [UIImage imageWithData:data];
+                        self.updatedIdentityAvatar = [self.updatedIdentityLargeAvatar resizeImage];
+                        
+                        CATransition *animation = [CATransition animation];
+                        animation.type = kCATransitionFade;
+                        animation.subtype = kCATransitionFromTop;
+                        animation.duration = 0.5;
+                        [self.avatarView.layer addAnimation:animation forKey:nil];
+                        
+                        self.avatarView.image = self.updatedIdentityLargeAvatar;
+                        
+                        [self setUpdated];
+                    }
+                });
+            }];
+        } else {
+            [self hideProgressIndicator];
+        }
+    }];
 }
 
 #pragma mark - EditIdentityServiceDelegate
@@ -399,16 +447,16 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     
     [self.twinmeApplication setProfileUpdateModeWithMode:value];
     
-    NSMutableAttributedString *valueAttributedString = [[NSMutableAttributedString alloc] initWithString:TwinmeLocalizedString(@"edit_profile_view_controller_propagating_profile", nil) attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_REGULAR32, NSFontAttributeName, Design.FONT_COLOR_DEFAULT, NSForegroundColorAttributeName, nil]];
+    NSMutableAttributedString *valueAttributedString = [[NSMutableAttributedString alloc] initWithString:TwinmeLocalizedString(@"edit_profile_view_propagating_profile", nil) attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_REGULAR32, NSFontAttributeName, Design.FONT_COLOR_DEFAULT, NSForegroundColorAttributeName, nil]];
     
     NSString *subTitle = @"";
 
     if (value == TLProfileUpdateModeAll) {
-        subTitle = TwinmeLocalizedString(@"edit_profile_view_controller_propagating_all_contacts", nil);
+        subTitle = TwinmeLocalizedString(@"edit_profile_view_propagating_all_contacts", nil);
     } else if (value == TLProfileUpdateModeDefault) {
-        subTitle = TwinmeLocalizedString(@"edit_profile_view_controller_propagating_except_contacts", nil);
+        subTitle = TwinmeLocalizedString(@"edit_profile_view_propagating_except_contacts", nil);
     } else {
-        subTitle = TwinmeLocalizedString(@"edit_profile_view_controller_propagating_no_contact", nil);
+        subTitle = TwinmeLocalizedString(@"edit_profile_view_propagating_no_contact", nil);
     }
     
     [valueAttributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:@"\n"]];
@@ -536,7 +584,7 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     self.descriptionTextView.textColor = Design.PLACEHOLDER_COLOR;
     self.descriptionTextView.tintColor = Design.FONT_COLOR_DEFAULT;
     self.descriptionTextView.delegate = self;
-    self.descriptionTextView.text = TwinmeLocalizedString(@"side_menu_view_controller_about", nil);
+    self.descriptionTextView.text = TwinmeLocalizedString(@"navigation_view_about_twinme", nil);
     self.descriptionTextView.textContainer.lineFragmentPadding = 0;
     self.descriptionTextView.textContainerInset = UIEdgeInsetsZero;
     
@@ -553,14 +601,14 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
         
     self.propagateView.clipsToBounds = YES;
     self.propagateView.isAccessibilityElement = YES;
-    self.propagateView.accessibilityLabel = TwinmeLocalizedString(@"edit_profile_view_controller_propagating_profile", nil);
+    self.propagateView.accessibilityLabel = TwinmeLocalizedString(@"edit_profile_view_propagating_profile", nil);
     [self.propagateView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handlePropagateTapGesture:)]];
     
     self.propagateLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
     
     self.propagateLabel.font = Design.FONT_REGULAR32;
     self.propagateLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    self.propagateLabel.text = TwinmeLocalizedString(@"edit_profile_view_controller_propagating_profile", nil);
+    self.propagateLabel.text = TwinmeLocalizedString(@"edit_profile_view_propagating_profile", nil);
 
     self.propagateImageViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
         
@@ -589,7 +637,7 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     
     self.messageLabel.font = Design.FONT_REGULAR32;
     self.messageLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    self.messageLabel.text = TwinmeLocalizedString(@"create_profile_view_controller_message", nil);
+    self.messageLabel.text = TwinmeLocalizedString(@"create_profile_view_message", nil);
 }
 
 - (void)finish {
@@ -631,7 +679,7 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
         }
         
         NSString *updatedIdentityDescription =  [self.descriptionTextView.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
-        if ([updatedIdentityDescription isEqualToString:TwinmeLocalizedString(@"side_menu_view_controller_about", nil)]) {
+        if ([updatedIdentityDescription isEqualToString:TwinmeLocalizedString(@"navigation_view_about_twinme", nil)]) {
             updatedIdentityDescription = @"";
         }
         
@@ -722,7 +770,7 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     }
     
     NSString *updatedIdentityDescription =  [self.descriptionTextView.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
-    if ([updatedIdentityDescription isEqualToString:TwinmeLocalizedString(@"side_menu_view_controller_about", nil)]) {
+    if ([updatedIdentityDescription isEqualToString:TwinmeLocalizedString(@"navigation_view_about_twinme", nil)]) {
         updatedIdentityDescription = @"";
     }
     
@@ -754,13 +802,13 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     
     NSString *title =  TwinmeLocalizedString(@"application_profile", nil);
     
-    NSMutableString *mutableString = [[NSMutableString alloc] initWithString:TwinmeLocalizedString(@"create_profile_view_controller_onboarding_message_part_1", nil)];
+    NSMutableString *mutableString = [[NSMutableString alloc] initWithString:TwinmeLocalizedString(@"create_profile_view_onboarding_message_part_1", nil)];
     [mutableString appendString:@"\n\n"];
-    [mutableString appendString:TwinmeLocalizedString(@"create_profile_view_controller_onboarding_message_part_2", nil)];
+    [mutableString appendString:TwinmeLocalizedString(@"create_profile_view_onboarding_message_part_2", nil)];
     [mutableString appendString:@"\n\n"];
-    [mutableString appendString:TwinmeLocalizedString(@"create_profile_view_controller_onboarding_message_part_3", nil)];
+    [mutableString appendString:TwinmeLocalizedString(@"create_profile_view_onboarding_message_part_3", nil)];
     [mutableString appendString:@"\n\n"];
-    [mutableString appendString:TwinmeLocalizedString(@"create_profile_view_controller_onboarding_message_part_4", nil)];
+    [mutableString appendString:TwinmeLocalizedString(@"create_profile_view_onboarding_message_part_4", nil)];
     
     message = mutableString;
     
@@ -818,22 +866,13 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
 - (void)selectPhoto {
     DDLogVerbose(@"%@ selectPhoto", LOG_TAG);
     
-    UIImagePickerController *picker = [[UIImagePickerController alloc] init];
-    picker.delegate = self;
-    picker.presentationController.delegate = self;
-    picker.allowsEditing = YES;
-    picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+    PHPickerConfiguration *config = [[PHPickerConfiguration alloc] init];
+    config.selectionLimit = 1;
+    config.filter = [PHPickerFilter imagesFilter];
     
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-        CGSize size = self.view.bounds.size;
-        picker.modalPresentationStyle = UIModalPresentationPopover;
-        picker.popoverPresentationController.sourceView = self.view;
-        picker.popoverPresentationController.sourceRect = CGRectMake(size.width / 2., size.height * 0.2, size.width * 0.6, size.height * 0.7);
-        picker.popoverPresentationController.permittedArrowDirections = UIPopoverArrowDirectionAny;
-        [self presentViewController:picker animated:YES completion:nil];
-    } else {
-        [self presentViewController:picker animated:YES completion:nil];
-    }
+    PHPickerViewController *pickerViewController = [[PHPickerViewController alloc] initWithConfiguration:config];
+    pickerViewController.delegate = self;
+    [self presentViewController:pickerViewController animated:YES completion:nil];
 }
 
 - (void)openMenuSelectValue {
@@ -864,7 +903,7 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     
     NSString *placeholder = @"";
     if (self.profile) {
-        self.nameLabel.text = TwinmeLocalizedString(@"edit_profile_view_controller_editing_profile", nil);
+        self.nameLabel.text = TwinmeLocalizedString(@"edit_profile_view_editing_profile", nil);
         [self.editIdentityService getImageWithProfile:self.profile withBlock:^(UIImage *image) {
             self.avatar = image;
         }];
@@ -880,16 +919,16 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
         self.saveProfileView.alpha = self.updated ? 1.0 : 0.5;
         self.avatarPlaceholderImageView.hidden = NO;
         
-        NSMutableAttributedString *valueAttributedString = [[NSMutableAttributedString alloc] initWithString:TwinmeLocalizedString(@"edit_profile_view_controller_propagating_profile", nil) attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_REGULAR32, NSFontAttributeName, Design.FONT_COLOR_DEFAULT, NSForegroundColorAttributeName, nil]];
+        NSMutableAttributedString *valueAttributedString = [[NSMutableAttributedString alloc] initWithString:TwinmeLocalizedString(@"edit_profile_view_propagating_profile", nil) attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_REGULAR32, NSFontAttributeName, Design.FONT_COLOR_DEFAULT, NSForegroundColorAttributeName, nil]];
         
         NSString *subTitle = @"";
 
         if (self.twinmeApplication.profileUpdateMode == TLProfileUpdateModeAll) {
-            subTitle = TwinmeLocalizedString(@"edit_profile_view_controller_propagating_all_contacts", nil);
+            subTitle = TwinmeLocalizedString(@"edit_profile_view_propagating_all_contacts", nil);
         } else if (self.twinmeApplication.profileUpdateMode == TLProfileUpdateModeDefault) {
-            subTitle = TwinmeLocalizedString(@"edit_profile_view_controller_propagating_except_contacts", nil);
+            subTitle = TwinmeLocalizedString(@"edit_profile_view_propagating_except_contacts", nil);
         } else {
-            subTitle = TwinmeLocalizedString(@"edit_profile_view_controller_propagating_no_contact", nil);
+            subTitle = TwinmeLocalizedString(@"edit_profile_view_propagating_no_contact", nil);
         }
         
         [valueAttributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:@"\n"]];
@@ -927,7 +966,7 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
         self.descriptionTextView.textColor = Design.FONT_COLOR_DEFAULT;
         self.counterDescriptionLabel.text = [NSString stringWithFormat:@"%lu/%d", (unsigned long)self.descriptionTextView.text.length, MAX_DESCRIPTION_LENGTH];
     } else {
-        self.descriptionTextView.text = TwinmeLocalizedString(@"side_menu_view_controller_about", nil);
+        self.descriptionTextView.text = TwinmeLocalizedString(@"navigation_view_about_twinme", nil);
         self.descriptionTextView.textColor = Design.PLACEHOLDER_COLOR;
         self.counterDescriptionLabel.text = [NSString stringWithFormat:@"0/%d", MAX_DESCRIPTION_LENGTH];
     }
@@ -945,9 +984,9 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
 
     UIImage *image =  [self.twinmeApplication darkModeEnable:[self currentSpaceSettings]] ? [UIImage imageNamed:@"OnboardingAddProfileDark"] : [UIImage imageNamed:@"OnboardingAddProfile"];
     
-    NSString *confirmTitle = incompleteProfile ? TwinmeLocalizedString(@"application_ok", nil) : TwinmeLocalizedString(@"show_profile_view_controller_create_profile", nil);
+    NSString *confirmTitle = incompleteProfile ? TwinmeLocalizedString(@"application_ok", nil) : TwinmeLocalizedString(@"profile_view_create_profile", nil);
 
-    [defaultConfirmView initWithTitle:nil message:TwinmeLocalizedString(@"create_profile_view_controller_incomplete_profile_message", nil) image:image avatar:nil action:confirmTitle actionColor:nil cancel:nil];
+    [defaultConfirmView initWithTitle:nil message:TwinmeLocalizedString(@"create_profile_view_incomplete_profile_message", nil) image:image avatar:nil action:confirmTitle actionColor:nil cancel:nil];
     [defaultConfirmView hideCancelAction];
     [self.tabBarController.view addSubview:defaultConfirmView];
     [defaultConfirmView showConfirmView];
@@ -982,7 +1021,7 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     self.propagateLabel.textColor = Design.FONT_COLOR_DEFAULT;
     self.messageLabel.textColor = Design.FONT_COLOR_DEFAULT;
     
-    if ([self.descriptionTextView.text isEqualToString:TwinmeLocalizedString(@"side_menu_view_controller_about", nil)]) {
+    if ([self.descriptionTextView.text isEqualToString:TwinmeLocalizedString(@"navigation_view_about_twinme", nil)]) {
         self.descriptionTextView.textColor = Design.PLACEHOLDER_COLOR;
     } else {
         self.descriptionTextView.textColor = Design.FONT_COLOR_DEFAULT;

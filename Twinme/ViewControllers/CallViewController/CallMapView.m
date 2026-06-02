@@ -123,10 +123,10 @@ static const CGFloat DESIGN_MIN_MARGIN_ACTION = 34;
     DDLogVerbose(@"%@ initMapView", LOG_TAG);
     
     if (self.isLocationShared) {
-        self.shareLocationView.accessibilityLabel = TwinmeLocalizedString(@"call_view_controller_location_stop", nil);
+        self.shareLocationView.accessibilityLabel = TwinmeLocalizedString(@"call_view_location_stop", nil);
         self.shareLocationImageView.image = [UIImage imageNamed:@"ShareLocationIcon"];
     } else {
-        self.shareLocationView.accessibilityLabel = TwinmeLocalizedString(@"call_view_controller_location_share", nil);
+        self.shareLocationView.accessibilityLabel = TwinmeLocalizedString(@"call_view_location_share", nil);
         self.shareLocationImageView.image = [UIImage imageNamed:@"CallLocationIcon"];
     }
     
@@ -422,14 +422,14 @@ static const CGFloat DESIGN_MIN_MARGIN_ACTION = 34;
             self.isLocationShared = NO;
             [self.callMapDelegate stopShareLocation];
 
-            self.shareLocationView.accessibilityLabel = TwinmeLocalizedString(@"call_view_controller_location_share", nil);
+            self.shareLocationView.accessibilityLabel = TwinmeLocalizedString(@"call_view_location_share", nil);
             self.shareLocationImageView.image = [UIImage imageNamed:@"CallLocationIcon"];
         } else {
             self.isLocationShared = YES;
             
             [self.callMapDelegate startShareLocation:self.mapView.region.span.latitudeDelta mapLongitudeDelta:self.mapView.region.span.longitudeDelta];
             
-            self.shareLocationView.accessibilityLabel = TwinmeLocalizedString(@"call_view_controller_location_stop", nil);
+            self.shareLocationView.accessibilityLabel = TwinmeLocalizedString(@"call_view_location_stop", nil);
             self.shareLocationImageView.image = [UIImage imageNamed:@"ShareLocationIcon"];
         }
     }

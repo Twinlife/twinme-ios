@@ -8,6 +8,10 @@
 
 #import <CocoaLumberjack.h>
 
+#import <Photos/Photos.h>
+#import <PhotosUI/PhotosUI.h>
+
+
 #import <Twinme/TLSpace.h>
 #import <Twinme/UIImage+Resize.h>
 
@@ -70,7 +74,7 @@ static CGFloat DESIGN_RESET_HEIGHT = 160;
 // Interface: ConversationAppearanceViewController  ()
 //
 
-@interface ConversationAppearanceViewController ()<MenuSelectColorDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate, SpaceAppearanceServiceDelegate, MenuPhotoViewDelegate>
+@interface ConversationAppearanceViewController ()<MenuSelectColorDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate, SpaceAppearanceServiceDelegate, MenuPhotoViewDelegate, PHPickerViewControllerDelegate>
 
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 
@@ -291,6 +295,51 @@ static CGFloat DESIGN_RESET_HEIGHT = 160;
     [pickerController dismissViewControllerAnimated:YES completion:nil];
 }
 
+#pragma mark - PHPickerViewControllerDelegate
+
+- (void)picker:(PHPickerViewController *)pickerController didFinishPicking:(NSArray<PHPickerResult *> *)results API_AVAILABLE(ios(14)){
+    DDLogVerbose(@"%@ picker: %@", LOG_TAG, pickerController);
+        
+    [self showProgressIndicator];
+    
+    [pickerController dismissViewControllerAnimated:YES completion:^{
+        if (!results || results.count == 0) {
+            [self hideProgressIndicator];
+            return;
+        }
+    
+        PHPickerResult *result = results.firstObject;
+        if ([result.itemProvider hasItemConformingToTypeIdentifier:UTTypeImage.identifier]) {
+            [result.itemProvider loadDataRepresentationForTypeIdentifier:UTTypeImage.identifier
+                                                       completionHandler:^(NSData * _Nullable data,
+                                                                           NSError * _Nullable error) {
+                
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    if (!error) {
+                        [self hideProgressIndicator];
+       
+                        self.canSave = YES;
+                        self.saveBarButtonItem.enabled = YES;
+                        
+                        if (self.displayMode == DisplayModeLight) {
+                            self.updatedLightImage = YES;
+                            self.updatedConversationBackgroundLightColor = NO;
+                            self.conversationBackgroundLightImage = [UIImage imageWithData:data];
+                        } else {
+                            self.updatedDarkImage = YES;
+                            self.updatedConversationBackgroundDarkColor = NO;
+                            self.conversationBackgroundDarkImage = [UIImage imageWithData:data];
+                        }
+                        
+                        [self.tableView reloadData];
+                    }
+                });
+            }];
+        } else {
+            [self hideProgressIndicator];
+        }
+    }];
+}
 
 #pragma mark - UITableViewDataSource
 
@@ -378,9 +427,9 @@ static CGFloat DESIGN_RESET_HEIGHT = 160;
             cell = [[SettingsInformationCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:SETTINGS_INFORMATION_CELL_IDENTIFIER];
         }
         
-        NSString *text = TwinmeLocalizedString(@"settings_view_controller_default_value_message", nil);
+        NSString *text = TwinmeLocalizedString(@"settings_view_default_value_message", nil);
         if (self.space) {
-            text = TwinmeLocalizedString(@"settings_space_view_controller_default_value_message", nil);
+            text = TwinmeLocalizedString(@"settings_space_view_default_value_message", nil);
         }
         [cell bindWithText:text];
         
@@ -416,7 +465,7 @@ static CGFloat DESIGN_RESET_HEIGHT = 160;
                 cell = [[SettingsInformationCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:SETTINGS_INFORMATION_CELL_IDENTIFIER];
             }
             
-            [cell bindWithText:TwinmeLocalizedString(@"space_appearance_view_controller_background_message", nil)];
+            [cell bindWithText:TwinmeLocalizedString(@"space_appearance_view_background_message", nil)];
             
             return cell;
         } else {
@@ -612,11 +661,11 @@ static CGFloat DESIGN_RESET_HEIGHT = 160;
     
     switch (row) {
         case PREVIEW_APPEARANCE_TITLE_ROW:
-            title = TwinmeLocalizedString(@"space_appearance_view_controller_preview_title", nil);
+            title = TwinmeLocalizedString(@"space_appearance_view_preview_title", nil);
             break;
             
         case BACKGROUND_APPEARANCE_TITLE_ROW:
-            title = TwinmeLocalizedString(@"space_appearance_view_controller_background_title", nil);
+            title = TwinmeLocalizedString(@"space_appearance_view_background_title", nil);
             break;
             
         case BACKGROUND_COLOR_ROW:
@@ -624,35 +673,35 @@ static CGFloat DESIGN_RESET_HEIGHT = 160;
             break;
             
         case BACKGROUND_TEXT_ROW:
-            title = TwinmeLocalizedString(@"space_appareance_view_controller_background_text_title", nil);
+            title = TwinmeLocalizedString(@"space_appearance_view_background_text_title", nil);
             break;
             
         case ITEM_APPEARANCE_TITLE_ROW:
-            title = TwinmeLocalizedString(@"space_appearance_view_controller_container_title", nil);
+            title = TwinmeLocalizedString(@"space_appearance_view_container_title", nil);
             break;
             
         case ITEM_BACKGROUND_COLOR_ROW:
-            title = TwinmeLocalizedString(@"space_appearance_view_controller_container_background_message", nil);
+            title = TwinmeLocalizedString(@"space_appearance_view_container_background_message", nil);
             break;
             
         case PEER_ITEM_BACKGROUND_COLOR_ROW:
-            title = TwinmeLocalizedString(@"space_appearance_view_controller_container_background_peer_message", nil);
+            title = TwinmeLocalizedString(@"space_appearance_view_container_background_peer_message", nil);
             break;
             
         case ITEM_BORDER_COLOR_ROW:
-            title = TwinmeLocalizedString(@"space_appearance_view_controller_container_border_message", nil);
+            title = TwinmeLocalizedString(@"space_appearance_view_container_border_message", nil);
             break;
             
         case PEER_ITEM_BORDER_COLOR_ROW:
-            title = TwinmeLocalizedString(@"space_appearance_view_controller_container_border_peer_message", nil);
+            title = TwinmeLocalizedString(@"space_appearance_view_container_border_peer_message", nil);
             break;
             
         case ITEM_TEXT_COLOR_ROW:
-            title = TwinmeLocalizedString(@"space_appearance_view_controller_container_text_message", nil);
+            title = TwinmeLocalizedString(@"space_appearance_view_container_text_message", nil);
             break;
             
         case PEER_ITEM_TEXT_COLOR_ROW:
-            title = TwinmeLocalizedString(@"space_appearance_view_controller_container_text_peer_message", nil);
+            title = TwinmeLocalizedString(@"space_appearance_view_container_text_peer_message", nil);
             break;
             
         default:
@@ -869,21 +918,13 @@ static CGFloat DESIGN_RESET_HEIGHT = 160;
 - (void)selectPhoto {
     DDLogVerbose(@"%@ selectPhoto", LOG_TAG);
     
-    UIImagePickerController *picker = [[UIImagePickerController alloc] init];
-    picker.delegate = self;
-    picker.allowsEditing = NO;
-    picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+    PHPickerConfiguration *config = [[PHPickerConfiguration alloc] init];
+    config.selectionLimit = 1;
+    config.filter = [PHPickerFilter imagesFilter];
     
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-        CGSize size = self.view.bounds.size;
-        picker.modalPresentationStyle = UIModalPresentationPopover;
-        picker.popoverPresentationController.sourceView = self.view;
-        picker.popoverPresentationController.sourceRect = CGRectMake(size.width * 0.5, size.height * 0.2, size.width * 0.6, size.height * 0.7);
-        picker.popoverPresentationController.permittedArrowDirections = UIPopoverArrowDirectionAny;
-        [self presentViewController:picker animated:YES completion:nil];
-    } else {
-        [self presentViewController:picker animated:YES completion:nil];
-    }
+    PHPickerViewController *pickerViewController = [[PHPickerViewController alloc] initWithConfiguration:config];
+    pickerViewController.delegate = self;
+    [self presentViewController:pickerViewController animated:YES completion:nil];
 }
 
 - (BOOL)isSelectableRow:(NSIndexPath *)indexPath {

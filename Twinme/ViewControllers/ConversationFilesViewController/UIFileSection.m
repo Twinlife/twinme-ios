@@ -56,7 +56,7 @@
     NSDateComponents *today = [[NSCalendar currentCalendar] components:NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay fromDate:[NSDate date]];
     
     if ([today month] == [itemDay month] && [today year] == [itemDay year]) {
-        return TwinmeLocalizedString(@"conversation_files_view_controller_month", nil);
+        return TwinmeLocalizedString(@"conversation_files_view_month", nil);
     }
     
     NSString *dateFormat = @"MMMM YYYY";

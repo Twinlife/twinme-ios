@@ -116,6 +116,9 @@ static CGFloat DESIGN_NOTIFICATION_LINE_HEIGHT = 22.f;
         case TLBaseServiceErrorCodeFileNotSupported:
             return TwinmeLocalizedString(@"application_error_media_not_supported", nil);
             
+        case TLBaseServiceErrorCodeFeatureNotSupportedByPeer:
+            return TwinmeLocalizedString(@"conversation_view_feature_not_supported_by_peer", nil);
+            
         default:
             break;
     }

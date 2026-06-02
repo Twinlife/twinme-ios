@@ -10,6 +10,7 @@
 
 #import "FilePreviewViewController.h"
 #import <Twinlife/TLConversationService.h>
+#import <TwinmeCommon/UIViewController+Utils.h>
 
 #import "PreviewItem.h"
 
@@ -80,7 +81,14 @@ static const int ddLogLevel = DDLogLevelWarning;
 - (void)previewControllerWillDismiss:(QLPreviewController *)controller {
     DDLogVerbose(@"%@ previewControllerWillDismiss: %@", LOG_TAG, controller);
     
-    if ([UIApplication sharedApplication].statusBarOrientation != UIInterfaceOrientationPortrait) {
+    UIWindow *currentWindow = [UIViewController currentWindow];
+    BOOL isLandscape = NO;
+    
+    if (currentWindow) {
+        isLandscape = UIInterfaceOrientationIsLandscape(currentWindow.windowScene.interfaceOrientation);
+    }
+    
+    if (isLandscape) {
         NSNumber *value = [NSNumber numberWithInt:UIInterfaceOrientationPortrait];
         [[UIDevice currentDevice] setValue:value forKey:@"orientation"];
     }

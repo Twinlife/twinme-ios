@@ -119,7 +119,7 @@ static UIColor *DESIGN_PEER_ITEM_COLOR;
     self.lightViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     self.lightView.userInteractionEnabled = YES;
     self.lightView.isAccessibilityElement = YES;
-    self.lightView.accessibilityLabel = TwinmeLocalizedString(@"personalization_view_controller_mode_light", nil);
+    self.lightView.accessibilityLabel = TwinmeLocalizedString(@"personalization_view_mode_light", nil);
     
     UITapGestureRecognizer *lightViewTapGesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(handleLightTapGesture:)];
     [self.lightView addGestureRecognizer:lightViewTapGesture];
@@ -170,14 +170,14 @@ static UIColor *DESIGN_PEER_ITEM_COLOR;
     
     self.lightLabel.font = Design.FONT_REGULAR34;
     self.lightLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    self.lightLabel.text = TwinmeLocalizedString(@"personalization_view_controller_mode_light", nil);
+    self.lightLabel.text = TwinmeLocalizedString(@"personalization_view_mode_light", nil);
     
     self.darkViewTopConstraint.constant *= Design.HEIGHT_RATIO;
     self.darkViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     
     self.darkView.userInteractionEnabled = YES;
     self.darkView.isAccessibilityElement = YES;
-    self.darkView.accessibilityLabel = TwinmeLocalizedString(@"personalization_view_controller_mode_dark", nil);
+    self.darkView.accessibilityLabel = TwinmeLocalizedString(@"personalization_view_mode_dark", nil);
     
     UITapGestureRecognizer *darkViewTapGesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(handleDarkTapGesture:)];
     [self.darkView addGestureRecognizer:darkViewTapGesture];
@@ -228,7 +228,7 @@ static UIColor *DESIGN_PEER_ITEM_COLOR;
     
     self.darkLabel.font = Design.FONT_REGULAR34;
     self.darkLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    self.darkLabel.text = TwinmeLocalizedString(@"personalization_view_controller_mode_dark", nil);
+    self.darkLabel.text = TwinmeLocalizedString(@"personalization_view_mode_dark", nil);
     
     self.separatorViewHeightConstraint.constant = Design.SEPARATOR_HEIGHT;
     self.separatorView.backgroundColor = Design.SEPARATOR_COLOR_GREY;
@@ -255,14 +255,9 @@ static UIColor *DESIGN_PEER_ITEM_COLOR;
         self.lightView.alpha = 0.5;
         self.darkView.alpha = 0.5;
         
-        if (@available(iOS 13.0, *)) {
-            if ([UIScreen mainScreen].traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark){
-                self.lightCheckMarkImageView.hidden = YES;
-                self.darkCheckMarkImageView.hidden = NO;
-            } else {
-                self.lightCheckMarkImageView.hidden = NO;
-                self.darkCheckMarkImageView.hidden = YES;
-            }
+        if ([UIScreen mainScreen].traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark){
+            self.lightCheckMarkImageView.hidden = YES;
+            self.darkCheckMarkImageView.hidden = NO;
         } else {
             self.lightCheckMarkImageView.hidden = NO;
             self.darkCheckMarkImageView.hidden = YES;

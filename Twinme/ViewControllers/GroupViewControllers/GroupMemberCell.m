@@ -102,27 +102,27 @@ static const int ddLogLevel = DDLogLevelWarning;
     
     NSString *statusInvitation = @"";
     if ([invitation peerFailure]) {
-        statusInvitation = TwinmeLocalizedString(@"conversation_view_controller_invitation_failed", nil);
+        statusInvitation = TwinmeLocalizedString(@"conversation_view_invitation_failed", nil);
     } else if (invitation.invitationDescriptor) {
         switch (invitation.invitationDescriptor.status) {
             case TLInvitationDescriptorStatusTypePending:
-                statusInvitation = TwinmeLocalizedString(@"conversation_view_controller_invitation_pending", nil);
+                statusInvitation = TwinmeLocalizedString(@"conversation_view_invitation_pending", nil);
                 break;
                 
             case TLInvitationDescriptorStatusTypeAccepted:
-                statusInvitation = TwinmeLocalizedString(@"conversation_view_controller_invitation_accepted", nil);
+                statusInvitation = TwinmeLocalizedString(@"conversation_view_invitation_accepted", nil);
                 break;
                 
             case TLInvitationDescriptorStatusTypeJoined:
-                statusInvitation = TwinmeLocalizedString(@"conversation_view_controller_invitation_joined", nil);
+                statusInvitation = TwinmeLocalizedString(@"conversation_view_invitation_joined", nil);
                 break;
                 
             case TLInvitationDescriptorStatusTypeRefused:
-                statusInvitation = TwinmeLocalizedString(@"conversation_view_controller_invitation_refused", nil);
+                statusInvitation = TwinmeLocalizedString(@"conversation_view_invitation_refused", nil);
                 break;
                 
             case TLInvitationDescriptorStatusTypeWithdrawn:
-                statusInvitation = TwinmeLocalizedString(@"conversation_view_controller_invitation_refused", nil);
+                statusInvitation = TwinmeLocalizedString(@"conversation_view_invitation_refused", nil);
                 break;
                 
             default:

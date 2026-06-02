@@ -381,7 +381,7 @@ NSString * const SLKTextInputbarDidMoveNotification =   @"SLKTextInputbarDidMove
         return 4;
     }
     else {
-        return 6;
+        return 10;
     }
 }
 

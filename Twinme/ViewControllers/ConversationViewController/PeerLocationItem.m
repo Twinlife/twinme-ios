@@ -22,6 +22,7 @@
     
     if (self) {
         _geolocationDescriptor= geolocationDescriptor;
+        self.copyAllowed = geolocationDescriptor.copyAllowed;
     }
     return self;
 }
@@ -29,6 +30,7 @@
 - (void)updateGeolocationDescriptor:(TLGeolocationDescriptor *)geolocationDescriptor {
     
     self.geolocationDescriptor = geolocationDescriptor;
+    self.copyAllowed = geolocationDescriptor.copyAllowed;
 }
 
 #pragma mark - Item

@@ -206,11 +206,11 @@ typedef enum {
     
     switch (section) {
         case SECTION_ALLOW_COPY:
-            sectionName = [NSString stringWithFormat:@"%@", TwinmeLocalizedString(@"settings_view_controller_permissions_title", nil)];
+            sectionName = [NSString stringWithFormat:@"%@", TwinmeLocalizedString(@"settings_view_permissions_title", nil)];
             break;
             
         case SECTION_EPHEMERAL:
-            sectionName = [NSString stringWithFormat:@"%@", TwinmeLocalizedString(@"settings_view_controller_ephemeral_section_title", nil)];
+            sectionName = [NSString stringWithFormat:@"%@", TwinmeLocalizedString(@"settings_view_ephemeral_section_title", nil)];
             break;
             
         default:
@@ -226,11 +226,11 @@ typedef enum {
     NSString *sectionName;
     switch (section) {
         case SECTION_ALLOW_COPY:
-            sectionName = [NSString stringWithFormat:@"%@", TwinmeLocalizedString(@"settings_view_controller_permissions_title", nil)];
+            sectionName = [NSString stringWithFormat:@"%@", TwinmeLocalizedString(@"settings_view_permissions_title", nil)];
             break;
             
         case SECTION_EPHEMERAL:
-            sectionName = [NSString stringWithFormat:@"%@", TwinmeLocalizedString(@"settings_view_controller_ephemeral_section_title", nil)];
+            sectionName = [NSString stringWithFormat:@"%@", TwinmeLocalizedString(@"settings_view_ephemeral_section_title", nil)];
             break;
             
         default:
@@ -289,11 +289,11 @@ typedef enum {
         
         NSString *text = @"";
         if (indexPath.section == SECTION_INFO) {
-            text = TwinmeLocalizedString(@"settings_space_view_controller_default_value_message", nil);
+            text = TwinmeLocalizedString(@"settings_space_view_default_value_message", nil);
         } else if (indexPath.section == SECTION_EPHEMERAL) {
-            text = TwinmeLocalizedString(@"settings_view_controller_ephemeral_message", nil);
+            text = TwinmeLocalizedString(@"settings_view_ephemeral_message", nil);
         } else {
-            text = TwinmeLocalizedString(@"settings_view_controller_allow_copy_category_title", nil);
+            text = TwinmeLocalizedString(@"settings_view_allow_copy_category_title", nil);
         }
         
         [cell bindWithText:text];
@@ -328,7 +328,7 @@ typedef enum {
                     switchState = self.allowCopyText;
                     hiddenSwitch = NO;
                     tag = TAG_ALLOW_COPY_TEXT;
-                    title = TwinmeLocalizedString(@"settings_view_controller_allow_copy_text_title", nil);
+                    title = TwinmeLocalizedString(@"settings_view_allow_copy_text_title", nil);
                     
                     if (self.space && self.space.isManagedSpace) {
                         disableSwitch = YES;
@@ -337,7 +337,7 @@ typedef enum {
                     switchState = self.allowCopyFile;
                     hiddenSwitch = NO;
                     tag = TAG_ALLOW_COPY_FILE;
-                    title = TwinmeLocalizedString(@"settings_view_controller_allow_copy_file_title", nil);
+                    title = TwinmeLocalizedString(@"settings_view_allow_copy_file_title", nil);
                     if (self.space && self.space.isManagedSpace) {
                         disableSwitch = YES;
                     }
@@ -349,7 +349,7 @@ typedef enum {
                     switchState = self.allowEphemeral;
                     hiddenSwitch = NO;
                     tag = TAG_ALLOW_EPHEMERAL;
-                    title = TwinmeLocalizedString(@"settings_view_controller_ephemeral_title", nil);
+                    title = TwinmeLocalizedString(@"settings_view_ephemeral_title", nil);
                     if (self.space && self.space.isManagedSpace) {
                         disableSwitch = YES;
                     }
@@ -429,7 +429,7 @@ typedef enum {
     
     self.view.backgroundColor = Design.WHITE_COLOR;
     
-    [self setNavigationTitle:TwinmeLocalizedString(@"settings_view_controller_chat_category_title", nil)];
+    [self setNavigationTitle:TwinmeLocalizedString(@"settings_view_chat_category_title", nil)];
     
     [self.tableView registerNib:[UINib nibWithNibName:@"SettingsItemCell" bundle:nil] forCellReuseIdentifier:SETTINGS_CELL_IDENTIFIER];
     [self.tableView registerNib:[UINib nibWithNibName:@"SettingsValueItemCell" bundle:nil] forCellReuseIdentifier:SETTINGS_VALUE_CELL_IDENTIFIER];

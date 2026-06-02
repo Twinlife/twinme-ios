@@ -48,15 +48,15 @@
     
     switch (self.configExternalCallSettings) {
         case ConfigExternalCallSettingsCallType:
-            self.title = TwinmeLocalizedString(@"create_external_call_view_controller_call_type", nil);
+            self.title = TwinmeLocalizedString(@"create_external_call_view_call_type", nil);
             break;
             
         case ConfigExternalCallSettingsPermissions:
-            self.title = TwinmeLocalizedString(@"settings_view_controller_authorization_title", nil);
+            self.title = TwinmeLocalizedString(@"settings_view_authorization_title", nil);
             break;
             
         case ConfigExternalCallSettingsExpiration:
-            self.title = TwinmeLocalizedString(@"create_external_call_view_controller_link_validity", nil);
+            self.title = TwinmeLocalizedString(@"create_external_call_view_link_validity", nil);
             break;
             
         case ConfigExternalCallSettingsScheduleStart:
@@ -66,11 +66,11 @@
             break;
 
         case ConfigExternalCallSettingsDelete:
-            self.title = TwinmeLocalizedString(@"create_external_call_view_controller_delete_link_setting", nil);
+            self.title = TwinmeLocalizedString(@"create_external_call_view_delete_link_setting", nil);
             break;
             
         case ConfigExternalCallSettingsNotification:
-            self.title = TwinmeLocalizedString(@"create_external_call_view_controller_notification_setting", nil);
+            self.title = TwinmeLocalizedString(@"create_external_call_view_notification_setting", nil);
             break;
             
         default:

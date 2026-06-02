@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="24765" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24743"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -93,6 +93,7 @@
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="28" id="MlW-zf-jNe"/>
+                            <constraint firstAttribute="width" secondItem="AHF-Ah-apu" secondAttribute="height" multiplier="1:1" id="PCd-Um-QYl"/>
                         </constraints>
                     </view>
                     <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="none" translatesAutoresizingMaskIntoConstraints="NO" id="rrK-Mq-TZa">
@@ -142,8 +143,7 @@
                     <constraint firstAttribute="bottom" secondItem="GlI-j9-wWf" secondAttribute="bottom" id="IEP-qG-Jxq"/>
                     <constraint firstItem="6Ye-Hf-LFZ" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" priority="750" constant="18" id="JvM-gw-MCZ"/>
                     <constraint firstItem="73k-vF-Kzc" firstAttribute="bottom" secondItem="Usv-OG-uB4" secondAttribute="bottom" id="MIm-U4-UgG"/>
-                    <constraint firstItem="qiG-Rn-Sr3" firstAttribute="trailing" secondItem="Nje-0A-dPc" secondAttribute="leading" constant="-18" id="PBz-Tx-Lrw"/>
-                    <constraint firstItem="AHF-Ah-apu" firstAttribute="width" secondItem="AHF-Ah-apu" secondAttribute="height" multiplier="1:1" id="PCd-Um-QYl"/>
+                    <constraint firstItem="Nje-0A-dPc" firstAttribute="leading" secondItem="qiG-Rn-Sr3" secondAttribute="trailing" constant="18" id="PBz-Tx-Lrw"/>
                     <constraint firstItem="6Ye-Hf-LFZ" firstAttribute="leading" secondItem="Usv-OG-uB4" secondAttribute="leading" id="Pq0-k6-7dm"/>
                     <constraint firstItem="qiG-Rn-Sr3" firstAttribute="bottom" secondItem="Nje-0A-dPc" secondAttribute="bottom" id="Ta2-JP-e50"/>
                     <constraint firstItem="twN-cn-CHP" firstAttribute="bottom" secondItem="Usv-OG-uB4" secondAttribute="top" id="cBQ-5H-bB2"/>

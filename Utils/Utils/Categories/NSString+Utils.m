@@ -109,7 +109,7 @@ static int BOLD_VALUE = -2;
     }
 }
 
-+ (NSString *)formatBackupTimeInterval:(NSTimeInterval)interval {
++ (NSString *)formatBackupTimeInterval:(NSTimeInterval)interval isLastBackup:(BOOL)isLastBackup {
     
     NSDate *date = [NSDate dateWithTimeIntervalSince1970:interval];
     NSCalendar *calendar = [NSCalendar currentCalendar];
@@ -119,7 +119,9 @@ static int BOLD_VALUE = -2;
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc]init];
     dateFormatter.locale = [NSLocale currentLocale];
     
-    if ([calendar isDateInToday:date]) {
+    if (isLastBackup) {
+        [dateFormatter setDateStyle:NSDateFormatterShortStyle];
+    } else if ([calendar isDateInToday:date]) {
         [dateFormatter setDateStyle:NSDateFormatterNoStyle];
     } else if ([calendar isDateInYesterday:date]) {
         [dateFormatter setDoesRelativeDateFormatting:YES];
@@ -208,19 +210,19 @@ static int BOLD_VALUE = -2;
     int64_t oneMonth = oneDay * 30;
     
     if (timeout == 0) {
-        return TwinmeLocalizedString(@"privacy_view_controller_lock_screen_timeout_instant", nil);
+        return TwinmeLocalizedString(@"privacy_view_lock_screen_timeout_instant", nil);
     } else if (timeout < oneMinute) {
-        return [NSString stringWithFormat:TwinmeLocalizedString(@"application_timeout_seconds %@", nil),[NSString convertWithLocale:[NSString stringWithFormat:@"%lld",timeout]]];
+        return [NSString stringWithFormat:TwinmeLocalizedString(@"application_timeout_seconds", nil),[NSString convertWithLocale:[NSString stringWithFormat:@"%lld",timeout]]];
     } else if (timeout == oneMinute) {
         return TwinmeLocalizedString(@"application_timeout_minute", nil);
     } else if (timeout < oneHour) {
         int64_t minutes = timeout / oneMinute;
-        return [NSString stringWithFormat:TwinmeLocalizedString(@"application_timeout_minutes %@", nil),[NSString convertWithLocale:[NSString stringWithFormat:@"%lld",minutes]]];
+        return [NSString stringWithFormat:TwinmeLocalizedString(@"application_timeout_minutes", nil),[NSString convertWithLocale:[NSString stringWithFormat:@"%lld",minutes]]];
     } else if (timeout == oneHour) {
         return TwinmeLocalizedString(@"application_timeout_hour", nil);
     } else if (timeout < oneDay) {
         int64_t hours = timeout / oneHour;
-        return [NSString stringWithFormat:TwinmeLocalizedString(@"application_timeout_hours %@", nil),[NSString convertWithLocale:[NSString stringWithFormat:@"%lld",hours]]];
+        return [NSString stringWithFormat:TwinmeLocalizedString(@"application_timeout_hours", nil),[NSString convertWithLocale:[NSString stringWithFormat:@"%lld",hours]]];
     } else if (timeout == oneDay) {
         return TwinmeLocalizedString(@"application_timeout_day", nil);
     } else if (timeout == oneWeek) {
@@ -230,14 +232,6 @@ static int BOLD_VALUE = -2;
     }
     
     return [NSString convertWithLocale:[NSString stringWithFormat:@"%lld",timeout]];
-}
-
-+ (NSString *)convertEmoji:(NSString *)string {
-    
-    string = [string stringByReplacingOccurrencesOfString:@":-)" withString:HAPPY_EMOJI_CODE];
-    string = [string stringByReplacingOccurrencesOfString:@":-(" withString:SAD_EMOJI_CODE];
-    
-    return string;
 }
 
 + (NSString *)firstCharacter:(NSString *)string {
@@ -250,6 +244,27 @@ static int BOLD_VALUE = -2;
         NSString *firstLetter = [string substringToIndex:1];
         return [firstLetter uppercaseString];
     }
+}
+
++ (NSString *)capitalizeFirstCharacter:(NSString *)string {
+    
+    if (!string || string.length == 0) {
+        return @"";
+    } else if (string.length == 1) {
+        return string.capitalizedString;
+    } else {
+        NSString *firstLetter = [string substringToIndex:1];
+        NSString *rest = [[string substringFromIndex:1] lowercaseString];
+        return [firstLetter stringByAppendingString:rest];
+    }
+}
+
++ (NSString *)convertEmoji:(NSString *)string {
+    
+    string = [string stringByReplacingOccurrencesOfString:@":-)" withString:HAPPY_EMOJI_CODE];
+    string = [string stringByReplacingOccurrencesOfString:@":-(" withString:SAD_EMOJI_CODE];
+    
+    return string;
 }
 
 + (NSUUID *)toUUID:(NSString *)string {
@@ -303,21 +318,11 @@ static int BOLD_VALUE = -2;
     
     NSRange range = NSMakeRange(0, text.length);
     NSMutableArray *excludeRanges = [[NSMutableArray alloc]init];
-    if (@available(iOS 13, *)) {
-        NSError *error = nil;
-        NSDataDetector *linkDetector = [NSDataDetector dataDetectorWithTypes:NSTextCheckingTypeLink error:&error];
-        NSArray *matches = [linkDetector matchesInString:text options:0 range:range];
-        for (NSTextCheckingResult *match in matches) {
-            [excludeRanges addObject:[NSValue valueWithRange:match.range]];
-        }
-    } else {
-        NSRegularExpression *urlRegularExpression = [NSRegularExpression regularExpressionWithPattern:
-                                                      URL_PATTERN options:NSRegularExpressionCaseInsensitive error:nil];
-        [urlRegularExpression enumerateMatchesInString:text options:NSMatchingReportProgress range:range usingBlock:^(NSTextCheckingResult *result, NSMatchingFlags flags, BOOL *stop) {
-            if (result.range.length > 0) {
-                [excludeRanges addObject:[NSValue valueWithRange:result.range]];
-            }
-        }];
+    NSError *error = nil;
+    NSDataDetector *linkDetector = [NSDataDetector dataDetectorWithTypes:NSTextCheckingTypeLink error:&error];
+    NSArray *matches = [linkDetector matchesInString:text options:0 range:range];
+    for (NSTextCheckingResult *match in matches) {
+        [excludeRanges addObject:[NSValue valueWithRange:match.range]];
     }
     
     NSMutableArray *styleRanges = [[NSMutableArray alloc]init];

@@ -704,9 +704,9 @@ SLKPastableMediaType SLKPastableMediaTypeFromNSString(NSString *string)
 
 - (void)slk_addCustomMenuControllerItems
 {
-    UIMenuItem *undo = [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"conversation_view_controller_custom_menu_action_undo", nil) action:@selector(slk_undo:)];
-    UIMenuItem *redo = [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"conversation_view_controller_custom_menu_action_redo", nil) action:@selector(slk_redo:)];
-    UIMenuItem *format = [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"conversation_view_controller_format_menu_title", nil) action:@selector(slk_presentFormattingMenu:)];
+    UIMenuItem *undo = [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"conversation_view_custom_menu_action_undo", nil) action:@selector(slk_undo:)];
+    UIMenuItem *redo = [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"conversation_view_custom_menu_action_redo", nil) action:@selector(slk_redo:)];
+    UIMenuItem *format = [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"conversation_view_format_menu_title", nil) action:@selector(slk_presentFormattingMenu:)];
     
     [[UIMenuController sharedMenuController] setMenuItems:@[undo, redo, format]];
 }

@@ -37,4 +37,6 @@
 
 - (long long)totalFilesSize;
 
+- (BOOL)shareLocation;
+
 @end

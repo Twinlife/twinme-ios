@@ -93,26 +93,16 @@
 
 - (void)updateNavigationBar:(UIColor *)backgroundColor {
     
-    if (@available(iOS 13.0, *)) {
-        UINavigationBarAppearance *navBarAppearance = [self.navigationBar standardAppearance];
-        [navBarAppearance configureWithOpaqueBackground];
-        navBarAppearance.titleTextAttributes = @{NSFontAttributeName: Design.FONT_BOLD34, NSForegroundColorAttributeName: [UIColor whiteColor]};
-        navBarAppearance.largeTitleTextAttributes = @{NSFontAttributeName: Design.FONT_BOLD68, NSForegroundColorAttributeName: [UIColor whiteColor]};
-        navBarAppearance.backgroundColor = backgroundColor;
-        navBarAppearance.shadowColor = [UIColor clearColor];
-        self.navigationBar.standardAppearance = navBarAppearance;
-        self.navigationBar.scrollEdgeAppearance = navBarAppearance;
-        self.navigationBar.compactAppearance = navBarAppearance;
-        self.navigationBar.tintColor = [UIColor whiteColor];
-    } else {
-        self.navigationBar.translucent = NO;
-        self.navigationBar.barTintColor = backgroundColor;
-        self.navigationBar.tintColor = [UIColor whiteColor];
-        self.navigationBar.backgroundColor = backgroundColor;
-        [self.navigationBar setLargeTitleTextAttributes:@{NSFontAttributeName: Design.FONT_BOLD68, NSForegroundColorAttributeName: [UIColor whiteColor]}];
-        
-        [self.navigationBar setTitleTextAttributes:@{NSFontAttributeName: Design.FONT_BOLD34, NSForegroundColorAttributeName: [UIColor whiteColor]}];
-    }
+    UINavigationBarAppearance *navBarAppearance = [self.navigationBar standardAppearance];
+    [navBarAppearance configureWithOpaqueBackground];
+    navBarAppearance.titleTextAttributes = @{NSFontAttributeName: Design.FONT_BOLD34, NSForegroundColorAttributeName: [UIColor whiteColor]};
+    navBarAppearance.largeTitleTextAttributes = @{NSFontAttributeName: Design.FONT_BOLD68, NSForegroundColorAttributeName: [UIColor whiteColor]};
+    navBarAppearance.backgroundColor = backgroundColor;
+    navBarAppearance.shadowColor = [UIColor clearColor];
+    self.navigationBar.standardAppearance = navBarAppearance;
+    self.navigationBar.scrollEdgeAppearance = navBarAppearance;
+    self.navigationBar.compactAppearance = navBarAppearance;
+    self.navigationBar.tintColor = [UIColor whiteColor];
 }
 
 @end

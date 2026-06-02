@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="22146" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="24765" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22122"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24743"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -54,6 +54,12 @@
                             <constraint firstItem="OmC-Z8-OmX" firstAttribute="top" secondItem="QN1-Gv-gwO" secondAttribute="top" constant="28" id="WwJ-CZ-exO"/>
                         </constraints>
                     </view>
+                    <imageView hidden="YES" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="InfoItem" translatesAutoresizingMaskIntoConstraints="NO" id="AIB-MW-CDZ">
+                        <rect key="frame" x="640" y="78" width="38" height="38"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="38" id="MVR-g7-xOS"/>
+                        </constraints>
+                    </imageView>
                     <label opaque="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dY9-x3-S9G" customClass="DecoratedLabel">
                         <rect key="frame" x="698" y="97" width="0.0" height="0.0"/>
                         <fontDescription key="fontDescription" type="system" pointSize="36"/>
@@ -110,20 +116,22 @@
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstAttribute="bottom" secondItem="Dvc-eW-N4U" secondAttribute="bottom" id="4CH-sQ-st5"/>
+                            <constraint firstAttribute="width" secondItem="2nR-Bc-0cs" secondAttribute="height" multiplier="1:1" id="4Q9-W2-1NW"/>
                             <constraint firstAttribute="width" secondItem="2nR-Bc-0cs" secondAttribute="height" multiplier="1:1" id="FoX-u4-qcE"/>
                             <constraint firstAttribute="height" constant="36" id="HW8-q3-3Th"/>
                             <constraint firstAttribute="trailing" secondItem="Dvc-eW-N4U" secondAttribute="trailing" id="SQl-7f-Qhx"/>
                             <constraint firstItem="Dvc-eW-N4U" firstAttribute="top" secondItem="2nR-Bc-0cs" secondAttribute="top" id="XtS-Uj-L37"/>
                             <constraint firstItem="Dvc-eW-N4U" firstAttribute="leading" secondItem="2nR-Bc-0cs" secondAttribute="leading" id="ca6-EM-Ff3"/>
                             <constraint firstAttribute="width" secondItem="2nR-Bc-0cs" secondAttribute="height" multiplier="1:1" id="lKL-EH-yKs"/>
+                            <constraint firstAttribute="width" secondItem="2nR-Bc-0cs" secondAttribute="height" multiplier="1:1" id="w9r-es-W6Q"/>
                         </constraints>
                     </view>
                 </subviews>
                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                 <constraints>
                     <constraint firstItem="dY9-x3-S9G" firstAttribute="bottom" secondItem="FlO-AM-HUa" secondAttribute="bottom" id="08g-7X-n3T"/>
-                    <constraint firstItem="2nR-Bc-0cs" firstAttribute="width" secondItem="2nR-Bc-0cs" secondAttribute="height" multiplier="1:1" id="4Q9-W2-1NW"/>
                     <constraint firstItem="QN1-Gv-gwO" firstAttribute="top" relation="greaterThanOrEqual" secondItem="H2p-sc-9uM" secondAttribute="top" priority="750" constant="18" id="8CY-Xp-jso"/>
+                    <constraint firstItem="AIB-MW-CDZ" firstAttribute="width" secondItem="AIB-MW-CDZ" secondAttribute="height" multiplier="1:1" id="8hH-4k-qz1"/>
                     <constraint firstItem="QN1-Gv-gwO" firstAttribute="bottom" secondItem="dY9-x3-S9G" secondAttribute="bottom" id="9Be-Il-1O4"/>
                     <constraint firstItem="jOt-hX-hRb" firstAttribute="bottom" secondItem="dY9-x3-S9G" secondAttribute="bottom" id="9X5-Uf-ecE"/>
                     <constraint firstItem="fpx-j6-DWd" firstAttribute="top" relation="greaterThanOrEqual" secondItem="H2p-sc-9uM" secondAttribute="top" priority="750" constant="18" id="E6m-1e-Az9"/>
@@ -142,15 +150,16 @@
                     <constraint firstAttribute="bottom" secondItem="WCv-TT-yUT" secondAttribute="bottom" id="crR-vA-3gs"/>
                     <constraint firstItem="2nR-Bc-0cs" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="36" id="dNg-S4-yGY"/>
                     <constraint firstItem="hEm-iE-ck2" firstAttribute="width" secondItem="dY9-x3-S9G" secondAttribute="width" id="eYs-6b-ykw"/>
+                    <constraint firstItem="dY9-x3-S9G" firstAttribute="leading" secondItem="AIB-MW-CDZ" secondAttribute="trailing" constant="20" id="iiF-Xb-cWM"/>
                     <constraint firstItem="hEm-iE-ck2" firstAttribute="height" secondItem="dY9-x3-S9G" secondAttribute="height" id="jnm-sA-sbT"/>
                     <constraint firstItem="d3p-la-g1p" firstAttribute="bottom" secondItem="dY9-x3-S9G" secondAttribute="top" id="kt9-a7-kRa"/>
+                    <constraint firstItem="AIB-MW-CDZ" firstAttribute="centerY" secondItem="dY9-x3-S9G" secondAttribute="centerY" id="kyG-bb-kuF"/>
                     <constraint firstItem="Q6g-RP-KQB" firstAttribute="top" secondItem="dY9-x3-S9G" secondAttribute="bottom" id="mQZ-wl-vKU"/>
                     <constraint firstItem="WCv-TT-yUT" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" id="pdH-9q-WWU"/>
                     <constraint firstItem="dY9-x3-S9G" firstAttribute="bottom" secondItem="H2p-sc-9uM" secondAttribute="bottom" constant="-18" id="rfW-dD-4Qm"/>
                     <constraint firstItem="fpx-j6-DWd" firstAttribute="bottom" secondItem="dY9-x3-S9G" secondAttribute="bottom" id="rwm-hd-nNc"/>
                     <constraint firstItem="QN1-Gv-gwO" firstAttribute="trailing" secondItem="dY9-x3-S9G" secondAttribute="trailing" id="tEL-xC-1vj"/>
                     <constraint firstItem="dY9-x3-S9G" firstAttribute="trailing" secondItem="jOt-hX-hRb" secondAttribute="leading" constant="-10" id="tcV-RP-Gav"/>
-                    <constraint firstItem="2nR-Bc-0cs" firstAttribute="width" secondItem="2nR-Bc-0cs" secondAttribute="height" multiplier="1:1" id="w9r-es-W6Q"/>
                     <constraint firstItem="hEm-iE-ck2" firstAttribute="leading" secondItem="dY9-x3-S9G" secondAttribute="leading" id="zbK-hW-foV"/>
                 </constraints>
             </tableViewCellContentView>
@@ -172,6 +181,9 @@
                 <outlet property="ephemeralViewBottomConstraint" destination="08g-7X-n3T" id="Ltg-gg-Jxt"/>
                 <outlet property="ephemeralViewHeightConstraint" destination="NE9-az-efg" id="Xa8-nh-8R6"/>
                 <outlet property="ephemeralViewLeadingConstraint" destination="HGO-Ly-f1k" id="pJ0-MY-1Ca"/>
+                <outlet property="infoImageView" destination="AIB-MW-CDZ" id="S4m-zR-leM"/>
+                <outlet property="infoImageViewHeightConstraint" destination="MVR-g7-xOS" id="0gD-W6-QTW"/>
+                <outlet property="infoImageViewTrailinConstraint" destination="iiF-Xb-cWM" id="YMG-DS-oND"/>
                 <outlet property="overlayView" destination="WCv-TT-yUT" id="ynM-2t-Gfs"/>
                 <outlet property="replyActionImageView" destination="KCc-IJ-JkD" id="yJ6-RH-iUh"/>
                 <outlet property="replyActionImageViewHeightConstraint" destination="Rok-72-iDW" id="YzB-de-Gtc"/>
@@ -201,12 +213,9 @@
             <point key="canvasLocation" x="139" y="141"/>
         </tableViewCell>
     </objects>
-    <designables>
-        <designable name="d3p-la-g1p"/>
-        <designable name="dY9-x3-S9G"/>
-    </designables>
     <resources>
         <image name="CheckMarkGrey" width="22" height="22"/>
+        <image name="InfoItem" width="18" height="18"/>
         <image name="ReplyItem" width="15" height="15"/>
     </resources>
 </document>

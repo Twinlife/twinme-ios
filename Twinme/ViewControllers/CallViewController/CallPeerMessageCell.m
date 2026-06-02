@@ -11,6 +11,7 @@
 #import "CallPeerMessageCell.h"
 
 #import <TwinmeCommon/Design.h>
+#import <TwinmeCommon/UIViewController+Utils.h>
 #import "DecoratedLabel.h"
 
 #import <Utils/NSString+Utils.h>
@@ -157,7 +158,7 @@ static const int MAX_EMOJI = 5;
     
     if (longPressGesture.state == UIGestureRecognizerStateBegan) {
         [[UIPasteboard generalPasteboard] setString:self.contentLabel.text];
-        [[UIApplication sharedApplication].keyWindow makeToast:TwinmeLocalizedString(@"conversation_view_controller_menu_item_view_copy_message", nil)];
+        [[UIViewController currentWindow] makeToast:TwinmeLocalizedString(@"conversation_view_menu_item_view_copy_message", nil)];
     }
 }
 

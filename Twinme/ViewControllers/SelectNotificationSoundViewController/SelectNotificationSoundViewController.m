@@ -166,7 +166,7 @@ static CGFloat DESIGN_CELL_HEIGHT = 120;
     
     self.view.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
     
-    [self setNavigationTitle:TwinmeLocalizedString(@"select_notification_sound_view_controller_title", nil)];
+    [self setNavigationTitle:TwinmeLocalizedString(@"select_notification_sound_view_title", nil)];
     
     self.tableView.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
     self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];

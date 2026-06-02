@@ -55,17 +55,17 @@
     
     switch (self.qualityOfServicesPart) {
         case QualityOfServicesPartOne:
-            self.message = TwinmeLocalizedString(@"quality_of_services_view_controller_step1_message", nil);
+            self.message = TwinmeLocalizedString(@"quality_of_service_view_step1_message", nil);
             self.image = darkMode ? [UIImage imageNamed:@"OnboardingStep2Dark"]:[UIImage imageNamed:@"OnboardingStep2"];
             break;
             
         case QualityOfServicesPartTwo:
-            self.message = TwinmeLocalizedString(@"quality_of_services_view_controller_step2_message", nil);
+            self.message = TwinmeLocalizedString(@"quality_of_service_view_step2_message", nil);
             self.image = darkMode ? [UIImage imageNamed:@"QualityServiceStep2Dark"]:[UIImage imageNamed:@"QualityServiceStep2"];
             break;
             
         case QualityOfServicesPartThree:
-            self.message = TwinmeLocalizedString(@"quality_of_services_view_controller_step3_message", nil);
+            self.message = TwinmeLocalizedString(@"quality_of_service_view_step3_message", nil);
             self.image = [UIImage imageNamed:@"QualityServiceStep3"];
             break;
                         

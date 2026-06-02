@@ -8,6 +8,9 @@
 
 #import <CocoaLumberjack.h>
 
+#import <Photos/Photos.h>
+#import <PhotosUI/PhotosUI.h>
+
 #import <Twinme/TLProfile.h>
 #import <Twinme/TLContact.h>
 #import <Twinme/UIImage+Resize.h>
@@ -45,7 +48,7 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
 // Interface: AddProfileViewController ()
 //
 
-@interface AddProfileViewController () <CreateProfileServiceDelegate, UITextFieldDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate, UITextViewDelegate, UIAdaptivePresentationControllerDelegate, MenuPhotoViewDelegate, BottomSheetViewDelegate>
+@interface AddProfileViewController () <CreateProfileServiceDelegate, UITextFieldDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate, UITextViewDelegate, UIAdaptivePresentationControllerDelegate, MenuPhotoViewDelegate, BottomSheetViewDelegate, PHPickerViewControllerDelegate>
 
 @property (weak, nonatomic) IBOutlet UIView *containerView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *avatarPlaceholderImageViewHeightConstraint;
@@ -224,6 +227,51 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     [pickerController dismissViewControllerAnimated:YES completion:nil];
 }
 
+#pragma mark - PHPickerViewControllerDelegate
+
+- (void)picker:(PHPickerViewController *)pickerController didFinishPicking:(NSArray<PHPickerResult *> *)results API_AVAILABLE(ios(14)){
+    DDLogVerbose(@"%@ picker: %@", LOG_TAG, pickerController);
+        
+    [self showProgressIndicator];
+    
+    [pickerController dismissViewControllerAnimated:YES completion:^{
+        if (!results || results.count == 0) {
+            [self hideProgressIndicator];
+            return;
+        }
+    
+        PHPickerResult *result = results.firstObject;
+        if ([result.itemProvider hasItemConformingToTypeIdentifier:UTTypeImage.identifier]) {
+            [result.itemProvider loadDataRepresentationForTypeIdentifier:UTTypeImage.identifier
+                                                       completionHandler:^(NSData * _Nullable data,
+                                                                           NSError * _Nullable error) {
+                
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    if (!error) {
+                        [self hideProgressIndicator];
+       
+                        self.updatedProfileLargeAvatar = [UIImage imageWithData:data];
+                        self.updatedProfileAvatar = [self.updatedProfileLargeAvatar resizeImage];
+                        
+                        CATransition *animation = [CATransition animation];
+                        animation.type = kCATransitionFade;
+                        animation.subtype = kCATransitionFromTop;
+                        animation.duration = 0.5;
+                        [self.avatarView.layer addAnimation:animation forKey:nil];
+                        
+                        self.avatarView.image = self.updatedProfileLargeAvatar;
+                        self.avatarPlaceholderImageView.hidden = YES;
+                        
+                        [self setUpdated];
+                    }
+                });
+            }];
+        } else {
+            [self hideProgressIndicator];
+        }
+    }];
+}
+
 #pragma mark - CreateProfileServiceDelegate
 
 - (void)onCreateSpace:(TLSpace *)space {
@@ -331,7 +379,7 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
         
     UIBarButtonItem *infoBarButtonItem =  [[UIBarButtonItem alloc]initWithImage:[UIImage imageNamed:@"OnboardingInfoIcon"] style:UIBarButtonItemStylePlain target:self action:@selector(handleInfoTapGesture:)];
     infoBarButtonItem.tintColor = [UIColor whiteColor];
-    infoBarButtonItem.accessibilityLabel = TwinmeLocalizedString(@"conversation_view_controller_menu_item_view_info_title", nil);
+    infoBarButtonItem.accessibilityLabel = TwinmeLocalizedString(@"conversation_view_menu_item_view_info_title", nil);
     self.navigationItem.rightBarButtonItem = infoBarButtonItem;
         
     self.nameViewTopConstraint.constant *= Design.HEIGHT_RATIO;
@@ -385,7 +433,7 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     
     self.messageLabel.font = Design.FONT_REGULAR32;
     self.messageLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    self.messageLabel.text = TwinmeLocalizedString(@"create_profile_view_controller_save_message", nil);
+    self.messageLabel.text = TwinmeLocalizedString(@"create_profile_view_save_message", nil);
 }
 
 - (void)finish {
@@ -532,9 +580,9 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     MainViewController *mainViewController = delegate.mainViewController;
     NSString *nameSpace;
     if ([mainViewController numberSpaces:YES] == 0) {
-        nameSpace = TwinmeLocalizedString(@"space_appearance_view_controller_general_title", nil);
+        nameSpace = TwinmeLocalizedString(@"space_appearance_view_general_title", nil);
     } else {
-        nameSpace = [NSString stringWithFormat:@"%@ %lu", TwinmeLocalizedString(@"settings_space_view_controller_space_category_title", nil), [mainViewController numberSpaces:YES] + 1];
+        nameSpace = [NSString stringWithFormat:@"%@ %lu", TwinmeLocalizedString(@"settings_space_view_space_category_title", nil), [mainViewController numberSpaces:YES] + 1];
     }
     [self.createProfileService createProfile:self.nameTextField.text profileDescription:nil avatar:self.updatedProfileAvatar largeAvatar:self.updatedProfileLargeAvatar nameSpace:nameSpace createSpace:self.fromCreateSpace];
 }
@@ -581,22 +629,13 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
 - (void)selectPhoto {
     DDLogVerbose(@"%@ selectPhoto", LOG_TAG);
     
-    UIImagePickerController *picker = [[UIImagePickerController alloc] init];
-    picker.delegate = self;
-    picker.presentationController.delegate = self;
-    picker.allowsEditing = YES;
-    picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+    PHPickerConfiguration *config = [[PHPickerConfiguration alloc] init];
+    config.selectionLimit = 1;
+    config.filter = [PHPickerFilter imagesFilter];
     
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-        CGSize size = self.view.bounds.size;
-        picker.modalPresentationStyle = UIModalPresentationPopover;
-        picker.popoverPresentationController.sourceView = self.view;
-        picker.popoverPresentationController.sourceRect = CGRectMake(size.width / 2., size.height * 0.2, size.width * 0.6, size.height * 0.7);
-        picker.popoverPresentationController.permittedArrowDirections = UIPopoverArrowDirectionAny;
-        [self presentViewController:picker animated:YES completion:nil];
-    } else {
-        [self presentViewController:picker animated:YES completion:nil];
-    }
+    PHPickerViewController *pickerViewController = [[PHPickerViewController alloc] initWithConfiguration:config];
+    pickerViewController.delegate = self;
+    [self presentViewController:pickerViewController animated:YES completion:nil];
 }
 
 - (void)openMenuPhoto {
@@ -622,13 +661,13 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     
     NSString *title =  TwinmeLocalizedString(@"application_profile", nil);
     
-    NSMutableString *mutableString = [[NSMutableString alloc] initWithString:TwinmeLocalizedString(@"create_profile_view_controller_onboarding_message_part_1", nil)];
+    NSMutableString *mutableString = [[NSMutableString alloc] initWithString:TwinmeLocalizedString(@"create_profile_view_onboarding_message_part_1", nil)];
     [mutableString appendString:@"\n\n"];
-    [mutableString appendString:TwinmeLocalizedString(@"create_profile_view_controller_onboarding_message_part_2", nil)];
+    [mutableString appendString:TwinmeLocalizedString(@"create_profile_view_onboarding_message_part_2", nil)];
     [mutableString appendString:@"\n\n"];
-    [mutableString appendString:TwinmeLocalizedString(@"create_profile_view_controller_onboarding_message_part_3", nil)];
+    [mutableString appendString:TwinmeLocalizedString(@"create_profile_view_onboarding_message_part_3", nil)];
     [mutableString appendString:@"\n\n"];
-    [mutableString appendString:TwinmeLocalizedString(@"create_profile_view_controller_onboarding_message_part_4", nil)];
+    [mutableString appendString:TwinmeLocalizedString(@"create_profile_view_onboarding_message_part_4", nil)];
     
     message = mutableString;
     
@@ -652,9 +691,9 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
 
     UIImage *image = [self.twinmeApplication darkModeEnable:[self currentSpaceSettings]] ? [UIImage imageNamed:@"OnboardingAddProfileDark"] : [UIImage imageNamed:@"OnboardingAddProfile"];
     
-    NSString *confirmTitle = incompleteProfile ? TwinmeLocalizedString(@"application_ok", nil) : TwinmeLocalizedString(@"show_profile_view_controller_create_profile", nil);
+    NSString *confirmTitle = incompleteProfile ? TwinmeLocalizedString(@"application_ok", nil) : TwinmeLocalizedString(@"profile_view_create_profile", nil);
 
-    [defaultConfirmView initWithTitle:nil message:TwinmeLocalizedString(@"create_profile_view_controller_incomplete_profile_message", nil) image:image avatar:nil action:confirmTitle actionColor:nil cancel:nil];
+    [defaultConfirmView initWithTitle:nil message:TwinmeLocalizedString(@"create_profile_view_incomplete_profile_message", nil) image:image avatar:nil action:confirmTitle actionColor:nil cancel:nil];
     [defaultConfirmView hideCancelAction];
     [self.tabBarController.view addSubview:defaultConfirmView];
     [defaultConfirmView showConfirmView];

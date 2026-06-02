@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2020-2025 twinlife SA.
+ *  Copyright (c) 2020-2026 twinlife SA.
  *  SPDX-License-Identifier: AGPL-3.0-only
  *
  *  Contributors:
@@ -36,6 +36,7 @@
 #import <Twinlife/TLPeerConnectionService.h>
 #import <Twinlife/TLPeerCallService.h>
 #import <Twinlife/TLCryptoService.h>
+#import <Twinlife/TLSecureRosterService.h>
 
 #import <Twinme/TLPushNotificationContent.h>
 #import <Twinme/TLNotificationCenter.h>
@@ -65,12 +66,10 @@ static const int ddLogLevel = DDLogLevelVerbose;
 static const int ddLogLevel = DDLogLevelWarning;
 #endif
 
-#define TwinmeLocalizedString(key, comment) [NSString localizedStringForKey:(key) replaceValue:(comment)]
 #define NOTIFICATION_TIMEOUT (23*1000)
 #define CHECK_INVOCATION_DELAY  1.5     // Check whether we have pending invocations each 1.5s
 #define DISCONNECT_DELAY 0.5            // Delay to wait before disconnecting from Twinme server after onTerminate (500ms).
 #define FLUSH_NOTIFICATIONS_DELAY 0.5   // Delay to wait before flushing the notifications after onTwinlifeOffline (500ms).
-#define HAVE_NOTIFICATION_FILTERING (YES)
 
 static NSString *APPLICATION_NAME = @"skred";
 
@@ -224,6 +223,7 @@ typedef enum {
         self.imageServiceConfiguration.serviceOn = true;
         self.peerCallServiceConfiguration.serviceOn = true;
         self.cryptoServiceConfiguration.serviceOn = true;
+        self.secureRosterServiceConfiguration.serviceOn = true;
     }
     return self;
 }
@@ -547,7 +547,7 @@ static NotificationService *INSTANCE;
         }
     }
     // Start Twinlife so that we activate the com.twinlife.ConnectionMonitor thread to setup the OpenFire websocket.
-    if ([self.twinmeContext status] != TLTwinlifeStatusStarted) {
+    if ([self.twinmeContext status] != TLTwinlifeStatusStarted && [self.twinmeContext status] != TLTwinlifeStatusRestoring) {
         [self.twinmeContext start];
     } else {
         [self.twinmeContext connect];
@@ -744,12 +744,14 @@ static NotificationService *INSTANCE;
 
 }
 
-- (void)onUpdateAnnotationWithContact:(id<TLOriginator>)contact conversationId:(NSUUID *)conversationId descriptor:(TLDescriptor *)descriptor annotatingUser:(nonnull TLTwincodeOutbound *)annotatingUser {
+- (void)onUpdateAnnotationsWithContact:(id<TLOriginator>)contact conversationId:(NSUUID *)conversationId descriptor:(TLDescriptor *)descriptor annotatingUser:(nonnull TLTwincodeOutbound *)annotatingUser annotations:(nonnull NSSet<TLDescriptorAnnotation *> *)annotations{
     DDLogVerbose(@"%@ onUpdateDescriptorWithContact: %@ conversationId: %@ descriptor: %@ annotatingUser: %@", LOG_TAG, contact, conversationId, descriptor, annotatingUser);
 
-    [self dispatchNotificationWithBlock:^(NSUUID *notificationId) {
-        return [self.notificationTools createNotificationAnnotationWithContact:contact conversationId:conversationId descriptor:descriptor annotatingUser:annotatingUser notificationId:notificationId];
-    }];
+    for (TLDescriptorAnnotation *annotation in annotations) {
+        [self dispatchNotificationWithBlock:^(NSUUID *notificationId) {
+            return [self.notificationTools createNotificationAnnotationWithContact:contact conversationId:conversationId descriptor:descriptor annotatingUser:annotatingUser notificationId:notificationId annotation:annotation];
+        }];
+    }
 }
 
 - (void)updateApplicationBadgeNumber:(NSInteger)applicationBadgeNumber {
@@ -863,6 +865,7 @@ static NotificationService *INSTANCE;
     notificationContent.title = info.alertTitle;
     notificationContent.subtitle = info.alertBody;
     notificationContent.categoryIdentifier = @"NOTIFICATION";
+    notificationContent.userInfo = info.userInfo;
     @synchronized (self) {
         self.badgeNumber++;
         notification.notification.badge = [NSNumber numberWithInteger:self.badgeNumber];
@@ -1099,39 +1102,12 @@ static void darwinNotificationObserver(CFNotificationCenterRef center, void *obs
 - (void)sendDefaultNotification {
     DDLogVerbose(@"%@ sendDefaultNotification", LOG_TAG);
 
-    NotificationService *notificationService = [NotificationService instance];
-
     self.request = nil;
     if (self.contentHandler) {
         // If we have the com.apple.developer.usernotifications.filtering entitlement,
         // we can filter the notification to avoid the annoying message.
         // This is possible only for iOS >= 13.3 so the issue remains for iOS 13.0 up to 13.2
-        if (HAVE_NOTIFICATION_FILTERING) {
-            if (@available(iOS 13.3, *)) {
-                self.contentHandler([[UNNotificationContent alloc] init]);
-                self.notification = nil;
-                return;
-            }
-        }
-
-        if (notificationService.readMessageCount > 0) {
-            self.notification.body = TwinmeLocalizedString(@"notification_center_message_read", nil);
-        } else if (notificationService.deleteMessageCount > 0) {
-            self.notification.body = TwinmeLocalizedString(@"notification_center_message_deleted", nil);
-        } else if (notificationService.resetConversationCount > 0) {
-            self.notification.body = TwinmeLocalizedString(@"notification_center_message_reset_conversation", nil);
-        } else {
-            self.notification.body = TwinmeLocalizedString(@"notification_center_message_synchronize", nil);
-        }
-
-        // Set an identifier on the notification so that we can redirect to the contact/group conversation.
-        if (self.contactId) {
-            self.notification.userInfo = @{@"contactId": self.contactId.UUIDString};
-        } else if (self.groupId) {
-            self.notification.userInfo = @{@"groupId": self.groupId.UUIDString};
-        }
-        self.contentHandler(self.notification);
-        self.contentHandler = nil;
+        self.contentHandler([[UNNotificationContent alloc] init]);
     }
     self.notification = nil;
 

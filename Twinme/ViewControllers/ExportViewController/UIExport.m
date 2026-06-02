@@ -34,31 +34,31 @@
     
     switch (self.exportContentType) {
         case ExportContentTypeMessage:
-            title = TwinmeLocalizedString(@"settings_view_controller_chat_category_title", nil);
+            title = TwinmeLocalizedString(@"settings_view_chat_category_title", nil);
             break;
             
         case ExportContentTypeImage:
-            title = TwinmeLocalizedString(@"export_view_controller_images", nil);
+            title = TwinmeLocalizedString(@"export_view_images", nil);
             break;
             
         case ExportContentTypeVideo:
-            title = TwinmeLocalizedString(@"export_view_controller_videos", nil);
+            title = TwinmeLocalizedString(@"export_view_videos", nil);
             break;
             
         case ExportContentTypeAudio:
-            title = TwinmeLocalizedString(@"export_view_controller_voice_messages", nil);
+            title = TwinmeLocalizedString(@"export_view_voice_messages", nil);
             break;
             
         case ExportContentTypeFile:
-            title = TwinmeLocalizedString(@"export_view_controller_files", nil).capitalizedString;
+            title = TwinmeLocalizedString(@"export_view_files", nil).capitalizedString;
             break;
             
         case ExportContentTypeMediaAndFile:
-            title = TwinmeLocalizedString(@"cleanup_view_controller_medias_and_files", nil);
+            title = TwinmeLocalizedString(@"cleanup_view_medias_and_files", nil);
             break;
             
         case ExportContentTypeAll:
-            title = TwinmeLocalizedString(@"cleanup_view_controller_messages", nil);
+            title = TwinmeLocalizedString(@"cleanup_view_messages", nil);
             break;
             
         default:
@@ -88,15 +88,15 @@
     
     if (self.exportContentType == ExportContentTypeMessage || self.exportContentType == ExportContentTypeAll) {
         if (self.count > 1) {
-            contentType = TwinmeLocalizedString(@"settings_view_controller_chat_category_title", nil);
+            contentType = TwinmeLocalizedString(@"settings_view_chat_category_title", nil);
         } else {
-            contentType = TwinmeLocalizedString(@"feedback_view_controller_message", nil);
+            contentType = TwinmeLocalizedString(@"feedback_view_message", nil);
         }
     } else {
         if (self.count > 1) {
-            contentType = TwinmeLocalizedString(@"export_view_controller_files", nil);
+            contentType = TwinmeLocalizedString(@"export_view_files", nil);
         } else {
-            contentType = TwinmeLocalizedString(@"export_view_controller_file", nil);
+            contentType = TwinmeLocalizedString(@"export_view_file", nil);
         }
     }
     

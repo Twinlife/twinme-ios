@@ -69,7 +69,7 @@ static const int ddLogLevel = DDLogLevelWarning;
     
     self.updateAvailableLabel.textColor = [UIColor whiteColor];
     self.updateAvailableLabel.font = Design.FONT_REGULAR34;
-    self.updateAvailableLabel.text = TwinmeLocalizedString(@"update_app_view_controller_update_available", nil);
+    self.updateAvailableLabel.text = TwinmeLocalizedString(@"update_app_view_update_available", nil);
 }
 
 - (void)prepareForReuse {

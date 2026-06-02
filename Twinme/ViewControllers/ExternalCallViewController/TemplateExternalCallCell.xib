@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="24765" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24743"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -38,7 +38,10 @@
                         <nil key="highlightedColor"/>
                     </label>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text=".label" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="V4T-i4-iBQ">
-                        <rect key="frame" x="174" y="36" width="528" height="48"/>
+                        <rect key="frame" x="174" y="8" width="528" height="104"/>
+                        <constraints>
+                            <constraint firstAttribute="height" relation="greaterThanOrEqual" priority="750" constant="112" id="Hry-n7-X9l"/>
+                        </constraints>
                         <fontDescription key="fontDescription" type="system" pointSize="40"/>
                         <nil key="textColor"/>
                         <nil key="highlightedColor"/>
@@ -56,10 +59,11 @@
                     <constraint firstItem="V4T-i4-iBQ" firstAttribute="leading" secondItem="XWL-Y1-JRc" secondAttribute="trailing" constant="48" id="7lY-yD-BEw"/>
                     <constraint firstAttribute="bottom" secondItem="TF7-gT-YkB" secondAttribute="bottom" id="9Ci-wU-rV6"/>
                     <constraint firstAttribute="trailing" secondItem="V4T-i4-iBQ" secondAttribute="trailing" constant="48" id="9Cs-0E-Uu4"/>
-                    <constraint firstItem="V4T-i4-iBQ" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="9kk-U5-h2W"/>
                     <constraint firstItem="0Sp-nG-JxZ" firstAttribute="height" secondItem="XWL-Y1-JRc" secondAttribute="height" id="A1G-rX-MY3"/>
+                    <constraint firstItem="V4T-i4-iBQ" firstAttribute="top" relation="greaterThanOrEqual" secondItem="H2p-sc-9uM" secondAttribute="top" constant="8" id="LPh-Ga-WSt"/>
                     <constraint firstItem="0Sp-nG-JxZ" firstAttribute="centerY" secondItem="XWL-Y1-JRc" secondAttribute="centerY" id="NeE-sR-KpD"/>
                     <constraint firstItem="TF7-gT-YkB" firstAttribute="leading" secondItem="V4T-i4-iBQ" secondAttribute="leading" id="Ora-tu-gqd"/>
+                    <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="V4T-i4-iBQ" secondAttribute="bottom" constant="8" id="TT6-aX-xmh"/>
                     <constraint firstAttribute="trailing" secondItem="TF7-gT-YkB" secondAttribute="trailing" id="UpR-NW-e93"/>
                     <constraint firstItem="0Sp-nG-JxZ" firstAttribute="width" secondItem="XWL-Y1-JRc" secondAttribute="width" id="hiv-Ns-m5Q"/>
                     <constraint firstItem="XWL-Y1-JRc" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="lDQ-aL-2tv"/>
@@ -77,7 +81,10 @@
                 <outlet property="externalCallImageViewHeightConstraint" destination="YkW-cS-2Ej" id="rB1-ca-8u1"/>
                 <outlet property="externalCallImageViewLeadingConstraint" destination="wCd-zJ-u4n" id="QOS-wU-ruY"/>
                 <outlet property="externalCallLabel" destination="V4T-i4-iBQ" id="1Ie-XT-oWD"/>
+                <outlet property="externalCallLabelBottomConstraint" destination="TT6-aX-xmh" id="Qei-ec-GsW"/>
+                <outlet property="externalCallLabelHeightConstraint" destination="Hry-n7-X9l" id="sH4-jf-zIX"/>
                 <outlet property="externalCallLabelLeadingConstraint" destination="7lY-yD-BEw" id="Fjf-mc-Sn2"/>
+                <outlet property="externalCallLabelTopConstraint" destination="LPh-Ga-WSt" id="aGi-Zx-oGP"/>
                 <outlet property="externalCallLabelTrailingConstraint" destination="9Cs-0E-Uu4" id="icZ-kP-tKS"/>
                 <outlet property="separatorView" destination="TF7-gT-YkB" id="0c1-4n-sO6"/>
                 <outlet property="separatorViewBottomConstraint" destination="9Ci-wU-rV6" id="Zxo-5f-tgW"/>

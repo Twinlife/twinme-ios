@@ -43,7 +43,7 @@
 }
 
 - (void)updatePseudo:(NSString*)pseudo {
-    self.infoLabel.text = [NSString stringWithFormat:TwinmeLocalizedString(@"conversation_view_controller_info", nil), pseudo];
+    self.infoLabel.text = [NSString stringWithFormat:TwinmeLocalizedString(@"conversation_view_info", nil), pseudo];
 }
 
 #pragma mark - ItemCell

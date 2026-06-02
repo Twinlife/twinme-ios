@@ -16,6 +16,7 @@
 #import "SettingsItemCell.h"
 
 #import <TwinmeCommon/Design.h>
+#import <TwinmeCommon/UIViewController+Utils.h>
 
 #import "SwitchView.h"
 
@@ -154,17 +155,17 @@ typedef enum {
         switchState = self.allowAudioCall;
         disableSwitch = YES;
         tag = TAG_ALLOW_AUDIO_CALL;
-        title = TwinmeLocalizedString(@"conversation_view_controller_audio_call", nil);
+        title = TwinmeLocalizedString(@"conversation_view_audio_call", nil);
     } else if (indexPath.row == 1) {
         switchState = self.allowVideoCall;
         tag = TAG_ALLOW_VIDEO_CALL;
-        title = TwinmeLocalizedString(@"conversation_view_controller_video_call", nil);
+        title = TwinmeLocalizedString(@"conversation_view_video_call", nil);
     } else {
         switchState = self.allowGroupCall;
         hideSeparator = YES;
         tag = TAG_ALLOW_GROUP_CALL;
-        title = TwinmeLocalizedString(@"show_call_view_controller_setting_group_calls", nil);
-        subTitle = TwinmeLocalizedString(@"create_external_call_view_controller_group_call_description", nil);
+        title = TwinmeLocalizedString(@"show_call_view_settings_group_calls", nil);
+        subTitle = TwinmeLocalizedString(@"create_external_call_view_group_call_description", nil);
     }
     
     [cell bindWithTitle:title subTitle:subTitle icon:nil stateSwitch:switchState tagSwitch:tag hiddenSwitch:NO disableSwitch:disableSwitch backgroundColor:Design.POPUP_BACKGROUND_COLOR hiddenSeparator:hideSeparator];
@@ -184,10 +185,15 @@ typedef enum {
     
     [super initViews];
     
-    self.titleLabel.text = TwinmeLocalizedString(@"show_call_view_controller_setting_calls", nil);
+    self.titleLabel.text = TwinmeLocalizedString(@"show_call_view_settings_call", nil);
     
-    UIWindow *window = UIApplication.sharedApplication.keyWindow;
-    CGFloat safeAreaInset = window.safeAreaInsets.bottom;
+    CGFloat safeAreaInset;
+    UIWindow *window = [UIViewController currentWindow];
+    if (window) {
+        safeAreaInset = window.safeAreaInsets.bottom;
+    } else {
+        safeAreaInset = self.safeAreaInsets.bottom;
+    }
     
     self.tableViewTopConstraint.constant *= Design.HEIGHT_RATIO;
     self.tableViewHeightConstraint.constant = Design.SETTING_CELL_HEIGHT * self.count;

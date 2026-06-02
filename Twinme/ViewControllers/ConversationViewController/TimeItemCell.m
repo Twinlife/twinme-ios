@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2017-2021 twinlife SA.
+ *  Copyright (c) 2017-2026 twinlife SA.
  *  SPDX-License-Identifier: AGPL-3.0-only
  *
  *  Contributors:
@@ -29,7 +29,21 @@ static const int ddLogLevel = DDLogLevelVerbose;
 static const int ddLogLevel = DDLogLevelWarning;
 #endif
 
-static const CGFloat DESIGN_TIME_CELL_MARGIN1 = 61;
+//
+// Interface: NameItemCell ()
+//
+
+@interface TimeItemCell ()
+
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *messageLabelTrailingConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *messageLabelLeadingConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *messageLabelTopConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *messageLabelBottomConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *messageLabelHeightConstraint;
+@property (weak, nonatomic) IBOutlet UILabel *messageLabel;
+@property (weak, nonatomic) IBOutlet UIView *overlayView;
+
+@end
 
 //
 // Implementation: TimeItemCell
@@ -40,47 +54,38 @@ static const CGFloat DESIGN_TIME_CELL_MARGIN1 = 61;
 
 @implementation TimeItemCell
 
-- (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier topMargin:(CGFloat)topMargin bottomMargin:(CGFloat)bottomMargin {
-    DDLogVerbose(@"%@ initialize", LOG_TAG);
+- (void)awakeFromNib {
+    DDLogVerbose(@"%@ awakeFromNib", LOG_TAG);
     
-    self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
-    if (self) {
-        self.selectionStyle = UITableViewCellSelectionStyleNone;
-        self.backgroundColor = [UIColor clearColor];
-        [self configureSubviewsWithMarginTop:topMargin bottomMargin:bottomMargin];
-    }
-    return self;
-}
-
-- (void)configureSubviewsWithMarginTop:(CGFloat)topMargin bottomMargin:(CGFloat)bottomMargin {
+    [super awakeFromNib];
     
-    NSDictionary *views = @{
-        @"messageLabel":self.messageLabel,
-    };
-    NSDictionary *metrics = @{
-        @"margin1":@(DESIGN_TIME_CELL_MARGIN1 * Design.WIDTH_RATIO)
-    };
-    
-    [self.contentView addSubview:self.overlayView];
-    [self.contentView addSubview:self.messageLabel];
-    [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.messageLabel attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self.contentView attribute:NSLayoutAttributeCenterX multiplier:1 constant:0]];
-    [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.messageLabel attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self.contentView attribute:NSLayoutAttributeCenterY multiplier:1 constant:0]];
-    [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-(margin1)-[messageLabel]" options:NSLayoutFormatDirectionLeadingToTrailing metrics:metrics views:views]];
-    [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:[messageLabel]-(margin1)-|" options:NSLayoutFormatDirectionLeadingToTrailing metrics:metrics views:views]];
-    [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.overlayView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self.contentView attribute:NSLayoutAttributeTop multiplier:1 constant:0]];
-    [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.overlayView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self.contentView attribute:NSLayoutAttributeBottom multiplier:1 constant:0]];
-    [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.overlayView attribute:NSLayoutAttributeLeading relatedBy:NSLayoutRelationEqual toItem:self.contentView attribute:NSLayoutAttributeLeading multiplier:1 constant:0]];
-    [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.overlayView attribute:NSLayoutAttributeTrailing relatedBy:NSLayoutRelationEqual toItem:self.contentView attribute:NSLayoutAttributeTrailing multiplier:1 constant:0]];
+    self.selectionStyle = UITableViewCellSelectionStyleNone;
     
     UITapGestureRecognizer *tapContentGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onTouchUpInsideContentView:)];
     [self.contentView addGestureRecognizer:tapContentGesture];
+    
+    self.messageLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
+    self.messageLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
+    self.messageLabelTopConstraint.constant *= Design.HEIGHT_RATIO;
+    self.messageLabelBottomConstraint.constant *= Design.HEIGHT_RATIO;
+    self.messageLabelHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    
+    self.messageLabel.font = Design.FONT_MEDIUM24;
+    self.messageLabel.numberOfLines = 0;
+    self.messageLabel.textColor = Design.TIME_COLOR;
+    self.messageLabel.userInteractionEnabled = NO;
+    self.messageLabel.textAlignment = NSTextAlignmentCenter;
+    
+    self.overlayView.hidden = YES;
+    self.overlayView.backgroundColor = Design.BACKGROUND_COLOR_WHITE_OPACITY85;
 }
 
 - (void)prepareForReuse {
+    DDLogVerbose(@"%@ prepareForReuse", LOG_TAG);
     
     [super prepareForReuse];
     
-    self.selectionStyle = UITableViewCellSelectionStyleNone;
+    self.messageLabel.text = nil;
 }
 
 #pragma mark - ItemCell
@@ -103,31 +108,6 @@ static const CGFloat DESIGN_TIME_CELL_MARGIN1 = 61;
     }
     
     [self setNeedsDisplay];
-}
-
-- (UILabel *)messageLabel {
-    
-    if (!_messageLabel) {
-        _messageLabel = [[UILabel alloc]initWithFrame:CGRectZero];
-        _messageLabel.translatesAutoresizingMaskIntoConstraints = NO;
-        _messageLabel.userInteractionEnabled = NO;
-        _messageLabel.numberOfLines = 0;
-        _messageLabel.font = Design.FONT_MEDIUM24;
-        [_messageLabel setTextColor:Design.TIME_COLOR];
-        _messageLabel.textAlignment = NSTextAlignmentCenter;
-    }
-    return _messageLabel;
-}
-
-- (UIView *)overlayView {
-    
-    if (!_overlayView) {
-        _overlayView = [UIView new];
-        _overlayView.translatesAutoresizingMaskIntoConstraints = NO;
-        _overlayView.backgroundColor = Design.BACKGROUND_COLOR_WHITE_OPACITY85;
-        _overlayView.hidden = YES;
-    }
-    return _overlayView;
 }
 
 - (void)onTouchUpInsideContentView:(UITapGestureRecognizer *)tapGesture {

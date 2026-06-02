@@ -228,12 +228,12 @@ typedef enum {
         BOOL hideSeparator = NO;
         
         if (indexPath.row == 0) {
-            title = TwinmeLocalizedString(@"settings_view_controller_ephemeral_title", nil);
+            title = TwinmeLocalizedString(@"settings_view_ephemeral_title", nil);
             tag = TAG_ALLOW_EPHEMERAL;
             switchState = self.allowEphemeral;
             icon = [UIImage imageNamed:@"SendOptionEphemeralIcon"];
         } else {
-            title = TwinmeLocalizedString(@"conversation_view_controller_send_menu_allow_copy", nil);
+            title = TwinmeLocalizedString(@"conversation_view_send_menu_allow_copy", nil);
             tag = TAG_ALLOW_COPY;
             switchState = self.allowCopy;
             hideSeparator = YES;
@@ -295,13 +295,13 @@ typedef enum {
     self.sendView.layer.cornerRadius = Design.CONTAINER_RADIUS;
     self.sendView.clipsToBounds = YES;
     self.sendView.isAccessibilityElement = YES;
-    self.sendView.accessibilityLabel = TwinmeLocalizedString(@"feedback_view_controller_send", nil);
+    self.sendView.accessibilityLabel = TwinmeLocalizedString(@"feedback_view_send", nil);
     [self.sendView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSendTapGesture:)]];
     
     self.sendLabelWidthConstraint.constant *= Design.WIDTH_RATIO;
     self.sendLabel.font = Design.FONT_BOLD36;
     self.sendLabel.textColor = [UIColor whiteColor];
-    self.sendLabel.text = TwinmeLocalizedString(@"feedback_view_controller_send", nil);
+    self.sendLabel.text = TwinmeLocalizedString(@"feedback_view_send", nil);
 }
 
 - (void)handleSendTapGesture:(UITapGestureRecognizer *)sender {

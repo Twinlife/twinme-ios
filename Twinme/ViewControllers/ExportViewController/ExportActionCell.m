@@ -82,11 +82,11 @@ static const int ddLogLevel = DDLogLevelWarning;
         if (exportActionType == ExportActionTypeCancel) {
             self.actionLabel.text = TwinmeLocalizedString(@"application_cancel", nil);
         } else {
-            self.actionLabel.text = TwinmeLocalizedString(@"cleanup_view_controller_clean", nil);
+            self.actionLabel.text = TwinmeLocalizedString(@"cleanup_view_clean", nil);
         }
     } else {
         self.actionView.backgroundColor = Design.MAIN_COLOR;
-        self.actionLabel.text = TwinmeLocalizedString(@"export_view_controller_export", nil);
+        self.actionLabel.text = TwinmeLocalizedString(@"export_view_export", nil);
     }
     
     if (enable) {

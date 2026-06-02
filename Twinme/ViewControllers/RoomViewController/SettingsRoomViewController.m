@@ -196,15 +196,15 @@ typedef enum {
     
     switch (section) {
         case SECTION_PARTCIPANTS:
-            sectionName = TwinmeLocalizedString(@"add_contact_view_controller_title", nil).uppercaseString;
+            sectionName = TwinmeLocalizedString(@"add_contact_view_title", nil).uppercaseString;
             break;
             
         case SECTION_CHAT:
-            sectionName = TwinmeLocalizedString(@"conversations_view_controller_title", nil).uppercaseString;
+            sectionName = TwinmeLocalizedString(@"conversations_view_title", nil).uppercaseString;
             break;
             
         case SECTION_CALLS:
-            sectionName = TwinmeLocalizedString(@"history_view_controller_title", nil).uppercaseString;
+            sectionName = TwinmeLocalizedString(@"calls_view_title", nil).uppercaseString;
             break;
             
         case SECTION_NOTIFICATIONS:
@@ -224,15 +224,15 @@ typedef enum {
     NSString *sectionName;
     switch (section) {
         case SECTION_PARTCIPANTS:
-            sectionName = TwinmeLocalizedString(@"add_contact_view_controller_title", nil).uppercaseString;
+            sectionName = TwinmeLocalizedString(@"add_contact_view_title", nil).uppercaseString;
             break;
             
         case SECTION_CHAT:
-            sectionName = TwinmeLocalizedString(@"conversations_view_controller_title", nil).uppercaseString;
+            sectionName = TwinmeLocalizedString(@"conversations_view_title", nil).uppercaseString;
             break;
             
         case SECTION_CALLS:
-            sectionName = TwinmeLocalizedString(@"history_view_controller_title", nil).uppercaseString;
+            sectionName = TwinmeLocalizedString(@"calls_view_title", nil).uppercaseString;
             break;
             
         case SECTION_NOTIFICATIONS:
@@ -302,26 +302,26 @@ typedef enum {
                 case SECTION_CHAT:
                     if (indexPath.row == 0) {
                         checked = self.chatMode == TLChatModeChannel;
-                        title = TwinmeLocalizedString(@"settings_room_view_controller_room_type_channel", nil);
+                        title = TwinmeLocalizedString(@"settings_room_view_room_type_channel", nil);
                     } else if (indexPath.row == 1) {
                         checked = self.chatMode == TLChatModeFeedback;
-                        title = TwinmeLocalizedString(@"settings_room_view_controller_room_type_feedback", nil);
+                        title = TwinmeLocalizedString(@"settings_room_view_room_type_feedback", nil);
                     } else if (indexPath.row == 2) {
                         checked = self.chatMode == TLChatModePublic;
-                        title = TwinmeLocalizedString(@"settings_room_view_controller_room_type_forum", nil);
+                        title = TwinmeLocalizedString(@"settings_room_view_room_type_forum", nil);
                     }
                     break;
                     
                 case SECTION_NOTIFICATIONS:
                     if (indexPath.row == 0) {
                         checked = self.notificationMode == TLNotificationModeInform;
-                        title = TwinmeLocalizedString(@"settings_room_view_controller_conference_notifications_inform", nil);
+                        title = TwinmeLocalizedString(@"settings_room_view_conference_notifications_inform", nil);
                     } else if (indexPath.row == 1) {
                         checked = self.notificationMode == TLNotificationModeNoisy;
-                        title = TwinmeLocalizedString(@"settings_room_view_controller_conference_notifications_noisy", nil);
+                        title = TwinmeLocalizedString(@"settings_room_view_conference_notifications_noisy", nil);
                     } else if (indexPath.row == 2) {
                         checked = self.notificationMode == TLNotificationModeQuiet;
-                        title = TwinmeLocalizedString(@"settings_room_view_controller_conference_notifications_quiet", nil);
+                        title = TwinmeLocalizedString(@"settings_room_view_conference_notifications_quiet", nil);
                     }
                     break;
                     
@@ -342,11 +342,11 @@ typedef enum {
             switch (indexPath.section) {
                 case SECTION_CHAT:
                     if (self.chatMode == TLChatModeChannel) {
-                        title = TwinmeLocalizedString(@"settings_room_view_controller_room_type_channel_information", nil);
+                        title = TwinmeLocalizedString(@"settings_room_view_room_type_channel_information", nil);
                     } else if (self.chatMode == TLChatModeFeedback) {
-                        title = TwinmeLocalizedString(@"settings_room_view_controller_room_type_feedback_information", nil);
+                        title = TwinmeLocalizedString(@"settings_room_view_room_type_feedback_information", nil);
                     } else if (self.chatMode == TLChatModePublic) {
-                        title = TwinmeLocalizedString(@"settings_room_view_controller_room_type_forum_information", nil);
+                        title = TwinmeLocalizedString(@"settings_room_view_room_type_forum_information", nil);
                     }
                     break;
                     
@@ -378,12 +378,12 @@ typedef enum {
                     switchState = self.invitationMode == TLInvitationModePublic;
                     hiddenSwitch = NO;
                     tag = TAG_ALLOW_INVITATION;
-                    title = TwinmeLocalizedString(@"settings_room_view_controller_allow_invite_contact", nil);
+                    title = TwinmeLocalizedString(@"settings_room_view_allow_invite_contact", nil);
                 } else if (indexPath.row == 1) {
                     switchState = self.allowInvitationAsPersonalContact;
                     hiddenSwitch = NO;
                     tag = TAG_ALLOW_INVITATION_AS_PERSONAL_CONTACT;
-                    title = TwinmeLocalizedString(@"settings_room_view_controller_allow_invite_as_personal_contact", nil);
+                    title = TwinmeLocalizedString(@"settings_room_view_allow_invite_as_personal_contact", nil);
                 }
                 break;
                 
@@ -392,12 +392,12 @@ typedef enum {
                     switchState = self.callMode != TLCallModeDisabled;
                     hiddenSwitch = NO;
                     tag = TAG_ALLOW_AUDIO_CALL;
-                    title = TwinmeLocalizedString(@"conversation_view_controller_audio_call", nil);
+                    title = TwinmeLocalizedString(@"conversation_view_audio_call", nil);
                 } else if (indexPath.row == 1) {
                     switchState = self.callMode == TLCallModeVideo;
                     hiddenSwitch = NO;
                     tag = TAG_ALLOW_VIDEO_CALL;
-                    title = TwinmeLocalizedString(@"conversation_view_controller_video_call", nil);
+                    title = TwinmeLocalizedString(@"conversation_view_video_call", nil);
                 }
                 break;
                 
@@ -485,7 +485,7 @@ typedef enum {
     
     self.view.backgroundColor = Design.WHITE_COLOR;
     
-    [self setNavigationTitle:TwinmeLocalizedString(@"settings_view_controller_title", nil)];
+    [self setNavigationTitle:TwinmeLocalizedString(@"navigation_view_settings", nil)];
     
     self.saveBarButtonItem = [[UIBarButtonItem alloc]initWithTitle:TwinmeLocalizedString(@"application_save", nil) style:UIBarButtonItemStylePlain target:self action:@selector(handleSaveTapGesture:)];
     [self.saveBarButtonItem setTitleTextAttributes: @{NSFontAttributeName : Design.FONT_BOLD36, NSForegroundColorAttributeName: [UIColor whiteColor]} forState:UIControlStateNormal];

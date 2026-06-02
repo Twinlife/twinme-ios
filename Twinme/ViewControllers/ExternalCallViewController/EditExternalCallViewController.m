@@ -8,6 +8,9 @@
 
 #import <CocoaLumberjack.h>
 
+#import <Photos/Photos.h>
+#import <PhotosUI/PhotosUI.h>
+
 #import <Twinme/TLCallReceiver.h>
 #import <Twinme/UIImage+Resize.h>
 
@@ -36,7 +39,7 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
 // Interface: EditExternalCallViewController ()
 //
 
-@interface EditExternalCallViewController ()<UITextFieldDelegate, UINavigationControllerDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate,UIAdaptivePresentationControllerDelegate, UITextViewDelegate, BottomSheetViewDelegate, CallReceiverServiceDelegate, MenuPhotoViewDelegate>
+@interface EditExternalCallViewController ()<UITextFieldDelegate, UINavigationControllerDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate, UIAdaptivePresentationControllerDelegate, UITextViewDelegate, BottomSheetViewDelegate, CallReceiverServiceDelegate, MenuPhotoViewDelegate, PHPickerViewControllerDelegate>
 
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *avatarPlaceholderImageViewHeightConstraint;
 @property (weak, nonatomic) IBOutlet UIImageView *avatarPlaceholderImageView;
@@ -164,7 +167,7 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     } else if (self.callReceiver.peerDescription) {
         self.callReceiverDescription = self.callReceiver.peerDescription;
     } else {
-        self.callReceiverDescription = TwinmeLocalizedString(@"side_menu_view_controller_about", nil);
+        self.callReceiverDescription = TwinmeLocalizedString(@"navigation_view_about_twinme", nil);
     }
     [self.callReceiverService initWithCallReceiver:callReceiver];
 }
@@ -254,7 +257,7 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
 -(void)textViewDidBeginEditing:(UITextView *)textView {
     DDLogVerbose(@"%@ textViewDidBeginEditing: %@", LOG_TAG, textView);
     
-    if ([textView.text isEqualToString:TwinmeLocalizedString(@"side_menu_view_controller_about", nil)]) {
+    if ([textView.text isEqualToString:TwinmeLocalizedString(@"navigation_view_about_twinme", nil)]) {
         textView.text = @"";
         textView.textColor = Design.FONT_COLOR_DEFAULT;
     }
@@ -283,7 +286,7 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     DDLogVerbose(@"%@ textViewDidEndEditing: %@", LOG_TAG, textView);
     
     if ([textView.text isEqualToString:@""]) {
-        textView.text = TwinmeLocalizedString(@"side_menu_view_controller_about", nil);
+        textView.text = TwinmeLocalizedString(@"navigation_view_about_twinme", nil);
         textView.textColor = Design.PLACEHOLDER_COLOR;
     }
 }
@@ -336,6 +339,49 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     
     self.navigationController.navigationBarHidden = YES;
     [pickerController dismissViewControllerAnimated:YES completion:nil];
+}
+
+#pragma mark - PHPickerViewControllerDelegate
+
+- (void)picker:(PHPickerViewController *)pickerController didFinishPicking:(NSArray<PHPickerResult *> *)results API_AVAILABLE(ios(14)){
+    DDLogVerbose(@"%@ picker: %@", LOG_TAG, pickerController);
+        
+    [self showProgressIndicator];
+    
+    [pickerController dismissViewControllerAnimated:YES completion:^{
+        if (!results || results.count == 0) {
+            [self hideProgressIndicator];
+            return;
+        }
+    
+        PHPickerResult *result = results.firstObject;
+        if ([result.itemProvider hasItemConformingToTypeIdentifier:UTTypeImage.identifier]) {
+            [result.itemProvider loadDataRepresentationForTypeIdentifier:UTTypeImage.identifier
+                                                       completionHandler:^(NSData * _Nullable data,
+                                                                           NSError * _Nullable error) {
+                
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    if (!error) {
+                        [self hideProgressIndicator];
+                        self.updatedLargeAvatar = [UIImage imageWithData:data];
+                        self.updatedAvatar = [self.updatedLargeAvatar resizeImage];
+                        
+                        CATransition *animation = [CATransition animation];
+                        animation.type = kCATransitionFade;
+                        animation.subtype = kCATransitionFromTop;
+                        animation.duration = 0.5;
+                        [self.avatarView.layer addAnimation:animation forKey:nil];
+                        
+                        self.avatarView.image = self.updatedLargeAvatar;
+                        self.updated = YES;
+                        [self setUpdated];
+                    }
+                });
+            }];
+        } else {
+            [self hideProgressIndicator];
+        }
+    }];
 }
 
 #pragma mark - UIAdaptivePresentationControllerDelegate
@@ -431,7 +477,7 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     self.descriptionTextView.textColor = Design.PLACEHOLDER_COLOR;
     self.descriptionTextView.tintColor = Design.FONT_COLOR_DEFAULT;
     self.descriptionTextView.delegate = self;
-    self.descriptionTextView.text = TwinmeLocalizedString(@"side_menu_view_controller_about", nil);
+    self.descriptionTextView.text = TwinmeLocalizedString(@"navigation_view_about_twinme", nil);
     self.descriptionTextView.textContainer.lineFragmentPadding = 0;
     self.descriptionTextView.textContainerInset = UIEdgeInsetsZero;
     
@@ -447,7 +493,7 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
         self.descriptionTextView.textColor = Design.FONT_COLOR_DEFAULT;
         self.counterDescriptionLabel.text = [NSString stringWithFormat:@"%lu/%d", (unsigned long)self.descriptionTextView.text.length, MAX_DESCRIPTION_LENGTH];
     } else {
-        self.descriptionTextView.text = TwinmeLocalizedString(@"side_menu_view_controller_about", nil);
+        self.descriptionTextView.text = TwinmeLocalizedString(@"navigation_view_about_twinme", nil);
         self.descriptionTextView.textColor = Design.PLACEHOLDER_COLOR;
         self.counterDescriptionLabel.text = [NSString stringWithFormat:@"0/%d", MAX_DESCRIPTION_LENGTH];
     }
@@ -562,7 +608,7 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     }
     
     NSString *updatedCallReceiverDescription = self.descriptionTextView.text;
-    if (updatedCallReceiverDescription.length == 0 || [updatedCallReceiverDescription isEqualToString:TwinmeLocalizedString(@"side_menu_view_controller_about", nil)]) {
+    if (updatedCallReceiverDescription.length == 0 || [updatedCallReceiverDescription isEqualToString:TwinmeLocalizedString(@"navigation_view_about_twinme", nil)]) {
         updatedCallReceiverDescription = self.callReceiver.objectDescription;
     }
     
@@ -585,15 +631,15 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
         
         NSString *message;
         if (self.callReceiver.isTransfer) {
-            message = [NSString stringWithFormat:@"%@\n%@", TwinmeLocalizedString(@"transfert_call_view_controller_delete_message", nil), TwinmeLocalizedString(@"transfert_call_view_controller_delete_confirm_message", nil)];
+            message = [NSString stringWithFormat:@"%@\n%@", TwinmeLocalizedString(@"transfert_call_view_delete_message", nil), TwinmeLocalizedString(@"transfert_call_view_delete_confirm_message", nil)];
         } else {
-            message = [NSString stringWithFormat:@"%@\n%@", TwinmeLocalizedString(@"edit_external_call_view_controller_message", nil), TwinmeLocalizedString(@"edit_external_call_view_controller_confirm_message", nil)];
+            message = [NSString stringWithFormat:@"%@\n%@", TwinmeLocalizedString(@"edit_external_call_view_delete_message", nil), TwinmeLocalizedString(@"edit_external_call_view_delete_confirm_message", nil)];
         }
         
         DeleteConfirmView *deleteConfirmView = [[DeleteConfirmView alloc] init];
         deleteConfirmView.bottomSheetViewDelegate = self;
         deleteConfirmView.deleteConfirmType = DeleteConfirmTypeOriginator;
-        [deleteConfirmView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:message avatar:self.avatar icon:[UIImage imageNamed:@"ActionBarDelete"]];
+        [deleteConfirmView initWithTitle:TwinmeLocalizedString(@"deleted_account_view_warning", nil) message:message avatar:self.avatar icon:[UIImage imageNamed:@"ActionBarDelete"]];
         [self.view addSubview:deleteConfirmView];
         [deleteConfirmView showConfirmView];
     }
@@ -647,22 +693,13 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
 - (void)selectPhoto {
     DDLogVerbose(@"%@ selectPhoto", LOG_TAG);
     
-    UIImagePickerController *picker = [[UIImagePickerController alloc] init];
-    picker.delegate = self;
-    picker.presentationController.delegate = self;
-    picker.allowsEditing = YES;
-    picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+    PHPickerConfiguration *config = [[PHPickerConfiguration alloc] init];
+    config.selectionLimit = 1;
+    config.filter = [PHPickerFilter imagesFilter];
     
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-        CGSize size = self.view.bounds.size;
-        picker.modalPresentationStyle = UIModalPresentationPopover;
-        picker.popoverPresentationController.sourceView = self.view;
-        picker.popoverPresentationController.sourceRect = CGRectMake(size.width / 2., size.height * 0.2, size.width * 0.6, size.height * 0.7);
-        picker.popoverPresentationController.permittedArrowDirections = UIPopoverArrowDirectionAny;
-        [self presentViewController:picker animated:YES completion:nil];
-    } else {
-        [self presentViewController:picker animated:YES completion:nil];
-    }
+    PHPickerViewController *pickerViewController = [[PHPickerViewController alloc] initWithConfiguration:config];
+    pickerViewController.delegate = self;
+    [self presentViewController:pickerViewController animated:YES completion:nil];
 }
 
 - (void)openMenuPhoto {
@@ -701,7 +738,7 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     self.counterDescriptionLabel.textColor = Design.FONT_COLOR_DEFAULT;
     self.counterNameLabel.textColor = Design.FONT_COLOR_DEFAULT;
     
-    if ([self.descriptionTextView.text isEqualToString:TwinmeLocalizedString(@"side_menu_view_controller_about", nil)]) {
+    if ([self.descriptionTextView.text isEqualToString:TwinmeLocalizedString(@"navigation_view_about_twinme", nil)]) {
         self.descriptionTextView.textColor = Design.PLACEHOLDER_COLOR;
     } else {
         self.descriptionTextView.textColor = Design.FONT_COLOR_DEFAULT;

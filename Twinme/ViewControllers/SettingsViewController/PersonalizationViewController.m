@@ -223,12 +223,12 @@ static NSString *TWINME_SETTINGS_CELL_IDENTIFIER = @"TwinmeSettingsCellIdentifie
     BOOL hideSeparator = NO;
     switch (section) {
         case DEFAULT_TAB_SECTION:
-            sectionName = TwinmeLocalizedString(@"personalization_view_controller_start_tab_title", nil);
+            sectionName = TwinmeLocalizedString(@"personalization_view_start_tab_title", nil);
             hideSeparator = YES;
             break;
             
         case MODE_SECTION:
-            sectionName = TwinmeLocalizedString(@"personalization_view_controller_mode", nil);
+            sectionName = TwinmeLocalizedString(@"personalization_view_mode", nil);
             break;
             
         case APPEARANCE_SECTION:
@@ -236,12 +236,12 @@ static NSString *TWINME_SETTINGS_CELL_IDENTIFIER = @"TwinmeSettingsCellIdentifie
             break;
             
         case HAPTIC_FEEDBACK_SECTION:
-            sectionName = TwinmeLocalizedString(@"personalization_view_controller_haptic_feedback", nil);
+            sectionName = TwinmeLocalizedString(@"personalization_view_haptic_feedback", nil);
             hideSeparator = YES;
             break;
             
         case FONT_SECTION:
-            sectionName = TwinmeLocalizedString(@"personalization_view_controller_font", nil);
+            sectionName = TwinmeLocalizedString(@"personalization_view_font", nil);
             break;
             
         default:
@@ -270,7 +270,7 @@ static NSString *TWINME_SETTINGS_CELL_IDENTIFIER = @"TwinmeSettingsCellIdentifie
             break;
             
         case HAPTIC_FEEDBACK_SECTION:
-            numberOfRowsInSection = 4;
+            numberOfRowsInSection = 1;
             break;
             
         case FONT_SECTION:
@@ -295,11 +295,11 @@ static NSString *TWINME_SETTINGS_CELL_IDENTIFIER = @"TwinmeSettingsCellIdentifie
         
         NSString *text = @"";
         if (indexPath.section == INFO_SECTION) {
-            text = TwinmeLocalizedString(@"settings_view_controller_default_value_message", nil);
+            text = TwinmeLocalizedString(@"settings_view_default_value_message", nil);
         } else if (indexPath.section == DEFAULT_TAB_SECTION) {
-            text = TwinmeLocalizedString(@"personalization_view_controller_start_tab_information", nil);
+            text = TwinmeLocalizedString(@"personalization_view_start_tab_information", nil);
         } else {
-            text = TwinmeLocalizedString(@"personalization_view_controller_haptic_feedback_message", nil);
+            text = TwinmeLocalizedString(@"personalization_view_haptic_feedback_message", nil);
         }
         [cell bindWithText:text];
         
@@ -326,16 +326,16 @@ static NSString *TWINME_SETTINGS_CELL_IDENTIFIER = @"TwinmeSettingsCellIdentifie
         BOOL checked = NO;
         if (indexPath.row == 0) {
             checked = self.twinmeApplication.fontSize == FontSizeSystem;
-            title = TwinmeLocalizedString(@"personalization_view_controller_system", nil);
+            title = TwinmeLocalizedString(@"personalization_view_system", nil);
         } else if (indexPath.row == 1) {
             checked = self.twinmeApplication.fontSize == FontSizeSmall;
-            title = TwinmeLocalizedString(@"personalization_view_controller_font_small", nil);
+            title = TwinmeLocalizedString(@"personalization_view_font_small", nil);
         } else if (indexPath.row == 2) {
             checked = self.twinmeApplication.fontSize == FontSizeLarge;
-            title = TwinmeLocalizedString(@"personalization_view_controller_font_large", nil);
+            title = TwinmeLocalizedString(@"personalization_view_font_large", nil);
         } else if (indexPath.row == 3) {
             checked = self.twinmeApplication.fontSize == FontSizeExtraLarge;
-            title = TwinmeLocalizedString(@"personalization_view_controller_font_extra_large", nil);
+            title = TwinmeLocalizedString(@"personalization_view_font_extra_large", nil);
         }
         
         UIColor *color = Design.MAIN_COLOR;
@@ -375,7 +375,7 @@ static NSString *TWINME_SETTINGS_CELL_IDENTIFIER = @"TwinmeSettingsCellIdentifie
             
             DisplayMode displayMode = [[self.defaultSpaceSettings getStringWithName:PROPERTY_DISPLAY_MODE defaultValue:[NSString stringWithFormat:@"%d",DisplayModeSystem]] intValue];
             
-            [cell bindWithTitle:TwinmeLocalizedString(@"personalization_view_controller_system", nil) subTitle:nil icon:nil stateSwitch:displayMode == DisplayModeSystem tagSwitch:0 hiddenSwitch:NO disableSwitch:NO backgroundColor:Design.WHITE_COLOR hiddenSeparator:NO];
+            [cell bindWithTitle:TwinmeLocalizedString(@"personalization_view_system", nil) subTitle:nil icon:nil stateSwitch:displayMode == DisplayModeSystem tagSwitch:MODE_SECTION hiddenSwitch:NO disableSwitch:NO backgroundColor:Design.WHITE_COLOR hiddenSeparator:NO];
             
             return cell;
         }
@@ -398,34 +398,18 @@ static NSString *TWINME_SETTINGS_CELL_IDENTIFIER = @"TwinmeSettingsCellIdentifie
                 cell = [[TwinmeSettingsItemCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:TWINME_SETTINGS_CELL_IDENTIFIER];
             }
             
-            [cell bindWithTitle:TwinmeLocalizedString(@"conversations_view_controller_title", nil) hiddenAccessory:NO disableSetting:NO color:Design.FONT_COLOR_DEFAULT];
+            [cell bindWithTitle:TwinmeLocalizedString(@"conversations_view_title", nil) hiddenAccessory:NO disableSetting:NO color:Design.FONT_COLOR_DEFAULT];
             return cell;
         }
     } else {
-        PersonalizationCell *cell = [tableView dequeueReusableCellWithIdentifier:PERSONALIZATION_CELL_IDENTIFIER];
+        SettingsItemCell *cell = [tableView dequeueReusableCellWithIdentifier:SETTINGS_CELL_IDENTIFIER];
         if (!cell) {
-            cell = [[PersonalizationCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:PERSONALIZATION_CELL_IDENTIFIER];
+            cell = [[SettingsItemCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:SETTINGS_CELL_IDENTIFIER];
         }
         
-        NSString *title = @"";
-        BOOL checked = NO;
-        if (indexPath.row == 1) {
-            checked = self.twinmeApplication.hapticFeedbackMode == HapticFeedbackModeSystem;
-            title = TwinmeLocalizedString(@"personalization_view_controller_system", nil);
-        } else if (indexPath.row == 2) {
-            checked = self.twinmeApplication.hapticFeedbackMode == HapticFeedbackModeOn;
-            title = TwinmeLocalizedString(@"application_on", nil);
-        } else if (indexPath.row == 3) {
-            checked = self.twinmeApplication.hapticFeedbackMode == HapticFeedbackModeOff;
-            title = TwinmeLocalizedString(@"application_off", nil);
-        }
+        cell.settingsActionDelegate = self;
         
-        UIColor *color = Design.MAIN_COLOR;
-        if (self.defaultSpaceSettings.style) {
-            color = [UIColor colorWithHexString:self.defaultSpaceSettings.style alpha:1.0];
-        }
-        [cell bindWithTitle:title checked:checked defaultColor:color];
-        
+        [cell bindWithTitle:TwinmeLocalizedString(@"personalization_view_haptic_feedback_message", nil) subTitle:nil icon:nil stateSwitch:[self.twinmeApplication allowHapticFeedback] tagSwitch:HAPTIC_FEEDBACK_SECTION hiddenSwitch:NO disableSwitch:NO backgroundColor:Design.WHITE_COLOR hiddenSeparator:NO];
         return cell;
     }
 }
@@ -435,11 +419,7 @@ static NSString *TWINME_SETTINGS_CELL_IDENTIFIER = @"TwinmeSettingsCellIdentifie
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     DDLogVerbose(@"%@ tableView: %@ didSelectRowAtIndexPath: %@", LOG_TAG, tableView, indexPath);
     
-    if (indexPath.section == HAPTIC_FEEDBACK_SECTION && indexPath.row != 0) {
-        [self.twinmeApplication setHapticFeedbackModeWithMode:(int)indexPath.row - 1];
-        [self hapticFeedBack:UIImpactFeedbackStyleHeavy];
-        [self.tableView reloadData];
-    } else if (indexPath.section == FONT_SECTION) {
+    if (indexPath.section == FONT_SECTION) {
         [self.twinmeApplication setFontSizeWithSize:(int)indexPath.row];
         [Design setupFont];
         [self.tableView reloadData];
@@ -474,30 +454,31 @@ static NSString *TWINME_SETTINGS_CELL_IDENTIFIER = @"TwinmeSettingsCellIdentifie
 - (void)switchChangeValue:(SwitchView *)updatedSwitch {
     DDLogVerbose(@"%@ switchChangeValue: %@", LOG_TAG, updatedSwitch);
         
-    DisplayMode displayMode;
-    if (updatedSwitch.isOn) {
-        displayMode = DisplayModeSystem;
-    } else {
-        if (@available(iOS 13.0, *)) {
+    if (updatedSwitch.tag == MODE_SECTION) {
+        DisplayMode displayMode;
+        if (updatedSwitch.isOn) {
+            displayMode = DisplayModeSystem;
+        } else {
             if ([UIScreen mainScreen].traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark){
                 displayMode = DisplayModeDark;
             } else {
                 displayMode = DisplayModeLight;
             }
         }
-        else {
-            displayMode = DisplayModeLight;
+
+        if (!self.currentSpace || [self.currentSpace.settings getBooleanWithName:PROPERTY_DEFAULT_APPEARANCE_SETTINGS defaultValue:YES]) {
+            [Design setupColors:displayMode];
         }
+        
+        [self.defaultSpaceSettings setStringWithName:PROPERTY_DISPLAY_MODE value:[NSString stringWithFormat:@"%d", displayMode]];
+        
+        [self updateColor];
+        [self saveDefaultSpaceSettings];
+    } else if (updatedSwitch.tag == HAPTIC_FEEDBACK_SECTION) {
+        [self.twinmeApplication setHapticFeedbackEnableWithState:updatedSwitch.isOn];
     }
     
-    if (!self.currentSpace || [self.currentSpace.settings getBooleanWithName:PROPERTY_DEFAULT_APPEARANCE_SETTINGS defaultValue:YES]) {
-        [Design setupColors:displayMode];
-    }
     
-    [self.defaultSpaceSettings setStringWithName:PROPERTY_DISPLAY_MODE value:[NSString stringWithFormat:@"%d", displayMode]];
-    
-    [self updateColor];
-    [self saveDefaultSpaceSettings];
     [self.tableView reloadData];
 }
 
@@ -622,7 +603,7 @@ static NSString *TWINME_SETTINGS_CELL_IDENTIFIER = @"TwinmeSettingsCellIdentifie
 
 - (BOOL)isInformationPath:(NSIndexPath *)indexPath {
     
-    if (indexPath.section == INFO_SECTION || ((indexPath.section == HAPTIC_FEEDBACK_SECTION || indexPath.section == DEFAULT_TAB_SECTION) && indexPath.row == 0)) {
+    if (indexPath.section == INFO_SECTION || (indexPath.section == DEFAULT_TAB_SECTION && indexPath.row == 0)) {
         return YES;
     }
     

@@ -162,19 +162,19 @@ typedef enum {
     NSString *sectionName = @"";
     switch (section) {
         case SECTION_SOUNDS:
-            sectionName = TwinmeLocalizedString(@"settings_view_controller_sound_enabled_title", nil).capitalizedString;
+            sectionName = TwinmeLocalizedString(@"settings_view_sound_enabled_title", nil).capitalizedString;
             break;
             
         case SECTION_CHAT:
-            sectionName = TwinmeLocalizedString(@"settings_view_controller_chat_category_title", nil);
+            sectionName = TwinmeLocalizedString(@"settings_view_chat_category_title", nil);
             break;
             
         case SECTION_AUDIO_CALL:
-            sectionName =  TwinmeLocalizedString(@"settings_view_controller_audio_call_category_title", nil);
+            sectionName =  TwinmeLocalizedString(@"settings_view_audio_call_category_title", nil);
             break;
             
         case SECTION_VIDEO_CALL:
-            sectionName =  TwinmeLocalizedString(@"settings_view_controller_video_call_category_title", nil);
+            sectionName =  TwinmeLocalizedString(@"settings_view_video_call_category_title", nil);
             break;
             
         default:
@@ -225,25 +225,34 @@ typedef enum {
             cell = [[TwinmeSettingsItemCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:TWINME_SETTINGS_CELL_IDENTIFIER];
         }
         
-        NSString *title = @"";        
+        NSString *title = @"";
+        NotificationSound *notiticationSound;
+        NSString *subTitle = @"";
         switch (indexPath.section) {
             case SECTION_CHAT:
-                title = TwinmeLocalizedString(@"settings_view_controller_chat_ringtone_title", nil);
+                title = TwinmeLocalizedString(@"settings_view_chat_ringtone_title", nil);
+                notiticationSound = [self.twinmeApplication getNotificationSoundWithType:NotificationSoundTypeNotification];
                 break;
                 
             case SECTION_AUDIO_CALL:
-                title = TwinmeLocalizedString(@"settings_view_controller_audio_call_notification_ringtone_title", nil);
+                title = TwinmeLocalizedString(@"settings_view_audio_call_notification_ringtone_title", nil);
+                notiticationSound = [self.twinmeApplication getNotificationSoundWithType:NotificationSoundTypeAudioCall];
                 break;
                 
             case SECTION_VIDEO_CALL:
-                title = TwinmeLocalizedString(@"settings_view_controller_video_call_notification_ringtone_title", nil);
+                title = TwinmeLocalizedString(@"settings_view_video_call_notification_ringtone_title", nil);
+                notiticationSound = [self.twinmeApplication getNotificationSoundWithType:NotificationSoundTypeVideoCall];
                 break;
                 
             default:
                 break;
         }
         
-        [cell bindWithTitle:title hiddenAccessory:NO disableSetting:NO color:Design.FONT_COLOR_DEFAULT];
+        if (notiticationSound) {
+            subTitle = notiticationSound.soundName;
+        }
+        
+        [cell bindWithTitle:title subTitle:subTitle hiddenAccessory:NO disableSetting:NO color:Design.FONT_COLOR_DEFAULT];
         
         return cell;
     }
@@ -261,7 +270,7 @@ typedef enum {
     BOOL hiddenSwitch = NO;
     switch (indexPath.section) {
         case SECTION_SOUNDS:
-            title = TwinmeLocalizedString(@"settings_view_controller_sound_enabled_subtitle", nil);
+            title = TwinmeLocalizedString(@"settings_view_sound_enabled_subtitle", nil);
             if ([self.twinmeApplication hasSoundEnable]) {
                 switchState = YES;
             } else {
@@ -280,7 +289,7 @@ typedef enum {
                 }
                 hiddenSwitch = NO;
                 tag = TAG_CHAT_VIBRATION;
-                title = TwinmeLocalizedString(@"settings_view_controller_chat_vibration_title", nil);
+                title = TwinmeLocalizedString(@"settings_view_chat_vibration_title", nil);
             } else if (indexPath.row == 1) {
                 if ([self.twinmeApplication hasNotificationSoundWithType:NotificationSoundTypeNotification]) {
                     switchState = YES;
@@ -289,7 +298,7 @@ typedef enum {
                 }
                 hiddenSwitch = NO;
                 tag = TAG_CHAT_NOTIFICATION;
-                title = TwinmeLocalizedString(@"settings_view_controller_chat_title", nil);
+                title = TwinmeLocalizedString(@"settings_view_chat_title", nil);
             }
             break;
             
@@ -302,7 +311,7 @@ typedef enum {
                 }
                 hiddenSwitch = NO;
                 tag = TAG_AUDIO_CALL_VIBRATION;
-                title = TwinmeLocalizedString(@"settings_view_controller_audio_call_vibration_title", nil);
+                title = TwinmeLocalizedString(@"settings_view_audio_call_vibration_title", nil);
                 
             } else if (indexPath.row == 1) {
                 if ([self.twinmeApplication hasNotificationSoundWithType:NotificationSoundTypeAudioCall]) {
@@ -312,7 +321,7 @@ typedef enum {
                 }
                 hiddenSwitch = NO;
                 tag = TAG_AUDIO_CALL_NOTIFICATION;
-                title = TwinmeLocalizedString(@"settings_view_controller_audio_call_notification_title", nil);
+                title = TwinmeLocalizedString(@"settings_view_audio_call_notification_title", nil);
                 
             }
             break;
@@ -326,7 +335,7 @@ typedef enum {
                 }
                 hiddenSwitch = NO;
                 tag = TAG_VIDEO_CALL_VIBRATION;
-                title = TwinmeLocalizedString(@"settings_view_controller_video_call_vibration_title", nil);
+                title = TwinmeLocalizedString(@"settings_view_video_call_vibration_title", nil);
                 
             } else if (indexPath.row == 1) {
                 if ([self.twinmeApplication hasNotificationSoundWithType:NotificationSoundTypeVideoCall]) {
@@ -336,7 +345,7 @@ typedef enum {
                 }
                 hiddenSwitch = NO;
                 tag = TAG_VIDEO_CALL_NOTIFICATION;
-                title = TwinmeLocalizedString(@"settings_view_controller_video_call_notification_title", nil);
+                title = TwinmeLocalizedString(@"settings_view_video_call_notification_title", nil);
                 
             }
             break;

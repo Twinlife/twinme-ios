@@ -8,6 +8,10 @@
 
 #import <CocoaLumberjack.h>
 
+#import <Photos/Photos.h>
+#import <PhotosUI/PhotosUI.h>
+
+
 #import <Twinme/TLProfile.h>
 #import <Twinme/TLSpace.h>
 #import <Twinme/UIImage+Resize.h>
@@ -58,7 +62,7 @@ static CGFloat DESIGN_COLLECTION_CELL_WIDTH = 70;
 // Interface: EditSpaceViewController ()
 //
 
-@interface EditSpaceViewController () <UITextFieldDelegate, UITextViewDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, EditSpaceServiceDelegate, UIAdaptivePresentationControllerDelegate, UICollectionViewDelegate, UICollectionViewDataSource, CustomColorDelegate, SpaceSettingsServiceDelegate, MenuPhotoViewDelegate, BottomSheetViewDelegate, AlertMessageViewDelegate>
+@interface EditSpaceViewController () <UITextFieldDelegate, UITextViewDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, EditSpaceServiceDelegate, UIAdaptivePresentationControllerDelegate, UICollectionViewDelegate, UICollectionViewDataSource, CustomColorDelegate, SpaceSettingsServiceDelegate, MenuPhotoViewDelegate, BottomSheetViewDelegate, AlertMessageViewDelegate, PHPickerViewControllerDelegate>
 
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *avatarPlaceholderImageViewHeightConstraint;
 @property (weak, nonatomic) IBOutlet UIImageView *avatarPlaceholderImageView;
@@ -508,6 +512,50 @@ static CGFloat DESIGN_COLLECTION_CELL_WIDTH = 70;
     [pickerController dismissViewControllerAnimated:YES completion:nil];
 }
 
+#pragma mark - PHPickerViewControllerDelegate
+
+- (void)picker:(PHPickerViewController *)pickerController didFinishPicking:(NSArray<PHPickerResult *> *)results API_AVAILABLE(ios(14)){
+    DDLogVerbose(@"%@ picker: %@", LOG_TAG, pickerController);
+        
+    [self showProgressIndicator];
+    
+    [pickerController dismissViewControllerAnimated:YES completion:^{
+        if (!results || results.count == 0) {
+            [self hideProgressIndicator];
+            return;
+        }
+    
+        PHPickerResult *result = results.firstObject;
+        if ([result.itemProvider hasItemConformingToTypeIdentifier:UTTypeImage.identifier]) {
+            [result.itemProvider loadDataRepresentationForTypeIdentifier:UTTypeImage.identifier
+                                                       completionHandler:^(NSData * _Nullable data,
+                                                                           NSError * _Nullable error) {
+                
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    if (!error) {
+                        [self hideProgressIndicator];
+       
+                        self.updatedSpaceLargeAvatar = [UIImage imageWithData:data];
+                        self.updatedSpaceAvatar = [self.updatedSpaceLargeAvatar resizeImage];
+                        
+                        CATransition *animation = [CATransition animation];
+                        animation.type = kCATransitionFade;
+                        animation.subtype = kCATransitionFromTop;
+                        animation.duration = 0.5;
+                        [self.avatarView.layer addAnimation:animation forKey:nil];
+                        
+                        self.avatarView.image = self.updatedSpaceLargeAvatar;
+                        
+                        [self setUpdated];
+                    }
+                });
+            }];
+        } else {
+            [self hideProgressIndicator];
+        }
+    }];
+}
+
 #pragma mark - BottomSheetViewDelegate
 
 - (void)didTapConfirm:(nonnull AbstractBottomSheetView *)abstractBottomSheetView {
@@ -624,7 +672,7 @@ static CGFloat DESIGN_COLLECTION_CELL_WIDTH = 70;
     
     self.avatarView.backgroundColor = DESIGN_AVATAR_PLACEHOLDER_COLOR;
     
-    self.nameLabel.text = TwinmeLocalizedString(@"settings_space_view_controller_space_category_title", nil);
+    self.nameLabel.text = TwinmeLocalizedString(@"settings_space_view_space_category_title", nil);
     
     self.avatarPlaceholderImageViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     
@@ -640,7 +688,7 @@ static CGFloat DESIGN_COLLECTION_CELL_WIDTH = 70;
     self.nameTextField.font = Design.FONT_REGULAR44;
     self.nameTextField.textColor = Design.FONT_COLOR_DEFAULT;
     self.nameTextField.tintColor = Design.FONT_COLOR_DEFAULT;
-    self.nameTextField.placeholder = TwinmeLocalizedString(@"create_space_view_controller_space_hint", nil);
+    self.nameTextField.placeholder = TwinmeLocalizedString(@"create_space_view_space_hint", nil);
     [self.nameTextField setReturnKeyType:UIReturnKeyDone];
     self.nameTextField.delegate = self;
     [self.nameTextField addTarget:self action:@selector(textFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
@@ -744,7 +792,7 @@ static CGFloat DESIGN_COLLECTION_CELL_WIDTH = 70;
     
     self.messageLabel.font = Design.FONT_REGULAR32;
     self.messageLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    self.messageLabel.text = TwinmeLocalizedString(@"create_space_view_controller_message", nil);
+    self.messageLabel.text = TwinmeLocalizedString(@"create_space_view_message", nil);
 }
 
 - (void)handleTapGesture {
@@ -813,7 +861,7 @@ static CGFloat DESIGN_COLLECTION_CELL_WIDTH = 70;
         if ([mainViewController numberSpaces:NO] < 2 && !self.space.settings.isSecret) {
             AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
             alertMessageView.alertMessageViewDelegate = self;
-            [alertMessageView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:TwinmeLocalizedString(@"edit_space_view_controller_delete_only_one_space_message", nil)];
+            [alertMessageView initWithTitle:TwinmeLocalizedString(@"deleted_account_view_warning", nil) message:TwinmeLocalizedString(@"edit_space_view_delete_only_one_space_message", nil)];
             [self.tabBarController.view addSubview:alertMessageView];
             [alertMessageView showAlertView];
             
@@ -836,7 +884,7 @@ static CGFloat DESIGN_COLLECTION_CELL_WIDTH = 70;
         
         DeleteSpaceConfirmView *deleteSpaceConfirmView = [[DeleteSpaceConfirmView alloc] init];
         deleteSpaceConfirmView.bottomSheetViewDelegate = self;
-        [deleteSpaceConfirmView initWithTitle:deleteTitle message:TwinmeLocalizedString(@"edit_space_view_controller_delete_message", nil) spaceName:self.space.settings.name spaceStyle:self.space.settings.style avatar:self.avatar icon:[UIImage imageNamed:@"ActionBarDelete"]];
+        [deleteSpaceConfirmView initWithTitle:deleteTitle message:TwinmeLocalizedString(@"edit_space_view_delete_message", nil) spaceName:self.space.settings.name spaceStyle:self.space.settings.style avatar:self.avatar icon:[UIImage imageNamed:@"ActionBarDelete"]];
         [self.view addSubview:deleteSpaceConfirmView];
         [deleteSpaceConfirmView showConfirmView];
     }
@@ -884,22 +932,13 @@ static CGFloat DESIGN_COLLECTION_CELL_WIDTH = 70;
 - (void)selectPhoto {
     DDLogVerbose(@"%@ selectPhoto", LOG_TAG);
     
-    UIImagePickerController *picker = [[UIImagePickerController alloc] init];
-    picker.delegate = self;
-    picker.presentationController.delegate = self;
-    picker.allowsEditing = YES;
-    picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+    PHPickerConfiguration *config = [[PHPickerConfiguration alloc] init];
+    config.selectionLimit = 1;
+    config.filter = [PHPickerFilter imagesFilter];
     
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-        CGSize size = self.view.bounds.size;
-        picker.modalPresentationStyle = UIModalPresentationPopover;
-        picker.popoverPresentationController.sourceView = self.view;
-        picker.popoverPresentationController.sourceRect = CGRectMake(size.width * 0.5, size.height * 0.2, size.width * 0.6, size.height * 0.7);
-        picker.popoverPresentationController.permittedArrowDirections = UIPopoverArrowDirectionAny;
-        [self presentViewController:picker animated:YES completion:nil];
-    } else {
-        [self presentViewController:picker animated:YES completion:nil];
-    }
+    PHPickerViewController *pickerViewController = [[PHPickerViewController alloc] initWithConfiguration:config];
+    pickerViewController.delegate = self;
+    [self presentViewController:pickerViewController animated:YES completion:nil];
 }
 
 - (void)finish {
@@ -1073,7 +1112,7 @@ static CGFloat DESIGN_COLLECTION_CELL_WIDTH = 70;
     self.removeLabel.textColor = Design.DELETE_COLOR_RED;
     
     self.nameView.backgroundColor = Design.TEXTFIELD_BACKGROUND_COLOR;
-    self.nameTextField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:TwinmeLocalizedString(@"create_space_view_controller_space_hint", nil) attributes:[NSDictionary dictionaryWithObject:Design.PLACEHOLDER_COLOR forKey:NSForegroundColorAttributeName]];
+    self.nameTextField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:TwinmeLocalizedString(@"create_space_view_space_hint", nil) attributes:[NSDictionary dictionaryWithObject:Design.PLACEHOLDER_COLOR forKey:NSForegroundColorAttributeName]];
     
     if (self.selectedColor.color) {
         self.saveView.backgroundColor = [UIColor colorWithHexString:self.selectedColor.color alpha:1.0];

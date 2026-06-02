@@ -19,25 +19,15 @@
 
 + (PHAuthorizationStatus)devicePhotoAuthorizationStatus {
     
-    if (@available(iOS 14, *)) {
-        return [PHPhotoLibrary authorizationStatusForAccessLevel:PHAccessLevelAddOnly];
-    } else {
-        return [PHPhotoLibrary authorizationStatus];
-    }
+    return [PHPhotoLibrary authorizationStatusForAccessLevel:PHAccessLevelAddOnly];
 }
 
 + (BOOL)devicePhotoAuthorizationAccessGranted:(PHAuthorizationStatus)status {
     
-    if (@available(iOS 14, *)) {
-        if (status == PHAuthorizationStatusLimited || status == PHAuthorizationStatusAuthorized) {
-            return YES;
-        }
-        return NO;
-    } else if (status == PHAuthorizationStatusAuthorized) {
+    if (status == PHAuthorizationStatusLimited || status == PHAuthorizationStatusAuthorized) {
         return YES;
-    } else {
-        return NO;
     }
+    return NO;
 }
 
 + (AVAuthorizationStatus)deviceCameraAuthorizationStatus {
@@ -57,7 +47,8 @@
 
 + (CLAuthorizationStatus)deviceLocationAuthorizationStatus {
     
-    return [CLLocationManager authorizationStatus];
+    CLLocationManager *manager = [[CLLocationManager alloc] init];    
+    return manager.authorizationStatus;
 }
 
 + (BOOL)deviceLocationServicesEnabled {

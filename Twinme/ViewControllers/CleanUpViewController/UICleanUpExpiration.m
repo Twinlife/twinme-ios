@@ -54,15 +54,15 @@
     
     switch (self.expirationType) {
         case ExpirationTypeAll:
-            title = TwinmeLocalizedString(@"cleanup_view_controller_all", nil);
+            title = TwinmeLocalizedString(@"cleanup_view_all", nil);
             break;
             
         case ExpirationTypeDate:
-            title = TwinmeLocalizedString(@"cleanup_view_controller_prior_to", nil);
+            title = TwinmeLocalizedString(@"cleanup_view_prior_to", nil);
             break;
             
         case ExpirationTypeValue:
-            title = TwinmeLocalizedString(@"cleanup_view_controller_older_than", nil);
+            title = TwinmeLocalizedString(@"cleanup_view_older_than", nil);
             break;
             
         default:
@@ -91,15 +91,15 @@
                 break;
                 
             case ExpirationPeriodThreeMonths:
-                value = [NSString stringWithFormat:TwinmeLocalizedString(@"cleanup_view_controller_month", nil), 3];
+                value = [NSString stringWithFormat:TwinmeLocalizedString(@"cleanup_view_month", nil), 3];
                 break;
                 
             case ExpirationPeriodSixMonths:
-                value = [NSString stringWithFormat:TwinmeLocalizedString(@"cleanup_view_controller_month", nil), 6];
+                value = [NSString stringWithFormat:TwinmeLocalizedString(@"cleanup_view_month", nil), 6];
                 break;
                 
             case ExpirationPeriodOneYear:
-                value = TwinmeLocalizedString(@"cleanup_view_controller_one_year", nil);
+                value = TwinmeLocalizedString(@"cleanup_view_one_year", nil);
                 break;
                 
             default:

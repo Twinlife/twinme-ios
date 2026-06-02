@@ -21,9 +21,9 @@
 @property (nonatomic, nullable) UIReaction *uiReaction;
 @property (nonatomic, nonnull) NSString *name;
 @property (nonatomic, nonnull) UIImage *avatar;
-@property (nonatomic) long timestamp;
+@property (nonatomic) long value;
 @property (nonatomic) int orderPriority;
 
-- (nonnull instancetype)initWithType:(TLDescriptorAnnotationType)annotationType reaction:(nullable UIReaction *)uiReaction name:(nonnull NSString *)name avatar:(nonnull UIImage *)avatar timestamp:(long)timestamp;
+- (nonnull instancetype)initWithType:(TLDescriptorAnnotationType)annotationType reaction:(nullable UIReaction *)uiReaction name:(nonnull NSString *)name avatar:(nonnull UIImage *)avatar value:(long)value;
 
 @end

@@ -23,6 +23,7 @@
 #import <Twinlife/TLPeerCallService.h>
 #import <Twinlife/TLCryptoService.h>
 #import <Twinlife/TLBackupService.h>
+#import <Twinlife/TLSecureRosterService.h>
 
 #import <Twinme/TLMessage.h>
 #import <Twinme/TLTyping.h>
@@ -53,11 +54,7 @@ static NSString *APPLICATION_NAME = @"skred";
         self.conversationServiceConfiguration.enableScheduler = true;
         
         // Database conversation locking is enabled when the NotificationServiceExtension is used.
-        if (@available(iOS 13.0, *)) {
-            self.conversationServiceConfiguration.lockIdentifier = 1;
-        } else {
-            self.conversationServiceConfiguration.lockIdentifier = 0;
-        }
+        self.conversationServiceConfiguration.lockIdentifier = 1;
         self.managementServiceConfiguration.saveEnvironment = true;
         self.connectivityServiceConfiguration.serviceOn = true;
         self.notificationServiceConfiguration.serviceOn = true;
@@ -74,6 +71,7 @@ static NSString *APPLICATION_NAME = @"skred";
         self.accountMigrationServiceConfiguration.serviceOn = true;
         self.cryptoServiceConfiguration.serviceOn = true;
         self.backupServiceConfiguration.serviceOn = true;
+        self.secureRosterServiceConfiguration.serviceOn = true;
     }
     return self;
 }

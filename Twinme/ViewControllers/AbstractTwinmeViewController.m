@@ -285,7 +285,7 @@ static CGFloat DESIGN_UPDATE_VERSION_MARGIN = 4.0;
     [customLeftView addSubview:avatarImageView];
     avatarImageView.center = CGPointMake(customLeftView.frame.size.width * 0.5, customLeftView.frame.size.height * 0.5);
     
-    if ([self.twinmeApplication.lastVersionManager isNewVersionAvailable]) {
+    if ([self.twinmeApplication.lastVersionManager isNewVersionAvailable] || [self.twinmeApplication showBackupWarning]) {
         UIView *updateVersionView = [[UIView alloc]initWithFrame:CGRectMake(customLeftViewWidth - DESIGN_UPDATE_VERSION_HEIGHT, DESIGN_UPDATE_VERSION_MARGIN, DESIGN_UPDATE_VERSION_HEIGHT, DESIGN_UPDATE_VERSION_HEIGHT)];
         updateVersionView.backgroundColor = Design.DELETE_COLOR_RED;
         updateVersionView.clipsToBounds = YES;
@@ -354,11 +354,33 @@ static CGFloat DESIGN_UPDATE_VERSION_MARGIN = 4.0;
 - (void)hapticFeedBack:(UIImpactFeedbackStyle)style {
     DDLogVerbose(@"%@ hapticFeedBack: %ld", LOG_TAG, style);
 
-    [Utils hapticFeedback:style hapticFeedbackMode:self.twinmeApplication.hapticFeedbackMode];
+    [Utils hapticFeedback:style];
 }
 
 - (void)finish {
     
+}
+
+- (nullable UIWindow *)currentWindow {
+    DDLogVerbose(@"%@ currentWindow", LOG_TAG);
+    
+    UIWindow *window = self.view.window;
+    
+    if (window == nil) {
+        for (UIScene *scene in UIApplication.sharedApplication.connectedScenes) {
+            if (scene.activationState == UISceneActivationStateForegroundActive && [scene isKindOfClass:[UIWindowScene class]]) {
+                UIWindowScene *windowScene = (UIWindowScene *)scene;
+                for (UIWindow *w in windowScene.windows) {
+                    if (w.isKeyWindow) {
+                        window = w;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+    
+    return window;
 }
 
 @end

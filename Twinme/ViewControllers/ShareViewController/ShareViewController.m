@@ -9,8 +9,8 @@
 
 #import <CocoaLumberjack.h>
 
-#import <MobileCoreServices/UTCoreTypes.h>
-#import <MobileCoreServices/UTType.h>
+#import <UniformTypeIdentifiers/UTCoreTypes.h>
+#import <UniformTypeIdentifiers/UTType.h>
 
 #import <Twinme/TLProfile.h>
 #import <Twinme/TLContact.h>
@@ -120,6 +120,7 @@ static const int GROUPS_VIEW_SECTION = 2;
 @property (nonatomic) BOOL uiInitialized;
 @property (nonatomic) BOOL keyboardHidden;
 @property (nonatomic) BOOL needRefresh;
+@property (nonatomic) BOOL needsCopyFile;
 @property (nonatomic) BOOL refreshTableScheduled;
 @property (nonatomic) CGFloat yOffset;
 
@@ -160,6 +161,7 @@ static const int GROUPS_VIEW_SECTION = 2;
         _descriptorId = nil;
         _keyboardHidden = YES;
         _needRefresh = NO;
+        _needsCopyFile = YES;
         
         _shareService = [[ShareService alloc] initWithTwinmeContext:self.twinmeContext delegate:self];
         _asyncLoaderManager = [[AsyncManager alloc] initWithTwinmeContext:self.twinmeContext delegate:self];
@@ -183,6 +185,12 @@ static const int GROUPS_VIEW_SECTION = 2;
         self.needRefresh = NO;
         [self.shareService getContactsAndGroups:self.space];
     }
+    
+    if (self.needsCopyFile && self.fileURL) {
+        self.needsCopyFile = NO;
+        [self copyFile];
+    }
+    
     [super viewWillAppear:animated];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
@@ -416,8 +424,7 @@ static const int GROUPS_VIEW_SECTION = 2;
     }
 
     if (self.uiSelectedContact.count == 0) {
-        [self.shareService dispose];
-        [self dismissViewControllerAnimated:YES completion:nil];
+        [self finish];
     } else {
         UIContact *selectedContact = [self.uiSelectedContact objectAtIndex:0];
         [self.uiSelectedContact removeObjectAtIndex:0];
@@ -678,13 +685,13 @@ static const int GROUPS_VIEW_SECTION = 2;
     switch (section) {
         case CONTACTS_VIEW_SECTION: {
             if (self.uiContacts.count > 0) {
-                sectionName = TwinmeLocalizedString(@"share_view_controller_contact_list_title", nil);
+                sectionName = TwinmeLocalizedString(@"share_view_contact_list", nil);
             }
             break;
         }
         case GROUPS_VIEW_SECTION: {
             if (self.uiGroups.count > 0) {
-                sectionName = TwinmeLocalizedString(@"share_view_controller_group_list_title", nil);
+                sectionName = TwinmeLocalizedString(@"share_view_group_list", nil);
             }
             break;
         }
@@ -950,16 +957,16 @@ static const int GROUPS_VIEW_SECTION = 2;
     [self.cancelBarButtonItem setTitleTextAttributes: @{NSFontAttributeName : Design.FONT_BOLD36, NSForegroundColorAttributeName: [UIColor colorWithWhite:1.0 alpha:0.5]} forState:UIControlStateDisabled];
     self.navigationItem.leftBarButtonItem = self.cancelBarButtonItem;
     
-    self.sendBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:TwinmeLocalizedString(@"feedback_view_controller_send", nil) style:UIBarButtonItemStylePlain target:self action:@selector(handleSendTapGesture:)];
+    self.sendBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:TwinmeLocalizedString(@"feedback_view_send", nil) style:UIBarButtonItemStylePlain target:self action:@selector(handleSendTapGesture:)];
     [self.sendBarButtonItem setTitleTextAttributes: @{NSFontAttributeName: Design.FONT_BOLD36, NSForegroundColorAttributeName: [UIColor whiteColor]} forState:UIControlStateNormal];
     [self.sendBarButtonItem setTitleTextAttributes: @{NSFontAttributeName: Design.FONT_BOLD36, NSForegroundColorAttributeName: [UIColor colorWithWhite:1.0 alpha:0.5]} forState:UIControlStateDisabled];
     self.navigationItem.rightBarButtonItem = self.sendBarButtonItem;
     self.sendBarButtonItem.enabled = NO;
     
     if (self.descriptorId) {
-        [self setNavigationTitle:TwinmeLocalizedString(@"conversation_view_controller_menu_item_view_forward_title", nil)];
+        [self setNavigationTitle:TwinmeLocalizedString(@"conversation_view_menu_item_view_forward_title", nil)];
     } else {
-        [self setNavigationTitle:TwinmeLocalizedString(@"share_view_controller_title", nil)];
+        [self setNavigationTitle:TwinmeLocalizedString(@"share_view_title", nil)];
     }
     
     self.navigationItem.hidesSearchBarWhenScrolling = NO;
@@ -979,15 +986,11 @@ static const int GROUPS_VIEW_SECTION = 2;
     contactSearchBar.backgroundColor = Design.NAVIGATION_BAR_BACKGROUND_COLOR;
     contactSearchBar.delegate = self;
     
-    if (@available(iOS 13.0, *)) {
-        self.searchController.searchBar.searchTextField.backgroundColor = [UIColor whiteColor];
-        self.searchController.searchBar.searchTextField.tintColor = Design.POPUP_BACKGROUND_COLOR;
-        self.searchController.searchBar.searchTextField.tintColor = [UIColor darkGrayColor];
-        self.searchController.searchBar.translucent = NO;
-        self.navigationItem.searchController = self.searchController;
-    } else {
-        self.previewTableView.tableHeaderView = self.searchController.searchBar;
-    }
+    self.searchController.searchBar.searchTextField.backgroundColor = [UIColor whiteColor];
+    self.searchController.searchBar.searchTextField.tintColor = Design.POPUP_BACKGROUND_COLOR;
+    self.searchController.searchBar.searchTextField.tintColor = [UIColor darkGrayColor];
+    self.searchController.searchBar.translucent = NO;
+    self.navigationItem.searchController = self.searchController;
     
     self.previewTableViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     
@@ -1043,6 +1046,13 @@ static const int GROUPS_VIEW_SECTION = 2;
 - (void)handleCancelTapGesture:(UIButton *)sender {
     DDLogVerbose(@"%@ handleCancelTapGesture: %@", LOG_TAG, sender);
     
+    if (self.fileURL) {
+        NSFileManager *fileManager = [NSFileManager defaultManager];
+        if ([fileManager fileExistsAtPath:self.fileURL.path]) {
+            [fileManager removeItemAtPath:self.fileURL.path error:nil];
+        }
+    }
+
     [self finish];
 }
 
@@ -1066,28 +1076,22 @@ static const int GROUPS_VIEW_SECTION = 2;
 - (BOOL)isImageFile:(NSString *)file {
     DDLogVerbose(@"%@ isImageFile: %@", LOG_TAG, file);
     
-    CFStringRef fileType = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (__bridge CFStringRef) [file pathExtension], NULL);
-    BOOL result = UTTypeConformsTo(fileType, kUTTypeImage);
-    CFRelease(fileType);
-    return result;
+    UTType *fileType = [UTType typeWithFilenameExtension:[file pathExtension]];
+    return [fileType conformsToType:UTTypeImage];
 }
 
 - (BOOL)isVideoFile:(NSString *)file {
     DDLogVerbose(@"%@ isVideoFile: %@", LOG_TAG, file);
     
-    CFStringRef fileType = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (__bridge CFStringRef) [file pathExtension], NULL);
-    BOOL result = UTTypeConformsTo(fileType, kUTTypeMovie);
-    CFRelease(fileType);
-    return result;
+    UTType *fileType = [UTType typeWithFilenameExtension:[file pathExtension]];
+    return [fileType conformsToType:UTTypeMovie];
 }
 
 - (BOOL)isAudioFile:(NSString *)file {
     DDLogVerbose(@"%@ isAudioFile: %@", LOG_TAG, file);
     
-    CFStringRef fileType = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (__bridge CFStringRef) [file pathExtension], NULL);
-    BOOL result = UTTypeConformsTo(fileType, kUTTypeAudio);
-    CFRelease(fileType);
-    return result;
+    UTType *fileType = [UTType typeWithFilenameExtension:[file pathExtension]];
+    return [fileType conformsToType:UTTypeAudio];
 }
 
 - (BOOL)isSelectedContact:(UIContact *)contact {
@@ -1114,6 +1118,30 @@ static const int GROUPS_VIEW_SECTION = 2;
     return -1;
 }
 
+- (void)copyFile {
+    DDLogVerbose(@"%@ copyFile", LOG_TAG);
+    
+    BOOL access = [self.fileURL startAccessingSecurityScopedResource];
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSString *fileName = self.fileURL.lastPathComponent;
+    NSURL *tmpUrl = [NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingPathComponent:fileName]];
+    NSError *error = nil;
+    if ([fileManager fileExistsAtPath:tmpUrl.path]) {
+        [fileManager removeItemAtPath:tmpUrl.path error:nil];
+    }
+
+    BOOL success = [fileManager copyItemAtURL:self.fileURL toURL:tmpUrl error:&error];
+    if (access) {
+        [self.fileURL stopAccessingSecurityScopedResource];
+    }
+    
+    if (success) {
+        self.fileURL = tmpUrl;
+    } else {
+        [self finish];
+    }
+}
+
 - (void)updateFont {
     DDLogVerbose(@"%@ updateFont", LOG_TAG);
     
@@ -1130,19 +1158,14 @@ static const int GROUPS_VIEW_SECTION = 2;
     DDLogVerbose(@"%@ updateColor", LOG_TAG);
     
     self.searchController.searchBar.barTintColor = Design.NAVIGATION_BAR_BACKGROUND_COLOR;
+    self.searchController.searchBar.backgroundColor = [UIColor clearColor];
+    self.searchController.searchBar.searchTextField.backgroundColor = Design.POPUP_BACKGROUND_COLOR;
+    self.searchController.searchBar.searchTextField.tintColor = Design.FONT_COLOR_DEFAULT;
+    self.searchController.searchBar.searchTextField.textColor = Design.FONT_COLOR_DEFAULT;
     
-    if (@available(iOS 13.0, *)) {
-        self.searchController.searchBar.backgroundColor = [UIColor clearColor];
-        self.searchController.searchBar.searchTextField.backgroundColor = Design.POPUP_BACKGROUND_COLOR;
-        self.searchController.searchBar.searchTextField.tintColor = Design.FONT_COLOR_DEFAULT;
-        self.searchController.searchBar.searchTextField.textColor = Design.FONT_COLOR_DEFAULT;
-        
-        UIImageView *glassIconImageView = (UIImageView *)self.searchController.searchBar.searchTextField.leftView;
-        glassIconImageView.image = [glassIconImageView.image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-        glassIconImageView.tintColor = Design.PLACEHOLDER_COLOR;
-    } else {
-        self.searchController.searchBar.backgroundColor = Design.NAVIGATION_BAR_BACKGROUND_COLOR;
-    }
+    UIImageView *glassIconImageView = (UIImageView *)self.searchController.searchBar.searchTextField.leftView;
+    glassIconImageView.image = [glassIconImageView.image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    glassIconImageView.tintColor = Design.PLACEHOLDER_COLOR;
     
     if ([self.twinmeApplication darkModeEnable:[self currentSpaceSettings]]) {
         self.searchController.searchBar.keyboardAppearance = UIKeyboardAppearanceDark;

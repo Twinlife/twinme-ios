@@ -13,6 +13,7 @@
 #import <TwinmeCommon/Design.h>
 #import "UIView+DropShadow.h"
 
+#import <TwinmeCommon/UIViewController+Utils.h>
 #import <Utils/NSString+Utils.h>
 
 static CGFloat DESIGN_RATIO_HEIGHT_SKREDBOARD = 249. / 667.;
@@ -60,8 +61,12 @@ static CGFloat DESIGN_RATIO_HEIGHT_SKREDBOARD = 249. / 667.;
     
     [super viewDidLayoutSubviews];
     
-    UIWindow *window = UIApplication.sharedApplication.keyWindow;
-    self.safeAreaViewHeightConstraint.constant = window.safeAreaInsets.top;
+    UIWindow *window = [UIViewController currentWindow];
+    if (window) {
+        self.safeAreaViewHeightConstraint.constant = window.safeAreaInsets.top;
+    } else {
+        self.safeAreaViewHeightConstraint.constant = 0;
+    }
     
     self.codeInputCollectionView.frame = self.codeInputCollectionViewContainer.bounds;
     [self.codeInputCollectionView.collectionViewLayout invalidateLayout];
@@ -100,22 +105,22 @@ static CGFloat DESIGN_RATIO_HEIGHT_SKREDBOARD = 249. / 667.;
         case SkredBoardModeAccessAccount:
             self.createAccountButton.hidden = NO;
             self.deleteAccountButton.hidden = NO;
-            self.titleLabel.text = TwinmeLocalizedString(@"main_view_controller_skredboard_access_title", nil);
-            self.messageLabel.text = TwinmeLocalizedString(@"main_view_controller_skredboard_message", nil);
+            self.titleLabel.text = TwinmeLocalizedString(@"main_view_skredboard_access_title", nil);
+            self.messageLabel.text = TwinmeLocalizedString(@"main_view_skredboard_message", nil);
             break;
             
         case SkredBoardModeCreateAccount:
             self.createAccountButton.hidden = YES;
             self.deleteAccountButton.hidden = NO;
-            self.titleLabel.text = TwinmeLocalizedString(@"main_view_controller_skredboard_create_title", nil);
-            self.messageLabel.text = TwinmeLocalizedString(@"main_view_controller_skredboard_message", nil);
+            self.titleLabel.text = TwinmeLocalizedString(@"main_view_skredboard_create_title", nil);
+            self.messageLabel.text = TwinmeLocalizedString(@"main_view_skredboard_message", nil);
             break;
             
         case SkredBoardModeDeleteAccount:
             self.createAccountButton.hidden = NO;
             self.deleteAccountButton.hidden = YES;
-            self.titleLabel.text = TwinmeLocalizedString(@"main_view_controller_skredboard_delete_title", nil);
-            self.messageLabel.text = TwinmeLocalizedString(@"main_view_controller_skredboard_message", nil);
+            self.titleLabel.text = TwinmeLocalizedString(@"main_view_skredboard_delete_title", nil);
+            self.messageLabel.text = TwinmeLocalizedString(@"main_view_skredboard_message", nil);
             break;
             
         default:

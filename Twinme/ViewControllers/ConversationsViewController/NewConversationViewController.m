@@ -30,7 +30,7 @@
 #import <TwinmeCommon/Design.h>
 #import "UIColor+Hex.h"
 
-#import "AddGroupCell.h"
+#import "AddContactCell.h"
 #import "ContactCell.h"
 #import "UIContact.h"
 #import <TwinmeCommon/ApplicationDelegate.h>
@@ -41,7 +41,7 @@ static const int ddLogLevel = DDLogLevelVerbose;
 static const int ddLogLevel = DDLogLevelWarning;
 #endif
 
-static NSString *ADD_GROUP_CELL_IDENTIFIER = @"AddGroupCellIdentifier";
+static NSString *ADD_CONTACT_CELL_IDENTIFIER = @"AddContactCellIdentifier";
 static NSString *CONTACT_CELL_IDENTIFIER = @"ContactCellIdentifier";
 static NSString *SHARE_SECTION_HEADER_CELL_IDENTIFIER = @"ShareSectionHeaderCellIdentifier";
 
@@ -334,7 +334,7 @@ static const int CONTACTS_VIEW_SECTION = 1;
     switch (section) {
         case CONTACTS_VIEW_SECTION: {
             if (self.uiContacts.count > 0) {
-                sectionName = TwinmeLocalizedString(@"share_view_controller_contact_list_title", nil);
+                sectionName = TwinmeLocalizedString(@"share_view_contact_list", nil);
             }
             break;
         }
@@ -354,7 +354,7 @@ static const int CONTACTS_VIEW_SECTION = 1;
     switch (section) {
         case CONTACTS_VIEW_SECTION: {
             if (self.uiContacts.count > 0) {
-                sectionName = TwinmeLocalizedString(@"share_view_controller_contact_list_title", nil);
+                sectionName = TwinmeLocalizedString(@"share_view_contact_list", nil);
             }
             break;
         }
@@ -368,13 +368,14 @@ static const int CONTACTS_VIEW_SECTION = 1;
     DDLogVerbose(@"%@ tableView: %@ cellForRowAtIndexPath: %@", LOG_TAG, tableView, indexPath);
     
     if (indexPath.section == CREATE_GROUP_SECTION) {
-        AddGroupCell *addGroupCell = (AddGroupCell *)[tableView dequeueReusableCellWithIdentifier:ADD_GROUP_CELL_IDENTIFIER];
-        if (!addGroupCell) {
-            addGroupCell = [[AddGroupCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:ADD_GROUP_CELL_IDENTIFIER];
+        AddContactCell *addContactCell = (AddContactCell *)[tableView dequeueReusableCellWithIdentifier:ADD_CONTACT_CELL_IDENTIFIER];
+        if (!addContactCell) {
+            addContactCell = [[AddContactCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:ADD_CONTACT_CELL_IDENTIFIER];
         }
-        [addGroupCell bind];
         
-        return addGroupCell;
+        [addContactCell bindWithTitle:TwinmeLocalizedString(@"main_view_add_group", nil) subTitle:TwinmeLocalizedString(@"create_group_view_subtitle", nil) icon:[UIImage imageNamed:@"GroupsIcon"]];
+        
+        return addContactCell;
     } else {
         ContactCell *contactCell = (ContactCell *)[tableView dequeueReusableCellWithIdentifier:CONTACT_CELL_IDENTIFIER];
         if (!contactCell) {
@@ -428,7 +429,7 @@ static const int CONTACTS_VIEW_SECTION = 1;
     self.definesPresentationContext = YES;
     self.view.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
     
-    [self setNavigationTitle:TwinmeLocalizedString(@"conversations_view_controller_title", nil).capitalizedString];
+    [self setNavigationTitle:TwinmeLocalizedString(@"conversations_view_title", nil).capitalizedString];
     
     self.cancelBarButtonItem = [[UIBarButtonItem alloc]initWithTitle:TwinmeLocalizedString(@"application_cancel", nil) style:UIBarButtonItemStylePlain target:self action:@selector(handleCancelTapGesture:)];
     [self.cancelBarButtonItem setTitleTextAttributes: @{NSFontAttributeName: Design.FONT_BOLD36, NSForegroundColorAttributeName: [UIColor whiteColor]} forState:UIControlStateNormal];
@@ -452,15 +453,11 @@ static const int CONTACTS_VIEW_SECTION = 1;
     contactSearchBar.backgroundColor = Design.NAVIGATION_BAR_BACKGROUND_COLOR;
     contactSearchBar.delegate = self;
     
-    if (@available(iOS 13.0, *)) {
-        self.searchController.searchBar.backgroundColor = [UIColor clearColor];
-        self.searchController.searchBar.searchTextField.backgroundColor = Design.POPUP_BACKGROUND_COLOR;
-        self.searchController.searchBar.searchTextField.tintColor = [UIColor darkGrayColor];
-        self.searchController.searchBar.translucent = NO;
-        self.navigationItem.searchController = self.searchController;
-    } else {
-        self.contactsTableView.tableHeaderView = self.searchController.searchBar;
-    }
+    self.searchController.searchBar.backgroundColor = [UIColor clearColor];
+    self.searchController.searchBar.searchTextField.backgroundColor = Design.POPUP_BACKGROUND_COLOR;
+    self.searchController.searchBar.searchTextField.tintColor = [UIColor darkGrayColor];
+    self.searchController.searchBar.translucent = NO;
+    self.navigationItem.searchController = self.searchController;
     
     self.contactsTableView.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
     self.contactsTableView.delegate = self;
@@ -468,7 +465,7 @@ static const int CONTACTS_VIEW_SECTION = 1;
     self.contactsTableView.sectionHeaderHeight = 0;
     self.contactsTableView.sectionFooterHeight = 0;
     
-    [self.contactsTableView registerNib:[UINib nibWithNibName:@"AddGroupCell" bundle:nil] forCellReuseIdentifier:ADD_GROUP_CELL_IDENTIFIER];
+    [self.contactsTableView registerNib:[UINib nibWithNibName:@"AddContactCell" bundle:nil] forCellReuseIdentifier:ADD_CONTACT_CELL_IDENTIFIER];
     [self.contactsTableView registerNib:[UINib nibWithNibName:@"ContactCell" bundle:nil] forCellReuseIdentifier:CONTACT_CELL_IDENTIFIER];
     [self.contactsTableView registerNib:[UINib nibWithNibName:@"ShareSectionHeaderCell" bundle:nil] forCellReuseIdentifier:SHARE_SECTION_HEADER_CELL_IDENTIFIER];
     
@@ -514,18 +511,14 @@ static const int CONTACTS_VIEW_SECTION = 1;
     self.view.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
     self.contactsTableView.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
     
-    if (@available(iOS 13.0, *)) {
-        self.searchController.searchBar.backgroundColor = [UIColor clearColor];
-        self.searchController.searchBar.searchTextField.backgroundColor = Design.POPUP_BACKGROUND_COLOR;
-        self.searchController.searchBar.searchTextField.tintColor = Design.FONT_COLOR_DEFAULT;
-        self.searchController.searchBar.searchTextField.textColor = Design.FONT_COLOR_DEFAULT;
-        
-        UIImageView *glassIconImageView = (UIImageView *)self.searchController.searchBar.searchTextField.leftView;
-        glassIconImageView.image = [glassIconImageView.image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-        glassIconImageView.tintColor = Design.PLACEHOLDER_COLOR;
-    } else {
-        self.searchController.searchBar.backgroundColor = Design.NAVIGATION_BAR_BACKGROUND_COLOR;
-    }
+    self.searchController.searchBar.backgroundColor = [UIColor clearColor];
+    self.searchController.searchBar.searchTextField.backgroundColor = Design.POPUP_BACKGROUND_COLOR;
+    self.searchController.searchBar.searchTextField.tintColor = Design.FONT_COLOR_DEFAULT;
+    self.searchController.searchBar.searchTextField.textColor = Design.FONT_COLOR_DEFAULT;
+    
+    UIImageView *glassIconImageView = (UIImageView *)self.searchController.searchBar.searchTextField.leftView;
+    glassIconImageView.image = [glassIconImageView.image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    glassIconImageView.tintColor = Design.PLACEHOLDER_COLOR;
     
     if ([self.twinmeApplication darkModeEnable:[self currentSpaceSettings]]) {
         self.searchController.searchBar.keyboardAppearance = UIKeyboardAppearanceDark;

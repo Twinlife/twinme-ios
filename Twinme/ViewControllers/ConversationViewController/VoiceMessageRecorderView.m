@@ -21,11 +21,11 @@
 #import "AudioTrackView.h"
 #import "RecordView.h"
 #import "UIView+Toast.h"
-
 #import <TwinmeCommon/ApplicationDelegate.h>
 #import <TwinmeCommon/AudioPlayerManager.h>
 #import <TwinmeCommon/Design.h>
 #import <TwinmeCommon/TwinmeApplication.h>
+#import <TwinmeCommon/UIViewController+Utils.h>
 #import <TwinmeCommon/Utils.h>
 
 #import "SpaceSetting.h"
@@ -255,7 +255,7 @@ static CGFloat MIN_DECIBEL = 45;
     self.trashView.layer.cornerRadius = self.trashViewHeightConstraint.constant * 0.5;
     UITapGestureRecognizer *trashTapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTrashViewTapGesture:)];
     [self.trashView addGestureRecognizer:trashTapGesture];
-    self.trashView.accessibilityLabel = TwinmeLocalizedString(@"conversation_view_controller_record_title", nil);
+    self.trashView.accessibilityLabel = TwinmeLocalizedString(@"conversation_view_record_title", nil);
     
     self.trashImageViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     
@@ -279,7 +279,7 @@ static CGFloat MIN_DECIBEL = 45;
     self.sendView.backgroundColor = Design.MAIN_COLOR;
     self.sendView.clipsToBounds = YES;
     self.sendView.alpha = 0.5f;
-    self.sendView.accessibilityLabel = TwinmeLocalizedString(@"feedback_view_controller_send", nil);
+    self.sendView.accessibilityLabel = TwinmeLocalizedString(@"feedback_view_send", nil);
     
     UITapGestureRecognizer *sendTapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSendViewTapGesture:)];
     [self.sendView addGestureRecognizer:sendTapGesture];
@@ -347,9 +347,7 @@ static CGFloat MIN_DECIBEL = 45;
     
     self.isTouchCanceled = NO;
     if (!self.recorder && !self.url) {
-        ApplicationDelegate *delegate = (ApplicationDelegate *)[[UIApplication sharedApplication] delegate];
-        TwinmeApplication *twinmeApplication = [delegate twinmeApplication];
-        [Utils hapticFeedback:UIImpactFeedbackStyleHeavy hapticFeedbackMode:twinmeApplication.hapticFeedbackMode];
+        [Utils hapticFeedback:UIImpactFeedbackStyleHeavy];
         
         [UIView animateWithDuration:0.15 animations:^{
             self.recordView.transform = CGAffineTransformMakeScale(0.9, 0.9);
@@ -403,7 +401,10 @@ static CGFloat MIN_DECIBEL = 45;
     [self resetViews];
     
     dispatch_async(dispatch_get_main_queue(), ^{
-        [[UIApplication sharedApplication].keyWindow makeToast:TwinmeLocalizedString(@"conversation_view_controller_record_start_record",nil)];
+        UIWindow *window = [UIViewController currentWindow];
+        if (window) {
+            [window makeToast:TwinmeLocalizedString(@"conversation_view_record_start_record",nil)];
+        }
     });
 }
 
@@ -414,9 +415,8 @@ static CGFloat MIN_DECIBEL = 45;
     
     if (self.url || self.recordURL) {
         ApplicationDelegate *delegate = (ApplicationDelegate *)[[UIApplication sharedApplication] delegate];
-        TwinmeApplication *twinmeApplication = [delegate twinmeApplication];
-        [Utils hapticFeedback:UIImpactFeedbackStyleMedium hapticFeedbackMode:twinmeApplication.hapticFeedbackMode];
-                
+        [Utils hapticFeedback:UIImpactFeedbackStyleMedium];
+
         TLSpaceSettings *spaceSettings = self.conversationViewController.space.settings;
         if ([self.conversationViewController.space.settings getBooleanWithName:PROPERTY_DEFAULT_MESSAGE_SETTINGS defaultValue:YES]) {
             spaceSettings = delegate.twinmeContext.defaultSpaceSettings;
@@ -469,9 +469,7 @@ static CGFloat MIN_DECIBEL = 45;
 
 - (void)handleTrashViewTapGesture:(UITapGestureRecognizer *)recognizer {
     
-    ApplicationDelegate *delegate = (ApplicationDelegate *)[[UIApplication sharedApplication] delegate];
-    TwinmeApplication *twinmeApplication = [delegate twinmeApplication];
-    [Utils hapticFeedback:UIImpactFeedbackStyleMedium hapticFeedbackMode:twinmeApplication.hapticFeedbackMode];
+    [Utils hapticFeedback:UIImpactFeedbackStyleMedium];
     
     [[UIApplication sharedApplication] setIdleTimerDisabled:NO];
     
@@ -497,9 +495,7 @@ static CGFloat MIN_DECIBEL = 45;
 
 - (void)handleRecordViewTapGesture:(UITapGestureRecognizer *)recognizer {
     
-    ApplicationDelegate *delegate = (ApplicationDelegate *)[[UIApplication sharedApplication] delegate];
-    TwinmeApplication *twinmeApplication = [delegate twinmeApplication];
-    [Utils hapticFeedback:UIImpactFeedbackStyleMedium hapticFeedbackMode:twinmeApplication.hapticFeedbackMode];
+    [Utils hapticFeedback:UIImpactFeedbackStyleMedium];
     
     [[UIApplication sharedApplication] setIdleTimerDisabled:YES];
     AVAudioSession *audioSession = [AVAudioSession sharedInstance];
@@ -530,18 +526,14 @@ static CGFloat MIN_DECIBEL = 45;
 
 - (void)handlePauseRecordViewTapGesture:(UITapGestureRecognizer *)recognizer {
     
-    ApplicationDelegate *delegate = (ApplicationDelegate *)[[UIApplication sharedApplication] delegate];
-    TwinmeApplication *twinmeApplication = [delegate twinmeApplication];
-    [Utils hapticFeedback:UIImpactFeedbackStyleMedium hapticFeedbackMode:twinmeApplication.hapticFeedbackMode];
+    [Utils hapticFeedback:UIImpactFeedbackStyleMedium];
     
     [self pauseRecording];
 }
 
 - (void)handlePlayViewTapGesture:(UITapGestureRecognizer *)recognizer {
     
-    ApplicationDelegate *delegate = (ApplicationDelegate *)[[UIApplication sharedApplication] delegate];
-    TwinmeApplication *twinmeApplication = [delegate twinmeApplication];
-    [Utils hapticFeedback:UIImpactFeedbackStyleMedium hapticFeedbackMode:twinmeApplication.hapticFeedbackMode];
+    [Utils hapticFeedback:UIImpactFeedbackStyleMedium];
     
     if (self.playTimer) {
         [self.playTimer invalidate];

@@ -163,19 +163,19 @@ static NSString * IP_PATTERN = @"^(?:[0-9]{1,3}\\.){3}[0-9]{1,3}$";
 - (void)onErrorAddProxy {
     DDLogVerbose(@"%@ onErrorAddProxy", LOG_TAG);
         
-    [self showAlertMessage:TwinmeLocalizedString(@"proxy_view_controller_invalid_format", nil)];
+    [self showAlertMessage:TwinmeLocalizedString(@"proxy_view_invalid_format", nil)];
 }
 
 - (void)onErrorAlreadyUsed {
     DDLogVerbose(@"%@ onErrorAlreadyUsed", LOG_TAG);
     
-    [self showAlertMessage:TwinmeLocalizedString(@"proxy_view_controller_already_use", nil)];
+    [self showAlertMessage:TwinmeLocalizedString(@"proxy_view_already_use", nil)];
 }
 
 - (void)onErrorLimitReached {
     DDLogVerbose(@"%@ onErrorLimitReached", LOG_TAG);
     
-    [self showAlertMessage:TwinmeLocalizedString(@"proxy_view_controller_limit", nil)];
+    [self showAlertMessage:TwinmeLocalizedString(@"proxy_view_limit", nil)];
 }
 
 #pragma mark - UITextFieldDelegate
@@ -248,7 +248,7 @@ static NSString * IP_PATTERN = @"^(?:[0-9]{1,3}\\.){3}[0-9]{1,3}$";
     self.view.backgroundColor = Design.WHITE_COLOR;
     [self.view addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(dismissKeyboard)]];
     
-    [self setNavigationTitle:TwinmeLocalizedString(@"proxy_view_controller_title", nil)];
+    [self setNavigationTitle:TwinmeLocalizedString(@"proxy_view_title", nil)];
                 
     self.proxyViewTopConstraint.constant *= Design.HEIGHT_RATIO;
     self.proxyViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
@@ -301,14 +301,14 @@ static NSString * IP_PATTERN = @"^(?:[0-9]{1,3}\\.){3}[0-9]{1,3}$";
     
     self.formatLabel.font = Design.FONT_MEDIUM_ITALIC28;
     self.formatLabel.textColor = Design.FONT_COLOR_GREY;
-    self.formatLabel.text = [NSString stringWithFormat:@"%@\n%@", TwinmeLocalizedString(@"proxy_view_controller_format", nil), TwinmeLocalizedString(@"proxy_view_controller_format_sample", nil)];
+    self.formatLabel.text = [NSString stringWithFormat:@"%@\n%@", TwinmeLocalizedString(@"proxy_view_format", nil), TwinmeLocalizedString(@"proxy_view_format_sample", nil)];
     
     if (self.proxyDescriptor) {
         self.proxyTextField.text = self.proxyDescriptor.proxyDescription;
         
         if (self.proxyDescriptor.proxyStatus != TLConnectionErrorNone) {
             self.messageLabel.hidden = NO;
-            self.messageLabel.text = TwinmeLocalizedString(@"proxy_view_controller_warning", nil);
+            self.messageLabel.text = TwinmeLocalizedString(@"proxy_view_warning", nil);
         } else {
             self.messageLabelTopConstraint.constant = 0;
         }
@@ -316,7 +316,7 @@ static NSString * IP_PATTERN = @"^(?:[0-9]{1,3}\\.){3}[0-9]{1,3}$";
         self.messageLabelTopConstraint.constant = 0;
         UIBarButtonItem *infoBarButtonItem =  [[UIBarButtonItem alloc]initWithImage:[UIImage imageNamed:@"OnboardingInfoIcon"] style:UIBarButtonItemStylePlain target:self action:@selector(handleInfoTapGesture:)];
         infoBarButtonItem.tintColor = [UIColor whiteColor];
-        infoBarButtonItem.accessibilityLabel = TwinmeLocalizedString(@"conversation_view_controller_menu_item_view_info_title", nil);
+        infoBarButtonItem.accessibilityLabel = TwinmeLocalizedString(@"conversation_view_menu_item_view_info_title", nil);
         self.navigationItem.rightBarButtonItem = infoBarButtonItem;
     }
 }
@@ -425,7 +425,7 @@ static NSString * IP_PATTERN = @"^(?:[0-9]{1,3}\\.){3}[0-9]{1,3}$";
         
     NSString *urlString = [NSString stringWithFormat:@"%@/%@", TLTwincodeURI.PROXY_ACTION, self.proxyDescriptor.host];
     
-    NSString *message = [NSString stringWithFormat:TwinmeLocalizedString(@"proxy_view_controller_share", nil), urlString];
+    NSString *message = [NSString stringWithFormat:TwinmeLocalizedString(@"proxy_view_share", nil), urlString];
     UIActivityViewController *activityViewController = [[UIActivityViewController alloc] initWithActivityItems:@[message] applicationActivities:nil];
     activityViewController.excludedActivityTypes = @[UIActivityTypeAirDrop,
                                                      UIActivityTypePrint,
@@ -450,9 +450,9 @@ static NSString * IP_PATTERN = @"^(?:[0-9]{1,3}\\.){3}[0-9]{1,3}$";
     
     OnboardingConfirmView *onboardingConfirmView = [[OnboardingConfirmView alloc] init];
     onboardingConfirmView.bottomSheetViewDelegate = self;
-    [onboardingConfirmView initWithTitle:TwinmeLocalizedString(@"proxy_view_controller_title", nil) message:TwinmeLocalizedString(@"proxy_view_controller_onboarding", nil) image:[UIImage imageNamed:@"OnboardingProxy"] action:TwinmeLocalizedString(@"application_ok", nil) actionColor:nil cancel:cancelAction ? TwinmeLocalizedString(@"application_do_not_display", nil) : nil];
+    [onboardingConfirmView initWithTitle:TwinmeLocalizedString(@"proxy_view_title", nil) message:TwinmeLocalizedString(@"proxy_view_onboarding", nil) image:[UIImage imageNamed:@"OnboardingProxy"] action:TwinmeLocalizedString(@"application_ok", nil) actionColor:nil cancel:cancelAction ? TwinmeLocalizedString(@"application_do_not_display", nil) : nil];
     
-    NSMutableAttributedString *attributedTitle = [[NSMutableAttributedString alloc] initWithString:TwinmeLocalizedString(@"proxy_view_controller_title", nil) attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_BOLD36, NSFontAttributeName, Design.FONT_COLOR_DEFAULT, NSForegroundColorAttributeName, nil]];
+    NSMutableAttributedString *attributedTitle = [[NSMutableAttributedString alloc] initWithString:TwinmeLocalizedString(@"proxy_view_title", nil) attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_BOLD36, NSFontAttributeName, Design.FONT_COLOR_DEFAULT, NSForegroundColorAttributeName, nil]];
     [onboardingConfirmView updateTitle:attributedTitle];
     
     if (!cancelAction) {
@@ -468,7 +468,7 @@ static NSString * IP_PATTERN = @"^(?:[0-9]{1,3}\\.){3}[0-9]{1,3}$";
     
     AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
     alertMessageView.alertMessageViewDelegate = self;
-    [alertMessageView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:message];
+    [alertMessageView initWithTitle:TwinmeLocalizedString(@"deleted_account_view_warning", nil) message:message];
     [self.navigationController.view addSubview:alertMessageView];
     [alertMessageView showAlertView];
 }
@@ -491,7 +491,7 @@ static NSString * IP_PATTERN = @"^(?:[0-9]{1,3}\\.){3}[0-9]{1,3}$";
     self.saveProxyView.backgroundColor = Design.MAIN_COLOR;
     self.messageLabel.textColor = Design.FONT_COLOR_DEFAULT;
     self.proxyTextField.textColor = Design.FONT_COLOR_DEFAULT;
-    self.proxyTextField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:TwinmeLocalizedString(@"proxy_view_controller_add_placeholder", nil) attributes:[NSDictionary dictionaryWithObject:Design.PLACEHOLDER_COLOR forKey:NSForegroundColorAttributeName]];
+    self.proxyTextField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:TwinmeLocalizedString(@"proxy_view_add_placeholder", nil) attributes:[NSDictionary dictionaryWithObject:Design.PLACEHOLDER_COLOR forKey:NSForegroundColorAttributeName]];
     self.formatLabel.textColor = Design.FONT_COLOR_GREY;
     
     if ([self.twinmeApplication darkModeEnable:[self currentSpaceSettings]]) {

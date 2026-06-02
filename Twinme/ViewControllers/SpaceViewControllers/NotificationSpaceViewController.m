@@ -253,9 +253,9 @@ typedef enum {
         
         NSString *text = @"";
         if (indexPath.section == SECTION_INFORMATION) {
-            text = TwinmeLocalizedString(@"settings_space_view_controller_header_message", nil);
+            text = TwinmeLocalizedString(@"settings_space_view_header_message", nil);
         } else {
-            text = TwinmeLocalizedString(@"settings_space_view_controller_allow_notifications_message", nil);
+            text = TwinmeLocalizedString(@"settings_space_view_allow_notifications_message", nil);
         }
         
         [cell bindWithText:text];
@@ -280,7 +280,7 @@ typedef enum {
                 switchState = self.displayNotifications;
                 hiddenSwitch = NO;
                 tag = TAG_ALLOW_NOTIFICATIONS;
-                title = TwinmeLocalizedString(@"settings_space_view_controller_allow_notifications", nil);
+                title = TwinmeLocalizedString(@"settings_space_view_allow_notifications", nil);
                 if (self.space && self.space.isManagedSpace) {
                     disableSwitch = YES;
                 }
@@ -333,7 +333,7 @@ typedef enum {
     
     self.view.backgroundColor = Design.WHITE_COLOR;
     
-    [self setNavigationTitle:TwinmeLocalizedString(@"settings_view_controller_title", nil)];
+    [self setNavigationTitle:TwinmeLocalizedString(@"navigation_view_settings", nil)];
         
     [self.tableView registerNib:[UINib nibWithNibName:@"SettingsItemCell" bundle:nil] forCellReuseIdentifier:SETTINGS_CELL_IDENTIFIER];
     [self.tableView registerNib:[UINib nibWithNibName:@"SettingsValueItemCell" bundle:nil] forCellReuseIdentifier:SETTINGS_VALUE_CELL_IDENTIFIER];

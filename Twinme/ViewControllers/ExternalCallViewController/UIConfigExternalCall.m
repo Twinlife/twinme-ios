@@ -237,20 +237,20 @@
 + (nonnull NSString *)getCallType:(ConfigExternalCallTypeCall)callType {
     
     if (callType == ConfigExternalCallTypeCallDirect) {
-        return TwinmeLocalizedString(@"create_external_call_view_controller_direct_call_short_title", nil);
+        return TwinmeLocalizedString(@"create_external_call_view_direct_call_short_title", nil);
     } else {
-        return TwinmeLocalizedString(@"create_external_call_view_controller_conference_call_short_title", nil);
+        return TwinmeLocalizedString(@"create_external_call_view_conference_call_short_title", nil);
     }
 }
 
 + (nonnull NSString *)getValidity:(TLLinkValidity)validity {
     
     if (validity == TLLinkValidityPermanent) {
-        return TwinmeLocalizedString(@"create_external_call_view_controller_continuous_link_title", nil);
+        return TwinmeLocalizedString(@"create_external_call_view_continuous_link_title", nil);
     } else if (validity == TLLinkValiditySingleUse) {
-        return TwinmeLocalizedString(@"create_external_call_view_controller_unique_link_title", nil);
+        return TwinmeLocalizedString(@"create_external_call_view_unique_link_title", nil);
     } else {
-        return TwinmeLocalizedString(@"create_external_call_view_controller_recurrent_link_title", nil);
+        return TwinmeLocalizedString(@"create_external_call_view_recurrent_link_title", nil);
     }
 }
 
@@ -258,21 +258,21 @@
     
     NSMutableString *message = [[NSMutableString alloc] initWithString:@""];
     if (allowVoiceCall) {
-        [message appendString:TwinmeLocalizedString(@"show_contact_view_controller_audio", nil)];
+        [message appendString:TwinmeLocalizedString(@"show_contact_view_audio", nil)];
     }
     
     if (allowVideoCall) {
         if (message.length > 0) {
             [message appendString:@", "];
         }
-        [message appendString:TwinmeLocalizedString(@"show_contact_view_controller_video", nil)];
+        [message appendString:TwinmeLocalizedString(@"show_contact_view_video", nil)];
     }
     
     if (allowGroupCall) {
         if (message.length > 0) {
             [message appendString:@", "];
         }
-        [message appendString:TwinmeLocalizedString(@"show_group_view_controller_title", nil)];
+        [message appendString:TwinmeLocalizedString(@"show_group_view_title", nil)];
     }
         
     return message;

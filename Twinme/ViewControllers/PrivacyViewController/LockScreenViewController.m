@@ -116,7 +116,7 @@ static const int ddLogLevel = DDLogLevelWarning;
     
     NSError *error = nil;
     if ([context canEvaluatePolicy:LAPolicyDeviceOwnerAuthentication error:&error]) {
-        [context evaluatePolicy:LAPolicyDeviceOwnerAuthentication localizedReason:TwinmeLocalizedString(@"lock_screen_view_controller_local_authentication", nil) reply:^(BOOL success, NSError *error) {
+        [context evaluatePolicy:LAPolicyDeviceOwnerAuthentication localizedReason:TwinmeLocalizedString(@"lock_screen_view_local_authentication", nil) reply:^(BOOL success, NSError *error) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 if (success && [self.lockScreenDelegate respondsToSelector:@selector(unlockScreenSuccess)]) {
                     [self.lockScreenDelegate unlockScreenSuccess];
@@ -148,7 +148,7 @@ static const int ddLogLevel = DDLogLevelWarning;
         self.unlockScreenView.hidden = NO;
         AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
         alertMessageView.alertMessageViewDelegate = self;
-        [alertMessageView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:TwinmeLocalizedString(@"lock_screen_view_controller_passcode_not_set", nil)];
+        [alertMessageView initWithTitle:TwinmeLocalizedString(@"deleted_account_view_warning", nil) message:TwinmeLocalizedString(@"lock_screen_view_passcode_not_set", nil)];
         [self.view addSubview:alertMessageView];
         [alertMessageView showAlertView];
     }
@@ -201,7 +201,7 @@ static const int ddLogLevel = DDLogLevelWarning;
     self.unlockScreenLabelWidthConstraint.constant *= Design.WIDTH_RATIO;
     self.unlockScreenLabel.font = Design.FONT_BOLD34;
     self.unlockScreenLabel.textColor = [UIColor blackColor];
-    self.unlockScreenLabel.text = TwinmeLocalizedString(@"lock_screen_view_controller_unlock", nil);
+    self.unlockScreenLabel.text = TwinmeLocalizedString(@"lock_screen_view_unlock", nil);
 }
 
 - (void)handleUnlockTapGesture:(UITapGestureRecognizer *)sender {

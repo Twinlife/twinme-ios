@@ -71,7 +71,7 @@ static const int ddLogLevel = DDLogLevelWarning;
     [self.commentTextField setReturnKeyType:UIReturnKeyDone];
     self.commentTextField.backgroundColor = Design.FORWARD_COMMENT_COLOR;
     
-    self.commentTextField.attributedPlaceholder = [[NSAttributedString alloc]initWithString:TwinmeLocalizedString(@"conversation_view_controller_message", nil) attributes:[NSDictionary dictionaryWithObject:[UIColor colorWithRed:162./255. green:162./255 blue:162./255 alpha:255./255] forKey:NSForegroundColorAttributeName]];
+    self.commentTextField.attributedPlaceholder = [[NSAttributedString alloc]initWithString:TwinmeLocalizedString(@"conversation_view_message", nil) attributes:[NSDictionary dictionaryWithObject:[UIColor colorWithRed:162./255. green:162./255 blue:162./255 alpha:255./255] forKey:NSForegroundColorAttributeName]];
     
     [self.commentTextField addTarget:self action:@selector(textFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
     

@@ -135,11 +135,11 @@ static NSString *SETTINGS_VALUE_CELL_IDENTIFIER = @"SettingsValueCellIdentifier"
         
         NSString *text = @"";
         if (indexPath.section == 0) {
-            text = TwinmeLocalizedString(@"privacy_view_controller_lock_screen_message", nil);
+            text = TwinmeLocalizedString(@"privacy_view_lock_screen_message", nil);
         } else if (indexPath.section == 1) {
-            text = TwinmeLocalizedString(@"privacy_view_controller_hide_last_screen_message", nil);
+            text = TwinmeLocalizedString(@"privacy_view_hide_last_screen_message", nil);
         } else {
-            text = TwinmeLocalizedString(@"privacy_view_controller_display_recent_call_message", nil);
+            text = TwinmeLocalizedString(@"privacy_view_display_recent_call_message", nil);
         }
         
         [cell bindWithText:text];
@@ -153,7 +153,7 @@ static NSString *SETTINGS_VALUE_CELL_IDENTIFIER = @"SettingsValueCellIdentifier"
         
         int screenLockTimeout = [self.twinmeApplication getTimeoutScreenLock];
 
-        [cell bindWithTitle:TwinmeLocalizedString(@"privacy_view_controller_lock_screen_timeout", nil) value:[NSString formatTimeout:screenLockTimeout] backgroundColor:Design.WHITE_COLOR];
+        [cell bindWithTitle:TwinmeLocalizedString(@"privacy_view_lock_screen_timeout", nil) value:[NSString formatTimeout:screenLockTimeout] backgroundColor:Design.WHITE_COLOR];
 
         return cell;
     } else {
@@ -168,14 +168,14 @@ static NSString *SETTINGS_VALUE_CELL_IDENTIFIER = @"SettingsValueCellIdentifier"
         BOOL disableSwitch = NO;
         NSString *title = @"";
         if (indexPath.section == 0) {
-            title = TwinmeLocalizedString(@"privacy_view_controller_lock_screen_title", nil);
+            title = TwinmeLocalizedString(@"privacy_view_lock_screen_title", nil);
             stateSwitch = [self.twinmeApplication isScreenLock];
             disableSwitch = self.disableScreenLock;
         } else if (indexPath.section == 1) {
-            title = TwinmeLocalizedString(@"privacy_view_controller_hide_last_screen_title", nil);
+            title = TwinmeLocalizedString(@"privacy_view_hide_last_screen_title", nil);
             stateSwitch = [self.twinmeApplication isLastScreenHidden];
         } else {
-            title = TwinmeLocalizedString(@"privacy_view_controller_display_recent_call", nil);
+            title = TwinmeLocalizedString(@"privacy_view_display_recent_call", nil);
             stateSwitch = [self.twinmeApplication isRecentCallsHidden];
         }
         
@@ -249,7 +249,7 @@ static NSString *SETTINGS_VALUE_CELL_IDENTIFIER = @"SettingsValueCellIdentifier"
     
     self.view.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
     
-    [self setNavigationTitle:TwinmeLocalizedString(@"privacy_view_controller_title", nil)];
+    [self setNavigationTitle:TwinmeLocalizedString(@"privacy_view_title", nil)];
     
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     self.tableView.rowHeight = UITableViewAutomaticDimension;
@@ -275,7 +275,7 @@ static NSString *SETTINGS_VALUE_CELL_IDENTIFIER = @"SettingsValueCellIdentifier"
     if (sender.state == UIGestureRecognizerStateEnded) {
         AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
         alertMessageView.alertMessageViewDelegate = self;
-        [alertMessageView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:TwinmeLocalizedString(@"lock_screen_view_controller_passcode_not_set", nil)];
+        [alertMessageView initWithTitle:TwinmeLocalizedString(@"deleted_account_view_warning", nil) message:TwinmeLocalizedString(@"lock_screen_view_passcode_not_set", nil)];
         [self.navigationController.view addSubview:alertMessageView];
         [alertMessageView showAlertView];
     }

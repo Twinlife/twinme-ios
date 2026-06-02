@@ -207,12 +207,12 @@ static const int WELCOME_STEP_COUNT = 3;
     }
         
     if (currentPage + 1 == self.uiWelcome.count) {
-        self.nextLabel.text = TwinmeLocalizedString(@"welcome_view_controller_start", nil);
+        self.nextLabel.text = TwinmeLocalizedString(@"welcome_view_start", nil);
         self.termsOfUseLabel.hidden = NO;
         self.nextClickableView.hidden = NO;
         self.nextLabel.hidden = NO;
     } else {
-        self.nextLabel.text = TwinmeLocalizedString(@"welcome_view_controller_next", nil);
+        self.nextLabel.text = TwinmeLocalizedString(@"welcome_view_next", nil);
         self.termsOfUseLabel.hidden = YES;
         self.nextClickableView.hidden = NO;
         self.nextLabel.hidden = NO;
@@ -280,7 +280,7 @@ static const int WELCOME_STEP_COUNT = 3;
     self.nextLabel.font = Design.FONT_BOLD34;
     self.nextLabel.textColor = [UIColor whiteColor];
     self.nextLabel.adjustsFontSizeToFitWidth = YES;
-    self.nextLabel.text = TwinmeLocalizedString(@"welcome_view_controller_next", nil);
+    self.nextLabel.text = TwinmeLocalizedString(@"welcome_view_next", nil);
     
     self.welcomePageControlBottomConstraint.constant *= Design.HEIGHT_RATIO;
     self.welcomePageControlWidthConstraint.constant *= Design.WIDTH_RATIO;
@@ -300,16 +300,16 @@ static const int WELCOME_STEP_COUNT = 3;
     [mutableLinkAttributes setObject:(__bridge id)[Design.MAIN_COLOR CGColor] forKey:(NSString *)kCTForegroundColorAttributeName];
     self.termsOfUseLabel.linkAttributes = [NSDictionary dictionaryWithDictionary:mutableLinkAttributes];
     
-    NSString *headerString = [NSString stringWithFormat:TwinmeLocalizedString(@"welcome_view_controller_accept %@", nil), TwinmeLocalizedString(@"welcome_view_controller_pass", nil)];
-    self.termsOfUseLabel.text = [NSString stringWithFormat:@"%@ %@ - %@", headerString, TwinmeLocalizedString(@"welcome_view_controller_terms_of_use", nil), TwinmeLocalizedString(@"welcome_view_controller_privacy_policy", nil)];
-    NSString *termOfUse = TwinmeLocalizedString(@"welcome_view_controller_terms_of_use", nil);
+    NSString *headerString = [NSString stringWithFormat:TwinmeLocalizedString(@"welcome_view_accept", nil), TwinmeLocalizedString(@"welcome_view_pass", nil)];
+    self.termsOfUseLabel.text = [NSString stringWithFormat:@"%@ %@ - %@", headerString, TwinmeLocalizedString(@"welcome_view_terms_of_use", nil), TwinmeLocalizedString(@"welcome_view_privacy_policy", nil)];
+    NSString *termOfUse = TwinmeLocalizedString(@"welcome_view_terms_of_use", nil);
     NSRange termOfUseRange = [self.termsOfUseLabel.text rangeOfString:termOfUse];
-    NSURL *termOfUseURL = [NSURL URLWithString:TwinmeLocalizedString(@"welcome_view_controller_terms_of_use_url", nil)];
+    NSURL *termOfUseURL = [NSURL URLWithString:TwinmeLocalizedString(@"welcome_view_terms_of_use_url", nil)];
     self.termsOfUseLabel.enabledTextCheckingTypes = NSTextCheckingTypeLink;
     [self.termsOfUseLabel addLinkToURL:termOfUseURL withRange:termOfUseRange];
-    NSString *privacyPolicy = TwinmeLocalizedString(@"welcome_view_controller_privacy_policy", nil);
+    NSString *privacyPolicy = TwinmeLocalizedString(@"welcome_view_privacy_policy", nil);
     NSRange privacyPolicyRange = [self.termsOfUseLabel.text rangeOfString:privacyPolicy];
-    NSURL *privacyPolicyURL = [NSURL URLWithString:TwinmeLocalizedString(@"welcome_view_controller_privacy_policy_url", nil)];
+    NSURL *privacyPolicyURL = [NSURL URLWithString:TwinmeLocalizedString(@"welcome_view_privacy_policy_url", nil)];
     [self.termsOfUseLabel addLinkToURL:privacyPolicyURL withRange:privacyPolicyRange];
     
     self.termsOfUseLabel.delegate = self;
@@ -398,21 +398,21 @@ static const int WELCOME_STEP_COUNT = 3;
     DDLogVerbose(@"%@ setupTermsOfUse", LOG_TAG);
     
     if (currentPage + 1 == WELCOME_STEP_COUNT) {
-        NSString *headerString = [NSString stringWithFormat:TwinmeLocalizedString(@"welcome_view_controller_accept %@", nil), TwinmeLocalizedString(@"welcome_view_controller_start", nil)];
-        self.termsOfUseLabel.text = [NSString stringWithFormat:@"%@ %@ - %@", headerString, TwinmeLocalizedString(@"welcome_view_controller_terms_of_use", nil), TwinmeLocalizedString(@"welcome_view_controller_privacy_policy", nil)];
+        NSString *headerString = [NSString stringWithFormat:TwinmeLocalizedString(@"welcome_view_accept", nil), TwinmeLocalizedString(@"welcome_view_start", nil)];
+        self.termsOfUseLabel.text = [NSString stringWithFormat:@"%@ %@ - %@", headerString, TwinmeLocalizedString(@"welcome_view_terms_of_use", nil), TwinmeLocalizedString(@"welcome_view_privacy_policy", nil)];
     } else {
-        NSString *headerString = [NSString stringWithFormat:TwinmeLocalizedString(@"welcome_view_controller_accept %@", nil), TwinmeLocalizedString(@"welcome_view_controller_pass", nil)];
-        self.termsOfUseLabel.text = [NSString stringWithFormat:@"%@ %@ - %@", headerString, TwinmeLocalizedString(@"welcome_view_controller_terms_of_use", nil), TwinmeLocalizedString(@"welcome_view_controller_privacy_policy", nil)];
+        NSString *headerString = [NSString stringWithFormat:TwinmeLocalizedString(@"welcome_view_accept", nil), TwinmeLocalizedString(@"welcome_view_pass", nil)];
+        self.termsOfUseLabel.text = [NSString stringWithFormat:@"%@ %@ - %@", headerString, TwinmeLocalizedString(@"welcome_view_terms_of_use", nil), TwinmeLocalizedString(@"welcome_view_privacy_policy", nil)];
     }
     
-    NSString *termOfUse = TwinmeLocalizedString(@"welcome_view_controller_terms_of_use", nil);
+    NSString *termOfUse = TwinmeLocalizedString(@"welcome_view_terms_of_use", nil);
     NSRange termOfUseRange = [self.termsOfUseLabel.text rangeOfString:termOfUse];
-    NSURL *termOfUseURL = [NSURL URLWithString:TwinmeLocalizedString(@"welcome_view_controller_terms_of_use_url", nil)];
+    NSURL *termOfUseURL = [NSURL URLWithString:TwinmeLocalizedString(@"welcome_view_terms_of_use_url", nil)];
     self.termsOfUseLabel.enabledTextCheckingTypes = NSTextCheckingTypeLink;
     [self.termsOfUseLabel addLinkToURL:termOfUseURL withRange:termOfUseRange];
-    NSString *privacyPolicy = TwinmeLocalizedString(@"welcome_view_controller_privacy_policy", nil);
+    NSString *privacyPolicy = TwinmeLocalizedString(@"welcome_view_privacy_policy", nil);
     NSRange privacyPolicyRange = [self.termsOfUseLabel.text rangeOfString:privacyPolicy];
-    NSURL *privacyPolicyURL = [NSURL URLWithString:TwinmeLocalizedString(@"welcome_view_controller_privacy_policy_url", nil)];
+    NSURL *privacyPolicyURL = [NSURL URLWithString:TwinmeLocalizedString(@"welcome_view_privacy_policy_url", nil)];
     [self.termsOfUseLabel addLinkToURL:privacyPolicyURL withRange:privacyPolicyRange];
 }
 

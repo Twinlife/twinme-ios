@@ -204,7 +204,10 @@ static NSString *SETTINGS_ITEM_CELL_IDENTIFIER = @"SettingsCellIdentifier";
     DDLogVerbose(@"%@ onClearConversation", LOG_TAG);
     
     dispatch_async(dispatch_get_main_queue(), ^{
-        [[UIApplication sharedApplication].keyWindow makeToast:TwinmeLocalizedString(@"cleanup_view_controller_success",nil)];
+        UIWindow *window = [self currentWindow];
+        if (window) {
+            [window makeToast:TwinmeLocalizedString(@"cleanup_view_success",nil)];
+        }
     });
     
     [self finish];
@@ -281,11 +284,11 @@ static NSString *SETTINGS_ITEM_CELL_IDENTIFIER = @"SettingsCellIdentifier";
     NSString *title = @"";
     
     if (section == STORAGE_VIEW_SECTION) {
-        title = TwinmeLocalizedString(@"cleanup_view_controller_storage_title", nil);
+        title = TwinmeLocalizedString(@"cleanup_view_storage_title", nil);
     } else if (section == CONTENT_VIEW_SECTION) {
-        title = TwinmeLocalizedString(@"export_view_controller_content_title", nil);
+        title = TwinmeLocalizedString(@"export_view_content_title", nil);
     } else if (section == EXPIRATION_VIEW_SECTION) {
-        title = TwinmeLocalizedString(@"cleanup_view_controller_expiration", nil);
+        title = TwinmeLocalizedString(@"cleanup_view_expiration", nil);
     }
     
     [settingsSectionHeaderCell bindWithTitle:title backgroundColor:Design.LIGHT_GREY_BACKGROUND_COLOR hideSeparator:YES uppercaseString:YES];
@@ -310,15 +313,15 @@ static NSString *SETTINGS_ITEM_CELL_IDENTIFIER = @"SettingsCellIdentifier";
         
         NSString *text = @"";
         if (indexPath.row == 0) {
-            text = TwinmeLocalizedString(@"cleanup_view_controller_select_content", nil);
+            text = TwinmeLocalizedString(@"cleanup_view_select_content", nil);
         } else if (indexPath.row == 2) {
             if (self.cleanUpType == CleanUpTypeLocal) {
-                text = TwinmeLocalizedString(@"cleanup_view_controller_medias_and_files_info", nil);
+                text = TwinmeLocalizedString(@"cleanup_view_medias_and_files_info", nil);
             } else {
-                text = TwinmeLocalizedString(@"cleanup_view_controller_medias_and_files_info_both", nil);
+                text = TwinmeLocalizedString(@"cleanup_view_medias_and_files_info_both", nil);
             }
         } else if (indexPath.row == 4) {
-            text = TwinmeLocalizedString(@"cleanup_view_controller_messages_info", nil);
+            text = TwinmeLocalizedString(@"cleanup_view_messages_info", nil);
         }
         
         [cell bindWithText:text];
@@ -368,7 +371,7 @@ static NSString *SETTINGS_ITEM_CELL_IDENTIFIER = @"SettingsCellIdentifier";
             
             cell.settingsActionDelegate = self;
             
-            [cell bindWithTitle:TwinmeLocalizedString(@"cleanup_view_controller_all", nil) subTitle:nil  icon:nil stateSwitch:self.cleanUpExpiration.expirationType == ExpirationTypeAll tagSwitch:0 hiddenSwitch:NO disableSwitch:NO backgroundColor:Design.WHITE_COLOR hiddenSeparator:NO];
+            [cell bindWithTitle:TwinmeLocalizedString(@"cleanup_view_all", nil) subTitle:nil  icon:nil stateSwitch:self.cleanUpExpiration.expirationType == ExpirationTypeAll tagSwitch:0 hiddenSwitch:NO disableSwitch:NO backgroundColor:Design.WHITE_COLOR hiddenSeparator:NO];
             
             return cell;
         } else {
@@ -548,9 +551,9 @@ static NSString *SETTINGS_ITEM_CELL_IDENTIFIER = @"SettingsCellIdentifier";
     self.view.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
     
     if (self.cleanUpType == CleanUpTypeLocal) {
-        [self setNavigationTitle:TwinmeLocalizedString(@"cleanup_view_controller_local_cleanup_title", nil)];
+        [self setNavigationTitle:TwinmeLocalizedString(@"cleanup_view_local_cleanup_title", nil)];
     } else {
-        [self setNavigationTitle:TwinmeLocalizedString(@"cleanup_view_controller_both_clean_title", nil)];
+        [self setNavigationTitle:TwinmeLocalizedString(@"cleanup_view_both_clean_title", nil)];
     }
     
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
@@ -693,14 +696,14 @@ static NSString *SETTINGS_ITEM_CELL_IDENTIFIER = @"SettingsCellIdentifier";
     if (self.space) {
         DeleteSpaceConfirmView *deleteConfirmView = [[DeleteSpaceConfirmView alloc] init];
         deleteConfirmView.bottomSheetViewDelegate = self;
-        [deleteConfirmView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:TwinmeLocalizedString(@"cleanup_view_controller_delete_confirmation_message", nil) spaceName:self.space.settings.name spaceStyle:self.space.settings.style avatar:avatar icon:[UIImage imageNamed:@"ActionBarDelete"]];
+        [deleteConfirmView initWithTitle:TwinmeLocalizedString(@"deleted_account_view_warning", nil) message:TwinmeLocalizedString(@"cleanup_view_delete_confirmation_message", nil) spaceName:self.space.settings.name spaceStyle:self.space.settings.style avatar:avatar icon:[UIImage imageNamed:@"ActionBarDelete"]];
         [self.tabBarController.view addSubview:deleteConfirmView];
         [deleteConfirmView showConfirmView];
     } else {
         DeleteConfirmView *deleteConfirmView = [[DeleteConfirmView alloc] init];
         deleteConfirmView.bottomSheetViewDelegate = self;
         deleteConfirmView.deleteConfirmType = DeleteConfirmTypeFile;
-        [deleteConfirmView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:TwinmeLocalizedString(@"cleanup_view_controller_delete_confirmation_message", nil) avatar:avatar icon:[UIImage imageNamed:@"ActionBarDelete"]];
+        [deleteConfirmView initWithTitle:TwinmeLocalizedString(@"deleted_account_view_warning", nil) message:TwinmeLocalizedString(@"cleanup_view_delete_confirmation_message", nil) avatar:avatar icon:[UIImage imageNamed:@"ActionBarDelete"]];
         
         if (!avatar) {
             [deleteConfirmView hideAvatar];

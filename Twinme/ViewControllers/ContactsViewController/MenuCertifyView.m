@@ -14,6 +14,7 @@
 #import "MenuIconCell.h"
 
 #import <TwinmeCommon/Design.h>
+#import <TwinmeCommon/UIViewController+Utils.h>
 
 #if 0
 static const int ddLogLevel = DDLogLevelVerbose;
@@ -106,10 +107,10 @@ static NSString *MENU_ICON_CELL_IDENTIFIER = @"MenuIconCellIdentifier";
     BOOL hideSeparator = NO;
     
     if (indexPath.row == 0) {
-        title = TwinmeLocalizedString(@"authentified_relation_view_controller_certify_by_scan", nil);
+        title = TwinmeLocalizedString(@"authentified_relation_view_certify_by_scan", nil);
         icon = @"CertifyByScanIcon";
     } else {
-        title = TwinmeLocalizedString(@"authentified_relation_view_controller_certify_by_video_call", nil);
+        title = TwinmeLocalizedString(@"authentified_relation_view_certify_by_video_call", nil);
         icon = @"VideoCall";
         hideSeparator = YES;
     }
@@ -140,10 +141,15 @@ static NSString *MENU_ICON_CELL_IDENTIFIER = @"MenuIconCellIdentifier";
     
     [super initViews];
     
-    self.titleLabel.text = TwinmeLocalizedString(@"authentified_relation_view_controller_to_be_certified_title", nil);
+    self.titleLabel.text = TwinmeLocalizedString(@"authentified_relation_view_to_be_certified_title", nil);
     
-    UIWindow *window = UIApplication.sharedApplication.keyWindow;
-    CGFloat safeAreaInset = window.safeAreaInsets.bottom;
+    CGFloat safeAreaInset;
+    UIWindow *window = [UIViewController currentWindow];
+    if (window) {
+        safeAreaInset = window.safeAreaInsets.bottom;
+    } else {
+        safeAreaInset = self.safeAreaInsets.bottom;
+    }
     
     self.tableViewTopConstraint.constant *= Design.HEIGHT_RATIO;
     self.tableViewBottomConstraint.constant = safeAreaInset;

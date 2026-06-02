@@ -16,6 +16,7 @@
 
 #import <TwinmeCommon/Design.h>
 #import <TwinmeCommon/CallParticipant.h>
+#import <TwinmeCommon/UIViewController+Utils.h>
 
 #define DESIGN_INSET 40
 static CGFloat DESIGN_SAFE_AREA_WIDTH_INSET = 0;
@@ -55,7 +56,9 @@ static const int ddLogLevel = DDLogLevelWarning;
 
 + (void)initialize {
     
-    UIWindow *window = UIApplication.sharedApplication.keyWindow;
+    UIWindow *window = [UIViewController currentWindow];
+    
+    
     DESIGN_SAFE_AREA_WIDTH_INSET = window.safeAreaInsets.left;
     DESIGN_SAFE_AREA_HEIGHT_INSET = window.safeAreaInsets.top;
     

@@ -392,13 +392,19 @@ static const int DESIGN_IMAGE_BOTTOM_MARGN = 6;
 - (void)onSubscribeSuccess {
     DDLogVerbose(@"%@ onSubscribeSuccess", LOG_TAG);
     
-    if (self.inAppSubscriptionViewControllerDelegate) {
-        [self.inAppSubscriptionViewControllerDelegate onSubscribeSuccess];
-    }
+    [CATransaction begin];
+    [CATransaction setCompletionBlock:^{
+        if (self.inAppSubscriptionViewControllerDelegate) {
+            [self.inAppSubscriptionViewControllerDelegate onSubscribeSuccess];
+        }
+    }];
+    
     self.subscribeInProgress = NO;
     [self updateViews];
     
     [self finish];
+
+    [CATransaction commit];
 }
 
 - (void)onSubscribeCancel {
@@ -534,7 +540,7 @@ static const int DESIGN_IMAGE_BOTTOM_MARGN = 6;
     
     self.skredPlusLabel.font = Design.FONT_BOLD54;
     self.skredPlusLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    self.skredPlusLabel.text = TwinmeLocalizedString(@"in_app_subscription_view_controller_title", nil);
+    self.skredPlusLabel.text = TwinmeLocalizedString(@"in_app_subscription_view_title", nil);
     
     self.descriptionViewLeadingConstraint.constant *= Design.WIDTH_RATIO;
     self.descriptionViewTrailingConstraint.constant *= Design.WIDTH_RATIO;
@@ -591,7 +597,7 @@ static const int DESIGN_IMAGE_BOTTOM_MARGN = 6;
     
     self.titleLabel.textColor = [UIColor blackColor];
     self.titleLabel.font = Design.FONT_MEDIUM36;
-    self.titleLabel.text = TwinmeLocalizedString(@"in_app_subscription_view_controller_description_step1_title", nil);
+    self.titleLabel.text = TwinmeLocalizedString(@"in_app_subscription_view_description_step1_title", nil);
     self.titleLabel.adjustsFontSizeToFitWidth = YES;
     
     self.descriptionLabelTopConstraint.constant *= Design.HEIGHT_RATIO;
@@ -600,7 +606,7 @@ static const int DESIGN_IMAGE_BOTTOM_MARGN = 6;
     
     self.descriptionLabel.textColor = DESIGN_DESCRIPTION_COLOR;
     self.descriptionLabel.font = Design.FONT_MEDIUM32;
-    self.descriptionLabel.text = TwinmeLocalizedString(@"in_app_subscription_view_controller_description_step1_subtitle", nil);
+    self.descriptionLabel.text = TwinmeLocalizedString(@"in_app_subscription_view_description_step1_subtitle", nil);
     self.descriptionLabel.adjustsFontSizeToFitWidth = YES;
     
     self.descriptionImageViewTopConstraint.constant *= Design.HEIGHT_RATIO;
@@ -640,7 +646,7 @@ static const int DESIGN_IMAGE_BOTTOM_MARGN = 6;
     
     self.oneYearSubscriptionSubTitleLabel.textColor = DESIGN_GREY_COLOR;
     self.oneYearSubscriptionSubTitleLabel.font = Design.FONT_MEDIUM24;
-    self.oneYearSubscriptionSubTitleLabel.text = TwinmeLocalizedString(@"in_app_subscription_view_controller_subscription_title", nil).uppercaseString;
+    self.oneYearSubscriptionSubTitleLabel.text = TwinmeLocalizedString(@"in_app_subscription_view_subscription_title", nil).uppercaseString;
     self.oneYearSubscriptionSubTitleLabel.adjustsFontSizeToFitWidth = YES;
     
     self.oneYearSubscriptionDurationLabelTopConstraint.constant *= Design.HEIGHT_RATIO;
@@ -657,7 +663,7 @@ static const int DESIGN_IMAGE_BOTTOM_MARGN = 6;
     
     self.oneYearSubscriptionUnitLabel.textColor = [UIColor blackColor];
     self.oneYearSubscriptionUnitLabel.font = Design.FONT_REGULAR26;
-    self.oneYearSubscriptionUnitLabel.text = TwinmeLocalizedString(@"in_app_subscription_view_controller_month", nil);
+    self.oneYearSubscriptionUnitLabel.text = TwinmeLocalizedString(@"in_app_subscription_view_month", nil);
     
     self.oneYearSubscriptionPriceLabelTopConstraint.constant *= Design.HEIGHT_RATIO;
     self.oneYearSubscriptionPriceLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
@@ -698,7 +704,7 @@ static const int DESIGN_IMAGE_BOTTOM_MARGN = 6;
     self.sixMonthSubscriptionTitleLabel.numberOfLines = 2;
     self.sixMonthSubscriptionTitleLabel.textColor = [UIColor whiteColor];
     self.sixMonthSubscriptionTitleLabel.font = Design.FONT_BOLD28;
-    self.sixMonthSubscriptionTitleLabel.text = TwinmeLocalizedString(@"in_app_subscription_view_controller_six_month_title", nil).uppercaseString;
+    self.sixMonthSubscriptionTitleLabel.text = TwinmeLocalizedString(@"in_app_subscription_view_six_month_title", nil).uppercaseString;
     self.sixMonthSubscriptionTitleLabel.adjustsFontSizeToFitWidth = YES;
     
     self.sixMonthSubscriptionSubTitleLabelTopConstraint.constant *= Design.HEIGHT_RATIO;
@@ -707,7 +713,7 @@ static const int DESIGN_IMAGE_BOTTOM_MARGN = 6;
     
     self.sixMonthSubscriptionSubTitleLabel.textColor = DESIGN_GREY_COLOR;
     self.sixMonthSubscriptionSubTitleLabel.font = Design.FONT_MEDIUM24;
-    self.sixMonthSubscriptionSubTitleLabel.text = TwinmeLocalizedString(@"in_app_subscription_view_controller_subscription_title", nil).uppercaseString;
+    self.sixMonthSubscriptionSubTitleLabel.text = TwinmeLocalizedString(@"in_app_subscription_view_subscription_title", nil).uppercaseString;
     self.sixMonthSubscriptionSubTitleLabel.adjustsFontSizeToFitWidth = YES;
     
     self.sixMonthSubscriptionDurationLabelTopConstraint.constant *= Design.HEIGHT_RATIO;
@@ -724,7 +730,7 @@ static const int DESIGN_IMAGE_BOTTOM_MARGN = 6;
     
     self.sixMonthSubscriptionUnitLabel.textColor = [UIColor blackColor];
     self.sixMonthSubscriptionUnitLabel.font = Design.FONT_REGULAR36;
-    self.sixMonthSubscriptionUnitLabel.text = TwinmeLocalizedString(@"in_app_subscription_view_controller_month", nil);
+    self.sixMonthSubscriptionUnitLabel.text = TwinmeLocalizedString(@"in_app_subscription_view_month", nil);
     
     self.sixMonthSubscriptionPriceLabelTopConstraint.constant *= Design.HEIGHT_RATIO;
     self.sixMonthSubscriptionPriceLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
@@ -770,7 +776,7 @@ static const int DESIGN_IMAGE_BOTTOM_MARGN = 6;
     
     self.oneMonthSubscriptionSubTitleLabel.textColor = DESIGN_GREY_COLOR;
     self.oneMonthSubscriptionSubTitleLabel.font = Design.FONT_MEDIUM24;
-    self.oneMonthSubscriptionSubTitleLabel.text = TwinmeLocalizedString(@"in_app_subscription_view_controller_subscription_title", nil).uppercaseString;
+    self.oneMonthSubscriptionSubTitleLabel.text = TwinmeLocalizedString(@"in_app_subscription_view_subscription_title", nil).uppercaseString;
     self.oneMonthSubscriptionSubTitleLabel.adjustsFontSizeToFitWidth = YES;
     
     self.oneMonthSubscriptionDurationLabelTopConstraint.constant *= Design.HEIGHT_RATIO;
@@ -787,7 +793,7 @@ static const int DESIGN_IMAGE_BOTTOM_MARGN = 6;
     
     self.oneMonthSubscriptionUnitLabel.textColor = [UIColor blackColor];
     self.oneMonthSubscriptionUnitLabel.font = Design.FONT_REGULAR26;
-    self.oneMonthSubscriptionUnitLabel.text = TwinmeLocalizedString(@"in_app_subscription_view_controller_month", nil);
+    self.oneMonthSubscriptionUnitLabel.text = TwinmeLocalizedString(@"in_app_subscription_view_month", nil);
     
     self.oneMonthSubscriptionPriceLabelTopConstraint.constant *= Design.HEIGHT_RATIO;
     self.oneMonthSubscriptionPriceLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
@@ -803,7 +809,7 @@ static const int DESIGN_IMAGE_BOTTOM_MARGN = 6;
     
     self.freeTrialLabel.textColor = DESIGN_GREY_COLOR;
     self.freeTrialLabel.font = Design.FONT_MEDIUM40;
-    self.freeTrialLabel.text = TwinmeLocalizedString(@"in_app_subscription_view_controller_free_trial", nil);
+    self.freeTrialLabel.text = TwinmeLocalizedString(@"in_app_subscription_view_free_trial", nil);
     self.freeTrialLabel.hidden = YES;
     
     self.subscribeViewWidthConstraint.constant *= Design.WIDTH_RATIO;
@@ -820,7 +826,7 @@ static const int DESIGN_IMAGE_BOTTOM_MARGN = 6;
     self.subscribeLabelWidthConstraint.constant *= Design.WIDTH_RATIO;
     self.subscribeLabel.font = Design.FONT_BOLD36;
     self.subscribeLabel.textColor = [UIColor whiteColor];
-    self.subscribeLabel.text = TwinmeLocalizedString(@"in_app_subscription_view_controller_subscribe_title", nil).uppercaseString;
+    self.subscribeLabel.text = TwinmeLocalizedString(@"in_app_subscription_view_subscribe_title", nil).uppercaseString;
     self.subscribeLabel.adjustsFontSizeToFitWidth = YES;
     
     self.restoreViewWidthConstraint.constant *= Design.WIDTH_RATIO;
@@ -832,7 +838,7 @@ static const int DESIGN_IMAGE_BOTTOM_MARGN = 6;
     
     self.restoreLabel.font = Design.FONT_BOLD36;
     self.restoreLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    self.restoreLabel.text = TwinmeLocalizedString(@"in_app_subscription_view_controller_restore_title", nil).uppercaseString;
+    self.restoreLabel.text = TwinmeLocalizedString(@"in_app_subscription_view_restore_title", nil).uppercaseString;
     
     self.inviteViewWidthConstraint.constant *= Design.WIDTH_RATIO;
     self.inviteViewHeightConstraint.constant = 0;
@@ -843,7 +849,7 @@ static const int DESIGN_IMAGE_BOTTOM_MARGN = 6;
     
     self.inviteLabel.font = Design.FONT_BOLD36;
     self.inviteLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    self.inviteLabel.text = TwinmeLocalizedString(@"add_contact_view_controller_title", nil).uppercaseString;
+    self.inviteLabel.text = TwinmeLocalizedString(@"add_contact_view_title", nil).uppercaseString;
     
     self.footerLabelTopConstraint.constant *= Design.HEIGHT_RATIO;
     self.footerLabelBottomConstraint.constant *= Design.HEIGHT_RATIO;
@@ -855,16 +861,16 @@ static const int DESIGN_IMAGE_BOTTOM_MARGN = 6;
     self.footerLabel.hidden = YES;
     self.footerLabel.adjustsFontSizeToFitWidth = YES;
     
-    self.footerLabel.text = [NSString stringWithFormat:@"%@ \n\n %@ - %@", TwinmeLocalizedString(@"in_app_subscription_view_controller_footer_message", nil), TwinmeLocalizedString(@"welcome_view_controller_terms_of_use", nil), TwinmeLocalizedString(@"welcome_view_controller_privacy_policy", nil)];
+    self.footerLabel.text = [NSString stringWithFormat:@"%@ \n\n %@ - %@", TwinmeLocalizedString(@"in_app_subscription_view_footer_message", nil), TwinmeLocalizedString(@"welcome_view_terms_of_use", nil), TwinmeLocalizedString(@"welcome_view_privacy_policy", nil)];
     
-    NSString *termOfUse = TwinmeLocalizedString(@"welcome_view_controller_terms_of_use", nil);
+    NSString *termOfUse = TwinmeLocalizedString(@"welcome_view_terms_of_use", nil);
     NSRange termOfUseRange = [self.footerLabel.text rangeOfString:termOfUse];
-    NSURL *termOfUseURL = [NSURL URLWithString:TwinmeLocalizedString(@"welcome_view_controller_terms_of_use_url", nil)];
+    NSURL *termOfUseURL = [NSURL URLWithString:TwinmeLocalizedString(@"welcome_view_terms_of_use_url", nil)];
     self.footerLabel.enabledTextCheckingTypes = NSTextCheckingTypeLink;
     [self.footerLabel addLinkToURL:termOfUseURL withRange:termOfUseRange];
-    NSString *privacyPolicy = TwinmeLocalizedString(@"welcome_view_controller_privacy_policy", nil);
+    NSString *privacyPolicy = TwinmeLocalizedString(@"welcome_view_privacy_policy", nil);
     NSRange privacyPolicyRange = [self.footerLabel.text rangeOfString:privacyPolicy];
-    NSURL *privacyPolicyURL = [NSURL URLWithString:TwinmeLocalizedString(@"welcome_view_controller_privacy_policy_url", nil)];
+    NSURL *privacyPolicyURL = [NSURL URLWithString:TwinmeLocalizedString(@"welcome_view_privacy_policy_url", nil)];
     [self.footerLabel addLinkToURL:privacyPolicyURL withRange:privacyPolicyRange];
     self.footerLabel.delegate = self;
     
@@ -892,7 +898,7 @@ static const int DESIGN_IMAGE_BOTTOM_MARGN = 6;
     
     self.activityLabel.font = Design.FONT_REGULAR34;
     self.activityLabel.textColor = [UIColor whiteColor];
-    self.activityLabel.text = TwinmeLocalizedString(@"in_app_subscription_view_controller_search", nil);
+    self.activityLabel.text = TwinmeLocalizedString(@"in_app_subscription_view_search", nil);
     
     self.activityIndicatorViewTopConstraint.constant *= Design.HEIGHT_RATIO;
     self.activityIndicatorView.hidesWhenStopped = YES;
@@ -905,7 +911,7 @@ static const int DESIGN_IMAGE_BOTTOM_MARGN = 6;
     
     self.subscribedLabel.font = Design.FONT_MEDIUM34;
     self.subscribedLabel.textColor = DESIGN_GREY_COLOR;
-    self.subscribedLabel.text = TwinmeLocalizedString(@"side_menu_view_controller_subscribe_enable", nil);
+    self.subscribedLabel.text = TwinmeLocalizedString(@"navigation_view_subscribe_enable", nil);
     self.subscribedLabel.hidden = YES;
     
     self.premiumVersionImageHeightConstraint.constant *= Design.HEIGHT_RATIO;
@@ -981,7 +987,7 @@ static const int DESIGN_IMAGE_BOTTOM_MARGN = 6;
         } else if ([self.twinmeApplication getInvitationSubscriptionTwincode]) {
             DefaultConfirmView *defaultConfirmView = [[DefaultConfirmView alloc] init];
             defaultConfirmView.bottomSheetViewDelegate = self;
-            [defaultConfirmView initWithTitle:TwinmeLocalizedString(@"in_app_subscription_view_controller_cancel_subscription", nil) message:TwinmeLocalizedString(@"in_app_subscription_view_controller_cancel_subscription_confirmation", nil) image:nil avatar:nil action: TwinmeLocalizedString(@"application_confirm", nil) actionColor:Design.DELETE_COLOR_RED cancel:TwinmeLocalizedString(@"application_cancel", nil)];
+            [defaultConfirmView initWithTitle:TwinmeLocalizedString(@"in_app_subscription_view_cancel_subscription", nil) message:TwinmeLocalizedString(@"in_app_subscription_view_cancel_subscription_confirmation", nil) image:nil avatar:nil action: TwinmeLocalizedString(@"application_confirm", nil) actionColor:Design.DELETE_COLOR_RED cancel:TwinmeLocalizedString(@"application_cancel", nil)];
             [self.view addSubview:defaultConfirmView];
             [defaultConfirmView showConfirmView];
         } else {
@@ -1068,13 +1074,13 @@ static const int DESIGN_IMAGE_BOTTOM_MARGN = 6;
             self.inviteView.hidden = YES;
         } else {
             if (self.subscriptionTwincode) {
-                self.subscribeLabel.text = TwinmeLocalizedString(@"in_app_subscription_view_controller_cancel_subscription", nil).uppercaseString;
+                self.subscribeLabel.text = TwinmeLocalizedString(@"in_app_subscription_view_cancel_subscription", nil).uppercaseString;
                 if (self.subscriptionImage) {
                     self.premiumVersionImage.image = self.subscriptionImage;
                     self.premiumVersionImage.hidden = NO;
                 }
             } else {
-                self.subscribeLabel.text = TwinmeLocalizedString(@"in_app_subscription_view_controller_manage_subscription", nil).uppercaseString;
+                self.subscribeLabel.text = TwinmeLocalizedString(@"in_app_subscription_view_manage_subscription", nil).uppercaseString;
             }
             self.subscribedLabel.hidden = NO;
         }
@@ -1200,7 +1206,7 @@ static const int DESIGN_IMAGE_BOTTOM_MARGN = 6;
         
         [self.activityIndicatorView startAnimating];
         self.activityView.hidden = NO;
-        self.activityLabel.text = TwinmeLocalizedString(@"in_app_subscription_view_controller_subscribe_in_progress", nil);
+        self.activityLabel.text = TwinmeLocalizedString(@"in_app_subscription_view_subscribe_in_progress", nil);
     } else {
         self.oneYearSubscriptionView.alpha = 1.f;
         self.sixMonthSubscriptionView.alpha = 1.f;
@@ -1241,24 +1247,24 @@ static const int DESIGN_IMAGE_BOTTOM_MARGN = 6;
     
     if (self.descriptionStep == 1) {
         [self.progressBarOneView startAnimation];
-        title = TwinmeLocalizedString(@"in_app_subscription_view_controller_description_step1_title", nil);
-        subTitle = TwinmeLocalizedString(@"in_app_subscription_view_controller_description_step1_subtitle", nil);
+        title = TwinmeLocalizedString(@"in_app_subscription_view_description_step1_title", nil);
+        subTitle = TwinmeLocalizedString(@"in_app_subscription_view_description_step1_subtitle", nil);
         image = @"InAppStep1";
         imageBottomMargin = 0;
     } else if (self.descriptionStep == 2) {
         [self.progressBarTwoView startAnimation];
-        title = TwinmeLocalizedString(@"in_app_subscription_view_controller_description_step2_title", nil);
-        subTitle = TwinmeLocalizedString(@"in_app_subscription_view_controller_description_step2_subtitle", nil);
+        title = TwinmeLocalizedString(@"in_app_subscription_view_description_step2_title", nil);
+        subTitle = TwinmeLocalizedString(@"in_app_subscription_view_description_step2_subtitle", nil);
         image = @"InAppStep2";
     } else if (self.descriptionStep == 3) {
         [self.progressBarThreeView startAnimation];
-        title = TwinmeLocalizedString(@"in_app_subscription_view_controller_description_step3_title", nil);
-        subTitle = TwinmeLocalizedString(@"in_app_subscription_view_controller_description_step3_subtitle", nil);
+        title = TwinmeLocalizedString(@"in_app_subscription_view_description_step3_title", nil);
+        subTitle = TwinmeLocalizedString(@"in_app_subscription_view_description_step3_subtitle", nil);
         image = @"InAppStep3";
     } else {
         [self.progressBarFourView startAnimation];
-        title = TwinmeLocalizedString(@"in_app_subscription_view_controller_description_step4_title", nil);
-        subTitle = TwinmeLocalizedString(@"in_app_subscription_view_controller_description_step4_subtitle", nil);
+        title = TwinmeLocalizedString(@"in_app_subscription_view_description_step4_title", nil);
+        subTitle = TwinmeLocalizedString(@"in_app_subscription_view_description_step4_subtitle", nil);
         image = @"InAppStep4";
     }
     

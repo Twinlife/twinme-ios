@@ -16,12 +16,14 @@
 @class AsyncImageLoader;
 @class AsyncVideoLoader;
 @class AsyncManager;
+@class AnnotationWithCount;
 
 @protocol DeleteActionDelegate;
 @protocol MenuActionDelegate;
 @protocol ReplyItemDelegate;
 @protocol SelectItemDelegate;
 @protocol ReactionViewDelegate;
+@protocol InfoItemDelegate;
 
 //
 // Protocol: ReplyItemDelegate
@@ -41,7 +43,7 @@
 
 @protocol AnnotationActionDelegate <NSObject>
 
-- (void)didTapAnnotation:(TLDescriptorId *)descriptord;
+- (void)didTapAnnotation:(TLDescriptorId *)descriptorId;
 
 @end
 
@@ -57,6 +59,7 @@
 @property (weak, nonatomic) id<ReplyItemDelegate> replyItemDelegate;
 @property (weak, nonatomic) id<SelectItemDelegate> selectItemDelegate;
 @property (weak, nonatomic) id<ReactionViewDelegate> reactionViewDelegate;
+@property (weak, nonatomic) id<InfoItemDelegate> infoItemDelegate;
 @property (strong, nonatomic) UIPanGestureRecognizer *panGestureRecognizer;
 @property (strong, nonatomic) AsyncImageLoader *replyImageLoader;
 @property (strong, nonatomic) AsyncVideoLoader *replyVideoLoader;
@@ -72,7 +75,7 @@
 
 - (void)onSwipeInsideContentView:(UIPanGestureRecognizer *)panGesture;
 
-- (CGFloat)annotationWidth:(TLDescriptorAnnotation *)descriptorAnnotation;
+- (CGFloat)annotationWidth:(AnnotationWithCount *)annotation;
 
 - (CGFloat)annotationCollectionWidth;
 

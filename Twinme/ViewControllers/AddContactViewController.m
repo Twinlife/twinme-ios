@@ -195,6 +195,7 @@ static UIColor *DESIGN_PLACEHOLDER_COLOR;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *invitationCodeAccessoryViewTrailing;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *invitationCodeAccessoryViewHeight;
 @property (weak, nonatomic) IBOutlet UIImageView *invitationCodeAccessoryView;
+@property (weak, nonatomic) IBOutlet UIActivityIndicatorView *activityIndicatorView;
 
 @property (nonatomic) CustomTabView *customTabView;
 @property (nonatomic) ResetInvitationConfirmView *resetInvitationConfirmView;
@@ -444,13 +445,23 @@ static UIColor *DESIGN_PLACEHOLDER_COLOR;
     if (pastedContent) {
         NSURL *url = [NSURL URLWithString:pastedContent];
         [self.shareProfileService parseUriWithUri:url withBlock:^(TLBaseServiceErrorCode errorCode, TLTwincodeURI *uri) {
-            self.twincodeInviteImageView.hidden = NO;
+            self.twincodePasteAddView.hidden = NO;
             self.twincodeTextFieldTrailingConstraint.constant = self.twincodeInviteViewWidthConstraint.constant;
             if (errorCode != TLBaseServiceErrorCodeSuccess) {
                 self.twincodeTextField.text = pastedContent;
             } else {
-                // SCz this is not correct: we will loose information such as public key.
-                self.twincodeTextField.text = uri.label;
+                NSMutableString *mutableString = [[NSMutableString alloc] initWithString:uri.label];
+                if (uri.publicKey) {
+                    [mutableString appendString:@"."];
+                    [mutableString appendString:uri.publicKey];
+                }
+                
+                if (uri.twincodeOptions) {
+                    [mutableString appendString:@"."];
+                    [mutableString appendString:uri.twincodeOptions];
+                }
+                
+                self.twincodeTextField.text = mutableString;
             }
         }];
     }
@@ -602,16 +613,16 @@ static UIColor *DESIGN_PLACEHOLDER_COLOR;
     } else {
         NSString *errorMessage;
         if (errorCode == TLBaseServiceErrorCodeExpired) {
-            errorMessage = TwinmeLocalizedString(@"in_app_subscription_view_controller_expired_code", nil);
+            errorMessage = TwinmeLocalizedString(@"in_app_subscription_view_expire_code", nil);
         } else if (errorCode == TLBaseServiceErrorCodeLimitReached) {
-            errorMessage = TwinmeLocalizedString(@"in_app_subscription_view_controller_used_code", nil);
+            errorMessage = TwinmeLocalizedString(@"in_app_subscription_view_used_code", nil);
         } else {
-            errorMessage = TwinmeLocalizedString(@"in_app_subscription_view_controller_invalid_code", nil);
+            errorMessage = TwinmeLocalizedString(@"in_app_subscription_view_invalid_code", nil);
         }
         
         AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
         alertMessageView.alertMessageViewDelegate = self;
-        [alertMessageView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:errorMessage];
+        [alertMessageView initWithTitle:TwinmeLocalizedString(@"deleted_account_view_warning", nil) message:errorMessage];
         [self.navigationController.view addSubview:alertMessageView];
         [alertMessageView showAlertView];
     }
@@ -715,9 +726,9 @@ static UIColor *DESIGN_PLACEHOLDER_COLOR;
     [self.view addGestureRecognizer:tapGesture];
     
     if (self.invitationMode == InvitationModeOnlyInvite) {
-        [self setNavigationTitle:TwinmeLocalizedString(@"import_privilege_card_view_controller_title", nil)];
+        [self setNavigationTitle:TwinmeLocalizedString(@"add_contact_view_title", nil)];
     } else {
-        [self setNavigationTitle:TwinmeLocalizedString(@"main_view_controller_add_contact", nil)];
+        [self setNavigationTitle:TwinmeLocalizedString(@"main_view_add_contact", nil)];
     }
     
     self.profileViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
@@ -770,9 +781,9 @@ static UIColor *DESIGN_PLACEHOLDER_COLOR;
     self.messageLabel.textColor = Design.FONT_COLOR_GREY;
     
     if (self.invitationMode == InvitationModeOnlyInvite) {
-        self.messageLabel.text = TwinmeLocalizedString(@"twincode_view_controller_message", nil);
+        self.messageLabel.text = TwinmeLocalizedString(@"twincode_view_message", nil);
     } else {
-        self.messageLabel.text = TwinmeLocalizedString(@"add_contact_view_controller_message", nil);
+        self.messageLabel.text = TwinmeLocalizedString(@"add_contact_view_message", nil);
     }
     
     self.qrcodeViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
@@ -841,7 +852,7 @@ static UIColor *DESIGN_PLACEHOLDER_COLOR;
     self.generateViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     
     self.generateView.isAccessibilityElement = YES;
-    self.generateView.accessibilityLabel = TwinmeLocalizedString(@"main_view_controller_reset_conversation", nil);
+    self.generateView.accessibilityLabel = TwinmeLocalizedString(@"main_view_reset_conversation", nil);
     UITapGestureRecognizer *generateCodeGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleGenerateTwincodeTapGesture:)];
     [self.generateView addGestureRecognizer:generateCodeGestureRecognizer];
     
@@ -859,12 +870,12 @@ static UIColor *DESIGN_PLACEHOLDER_COLOR;
     
     self.generateLabel.font = Design.FONT_MEDIUM28;
     self.generateLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    self.generateLabel.text = TwinmeLocalizedString(@"main_view_controller_reset_conversation", nil);
+    self.generateLabel.text = TwinmeLocalizedString(@"main_view_reset_conversation", nil);
     
     self.twincodeCopyViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     
     self.twincodeCopyView.isAccessibilityElement = YES;
-    self.twincodeCopyView.accessibilityLabel = TwinmeLocalizedString(@"conversation_view_controller_menu_item_view_copy_title", nil);
+    self.twincodeCopyView.accessibilityLabel = TwinmeLocalizedString(@"conversation_view_menu_item_view_copy_title", nil);
     UITapGestureRecognizer *twincodeCopyCodeGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleCopyTwincodeTapGesture:)];
     [self.twincodeCopyView addGestureRecognizer:twincodeCopyCodeGestureRecognizer];
     
@@ -883,7 +894,7 @@ static UIColor *DESIGN_PLACEHOLDER_COLOR;
     
     self.twincodeCopyLabel.font = Design.FONT_MEDIUM28;
     self.twincodeCopyLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    self.twincodeCopyLabel.text = TwinmeLocalizedString(@"conversation_view_controller_menu_item_view_copy_title", nil);
+    self.twincodeCopyLabel.text = TwinmeLocalizedString(@"conversation_view_menu_item_view_copy_title", nil);
     
     self.shareViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     self.shareViewWidthConstraint.constant *= Design.WIDTH_RATIO;
@@ -895,7 +906,7 @@ static UIColor *DESIGN_PLACEHOLDER_COLOR;
     self.shareView.layer.cornerRadius = self.shareViewHeightConstraint.constant * 0.5;
     self.shareView.clipsToBounds = YES;
     [self.shareView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSocialTapGesture)]];
-    self.shareView.accessibilityLabel = TwinmeLocalizedString(@"share_view_controller_title", nil);
+    self.shareView.accessibilityLabel = TwinmeLocalizedString(@"share_view_title", nil);
     
     self.shareImageViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     self.shareImageViewLeadingConstraint.constant = Design.BUTTON_PADDING;
@@ -907,7 +918,7 @@ static UIColor *DESIGN_PLACEHOLDER_COLOR;
     
     self.shareLabel.font = Design.FONT_MEDIUM36;
     self.shareLabel.textColor = [UIColor whiteColor];
-    self.shareLabel.text = TwinmeLocalizedString(@"share_view_controller_title", nil);
+    self.shareLabel.text = TwinmeLocalizedString(@"share_view_title", nil);
     
     [self.shareLabel setContentHuggingPriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisHorizontal];
     
@@ -917,7 +928,7 @@ static UIColor *DESIGN_PLACEHOLDER_COLOR;
     
     self.shareSubLabel.font = Design.FONT_REGULAR24;
     self.shareSubLabel.textColor = Design.FONT_COLOR_GREY;
-    self.shareSubLabel.text = TwinmeLocalizedString(@"add_contact_view_controller_social_subtitle", nil);
+    self.shareSubLabel.text = TwinmeLocalizedString(@"add_contact_view_social_subtitle", nil);
     
     [self.captureView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleCameraTapGesture:)]];
     self.captureView.hidden = YES;
@@ -936,7 +947,7 @@ static UIColor *DESIGN_PLACEHOLDER_COLOR;
     self.messageScanLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
     [self.messageScanLabel setFont:Design.FONT_MEDIUM32];
     self.messageScanLabel.textColor = [UIColor whiteColor];
-    self.messageScanLabel.text = TwinmeLocalizedString(@"add_contact_view_controller_scan_code", nil);
+    self.messageScanLabel.text = TwinmeLocalizedString(@"add_contact_view_scan_code", nil);
     
     self.messageNoPermissionScanLabelWidthConstraint.constant *= Design.WIDTH_RATIO;
     
@@ -963,7 +974,7 @@ static UIColor *DESIGN_PLACEHOLDER_COLOR;
     self.importFromGalleryView.clipsToBounds = YES;
     self.importFromGalleryView.layer.cornerRadius = self.importFromGalleryViewHeightConstraint.constant * 0.5;
     [self.importFromGalleryView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleImportQRCodeTapGesture:)]];
-    self.importFromGalleryView.accessibilityLabel = TwinmeLocalizedString(@"add_contact_view_controller_gallery_title", nil);
+    self.importFromGalleryView.accessibilityLabel = TwinmeLocalizedString(@"add_contact_view_gallery_title", nil);
     
     self.importFromGalleryImageViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     self.importFromGalleryImageViewLeadingConstraint.constant *= Design.HEIGHT_RATIO;
@@ -974,7 +985,7 @@ static UIColor *DESIGN_PLACEHOLDER_COLOR;
     
     self.importFromGalleryLabel.font = Design.FONT_MEDIUM36;
     self.importFromGalleryLabel.textColor = [UIColor whiteColor];
-    self.importFromGalleryLabel.text = TwinmeLocalizedString(@"add_contact_view_controller_gallery_title", nil);
+    self.importFromGalleryLabel.text = TwinmeLocalizedString(@"add_contact_view_gallery_title", nil);
     
     self.twincodePasteViewTopConstraint.constant *= Design.HEIGHT_RATIO;
     self.twincodePasteViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
@@ -992,7 +1003,7 @@ static UIColor *DESIGN_PLACEHOLDER_COLOR;
     self.twincodeTextField.tintColor = Design.FONT_COLOR_DEFAULT;
     self.twincodeTextField.overrideDeleteBackWard = NO;
     
-    self.twincodeTextField.attributedPlaceholder = [[NSAttributedString alloc]initWithString:TwinmeLocalizedString(@"scan_view_controller_paste_code", nil) attributes:[NSDictionary dictionaryWithObject:Design.PLACEHOLDER_COLOR forKey:NSForegroundColorAttributeName]];
+    self.twincodeTextField.attributedPlaceholder = [[NSAttributedString alloc]initWithString:TwinmeLocalizedString(@"scan_view_paste_code", nil) attributes:[NSDictionary dictionaryWithObject:Design.PLACEHOLDER_COLOR forKey:NSForegroundColorAttributeName]];
     [self.twincodeTextField setReturnKeyType:UIReturnKeyDone];
     self.twincodeTextField.delegate = self;
     [self.twincodeTextField addTarget:self action:@selector(textFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
@@ -1043,12 +1054,18 @@ static UIColor *DESIGN_PLACEHOLDER_COLOR;
     
     self.invitationCodeLabel.textColor = Design.FONT_COLOR_DEFAULT;
     self.invitationCodeLabel.font = Design.FONT_MEDIUM34;
-    self.invitationCodeLabel.text = TwinmeLocalizedString(@"add_contact_view_controller_invitation_code_title", nil);
+    self.invitationCodeLabel.text = TwinmeLocalizedString(@"add_contact_view_invitation_code_title", nil);
 
     self.invitationCodeAccessoryViewTrailing.constant *= Design.WIDTH_RATIO;
     self.invitationCodeAccessoryViewHeight.constant *= Design.HEIGHT_RATIO;
     
     self.invitationCodeAccessoryView.tintColor = Design.BLACK_COLOR;
+    
+    self.activityIndicatorView.hidesWhenStopped = YES;
+    
+    if ([self.twinmeApplication darkModeEnable:[self.twinmeContext defaultSpaceSettings]]) {
+        self.activityIndicatorView.color = [UIColor whiteColor];
+    }
 }
 
 - (void)initCustomTab {
@@ -1056,8 +1073,8 @@ static UIColor *DESIGN_PLACEHOLDER_COLOR;
     
     NSMutableArray *customTabs = [[NSMutableArray alloc]init];
     
-    [customTabs addObject:[[UICustomTab alloc]initWithTitle:TwinmeLocalizedString(@"add_contact_view_controller_invite", nil) tag:InvitationModeInvite isSelected:self.invitationMode == InvitationModeInvite]];
-    [customTabs addObject:[[UICustomTab alloc]initWithTitle:TwinmeLocalizedString(@"add_contact_view_controller_scan_title", nil) tag:InvitationModeScan isSelected:self.invitationMode == InvitationModeScan]];
+    [customTabs addObject:[[UICustomTab alloc]initWithTitle:TwinmeLocalizedString(@"add_contact_view_invite", nil) tag:InvitationModeInvite isSelected:self.invitationMode == InvitationModeInvite]];
+    [customTabs addObject:[[UICustomTab alloc]initWithTitle:TwinmeLocalizedString(@"add_contact_view_scan_title", nil) tag:InvitationModeScan isSelected:self.invitationMode == InvitationModeScan]];
     
     self.customTabView = [[CustomTabView alloc] initWithCustomTab:customTabs];
     self.customTabView.customTabViewDelegate = self;
@@ -1157,29 +1174,29 @@ static UIColor *DESIGN_PLACEHOLDER_COLOR;
     
     switch (errorCode) {
         case TLBaseServiceErrorCodeBadRequest:
-            message = TwinmeLocalizedString(@"add_contact_view_controller_scan_error_incorect_link", nil);
+            message = TwinmeLocalizedString(@"add_contact_view_scan_error_incorrect_link", nil);
             break;
             
         case TLBaseServiceErrorCodeFeatureNotImplemented:
-            message = TwinmeLocalizedString(@"add_contact_view_controller_scan_error_not_managed_link", nil);
+            message = TwinmeLocalizedString(@"add_contact_view_scan_error_not_managed_link", nil);
             break;
             
         case TLBaseServiceErrorCodeItemNotFound:
-            message = TwinmeLocalizedString(@"add_contact_view_controller_scan_error_corrupt_link", nil);
+            message = TwinmeLocalizedString(@"add_contact_view_scan_error_corrupt_link", nil);
             break;
             
         case TLBaseServiceErrorCodeExpired:
-            message = TwinmeLocalizedString(@"add_contact_view_controller_scan_error_expired_link", nil);
+            message = TwinmeLocalizedString(@"add_contact_view_scan_error_expired_link", nil);
             break;
             
         default:
-            message = TwinmeLocalizedString(@"capture_view_controller_incorrect_qrcode", nil);
+            message = TwinmeLocalizedString(@"capture_view_incorrect_qrcode", nil);
             break;
     }
     
     AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
     alertMessageView.alertMessageViewDelegate = self;
-    [alertMessageView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:message];
+    [alertMessageView initWithTitle:TwinmeLocalizedString(@"deleted_account_view_warning", nil) message:message];
     [self.navigationController.view addSubview:alertMessageView];
     [alertMessageView showAlertView];
 }
@@ -1207,7 +1224,7 @@ static UIColor *DESIGN_PLACEHOLDER_COLOR;
                 [self.shareProfileService getImageWithContact:contact withBlock:^(UIImage *image) {
                     SuccessAuthentifiedRelationView *successAuthentifiedRelationView = [[SuccessAuthentifiedRelationView alloc] init];
                     successAuthentifiedRelationView.bottomSheetViewDelegate = self;
-                    [successAuthentifiedRelationView initWithTitle:contact.name message:[NSString stringWithFormat:TwinmeLocalizedString(@"authentified_relation_view_controller_certified_message", nil), contact.name] avatar:image icon:nil];
+                    [successAuthentifiedRelationView initWithTitle:contact.name message:[NSString stringWithFormat:TwinmeLocalizedString(@"authentified_relation_view_certified_message", nil), contact.name] avatar:image icon:nil];
                     [self.navigationController.view addSubview:successAuthentifiedRelationView];
                     [successAuthentifiedRelationView showConfirmView];
                 }];
@@ -1216,19 +1233,19 @@ static UIColor *DESIGN_PLACEHOLDER_COLOR;
             }
         }];
     } else {
-        NSString *message = TwinmeLocalizedString(@"capture_view_controller_incorrect_qrcode", nil);
+        NSString *message = TwinmeLocalizedString(@"capture_view_incorrect_qrcode", nil);
         
         switch (twincodeUri.kind) {
             case TLTwincodeURIKindCall:
-                message = TwinmeLocalizedString(@"add_contact_view_controller_scan_message_call_link", nil);
+                message = TwinmeLocalizedString(@"add_contact_view_scan_message_call_link", nil);
                 break;
                 
             case TLTwincodeURIKindAccountMigration:
-                message = TwinmeLocalizedString(@"add_contact_view_controller_scan_message_migration_link", nil);
+                message = TwinmeLocalizedString(@"add_contact_view_scan_message_migration_link", nil);
                 break;
                 
             case TLTwincodeURIKindTransfer:
-                message = TwinmeLocalizedString(@"add_contact_view_controller_scan_message_transfer_link", nil);
+                message = TwinmeLocalizedString(@"add_contact_view_scan_message_transfer_link", nil);
                 break;
                 
             default:
@@ -1237,7 +1254,7 @@ static UIColor *DESIGN_PLACEHOLDER_COLOR;
         
         AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
         alertMessageView.alertMessageViewDelegate = self;
-        [alertMessageView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:message];
+        [alertMessageView initWithTitle:TwinmeLocalizedString(@"deleted_account_view_warning", nil) message:message];
         [self.navigationController.view addSubview:alertMessageView];
         [alertMessageView showAlertView];
     }
@@ -1284,23 +1301,13 @@ static UIColor *DESIGN_PLACEHOLDER_COLOR;
     PHAuthorizationStatus photoAuthorizationStatus = [DeviceAuthorization devicePhotoAuthorizationStatus];
     switch (photoAuthorizationStatus) {
         case PHAuthorizationStatusNotDetermined: {
-            if (@available(iOS 14, *)) {
-                [PHPhotoLibrary requestAuthorizationForAccessLevel:PHAccessLevelAddOnly handler:^(PHAuthorizationStatus authorizationStatus) {
-                    if ([DeviceAuthorization devicePhotoAuthorizationAccessGranted:authorizationStatus]) {
-                        dispatch_async(dispatch_get_main_queue(), ^(void) {
-                            [self saveQRCode];
-                        });
-                    }
-                }];
-            } else {
-                [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus authorizationStatus) {
-                    if ([DeviceAuthorization devicePhotoAuthorizationAccessGranted:authorizationStatus]) {
-                        dispatch_async(dispatch_get_main_queue(), ^(void) {
-                            [self saveQRCode];
-                        });
-                    }
-                }];
-            }
+            [PHPhotoLibrary requestAuthorizationForAccessLevel:PHAccessLevelAddOnly handler:^(PHAuthorizationStatus authorizationStatus) {
+                if ([DeviceAuthorization devicePhotoAuthorizationAccessGranted:authorizationStatus]) {
+                    dispatch_async(dispatch_get_main_queue(), ^(void) {
+                        [self saveQRCode];
+                    });
+                }
+            }];
             break;
         }
             
@@ -1361,7 +1368,10 @@ static UIColor *DESIGN_PLACEHOLDER_COLOR;
         if (success) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 self.saveQRCodeInGallery = NO;
-                [[UIApplication sharedApplication].keyWindow makeToast:TwinmeLocalizedString(@"capture_view_controller_qrcode_saved",nil)];
+                UIWindow *window = [self currentWindow];
+                if (window) {
+                    [window makeToast:TwinmeLocalizedString(@"capture_view_qrcode_saved",nil)];
+                }
             });
         }
     }];
@@ -1383,7 +1393,10 @@ static UIColor *DESIGN_PLACEHOLDER_COLOR;
     if (sender.state == UIGestureRecognizerStateEnded && self.uri) {
         [self hapticFeedBack:UIImpactFeedbackStyleHeavy];
         [[UIPasteboard generalPasteboard] setString:self.uri.uri];
-        [[UIApplication sharedApplication].keyWindow makeToast:TwinmeLocalizedString(@"conversation_view_controller_menu_item_view_copy_message",nil)];
+        UIWindow *window = [self currentWindow];
+        if (window) {
+            [window makeToast:TwinmeLocalizedString(@"conversation_view_menu_item_view_copy_message",nil)];
+        }
     }
 }
 
@@ -1401,23 +1414,22 @@ static UIColor *DESIGN_PLACEHOLDER_COLOR;
     // hyperlink recognition and forwarding.  Even cut&paste will not allow to follow such link.
     NSString *name = [self.profile.name stringByReplacingOccurrencesOfString:@"." withString:@"\u2024"];
     name = [name stringByReplacingOccurrencesOfString:@":" withString:@"\u02d0"];
-   //NSString *message = [NSString stringWithFormat:TwinmeLocalizedString(@"add_contact_view_controller_invite_message %@ %@", nil), self.uri.uri, name];
-    
+
     NSMutableString *message = [[NSMutableString alloc] initWithString:@""];
-    [message appendString:[NSString stringWithFormat:TwinmeLocalizedString(@"add_contact_view_controller_share_message_part_1", nil), name]];
+    [message appendString:[NSString stringWithFormat:TwinmeLocalizedString(@"add_contact_view_share_message_part_1", nil), name]];
     [message appendString:@"\n\n"];
-    [message appendString:TwinmeLocalizedString(@"add_contact_view_controller_share_message_part_2", nil)];
+    [message appendString:TwinmeLocalizedString(@"add_contact_view_share_message_part_2", nil)];
     [message appendString:@"\n\n"];
-    [message appendString:[NSString stringWithFormat:TwinmeLocalizedString(@"add_contact_view_controller_share_message_part_3", nil), name]];
+    [message appendString:[NSString stringWithFormat:TwinmeLocalizedString(@"add_contact_view_share_message_part_3", nil), name]];
     [message appendString:@"\n"];
     [message appendString: self.uri.uri];
     [message appendString:@"\n\n"];
-    [message appendString:TwinmeLocalizedString(@"add_contact_view_controller_share_message_part_4", nil)];
+    [message appendString:TwinmeLocalizedString(@"add_contact_view_share_message_part_4", nil)];
     
     UIImage *qrcodeToSave;
     TwincodeView *twincodeView;
     
-    NSString *shareTitle = [NSString stringWithFormat:TwinmeLocalizedString(@"add_contact_view_controller_share_title", nil), name];
+    NSString *shareTitle = [NSString stringWithFormat:TwinmeLocalizedString(@"add_contact_view_share_title", nil), name];
     twincodeView = [[TwincodeView alloc] initWithName:self.profile.name avatar:self.avatarView.image qrcode:self.qrcodeView.image twincodeId:self.profile.twincodeOutbound.uuid];
     qrcodeToSave = [twincodeView screenshot];
     ShareItemSource *shareItem = [[ShareItemSource alloc] initWithMessage:message subject:shareTitle];
@@ -1507,7 +1519,7 @@ static UIColor *DESIGN_PLACEHOLDER_COLOR;
     
     self.resetInvitationConfirmView = [[ResetInvitationConfirmView alloc] init];
     self.resetInvitationConfirmView.bottomSheetViewDelegate = self;
-    [self.resetInvitationConfirmView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:TwinmeLocalizedString(@"fullscreen_qrcode_view_controller_generate_code_message", nil) avatar:avatar icon:[UIImage imageNamed:@"GenerateCode"]];
+    [self.resetInvitationConfirmView initWithTitle:TwinmeLocalizedString(@"deleted_account_view_warning", nil) message:TwinmeLocalizedString(@"fullscreen_qrcode_view_generate_code_message", nil) avatar:avatar icon:[UIImage imageNamed:@"GenerateCode"]];
     [self.tabBarController.view addSubview:self.resetInvitationConfirmView];
     [self.resetInvitationConfirmView showConfirmView];
 }
@@ -1520,7 +1532,7 @@ static UIColor *DESIGN_PLACEHOLDER_COLOR;
     if (proxies.count  >= [TLConnectivityService MAX_PROXIES]) {
         AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
         alertMessageView.alertMessageViewDelegate = self;
-        [alertMessageView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:[NSString stringWithFormat:TwinmeLocalizedString(@"proxy_view_controller_limit", nil), [TLConnectivityService MAX_PROXIES]]];
+        [alertMessageView initWithTitle:TwinmeLocalizedString(@"deleted_account_view_warning", nil) message:[NSString stringWithFormat:TwinmeLocalizedString(@"proxy_view_limit", nil), [TLConnectivityService MAX_PROXIES]]];
         [self.tabBarController.view addSubview:alertMessageView];
         [alertMessageView showAlertView];
         return;
@@ -1530,7 +1542,7 @@ static UIColor *DESIGN_PLACEHOLDER_COLOR;
         if ([proxyDescriptor.description caseInsensitiveCompare:proxy] == NSOrderedSame) {
             AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
             alertMessageView.alertMessageViewDelegate = self;
-            [alertMessageView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:[NSString stringWithFormat:TwinmeLocalizedString(@"proxy_view_controller_already_use", nil), [TLConnectivityService MAX_PROXIES]]];
+            [alertMessageView initWithTitle:TwinmeLocalizedString(@"deleted_account_view_warning", nil) message:[NSString stringWithFormat:TwinmeLocalizedString(@"proxy_view_already_use", nil), [TLConnectivityService MAX_PROXIES]]];
             [self.tabBarController.view addSubview:alertMessageView];
             [alertMessageView showAlertView];
             return;
@@ -1542,9 +1554,9 @@ static UIColor *DESIGN_PLACEHOLDER_COLOR;
     DefaultConfirmView *defaultConfirmView = [[DefaultConfirmView alloc] init];
     defaultConfirmView.bottomSheetViewDelegate = self;
 
-    [defaultConfirmView initWithTitle:TwinmeLocalizedString(@"proxy_view_controller_title", nil) message:TwinmeLocalizedString(@"proxy_view_controller_url", nil) image:[UIImage imageNamed:@"OnboardingProxy"] avatar:nil action: TwinmeLocalizedString(@"proxy_view_controller_enable", nil) actionColor:nil cancel:TwinmeLocalizedString(@"application_cancel", nil)];
+    [defaultConfirmView initWithTitle:TwinmeLocalizedString(@"proxy_view_title", nil) message:TwinmeLocalizedString(@"proxy_view_url", nil) image:[UIImage imageNamed:@"OnboardingProxy"] avatar:nil action: TwinmeLocalizedString(@"proxy_view_enable", nil) actionColor:nil cancel:TwinmeLocalizedString(@"application_cancel", nil)];
 
-    NSMutableAttributedString *attributedTitle = [[NSMutableAttributedString alloc] initWithString:TwinmeLocalizedString(@"proxy_view_controller_title", nil) attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_BOLD36, NSFontAttributeName, Design.FONT_COLOR_DEFAULT, NSForegroundColorAttributeName, nil]];
+    NSMutableAttributedString *attributedTitle = [[NSMutableAttributedString alloc] initWithString:TwinmeLocalizedString(@"proxy_view_title", nil) attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_BOLD36, NSFontAttributeName, Design.FONT_COLOR_DEFAULT, NSForegroundColorAttributeName, nil]];
     [attributedTitle appendAttributedString:[[NSMutableAttributedString alloc] initWithString:@"\n\n"]];
     [attributedTitle appendAttributedString:[[NSMutableAttributedString alloc] initWithString:self.proxyToAdd attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_MEDIUM34, NSFontAttributeName, Design.FONT_COLOR_GREY, NSForegroundColorAttributeName, nil]]];
     
@@ -1580,7 +1592,18 @@ static UIColor *DESIGN_PLACEHOLDER_COLOR;
         self.avatarView.image = image;
     }];
     if (self.uri) {
-        self.qrcodeView.image = [Utils makeQRCodeWithUri:self.uri scale:10];
+        [self.activityIndicatorView startAnimating];
+        __weak typeof(self) weakSelf = self;
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            UIImage *qrImage = [Utils makeQRCodeWithUri:weakSelf.uri scale:10];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if (!weakSelf) {
+                    return;
+                }
+                self.qrcodeView.image = qrImage;
+                [self.activityIndicatorView stopAnimating];
+            });
+        });
     }
     self.nameLabel.text = self.profile.name;
     self.twincodeLabel.text = self.uri.label;
@@ -1718,7 +1741,7 @@ static UIColor *DESIGN_PLACEHOLDER_COLOR;
     self.twincodeCopyImageView.tintColor = Design.BLACK_COLOR;
     self.twincodePasteAddView.backgroundColor = Design.MAIN_COLOR;
     
-    self.twincodeTextField.attributedPlaceholder = [[NSAttributedString alloc]initWithString:TwinmeLocalizedString(@"scan_view_controller_paste_code", nil) attributes:[NSDictionary dictionaryWithObject:Design.PLACEHOLDER_COLOR forKey:NSForegroundColorAttributeName]];
+    self.twincodeTextField.attributedPlaceholder = [[NSAttributedString alloc]initWithString:TwinmeLocalizedString(@"scan_view_paste_code", nil) attributes:[NSDictionary dictionaryWithObject:Design.PLACEHOLDER_COLOR forKey:NSForegroundColorAttributeName]];
     
     if ([self.twinmeApplication darkModeEnable:[self currentSpaceSettings]]) {
         self.twincodeTextField.keyboardAppearance = UIKeyboardAppearanceDark;

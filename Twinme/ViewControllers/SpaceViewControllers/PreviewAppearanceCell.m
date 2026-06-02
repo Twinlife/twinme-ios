@@ -126,7 +126,7 @@ static UIColor *DESIGN_SHADOW_COLOR;
     [self.contentLabel setBorderColor:[UIColor clearColor]];
     [self.contentLabel setBorderWidth:Design.ITEM_BORDER_WIDTH];
     [self.contentLabel setCornerRadiusWithTopLeft:largeRadius topRight:largeRadius bottomRight:smallRadius bottomLeft:largeRadius];
-    self.contentLabel.text = TwinmeLocalizedString(@"space_appearance_view_controller_preview_message", nil);
+    self.contentLabel.text = TwinmeLocalizedString(@"space_appearance_view_preview_message", nil);
     
     self.peerContentLabelLeadingConstraint.constant *= Design.HEIGHT_RATIO;
     
@@ -141,7 +141,7 @@ static UIColor *DESIGN_SHADOW_COLOR;
     [self.peerContentLabel setBorderColor:Design.ITEM_BORDER_COLOR];
     [self.peerContentLabel setBorderWidth:Design.ITEM_BORDER_WIDTH];
     [self.peerContentLabel setCornerRadiusWithTopLeft:largeRadius topRight:largeRadius bottomRight:largeRadius bottomLeft:largeRadius];
-    self.peerContentLabel.text = TwinmeLocalizedString(@"space_appearance_view_controller_preview_peer_message", nil);
+    self.peerContentLabel.text = TwinmeLocalizedString(@"space_appearance_view_preview_peer_message", nil);
     
     self.stateImageViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     self.stateImageViewTrailingConstraint.constant *= Design.WIDTH_RATIO;
@@ -172,12 +172,12 @@ static UIColor *DESIGN_SHADOW_COLOR;
     self.contentLabel.textColor = [customAppearance getMessageTextColor];
     [self.contentLabel setDecorColor:[customAppearance getMessageBackgroundColor]];
     [self.contentLabel setBorderColor:[customAppearance getMessageBorderColor]];
-    self.contentLabel.text = TwinmeLocalizedString(@"space_appearance_view_controller_preview_message", nil);
+    self.contentLabel.text = TwinmeLocalizedString(@"space_appearance_view_preview_message", nil);
     
     self.peerContentLabel.textColor = [customAppearance getPeerMessageTextColor];
     [self.peerContentLabel setDecorColor:[customAppearance getPeerMessageBackgroundColor]];
     [self.peerContentLabel setBorderColor:[customAppearance getPeerMessageBorderColor]];
-    self.peerContentLabel.text = TwinmeLocalizedString(@"space_appearance_view_controller_preview_peer_message", nil);
+    self.peerContentLabel.text = TwinmeLocalizedString(@"space_appearance_view_preview_peer_message", nil);
     
     [self.peerContentLabel setNeedsDisplay];
     [self.contentLabel setNeedsDisplay];

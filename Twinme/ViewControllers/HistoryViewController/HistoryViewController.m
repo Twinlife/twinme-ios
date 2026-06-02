@@ -69,8 +69,7 @@ static NSString *ADD_EXTERNAL_CALL_CELL_IDENTIFIER = @"AddExternalCallCellIdenti
 static NSString *CALL_CELL_IDENTIFIER = @"CallCellIdentifier";
 static NSString *CONTACT_CELL_IDENTIFIER = @"ContactCellIdentifier";
 
-
-static const int HISTORY_VIEW_SECTION_COUNT = 3;
+static const int CALLS_VIEW_SECTION_COUNT = 3;
 
 static const int CREATE_EXTERNAL_CALL_SECTION = 0;
 static const int EXTERNAL_CALL_SECTION = 1;
@@ -260,6 +259,10 @@ static const int NB_CALL_RECEIVER = 3;
 - (void)onAddDescriptor:(nonnull TLCallDescriptor *)descriptor {
     DDLogVerbose(@"%@ onAddDescriptor: %@", LOG_TAG, descriptor);
     
+    if (![descriptor isTerminated]) {
+        return;
+    }
+    
     if (![self.allCalls containsObject:descriptor]) {
         [self.allCalls insertObject:descriptor atIndex:0];
     }
@@ -269,6 +272,10 @@ static const int NB_CALL_RECEIVER = 3;
 
 - (void)onUpdateDescriptor:(nonnull TLCallDescriptor *)descriptor {
     DDLogVerbose(@"%@ onAddDescriptor: %@", LOG_TAG, descriptor);
+    
+    if (![descriptor isTerminated]) {
+        return;
+    }
     
     BOOL isUpdated = NO;
     NSInteger count = self.allCalls.count;
@@ -466,7 +473,7 @@ static const int NB_CALL_RECEIVER = 3;
     if (members.count + 1 > MAX_CALL_GROUP_PARTICIPANTS) {
         AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
         alertMessageView.alertMessageViewDelegate = self;
-        [alertMessageView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:[NSString stringWithFormat:TwinmeLocalizedString(@"call_view_controller_max_participant_message", nil), MAX_CALL_GROUP_PARTICIPANTS]];
+        [alertMessageView initWithTitle:TwinmeLocalizedString(@"deleted_account_view_warning", nil) message:[NSString stringWithFormat:TwinmeLocalizedString(@"call_view_max_participant_message", nil), MAX_CALL_GROUP_PARTICIPANTS]];
         [self.tabBarController.view addSubview:alertMessageView];
         [alertMessageView showAlertView];
         
@@ -519,7 +526,7 @@ static const int NB_CALL_RECEIVER = 3;
         return 0;
     }
     
-    return HISTORY_VIEW_SECTION_COUNT;
+    return CALLS_VIEW_SECTION_COUNT;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
@@ -573,7 +580,7 @@ static const int NB_CALL_RECEIVER = 3;
     BOOL showRightAction = NO;
     switch (section) {
         case EXTERNAL_CALL_SECTION:
-            sectionName = TwinmeLocalizedString(@"premium_services_view_controller_click_to_call_title", nil);
+            sectionName = TwinmeLocalizedString(@"premium_services_view_click_to_call_title", nil);
             if (self.displayAllCallReceiver || self.uiCallReceivers.count <= NB_CALL_RECEIVER) {
                 showRightAction = NO;
             } else {
@@ -583,7 +590,7 @@ static const int NB_CALL_RECEIVER = 3;
             break;
                 
         case LAST_CALLS_SECTION:
-            sectionName = TwinmeLocalizedString(@"show_contact_view_controller_history_title", nil);
+            sectionName = TwinmeLocalizedString(@"show_contact_view_history_title", nil);
             break;
             
         default:
@@ -605,7 +612,7 @@ static const int NB_CALL_RECEIVER = 3;
             addExternalCallCell = [[AddExternalCallCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:ADD_EXTERNAL_CALL_CELL_IDENTIFIER];
         }
         
-        [addExternalCallCell bindWithTitle:TwinmeLocalizedString(@"history_view_controller_create_link", nil) subTitle:TwinmeLocalizedString(@"show_call_view_controller_code_information", nil)];
+        [addExternalCallCell bindWithTitle:TwinmeLocalizedString(@"calls_view_create_link", nil) subTitle:TwinmeLocalizedString(@"show_call_view_information_code", nil)];
         
         return addExternalCallCell;
     } else if (indexPath.section == EXTERNAL_CALL_SECTION) {
@@ -659,17 +666,21 @@ static const int NB_CALL_RECEIVER = 3;
     // Get the UI call now since the list could change while contextualActionWithStyle executes.
     UICall *uiCall = nil;
     UICallReceiver *uiCallReceiver = nil;
-    if (indexPath.section == LAST_CALLS_SECTION){
+    if (indexPath.section == LAST_CALLS_SECTION && indexPath.row < self.uiCalls.count) {
         uiCall = [self.uiCalls objectAtIndex:indexPath.row];
-    } else {
+    } else if (indexPath.section == EXTERNAL_CALL_SECTION && indexPath.row < self.uiCallReceivers.count) {
         uiCallReceiver = [self.uiCallReceivers objectAtIndex:indexPath.row];
+    }
+    
+    if (!uiCall && !uiCallReceiver) {
+        return nil;
     }
     
     UIContextualAction *deleteAction = [UIContextualAction contextualActionWithStyle:UIContextualActionStyleNormal title:TwinmeLocalizedString(@"application_remove", nil) handler:^(UIContextualAction * _Nonnull action, __kindof UIView * _Nonnull sourceView, void (^ _Nonnull completionHandler)(BOOL)) {
         
         if (uiCall) {
             [self handleDeleteHistory:uiCall];
-        } else {
+        } else if (uiCallReceiver) {
             [self handleDeleteCallReceiver:uiCallReceiver];
         }
     }];
@@ -682,7 +693,7 @@ static const int NB_CALL_RECEIVER = 3;
             [self handleShareCallReceiver:uiCallReceiver];
         }];
         
-    CellActionView *shareActionView = [[CellActionView alloc]initWithTitle:TwinmeLocalizedString(@"share_view_controller_title", nil) icon:@"QRCode" backgroundColor:[UIColor clearColor] iconWidth:38 iconHeight:38 iconTopMargin:28];
+    CellActionView *shareActionView = [[CellActionView alloc]initWithTitle:TwinmeLocalizedString(@"share_view_title", nil) icon:@"QRCode" backgroundColor:[UIColor clearColor] iconWidth:38 iconHeight:38 iconTopMargin:28];
     shareAction.image = [shareActionView imageFromView];
     shareAction.backgroundColor = Design.MAIN_COLOR;
     
@@ -843,22 +854,19 @@ static const int NB_CALL_RECEIVER = 3;
     
     self.view.backgroundColor = Design.WHITE_COLOR;
     
-    [self setNavigationTitle:TwinmeLocalizedString(@"history_view_controller_title", nil).capitalizedString];
+    [self setNavigationTitle:TwinmeLocalizedString(@"calls_view_title", nil).capitalizedString];
     
     self.resetCallsBarButtonItem = [[UIBarButtonItem alloc]initWithImage:[UIImage imageNamed:@"ActionBarDelete"] style:UIBarButtonItemStylePlain target:self action:@selector(handleResetTapGesture:)];
-    self.resetCallsBarButtonItem.accessibilityLabel = TwinmeLocalizedString(@"history_view_controller_reset_title", nil);
+    self.resetCallsBarButtonItem.accessibilityLabel = TwinmeLocalizedString(@"calls_view_reset_title", nil);
     self.resetCallsBarButtonItem.enabled = NO;
     self.navigationItem.rightBarButtonItem = self.resetCallsBarButtonItem;
     
-    self.segmentedControl = [[UISegmentedControl alloc]initWithItems:@[TwinmeLocalizedString(@"history_view_controller_all_call_segmented_control", nil), TwinmeLocalizedString(@"history_view_controller_missed_call_segmented_control", nil)]];
+    self.segmentedControl = [[UISegmentedControl alloc]initWithItems:@[TwinmeLocalizedString(@"calls_view_all_call_segmented_control", nil), TwinmeLocalizedString(@"calls_view_missed_call_segmented_control", nil)]];
     [self.segmentedControl setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys: Design.FONT_REGULAR32, NSFontAttributeName, [UIColor whiteColor], NSForegroundColorAttributeName, nil] forState:UIControlStateNormal];
     [self.segmentedControl setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys: Design.FONT_REGULAR32, NSFontAttributeName, Design.MAIN_COLOR, NSForegroundColorAttributeName, nil] forState:UIControlStateSelected];
     self.segmentedControl.selectedSegmentIndex = 0;
     self.segmentedControl.tintColor = [UIColor whiteColor];
-    
-    if (@available(iOS 13.0, *)) {
-        self.segmentedControl.selectedSegmentTintColor = [UIColor whiteColor];
-    }
+    self.segmentedControl.selectedSegmentTintColor = [UIColor whiteColor];
     
     [self.segmentedControl addTarget:self action:@selector(segmentedControlValueDidChange:) forControlEvents:UIControlEventValueChanged];
     
@@ -884,7 +892,7 @@ static const int NB_CALL_RECEIVER = 3;
     
     self.noCallTitleLabel.font = Design.FONT_MEDIUM34;
     self.noCallTitleLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    self.noCallTitleLabel.text = TwinmeLocalizedString(@"history_view_controller_no_call_title", nil);
+    self.noCallTitleLabel.text = TwinmeLocalizedString(@"calls_view_no_call_title", nil);
     self.noCallTitleLabel.hidden = YES;
     
     self.noCallLabelWidthConstraint.constant *= Design.WIDTH_RATIO;
@@ -892,7 +900,7 @@ static const int NB_CALL_RECEIVER = 3;
     
     self.noCallLabel.font = Design.FONT_MEDIUM28;
     self.noCallLabel.textColor = Design.FONT_COLOR_DESCRIPTION;
-    self.noCallLabel.text = TwinmeLocalizedString(@"history_view_controller_no_call_message", nil);
+    self.noCallLabel.text = TwinmeLocalizedString(@"calls_view_no_call_message", nil);
     self.noCallLabel.hidden = YES;
 }
 
@@ -934,12 +942,12 @@ static const int NB_CALL_RECEIVER = 3;
         [self.callsTableView setEditing:NO];
         self.callReceiverToDelete = uiCallReceiver.callReceiver;
         
-        NSString *message = [NSString stringWithFormat:@"%@\n%@", TwinmeLocalizedString(@"edit_external_call_view_controller_message", nil), TwinmeLocalizedString(@"edit_external_call_view_controller_confirm_message", nil)];
+        NSString *message = [NSString stringWithFormat:@"%@\n%@", TwinmeLocalizedString(@"edit_external_call_view_delete_message", nil), TwinmeLocalizedString(@"edit_external_call_view_delete_confirm_message", nil)];
         
         DeleteConfirmView *deleteConfirmView = [[DeleteConfirmView alloc] init];
         deleteConfirmView.bottomSheetViewDelegate = self;
         deleteConfirmView.deleteConfirmType = DeleteConfirmTypeOriginator;
-        [deleteConfirmView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:message avatar:uiCallReceiver.avatar icon:[UIImage imageNamed:@"ActionBarDelete"]];
+        [deleteConfirmView initWithTitle:TwinmeLocalizedString(@"deleted_account_view_warning", nil) message:message avatar:uiCallReceiver.avatar icon:[UIImage imageNamed:@"ActionBarDelete"]];
         [self.tabBarController.view addSubview:deleteConfirmView];
         [deleteConfirmView showConfirmView];
     }
@@ -1214,9 +1222,9 @@ static const int NB_CALL_RECEIVER = 3;
             DeleteConfirmView *deleteConfirmView = [[DeleteConfirmView alloc] init];
             deleteConfirmView.bottomSheetViewDelegate = self;
             deleteConfirmView.deleteConfirmType = DeleteConfirmTypeHistory;
-            NSString *message = [NSString stringWithFormat:@"%@\n\n%@", TwinmeLocalizedString(@"application_operation_irreversible", nil), TwinmeLocalizedString(@"history_view_controller_reset", nil)];
-            [deleteConfirmView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:message avatar:image icon:[UIImage imageNamed:@"ActionBarDelete"]];
-            [deleteConfirmView setConfirmTitle:TwinmeLocalizedString(@"history_view_controller_reset_title", nil)];
+            NSString *message = [NSString stringWithFormat:@"%@\n\n%@", TwinmeLocalizedString(@"application_operation_irreversible", nil), TwinmeLocalizedString(@"calls_view_reset", nil)];
+            [deleteConfirmView initWithTitle:TwinmeLocalizedString(@"deleted_account_view_warning", nil) message:message avatar:image icon:[UIImage imageNamed:@"ActionBarDelete"]];
+            [deleteConfirmView setConfirmTitle:TwinmeLocalizedString(@"calls_view_reset_title", nil)];
             
             [self.tabBarController.view addSubview:deleteConfirmView];
             [deleteConfirmView showConfirmView];
@@ -1289,7 +1297,11 @@ static const int NB_CALL_RECEIVER = 3;
         }
     } else {
         dispatch_async(dispatch_get_main_queue(), ^{
-            [[UIApplication sharedApplication].keyWindow makeToast:TwinmeLocalizedString(@"application_not_authorized_operation_by_your_contact",nil)];
+            UIWindow *window = [self currentWindow];
+            if (window) {
+                [window makeToast:TwinmeLocalizedString(@"application_not_authorized_operation_by_your_contact",nil)];
+            }
+            
         });
     }
 }
@@ -1320,11 +1332,11 @@ static const int NB_CALL_RECEIVER = 3;
             
             NSDateFormatter *dateFormatter = [[NSDateFormatter alloc]init];
             NSMutableString *validityMessage = [[NSMutableString alloc] initWithString:@""];
-            [validityMessage appendString:TwinmeLocalizedString(@"show_call_view_controller_setting_start", nil)];
+            [validityMessage appendString:TwinmeLocalizedString(@"show_call_view_settings_start", nil)];
             [validityMessage appendString:@" : "];
             [validityMessage appendString:[scheduleStartTime formatTime]];
             [validityMessage appendString:@"\n"];
-            [validityMessage appendString:TwinmeLocalizedString(@"show_call_view_controller_setting_end", nil)];
+            [validityMessage appendString:TwinmeLocalizedString(@"show_call_view_settings_end", nil)];
             [validityMessage appendString:@" : "];
             [validityMessage appendString:[scheduleEndTime formatTime]];
             [validityMessage appendString:@"\n\n"];
@@ -1370,18 +1382,18 @@ static const int NB_CALL_RECEIVER = 3;
             TLDateTime *start = dateTimeRange.start;
             TLDateTime *end = dateTimeRange.end;
             if ([start.date isEqual:end.date]) {
-                message = [NSString stringWithFormat:TwinmeLocalizedString(@"show_call_view_controller_schedule_from_to", nil), [start.date formatDate], [start.time formatTime], [end.time formatTime]];
+                message = [NSString stringWithFormat:TwinmeLocalizedString(@"show_call_view_schedule_from_to", nil), [start.date formatDate], [start.time formatTime], [end.time formatTime]];
             } else {
                 message = [NSString stringWithFormat:@"%@ %@", [start formatDateTime], [end formatDateTime]];
             }
         }
     } else {
-        message = TwinmeLocalizedString(@"show_call_view_controller_schedule_message", nil);
+        message = TwinmeLocalizedString(@"show_call_view_schedule_message", nil);
     }
                 
     AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
     alertMessageView.alertMessageViewDelegate = self;
-    [alertMessageView initWithTitle:TwinmeLocalizedString(@"show_call_view_controller_schedule_call", nil) message:message];
+    [alertMessageView initWithTitle:TwinmeLocalizedString(@"show_call_view_schedule_call", nil) message:message];
     [self.tabBarController.view addSubview:alertMessageView];
     [alertMessageView showAlertView];
 }
@@ -1392,10 +1404,10 @@ static const int NB_CALL_RECEIVER = 3;
     CallAgainConfirmView *callAgainConfirmView = [[CallAgainConfirmView alloc] init];
     callAgainConfirmView.bottomSheetViewDelegate = self;
     
-    NSString *message = TwinmeLocalizedString(@"conversation_view_controller_audio_call", nil);
+    NSString *message = TwinmeLocalizedString(@"conversation_view_audio_call", nil);
     UIImage *icon = [UIImage imageNamed:@"AudioCall"];
     if (self.callDescriptor.isVideo) {
-        message = TwinmeLocalizedString(@"conversation_view_controller_video_call", nil);
+        message = TwinmeLocalizedString(@"conversation_view_video_call", nil);
         icon = [UIImage imageNamed:@"VideoCall"];
     }
     

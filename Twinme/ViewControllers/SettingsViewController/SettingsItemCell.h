@@ -21,4 +21,6 @@
 
 - (void)resetMargins;
 
+- (void)updateMargins:(CGFloat)value;
+
 @end

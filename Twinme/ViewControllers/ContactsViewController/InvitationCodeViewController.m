@@ -160,7 +160,7 @@ static const int CONTACTS_VIEW_SECTION_COUNT = 2;
         
     NSString *sectionName = @"";
     if (section == 1) {
-        sectionName = TwinmeLocalizedString(@"invitation_code_view_controller_history", nil);
+        sectionName = TwinmeLocalizedString(@"invitation_code_view_history", nil);
     }
     
     [sectionCallCell bindWithTitle:sectionName hideSeparator:NO uppercaseString:YES showRightAction:NO];
@@ -186,7 +186,7 @@ static const int CONTACTS_VIEW_SECTION_COUNT = 2;
             addInvitationCodeCell = [[AddInvitationCodeCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:ADD_INVITATION_CODE_CELL_IDENTIFIER];
         }
         
-        [addInvitationCodeCell bindWithTitle:TwinmeLocalizedString(@"invitation_code_view_controller_create_code", nil) subTitle:TwinmeLocalizedString(@"invitation_code_view_controller_create_code_subtitle", nil)];
+        [addInvitationCodeCell bindWithTitle:TwinmeLocalizedString(@"invitation_code_view_create_code", nil) subTitle:TwinmeLocalizedString(@"invitation_code_view_create_code_subtitle", nil)];
         
         return addInvitationCodeCell;
     } else {
@@ -337,7 +337,7 @@ static const int CONTACTS_VIEW_SECTION_COUNT = 2;
     
     AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
     alertMessageView.alertMessageViewDelegate = self;
-    [alertMessageView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:TwinmeLocalizedString(@"invitation_code_view_controller_limit_message", nil)];
+    [alertMessageView initWithTitle:TwinmeLocalizedString(@"deleted_account_view_warning", nil) message:TwinmeLocalizedString(@"invitation_code_view_limit_message", nil)];
     [self.tabBarController.view addSubview:alertMessageView];
     [alertMessageView showAlertView];
 }
@@ -408,11 +408,11 @@ static const int CONTACTS_VIEW_SECTION_COUNT = 2;
     self.definesPresentationContext = YES;
     self.view.backgroundColor = Design.WHITE_COLOR;
     
-    [self setNavigationTitle:TwinmeLocalizedString(@"add_contact_view_controller_invitation_code_title", nil).capitalizedString];
+    [self setNavigationTitle:TwinmeLocalizedString(@"add_contact_view_invitation_code_title", nil).capitalizedString];
     
     UIBarButtonItem *infoBarButtonItem =  [[UIBarButtonItem alloc]initWithImage:[UIImage imageNamed:@"OnboardingInfoIcon"] style:UIBarButtonItemStylePlain target:self action:@selector(handleInfoTapGesture:)];
     infoBarButtonItem.tintColor = [UIColor whiteColor];
-    infoBarButtonItem.accessibilityLabel = TwinmeLocalizedString(@"conversation_view_controller_menu_item_view_info_title", nil);
+    infoBarButtonItem.accessibilityLabel = TwinmeLocalizedString(@"conversation_view_menu_item_view_info_title", nil);
     self.navigationItem.rightBarButtonItem = infoBarButtonItem;
     
     self.invitationCodeTableView.backgroundColor = Design.WHITE_COLOR;
@@ -432,12 +432,8 @@ static const int CONTACTS_VIEW_SECTION_COUNT = 2;
     self.overlayView.backgroundColor = Design.OVERLAY_COLOR;
     self.overlayView.hidden = YES;
     
-    if (@available(iOS 13.0, *)) {
-        self.activityIndicatorView = [[UIActivityIndicatorView alloc]initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleMedium];
-        self.activityIndicatorView.color = [UIColor whiteColor];
-    } else {
-        self.activityIndicatorView = [[UIActivityIndicatorView alloc]initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
-    }
+    self.activityIndicatorView = [[UIActivityIndicatorView alloc]initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleMedium];
+    self.activityIndicatorView.color = [UIColor whiteColor];
     self.activityIndicatorView.hidesWhenStopped = YES;
     
     [self.overlayView addSubview:self.activityIndicatorView];
@@ -478,11 +474,11 @@ static const int CONTACTS_VIEW_SECTION_COUNT = 2;
     DefaultConfirmView *defaultConfirmView = [[DefaultConfirmView alloc] init];
     defaultConfirmView.bottomSheetViewDelegate = self;
     
-    NSMutableString *message = [[NSMutableString alloc] initWithString: TwinmeLocalizedString(@"invitation_code_view_controller_onboarding_message", nil)];
+    NSMutableString *message = [[NSMutableString alloc] initWithString: TwinmeLocalizedString(@"invitation_code_view_onboarding_message", nil)];
     [message appendString:@"\n\n"];
-    [message appendString:TwinmeLocalizedString(@"invitation_code_view_controller_success_message", nil)];
+    [message appendString:TwinmeLocalizedString(@"invitation_code_view_success_message", nil)];
     
-    [defaultConfirmView initWithTitle:nil message:message image:[UIImage imageNamed:@"OnboardingMiniCode"] avatar:nil action:fromInfo ? TwinmeLocalizedString(@"application_ok", nil) : TwinmeLocalizedString(@"welcome_view_controller_next", nil) actionColor:nil cancel:TwinmeLocalizedString(@"application_do_not_display", nil)];
+    [defaultConfirmView initWithTitle:nil message:message image:[UIImage imageNamed:@"OnboardingMiniCode"] avatar:nil action:fromInfo ? TwinmeLocalizedString(@"application_ok", nil) : TwinmeLocalizedString(@"welcome_view_next", nil) actionColor:nil cancel:TwinmeLocalizedString(@"application_do_not_display", nil)];
     [defaultConfirmView useLargeImage];
     
     if (fromInfo) {
@@ -511,9 +507,9 @@ static const int CONTACTS_VIEW_SECTION_COUNT = 2;
     InvitationCodeShareView *invitationCodeShareView = [[InvitationCodeShareView alloc] init];
     invitationCodeShareView.bottomSheetViewDelegate = self;
     
-    NSMutableString *message = [[NSMutableString alloc] initWithString: TwinmeLocalizedString(@"invitation_code_view_controller_onboarding_message", nil)];
+    NSMutableString *message = [[NSMutableString alloc] initWithString: TwinmeLocalizedString(@"invitation_code_view_onboarding_message", nil)];
     [message appendString:@"\n\n"];
-    [message appendString:TwinmeLocalizedString(@"invitation_code_view_controller_success_message", nil)];
+    [message appendString:TwinmeLocalizedString(@"invitation_code_view_success_message", nil)];
     
     [invitationCodeShareView initWithTitle:invitationCode.code message:message avatar:nil icon:[UIImage imageNamed:@"ActionBarAddContact"]];
     [self.navigationController.view addSubview:invitationCodeShareView];

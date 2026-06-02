@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="PollHeaderCellIdentifier" id="KGk-i7-Jjw" customClass="PollHeaderCell">
+            <rect key="frame" x="0.0" y="0.0" width="750" height="200"/>
+            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
+                <rect key="frame" x="0.0" y="0.0" width="750" height="200"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="MjY-Iv-Xs8">
+                        <rect key="frame" x="34" y="30" width="682" height="30"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <color key="textColor" systemColor="labelColor"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                        <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                    </textView>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text=".count" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="S82-4c-IHl">
+                        <rect key="frame" x="668" y="70" width="48" height="21"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                        <nil key="textColor"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="HXk-Hz-fy0">
+                        <rect key="frame" x="0.0" y="100" width="750" height="100"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text=".allow" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="aA8-hj-yj1">
+                                <rect key="frame" x="34" y="20" width="665" height="60"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="24"/>
+                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="DmV-1Y-hGJ" customClass="SwitchView">
+                                <rect key="frame" x="665" y="34.666666666666657" width="51" height="31"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="31" id="4Wn-8Q-NEm"/>
+                                    <constraint firstAttribute="width" constant="51" id="bc1-6b-Imr"/>
+                                </constraints>
+                            </view>
+                        </subviews>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="100" id="1rw-xk-xEU"/>
+                            <constraint firstAttribute="bottom" secondItem="aA8-hj-yj1" secondAttribute="bottom" constant="20" id="5Xr-Jj-XIB"/>
+                            <constraint firstItem="aA8-hj-yj1" firstAttribute="leading" secondItem="HXk-Hz-fy0" secondAttribute="leading" constant="34" id="IHh-OU-Dh8"/>
+                            <constraint firstItem="aA8-hj-yj1" firstAttribute="trailing" secondItem="DmV-1Y-hGJ" secondAttribute="leading" constant="34" id="Kza-ml-5eV"/>
+                            <constraint firstAttribute="trailing" secondItem="DmV-1Y-hGJ" secondAttribute="trailing" constant="34" id="Lpu-qj-dQp"/>
+                            <constraint firstItem="DmV-1Y-hGJ" firstAttribute="centerY" secondItem="aA8-hj-yj1" secondAttribute="centerY" id="hMu-PI-lTM"/>
+                            <constraint firstItem="aA8-hj-yj1" firstAttribute="top" secondItem="HXk-Hz-fy0" secondAttribute="top" constant="20" id="pG7-1H-F1J"/>
+                        </constraints>
+                    </view>
+                </subviews>
+                <constraints>
+                    <constraint firstItem="MjY-Iv-Xs8" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="34" id="5KU-ST-BJj"/>
+                    <constraint firstAttribute="bottom" secondItem="HXk-Hz-fy0" secondAttribute="bottom" id="DFX-YO-2iT"/>
+                    <constraint firstItem="HXk-Hz-fy0" firstAttribute="top" secondItem="MjY-Iv-Xs8" secondAttribute="bottom" constant="40" id="EN7-tk-JJ7"/>
+                    <constraint firstAttribute="trailing" secondItem="MjY-Iv-Xs8" secondAttribute="trailing" constant="34" id="PQJ-Ja-0Nw"/>
+                    <constraint firstItem="MjY-Iv-Xs8" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="30" id="iO5-h7-sWU"/>
+                    <constraint firstAttribute="trailing" secondItem="HXk-Hz-fy0" secondAttribute="trailing" id="lwK-Vu-6m3"/>
+                    <constraint firstAttribute="trailing" secondItem="S82-4c-IHl" secondAttribute="trailing" constant="34" id="nLO-TU-tts"/>
+                    <constraint firstItem="HXk-Hz-fy0" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" id="ojS-0D-Vsh"/>
+                    <constraint firstItem="S82-4c-IHl" firstAttribute="top" secondItem="MjY-Iv-Xs8" secondAttribute="bottom" constant="10" id="srI-OZ-BXg"/>
+                </constraints>
+            </tableViewCellContentView>
+            <viewLayoutGuide key="safeArea" id="aW0-zy-SZf"/>
+            <connections>
+                <outlet property="choiceSwitch" destination="DmV-1Y-hGJ" id="7Ux-K7-jIj"/>
+                <outlet property="choiceSwitchHeightConstraint" destination="4Wn-8Q-NEm" id="uul-fm-Pa5"/>
+                <outlet property="choiceSwitchTrailingConstraint" destination="Lpu-qj-dQp" id="Ryv-4i-EJn"/>
+                <outlet property="choiceSwitchWidthConstraint" destination="bc1-6b-Imr" id="2Fh-uH-MMb"/>
+                <outlet property="multipleChoiceLabel" destination="aA8-hj-yj1" id="3ez-Nr-KXz"/>
+                <outlet property="multipleChoiceLabelBottomConstraint" destination="5Xr-Jj-XIB" id="y1p-Xp-smA"/>
+                <outlet property="multipleChoiceLabelLeadingConstraint" destination="IHh-OU-Dh8" id="j5r-yu-LDU"/>
+                <outlet property="multipleChoiceLabelTopConstraint" destination="pG7-1H-F1J" id="is3-MU-PnJ"/>
+                <outlet property="multipleChoiceLabelTrailingConstraint" destination="Kza-ml-5eV" id="R91-C4-CHP"/>
+                <outlet property="multipleChoiceView" destination="HXk-Hz-fy0" id="AiF-aE-bd0"/>
+                <outlet property="multipleChoiceViewHeightConstraint" destination="1rw-xk-xEU" id="m2n-JC-meT"/>
+                <outlet property="questionCounterLabel" destination="S82-4c-IHl" id="Z7k-aV-L47"/>
+                <outlet property="questionCounterLabelTopConstraint" destination="srI-OZ-BXg" id="5PP-pf-xpg"/>
+                <outlet property="questionCounterLabelTrailingConstraint" destination="nLO-TU-tts" id="WDW-6h-yPt"/>
+                <outlet property="questionTextView" destination="MjY-Iv-Xs8" id="BHK-Zm-vcE"/>
+                <outlet property="questionTextViewBottomConstraint" destination="EN7-tk-JJ7" id="vnk-Up-J0x"/>
+                <outlet property="questionTextViewLeadingConstraint" destination="5KU-ST-BJj" id="Las-RB-JrK"/>
+                <outlet property="questionTextViewTopConstraint" destination="iO5-h7-sWU" id="sLm-Kd-Ggy"/>
+                <outlet property="questionTextViewTrailingConstraint" destination="PQJ-Ja-0Nw" id="qrc-KY-BTk"/>
+            </connections>
+            <point key="canvasLocation" x="-263" y="-1"/>
+        </tableViewCell>
+    </objects>
+    <resources>
+        <systemColor name="labelColor">
+            <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+    </resources>
+</document>

@@ -84,7 +84,7 @@ static const int ddLogLevel = DDLogLevelWarning;
     self.spacesTabView.isAccessibilityElement = YES;
     UITapGestureRecognizer *spacesTabTapGesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(handleSpacesTapGesture:)];
     [self.spacesTabView addGestureRecognizer:spacesTabTapGesture];
-    self.spacesTabView.accessibilityLabel = TwinmeLocalizedString(@"settings_space_view_controller_space_category_title", nil);
+    self.spacesTabView.accessibilityLabel = TwinmeLocalizedString(@"settings_space_view_space_category_title", nil);
     
     self.spacesImageTabViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     self.spacesImageTabView.tintColor = Design.UNSELECTED_TAB_COLOR;
@@ -94,7 +94,7 @@ static const int ddLogLevel = DDLogLevelWarning;
     self.callsTabView.userInteractionEnabled = YES;
     UITapGestureRecognizer *callsTabTapGesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(handleCallsTapGesture:)];
     [self.callsTabView addGestureRecognizer:callsTabTapGesture];
-    self.callsTabView.accessibilityLabel = TwinmeLocalizedString(@"history_view_controller_title", nil);
+    self.callsTabView.accessibilityLabel = TwinmeLocalizedString(@"calls_view_title", nil);
     
     self.callsImageTabViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     self.callsImageTabView.tintColor = Design.UNSELECTED_TAB_COLOR;
@@ -103,7 +103,7 @@ static const int ddLogLevel = DDLogLevelWarning;
     self.contactsTabView.userInteractionEnabled = YES;
     UITapGestureRecognizer *contactsTabTapGesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(handleContactsTapGesture:)];
     [self.contactsTabView addGestureRecognizer:contactsTabTapGesture];
-    self.contactsTabView.accessibilityLabel = TwinmeLocalizedString(@"contacts_view_controller_title", nil);
+    self.contactsTabView.accessibilityLabel = TwinmeLocalizedString(@"contacts_view_title", nil);
     
     self.contactsImageTabViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     self.contactsImageTabView.tintColor = Design.UNSELECTED_TAB_COLOR;
@@ -112,7 +112,7 @@ static const int ddLogLevel = DDLogLevelWarning;
     self.conversationsTabView.userInteractionEnabled = YES;
     UITapGestureRecognizer *conversationsTabTapGesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(handleConversationsTapGesture:)];
     [self.conversationsTabView addGestureRecognizer:conversationsTabTapGesture];
-    self.conversationsTabView.accessibilityLabel = TwinmeLocalizedString(@"conversations_view_controller_title", nil);
+    self.conversationsTabView.accessibilityLabel = TwinmeLocalizedString(@"conversations_view_title", nil);
     
     self.conversationsImageTabViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     self.conversationsImageTabView.tintColor = Design.UNSELECTED_TAB_COLOR;

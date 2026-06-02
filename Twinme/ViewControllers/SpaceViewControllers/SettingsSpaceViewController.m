@@ -227,7 +227,7 @@ typedef enum {
             break;
             
         case SECTION_MESSAGES:
-            sectionName = TwinmeLocalizedString(@"settings_view_controller_chat_category_title", nil).uppercaseString;
+            sectionName = TwinmeLocalizedString(@"settings_view_chat_category_title", nil).uppercaseString;
             break;
                         
         case SECTION_APPEARANCE:
@@ -236,7 +236,7 @@ typedef enum {
             
         case SECTION_PERMISSIONS:
             if (self.space && self.space.isManagedSpace) {
-                sectionName = TwinmeLocalizedString(@"settings_space_view_controller_permissions_title", nil).uppercaseString;
+                sectionName = TwinmeLocalizedString(@"settings_space_view_permissions_title", nil).uppercaseString;
             } else {
                 sectionName = @"";
             }
@@ -259,7 +259,7 @@ typedef enum {
             break;
             
         case SECTION_MESSAGES:
-            sectionName = TwinmeLocalizedString(@"settings_view_controller_chat_category_title", nil).uppercaseString;
+            sectionName = TwinmeLocalizedString(@"settings_view_chat_category_title", nil).uppercaseString;
             break;
             
         case SECTION_APPEARANCE:
@@ -268,7 +268,7 @@ typedef enum {
             
         case SECTION_PERMISSIONS:
             if (self.space && self.space.isManagedSpace) {
-                sectionName = TwinmeLocalizedString(@"settings_space_view_controller_permissions_title", nil).uppercaseString;
+                sectionName = TwinmeLocalizedString(@"settings_space_view_permissions_title", nil).uppercaseString;
             } else {
                 sectionName = @"";
             }
@@ -329,7 +329,7 @@ typedef enum {
             cell = [[SettingsInformationCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:SETTINGS_INFORMATION_CELL_IDENTIFIER];
         }
         
-        [cell bindWithText:TwinmeLocalizedString(@"settings_space_view_controller_header_message", nil)];
+        [cell bindWithText:TwinmeLocalizedString(@"settings_space_view_header_message", nil)];
         
         return cell;
     } else if ([self isDefaultValueSwitchPath:indexPath]) {
@@ -362,7 +362,7 @@ typedef enum {
                 break;
         }
         
-        [cell bindWithTitle:TwinmeLocalizedString(@"side_menu_view_controller_application_settings", nil) subTitle:nil icon:nil stateSwitch:stateSwitch tagSwitch:tag hiddenSwitch:NO disableSwitch:NO backgroundColor:Design.WHITE_COLOR hiddenSeparator:NO];
+        [cell bindWithTitle:TwinmeLocalizedString(@"navigation_view_application_settings", nil) subTitle:nil icon:nil stateSwitch:stateSwitch tagSwitch:tag hiddenSwitch:NO disableSwitch:NO backgroundColor:Design.WHITE_COLOR hiddenSeparator:NO];
         
         return cell;
     } else if ([self isUdpateDefaultValuePath:indexPath]) {
@@ -390,7 +390,7 @@ typedef enum {
                 break;
         }
         
-        [cell bindWithTitle:TwinmeLocalizedString(@"settings_space_view_controller_default_value_title", nil) hiddenAccessory:NO disableSetting:disableSetting color:Design.FONT_COLOR_DEFAULT];
+        [cell bindWithTitle:TwinmeLocalizedString(@"settings_space_view_default_value_title", nil) hiddenAccessory:NO disableSetting:disableSetting color:Design.FONT_COLOR_DEFAULT];
         
         return cell;
     } else {
@@ -414,27 +414,27 @@ typedef enum {
                 if (indexPath.row == 0) {
                     switchState = [self.space hasPermission:TLSpacePermissionTypeShareSpaceCard];
                     tag = TAG_PERMISSION_SHARE_SPACE_CARD;
-                    title = TwinmeLocalizedString(@"settings_space_view_controller_permission_share_space_card", nil);
+                    title = TwinmeLocalizedString(@"settings_space_view_permission_share_space_card", nil);
                 } else if (indexPath.row == 1) {
                     switchState = [self.space hasPermission:TLSpacePermissionTypeCreateContact];
                     tag = TAG_PERMISSION_CREATE_CONTACT;
-                    title = TwinmeLocalizedString(@"settings_space_view_controller_permission_create_contact", nil);
+                    title = TwinmeLocalizedString(@"settings_space_view_permission_create_contact", nil);
                 } else if (indexPath.row == 2) {
                     switchState = [self.space hasPermission:TLSpacePermissionTypeMoveContact];
                     tag = TAG_PERMISSION_MOVE_CONTACT;
-                    title = TwinmeLocalizedString(@"settings_space_view_controller_permission_move_contact", nil);
+                    title = TwinmeLocalizedString(@"settings_space_view_permission_move_contact", nil);
                 } else if (indexPath.row == 3) {
                     switchState = [self.space hasPermission:TLSpacePermissionTypeCreateGroup];
                     tag = TAG_PERMISSION_CREATE_GROUP;
-                    title = TwinmeLocalizedString(@"settings_space_view_controller_permission_create_group", nil);
+                    title = TwinmeLocalizedString(@"settings_space_view_permission_create_group", nil);
                 } else if (indexPath.row == 4) {
                     switchState = [self.space hasPermission:TLSpacePermissionTypeMoveGroup];
                     tag = TAG_PERMISSION_MOVE_GROUP;
-                    title = TwinmeLocalizedString(@"settings_space_view_controller_permission_move_group", nil);
+                    title = TwinmeLocalizedString(@"settings_space_view_permission_move_group", nil);
                 } else if (indexPath.row == 5) {
                     switchState = [self.space hasPermission:TLSpacePermissionTypeUpdateIdentity];
                     tag = TAG_PERMISSION_UPDATE_IDENITY;
-                    title = TwinmeLocalizedString(@"settings_space_view_controller_permission_update_identity", nil);
+                    title = TwinmeLocalizedString(@"settings_space_view_permission_update_identity", nil);
                 }
                 break;
                 
@@ -508,7 +508,7 @@ typedef enum {
     
     self.view.backgroundColor = Design.WHITE_COLOR;
     
-    [self setNavigationTitle:TwinmeLocalizedString(@"settings_view_controller_title", nil)];
+    [self setNavigationTitle:TwinmeLocalizedString(@"navigation_view_settings", nil)];
         
     [self.tableView registerNib:[UINib nibWithNibName:@"SettingsItemCell" bundle:nil] forCellReuseIdentifier:SETTINGS_CELL_IDENTIFIER];
     [self.tableView registerNib:[UINib nibWithNibName:@"SettingsValueItemCell" bundle:nil] forCellReuseIdentifier:SETTINGS_VALUE_CELL_IDENTIFIER];

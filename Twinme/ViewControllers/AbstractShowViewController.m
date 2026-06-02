@@ -394,7 +394,7 @@ static CGFloat ACTION_VIEW_MIN_MARGIN;
     self.identityView.isAccessibilityElement = YES;
     UITapGestureRecognizer *identityViewGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleIdentityTapGesture:)];
     [self.identityView addGestureRecognizer:identityViewGestureRecognizer];
-    [self.identityView setAccessibilityLabel:TwinmeLocalizedString(@"show_contact_view_controller_identity_title", nil)];
+    [self.identityView setAccessibilityLabel:TwinmeLocalizedString(@"show_contact_view_identity_title", nil)];
     
     [self.identityView setBorder:Design.SEPARATOR_COLOR_GREY borderWidth:Design.SEPARATOR_HEIGHT width:Design.DISPLAY_WIDTH height:self.identityViewHeightConstraint.constant left:false right:false top:true bottom:true];
     
@@ -403,7 +403,7 @@ static CGFloat ACTION_VIEW_MIN_MARGIN;
     self.identityTitleLabelTopConstraint.constant *= Design.HEIGHT_RATIO;
     self.identityTitleLabel.font = Design.FONT_BOLD26;
     self.identityTitleLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    self.identityTitleLabel.text = TwinmeLocalizedString(@"show_contact_view_controller_identity_title", nil).uppercaseString;
+    self.identityTitleLabel.text = TwinmeLocalizedString(@"show_contact_view_identity_title", nil).uppercaseString;
     
     self.identityImageViewLeadingConstraint.constant *= Design.WIDTH_RATIO;
     self.identityImageViewHeightConstraint.constant *= Design.HEIGHT_RATIO;

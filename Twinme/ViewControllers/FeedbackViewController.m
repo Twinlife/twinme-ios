@@ -166,15 +166,23 @@ static NSInteger SUBJECT_TEXT_FIELD_TAG = 2;
             dispatch_async(dispatch_get_main_queue(), ^{
                 self.overlayView.hidden = YES;
                 [self.activityIndicatorView stopAnimating];
+                UIWindow *window = [self currentWindow];
                 
                 if (errorCode == TLBaseServiceErrorCodeSuccess) {
-                    [[UIApplication sharedApplication].keyWindow makeToast:TwinmeLocalizedString(@"feedback_view_controller_send_message", nil)];
+                    if (window) {
+                        [window makeToast:TwinmeLocalizedString(@"feedback_view_send_message", nil)];
+                    }
+                    
                     [self.overlayView removeFromSuperview];
                     [self finish];
                 } else if (errorCode == TLBaseServiceErrorCodeTimeoutError) {
-                    [[UIApplication sharedApplication].keyWindow makeToast:TwinmeLocalizedString(@"application_server_timeout", nil)];
+                    if (window) {
+                        [window makeToast:TwinmeLocalizedString(@"application_server_timeout", nil)];
+                    }
                 } else {
-                    [[UIApplication sharedApplication].keyWindow makeToast:TwinmeLocalizedString(@"cleanup_view_controller_error", nil)];
+                    if (window) {
+                        [window makeToast:TwinmeLocalizedString(@"cleanup_view_error", nil)];
+                    }
                 }
             });
         }];
@@ -209,7 +217,7 @@ static NSInteger SUBJECT_TEXT_FIELD_TAG = 2;
 - (void)textViewDidBeginEditing:(UITextView *)textView {
     DDLogVerbose(@"%@ textViewDidBeginEditing: %@", LOG_TAG, textView);
     
-    if ([textView.text isEqualToString:TwinmeLocalizedString(@"feedback_view_controller_message", nil)]) {
+    if ([textView.text isEqualToString:TwinmeLocalizedString(@"feedback_view_message", nil)]) {
         textView.text = @"";
         textView.textColor = Design.FONT_COLOR_DEFAULT;
     }
@@ -219,7 +227,7 @@ static NSInteger SUBJECT_TEXT_FIELD_TAG = 2;
     DDLogVerbose(@"%@ textViewDidEndEditing: %@", LOG_TAG, textView);
     
     if ([textView.text isEqualToString:@""]) {
-        textView.text = TwinmeLocalizedString(@"feedback_view_controller_message", nil);
+        textView.text = TwinmeLocalizedString(@"feedback_view_message", nil);
         textView.textColor = Design.PLACEHOLDER_COLOR;
     }
 }
@@ -239,7 +247,7 @@ static NSInteger SUBJECT_TEXT_FIELD_TAG = 2;
     
     self.view.backgroundColor = Design.WHITE_COLOR;
     
-    [self setNavigationTitle:TwinmeLocalizedString(@"feedback_view_controller_title", nil)];
+    [self setNavigationTitle:TwinmeLocalizedString(@"feedback_view_title", nil)];
     
     self.containerViewBottomConstraint.constant *= Design.HEIGHT_RATIO;
     self.containerViewTopConstraint.constant *= Design.HEIGHT_RATIO;
@@ -263,7 +271,7 @@ static NSInteger SUBJECT_TEXT_FIELD_TAG = 2;
     self.emailField.keyboardType = UIKeyboardTypeEmailAddress;
     self.emailField.textColor = Design.FONT_COLOR_DEFAULT;
     self.emailField.tintColor = Design.FONT_COLOR_DEFAULT;
-    self.emailField.placeholder = TwinmeLocalizedString(@"feedback_view_controller_email", nil);
+    self.emailField.placeholder = TwinmeLocalizedString(@"feedback_view_email", nil);
     
     self.subjectViewWidthConstraint.constant *= Design.WIDTH_RATIO;
     self.subjectViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
@@ -278,7 +286,7 @@ static NSInteger SUBJECT_TEXT_FIELD_TAG = 2;
     self.subjectField.textColor = Design.FONT_COLOR_DEFAULT;
     self.subjectField.tag = SUBJECT_TEXT_FIELD_TAG;
     self.subjectField.delegate = self;
-    self.subjectField.placeholder = TwinmeLocalizedString(@"feedback_view_controller_subject", nil);
+    self.subjectField.placeholder = TwinmeLocalizedString(@"feedback_view_subject", nil);
     self.subjectField.tintColor = Design.FONT_COLOR_DEFAULT;
     
     self.messageViewWidthConstraint.constant *= Design.WIDTH_RATIO;
@@ -295,7 +303,7 @@ static NSInteger SUBJECT_TEXT_FIELD_TAG = 2;
     self.messageTextView.textColor = Design.PLACEHOLDER_COLOR;
     self.messageTextView.tintColor = Design.FONT_COLOR_DEFAULT;
     self.messageTextView.delegate = self;
-    self.messageTextView.text = TwinmeLocalizedString(@"feedback_view_controller_message", nil);
+    self.messageTextView.text = TwinmeLocalizedString(@"feedback_view_message", nil);
     self.messageTextView.textContainer.lineFragmentPadding = 0;
     self.messageTextView.textContainerInset = UIEdgeInsetsZero;
         
@@ -315,7 +323,7 @@ static NSInteger SUBJECT_TEXT_FIELD_TAG = 2;
     
     self.logsSwitch.backgroundColor = Design.WHITE_COLOR;
     self.logsSwitch.isAccessibilityElement = YES;
-    self.logsSwitch.accessibilityLabel = TwinmeLocalizedString(@"privacy_view_controller_lock_screen_title", nil);
+    self.logsSwitch.accessibilityLabel = TwinmeLocalizedString(@"privacy_view_lock_screen_title", nil);
     [self.logsSwitch setOn:YES];
     
     UITapGestureRecognizer *sendLogsViewTapGesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(handleSwitchTapGesture:)];
@@ -326,14 +334,14 @@ static NSInteger SUBJECT_TEXT_FIELD_TAG = 2;
     
     self.sendLogsLabel.font = Design.FONT_REGULAR34;
     self.sendLogsLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    self.sendLogsLabel.text = TwinmeLocalizedString(@"feedback_view_controller_send_logs", nil);
+    self.sendLogsLabel.text = TwinmeLocalizedString(@"feedback_view_send_logs", nil);
     
     self.infosLogsLabelTopConstraint.constant *= Design.HEIGHT_RATIO;
     self.infosLogsLabelWidthConstraint.constant *= Design.WIDTH_RATIO;
     
     self.infosLogsLabel.font = Design.FONT_REGULAR26;
     self.infosLogsLabel.textColor = Design.FONT_COLOR_GREY;
-    self.infosLogsLabel.text = [NSString stringWithFormat:@"%@\n\n%@", TwinmeLocalizedString(@"feedback_view_controller_info_logs", nil), TwinmeLocalizedString(@"feedback_view_controller_help", nil)];
+    self.infosLogsLabel.text = [NSString stringWithFormat:@"%@\n\n%@", TwinmeLocalizedString(@"feedback_view_info_logs", nil), TwinmeLocalizedString(@"feedback_view_help", nil)];
 
     self.logsReportViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     
@@ -348,9 +356,9 @@ static NSInteger SUBJECT_TEXT_FIELD_TAG = 2;
     [mutableLinkAttributes setObject:(__bridge id)[Design.MAIN_COLOR CGColor] forKey:(NSString *)kCTForegroundColorAttributeName];
     self.logsLabel.linkAttributes = [NSDictionary dictionaryWithDictionary:mutableLinkAttributes];
         
-    self.logsLabel.text = TwinmeLocalizedString(@"feedback_view_controller_logs", nil);
+    self.logsLabel.text = TwinmeLocalizedString(@"feedback_view_logs", nil);
     
-    NSString *logs = TwinmeLocalizedString(@"feedback_view_controller_logs", nil);
+    NSString *logs = TwinmeLocalizedString(@"feedback_view_logs", nil);
     NSRange logsRange = [self.logsLabel.text rangeOfString:logs];
     
     self.logsLabel.enabledTextCheckingTypes = NSTextCheckingTypeLink;
@@ -364,7 +372,7 @@ static NSInteger SUBJECT_TEXT_FIELD_TAG = 2;
     self.sendView.backgroundColor = Design.MAIN_COLOR;
     self.sendView.userInteractionEnabled = YES;
     self.sendView.isAccessibilityElement = YES;
-    self.sendView.accessibilityLabel = TwinmeLocalizedString(@"feedback_view_controller_send", nil);
+    self.sendView.accessibilityLabel = TwinmeLocalizedString(@"feedback_view_send", nil);
     self.sendView.layer.cornerRadius = Design.CONTAINER_RADIUS;
     self.sendView.clipsToBounds = YES;
     [self.sendView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onTouchUpInsideSend:)]];
@@ -373,25 +381,21 @@ static NSInteger SUBJECT_TEXT_FIELD_TAG = 2;
     
     self.sendLabel.font = Design.FONT_BOLD28;
     self.sendLabel.textColor = [UIColor whiteColor];
-    self.sendLabel.text = TwinmeLocalizedString(@"feedback_view_controller_send", nil);
+    self.sendLabel.text = TwinmeLocalizedString(@"feedback_view_send", nil);
     
     self.deviceInfoLabelWidthConstraint.constant *= Design.WIDTH_RATIO;
     self.deviceInfoLabelTopConstraint.constant *= Design.HEIGHT_RATIO;
     self.deviceInfoLabelBottomConstraint.constant *= Design.HEIGHT_RATIO;
     self.deviceInfoLabel.font = Design.FONT_REGULAR28;
     self.deviceInfoLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    self.deviceInfoLabel.text = [NSString stringWithFormat:@"%@\n%@", [self deviceInfo], TwinmeLocalizedString(@"feedback_view_controller_gdpr_notice", nil)];
+    self.deviceInfoLabel.text = [NSString stringWithFormat:@"%@\n%@", [self deviceInfo], TwinmeLocalizedString(@"feedback_view_gdpr_notice", nil)];
     
     self.overlayView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, Design.DISPLAY_WIDTH, Design.DISPLAY_HEIGHT)];
     self.overlayView.backgroundColor = Design.OVERLAY_COLOR;
     self.overlayView.hidden = YES;
     
-    if (@available(iOS 13.0, *)) {
-        self.activityIndicatorView = [[UIActivityIndicatorView alloc]initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleMedium];
-        self.activityIndicatorView.color = [UIColor whiteColor];
-    } else {
-        self.activityIndicatorView = [[UIActivityIndicatorView alloc]initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
-    }
+    self.activityIndicatorView = [[UIActivityIndicatorView alloc]initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleMedium];
+    self.activityIndicatorView.color = [UIColor whiteColor];
     self.activityIndicatorView.hidesWhenStopped = YES;
     
     [self.overlayView addSubview:self.activityIndicatorView];
@@ -500,8 +504,8 @@ static NSInteger SUBJECT_TEXT_FIELD_TAG = 2;
     self.subjectView.backgroundColor = Design.TEXTFIELD_BACKGROUND_COLOR;
     self.messageView.backgroundColor = Design.TEXTFIELD_BACKGROUND_COLOR;
     
-    self.emailField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:TwinmeLocalizedString(@"feedback_view_controller_email", nil) attributes:[NSDictionary dictionaryWithObject:Design.PLACEHOLDER_COLOR forKey:NSForegroundColorAttributeName]];
-    self.subjectField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:TwinmeLocalizedString(@"feedback_view_controller_subject", nil) attributes:[NSDictionary dictionaryWithObject:Design.PLACEHOLDER_COLOR forKey:NSForegroundColorAttributeName]];
+    self.emailField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:TwinmeLocalizedString(@"feedback_view_email", nil) attributes:[NSDictionary dictionaryWithObject:Design.PLACEHOLDER_COLOR forKey:NSForegroundColorAttributeName]];
+    self.subjectField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:TwinmeLocalizedString(@"feedback_view_subject", nil) attributes:[NSDictionary dictionaryWithObject:Design.PLACEHOLDER_COLOR forKey:NSForegroundColorAttributeName]];
     
     if ([self.twinmeApplication darkModeEnable:[self currentSpaceSettings]]) {
         self.emailField.keyboardAppearance = UIKeyboardAppearanceDark;

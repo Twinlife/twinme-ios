@@ -313,7 +313,7 @@ static CGFloat DESIGN_NAME_DEFAULT_WIDTH = 420;
         if (![self.contact.space hasPermission:TLSpacePermissionTypeUpdateIdentity]) {
             AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
             alertMessageView.alertMessageViewDelegate = self;
-            [alertMessageView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:TwinmeLocalizedString(@"spaces_view_controller_permission_not_allowed", nil)];
+            [alertMessageView initWithTitle:TwinmeLocalizedString(@"deleted_account_view_warning", nil) message:TwinmeLocalizedString(@"spaces_view_permission_not_allowed", nil)];
             [self.view addSubview:alertMessageView];
             [alertMessageView showAlertView];
         } else {
@@ -324,7 +324,10 @@ static CGFloat DESIGN_NAME_DEFAULT_WIDTH = 420;
         }
     } else {
         dispatch_async(dispatch_get_main_queue(), ^{
-            [[UIApplication sharedApplication].keyWindow makeToast:TwinmeLocalizedString(@"show_contact_view_controller_pending_message",nil)];
+            UIWindow *window = [self currentWindow];
+            if (window) {
+                [window makeToast:TwinmeLocalizedString(@"show_contact_view_pending_message",nil)];
+            }
         });
     }
 }
@@ -342,8 +345,13 @@ static CGFloat DESIGN_NAME_DEFAULT_WIDTH = 420;
 - (int)getActionViewHeight {
     DDLogVerbose(@"%@ getActionViewHeight", LOG_TAG);
     
-    UIWindow *window = UIApplication.sharedApplication.keyWindow;
-    CGFloat safeAreaInset = window.safeAreaInsets.bottom;
+    UIWindow *window = [self currentWindow];
+    CGFloat safeAreaInset;
+    if (window) {
+        safeAreaInset = window.safeAreaInsets.bottom;
+    } else {
+        safeAreaInset = self.view.safeAreaInsets.bottom;
+    }
     
     return self.cleanView.frame.origin.y + self.cleanViewHeightConstraint.constant + safeAreaInset;
 }
@@ -472,7 +480,10 @@ static CGFloat DESIGN_NAME_DEFAULT_WIDTH = 420;
     
     if (!self.contact.capabilities.hasVideo) {
         dispatch_async(dispatch_get_main_queue(), ^{
-            [[UIApplication sharedApplication].keyWindow makeToast:[NSString stringWithFormat:TwinmeLocalizedString(@"authentified_relation_view_controller_certify_by_video_call_missing_capability",nil), self.contactName]];
+            UIWindow *window = [self currentWindow];
+            if (window) {
+                [window makeToast:[NSString stringWithFormat:TwinmeLocalizedString(@"authentified_relation_view_certify_by_video_call_missing_capability",nil), self.contactName]];
+            }
         });
         return;
     }
@@ -482,13 +493,13 @@ static CGFloat DESIGN_NAME_DEFAULT_WIDTH = 420;
         onboardingConfirmView.bottomSheetViewDelegate = self;
         onboardingConfirmView.tag = OnboardingTypeCertifiedRelation;
         UIImage *image = [self.twinmeApplication darkModeEnable:[self currentSpaceSettings]] ? [UIImage imageNamed:@"OnboardingAuthentifiedRelationDark"] : [UIImage imageNamed:@"OnboardingAuthentifiedRelation"];
-        NSString *message = [NSString stringWithFormat:@"%@\n\n%@", TwinmeLocalizedString(@"authentified_relation_view_controller_onboarding_message", nil), TwinmeLocalizedString(@"call_view_controller_certify_onboarding_message", nil)];
+        NSString *message = [NSString stringWithFormat:@"%@\n\n%@", TwinmeLocalizedString(@"authentified_relation_view_onboarding_message", nil), TwinmeLocalizedString(@"call_view_certify_onboarding_message", nil)];
         
-        NSMutableAttributedString *attributedTitle = [[NSMutableAttributedString alloc] initWithString:TwinmeLocalizedString(@"authentified_relation_view_controller_to_be_certified_title", nil) attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_BOLD36, NSFontAttributeName, Design.FONT_COLOR_DEFAULT, NSForegroundColorAttributeName, nil]];
+        NSMutableAttributedString *attributedTitle = [[NSMutableAttributedString alloc] initWithString:TwinmeLocalizedString(@"authentified_relation_view_to_be_certified_title", nil) attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_BOLD36, NSFontAttributeName, Design.FONT_COLOR_DEFAULT, NSForegroundColorAttributeName, nil]];
         [attributedTitle appendAttributedString:[[NSMutableAttributedString alloc] initWithString:@"\n\n"]];
-        [attributedTitle appendAttributedString:[[NSMutableAttributedString alloc] initWithString:TwinmeLocalizedString(@"authentified_relation_view_controller_onboarding_subtitle", nil) attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_MEDIUM34, NSFontAttributeName, Design.FONT_COLOR_GREY, NSForegroundColorAttributeName, nil]]];
+        [attributedTitle appendAttributedString:[[NSMutableAttributedString alloc] initWithString:TwinmeLocalizedString(@"authentified_relation_view_onboarding_subtitle", nil) attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_MEDIUM34, NSFontAttributeName, Design.FONT_COLOR_GREY, NSForegroundColorAttributeName, nil]]];
                 
-        [onboardingConfirmView initWithTitle:TwinmeLocalizedString(@"authentified_relation_view_controller_to_be_certified_title", nil) message:message image:image action:TwinmeLocalizedString(@"authentified_relation_view_controller_start", nil) actionColor:nil cancel:TwinmeLocalizedString(@"application_do_not_display", nil)];
+        [onboardingConfirmView initWithTitle:TwinmeLocalizedString(@"authentified_relation_view_to_be_certified_title", nil) message:message image:image action:TwinmeLocalizedString(@"authentified_relation_view_start", nil) actionColor:nil cancel:TwinmeLocalizedString(@"application_do_not_display", nil)];
         [onboardingConfirmView updateTitle:attributedTitle];
         
         [self.navigationController.view addSubview:onboardingConfirmView];
@@ -506,7 +517,10 @@ static CGFloat DESIGN_NAME_DEFAULT_WIDTH = 420;
         [self startVideoCallWithPermissionCheck:NO];
     } else if (!self.contact.capabilities.hasVideo) {
         dispatch_async(dispatch_get_main_queue(), ^{
-            [[UIApplication sharedApplication].keyWindow makeToast:TwinmeLocalizedString(@"application_not_authorized_operation_by_your_contact",nil)];
+            UIWindow *window = [self currentWindow];
+            if (window) {
+                [window makeToast:TwinmeLocalizedString(@"application_not_authorized_operation_by_your_contact",nil)];
+            }
         });
     } else if ([self hasSchedule]) {
         [self showSchedule];
@@ -568,7 +582,7 @@ static CGFloat DESIGN_NAME_DEFAULT_WIDTH = 420;
     self.chatView.isAccessibilityElement = YES;
     UITapGestureRecognizer *chatViewGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleChatTapGesture:)];
     [self.chatView addGestureRecognizer:chatViewGestureRecognizer];
-    [self.chatView setAccessibilityLabel:TwinmeLocalizedString(@"conversations_view_controller_title", nil)];
+    [self.chatView setAccessibilityLabel:TwinmeLocalizedString(@"conversations_view_title", nil)];
     
     self.chatRoundedView.backgroundColor = Design.CHAT_COLOR;
     self.chatRoundedView.layer.cornerRadius = self.chatViewWidthConstraint.constant * 0.5;
@@ -577,7 +591,7 @@ static CGFloat DESIGN_NAME_DEFAULT_WIDTH = 420;
     
     self.chatLabel.font = Design.FONT_REGULAR28;
     self.chatLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    self.chatLabel.text = TwinmeLocalizedString(@"show_contact_view_controller_chat", nil);
+    self.chatLabel.text = TwinmeLocalizedString(@"show_contact_view_chat", nil);
     
     self.videoViewWidthConstraint.constant *= Design.WIDTH_RATIO;
     self.videoViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
@@ -585,7 +599,7 @@ static CGFloat DESIGN_NAME_DEFAULT_WIDTH = 420;
     self.videoView.isAccessibilityElement = YES;
     UITapGestureRecognizer *videoViewGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleVideoTapGesture:)];
     [self.videoView addGestureRecognizer:videoViewGestureRecognizer];
-    [self.videoView setAccessibilityLabel:TwinmeLocalizedString(@"conversation_view_controller_video_call", nil)];
+    [self.videoView setAccessibilityLabel:TwinmeLocalizedString(@"conversation_view_video_call", nil)];
     
     self.videoRoundedView.backgroundColor = Design.VIDEO_CALL_COLOR;
     self.videoRoundedView.layer.cornerRadius = self.videoViewWidthConstraint.constant * 0.5;
@@ -594,7 +608,7 @@ static CGFloat DESIGN_NAME_DEFAULT_WIDTH = 420;
     
     self.videoLabel.font = Design.FONT_REGULAR28;
     self.videoLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    self.videoLabel.text = TwinmeLocalizedString(@"show_contact_view_controller_video", nil);
+    self.videoLabel.text = TwinmeLocalizedString(@"show_contact_view_video", nil);
     
     self.audioViewWidthConstraint.constant *= Design.WIDTH_RATIO;
     self.audioViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
@@ -605,7 +619,7 @@ static CGFloat DESIGN_NAME_DEFAULT_WIDTH = 420;
     self.audioView.isAccessibilityElement = YES;
     UITapGestureRecognizer *audioViewGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleAudioTapGesture:)];
     [self.audioView addGestureRecognizer:audioViewGestureRecognizer];
-    [self.audioView setAccessibilityLabel:TwinmeLocalizedString(@"conversation_view_controller_audio_call", nil)];
+    [self.audioView setAccessibilityLabel:TwinmeLocalizedString(@"conversation_view_audio_call", nil)];
     
     self.audioRoundedView.backgroundColor = Design.AUDIO_CALL_COLOR;
     self.audioRoundedView.layer.cornerRadius = self.audioViewWidthConstraint.constant * 0.5;
@@ -614,7 +628,7 @@ static CGFloat DESIGN_NAME_DEFAULT_WIDTH = 420;
     
     self.audioLabel.font = Design.FONT_REGULAR28;
     self.audioLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    self.audioLabel.text = TwinmeLocalizedString(@"show_contact_view_controller_audio", nil);
+    self.audioLabel.text = TwinmeLocalizedString(@"show_contact_view_audio", nil);
     
     self.authentifiedRelationViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     self.authentifiedRelationViewTopConstraint.constant *= Design.HEIGHT_RATIO;
@@ -631,7 +645,7 @@ static CGFloat DESIGN_NAME_DEFAULT_WIDTH = 420;
     self.authentifiedRelationLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
     self.authentifiedRelationLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
 
-    self.authentifiedRelationLabel.text = TwinmeLocalizedString(@"authentified_relation_view_controller_title", nil);
+    self.authentifiedRelationLabel.text = TwinmeLocalizedString(@"authentified_relation_view_title", nil);
     self.authentifiedRelationLabel.font = Design.FONT_REGULAR34;
     self.authentifiedRelationLabel.textColor = Design.FONT_COLOR_DEFAULT;
     
@@ -647,7 +661,7 @@ static CGFloat DESIGN_NAME_DEFAULT_WIDTH = 420;
     
     self.settingsTitleLabel.font = Design.FONT_BOLD26;
     self.settingsTitleLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    self.settingsTitleLabel.text = TwinmeLocalizedString(@"settings_view_controller_title", nil).uppercaseString;
+    self.settingsTitleLabel.text = TwinmeLocalizedString(@"navigation_view_settings", nil).uppercaseString;
     
     self.settingsViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     self.settingsViewTopConstraint.constant *= Design.HEIGHT_RATIO;
@@ -663,7 +677,7 @@ static CGFloat DESIGN_NAME_DEFAULT_WIDTH = 420;
     
     self.settingsLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
     self.settingsLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
-    self.settingsLabel.text = TwinmeLocalizedString(@"contact_capabilities_view_controller_call_settings", nil);
+    self.settingsLabel.text = TwinmeLocalizedString(@"contact_capabilities_view_call_settings", nil);
     
     self.settingsNewLabelHeightConstraint.constant *= Design.HEIGHT_RATIO;
     
@@ -692,7 +706,7 @@ static CGFloat DESIGN_NAME_DEFAULT_WIDTH = 420;
     
     self.historyTitleLabel.font = Design.FONT_BOLD26;
     self.historyTitleLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    self.historyTitleLabel.text = TwinmeLocalizedString(@"show_contact_view_controller_history_title", nil).uppercaseString;
+    self.historyTitleLabel.text = TwinmeLocalizedString(@"show_contact_view_history_title", nil).uppercaseString;
     
     self.lastCallAccessoryViewTrailingConstraint.constant *= Design.WIDTH_RATIO;
     self.lastCallAccessoryViewHeightConstraint.constant = Design.ACCESSORY_HEIGHT;
@@ -711,7 +725,7 @@ static CGFloat DESIGN_NAME_DEFAULT_WIDTH = 420;
     
     self.lastCallLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
     self.lastCallLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
-    self.lastCallLabel.text = TwinmeLocalizedString(@"show_contact_view_controller_last_calls", nil);
+    self.lastCallLabel.text = TwinmeLocalizedString(@"show_contact_view_last_calls", nil);
     self.lastCallLabel.font = Design.FONT_REGULAR34;
     self.lastCallLabel.textColor = Design.FONT_COLOR_DEFAULT;
     
@@ -764,7 +778,7 @@ static CGFloat DESIGN_NAME_DEFAULT_WIDTH = 420;
     
     self.conversationsTitleLabel.font = Design.FONT_BOLD26;
     self.conversationsTitleLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    self.conversationsTitleLabel.text = TwinmeLocalizedString(@"conversations_view_controller_title", nil).uppercaseString;
+    self.conversationsTitleLabel.text = TwinmeLocalizedString(@"conversations_view_title", nil).uppercaseString;
     
     self.filesViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     self.filesViewTopConstraint.constant *= Design.HEIGHT_RATIO;
@@ -782,7 +796,7 @@ static CGFloat DESIGN_NAME_DEFAULT_WIDTH = 420;
     self.filesLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
     self.filesLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
     
-    self.filesLabel.text = TwinmeLocalizedString(@"conversation_files_view_controller_title", nil);
+    self.filesLabel.text = TwinmeLocalizedString(@"conversation_files_view_title", nil);
     self.filesLabel.font = Design.FONT_REGULAR34;
     self.filesLabel.textColor = Design.FONT_COLOR_DEFAULT;
     
@@ -807,7 +821,7 @@ static CGFloat DESIGN_NAME_DEFAULT_WIDTH = 420;
     self.exportLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
     self.exportLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
     
-    self.exportLabel.text = TwinmeLocalizedString(@"show_contact_view_controller_export_contents", nil);
+    self.exportLabel.text = TwinmeLocalizedString(@"show_contact_view_export_contents", nil);
     self.exportLabel.font = Design.FONT_REGULAR34;
     self.exportLabel.textColor = Design.FONT_COLOR_DEFAULT;
     
@@ -832,7 +846,7 @@ static CGFloat DESIGN_NAME_DEFAULT_WIDTH = 420;
     self.cleanLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
     self.cleanLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
     
-    self.cleanLabel.text = TwinmeLocalizedString(@"show_contact_view_controller_cleanup", nil);
+    self.cleanLabel.text = TwinmeLocalizedString(@"show_contact_view_cleanup", nil);
     self.cleanLabel.font = Design.FONT_REGULAR34;
     self.cleanLabel.textColor = Design.FONT_COLOR_DEFAULT;
     
@@ -894,7 +908,7 @@ static CGFloat DESIGN_NAME_DEFAULT_WIDTH = 420;
         if (![self.contact.space hasPermission:TLSpacePermissionTypeMoveContact]) {
             AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
             alertMessageView.alertMessageViewDelegate = self;
-            [alertMessageView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:TwinmeLocalizedString(@"spaces_view_controller_permission_not_allowed", nil)];
+            [alertMessageView initWithTitle:TwinmeLocalizedString(@"deleted_account_view_warning", nil) message:TwinmeLocalizedString(@"spaces_view_permission_not_allowed", nil)];
             [self.view addSubview:alertMessageView];
             [alertMessageView showAlertView];
         } else {
@@ -926,7 +940,10 @@ static CGFloat DESIGN_NAME_DEFAULT_WIDTH = 420;
         [self startVideoCallWithPermissionCheck:NO];
     } else if (!self.contact.capabilities.hasVideo) {
         dispatch_async(dispatch_get_main_queue(), ^{
-            [[UIApplication sharedApplication].keyWindow makeToast:TwinmeLocalizedString(@"application_not_authorized_operation_by_your_contact",nil)];
+            UIWindow *window = [self currentWindow];
+            if (window) {
+                [window makeToast:TwinmeLocalizedString(@"application_not_authorized_operation_by_your_contact",nil)];
+            }
         });
     } else if ([self hasSchedule]) {
         [self showSchedule];
@@ -1011,7 +1028,10 @@ static CGFloat DESIGN_NAME_DEFAULT_WIDTH = 420;
     if (self.contact) {
         if (![self.contact hasPrivatePeer]) {
             dispatch_async(dispatch_get_main_queue(), ^{
-                [[UIApplication sharedApplication].keyWindow makeToast:TwinmeLocalizedString(@"show_contact_view_controller_pending_message",nil)];
+                UIWindow *window = [self currentWindow];
+                if (window) {
+                    [window makeToast:TwinmeLocalizedString(@"show_contact_view_pending_message",nil)];
+                }
             });
             return;
         }
@@ -1052,7 +1072,10 @@ static CGFloat DESIGN_NAME_DEFAULT_WIDTH = 420;
         }
     } else if (!self.contact.capabilities.hasAudio) {
         dispatch_async(dispatch_get_main_queue(), ^{
-            [[UIApplication sharedApplication].keyWindow makeToast:TwinmeLocalizedString(@"application_not_authorized_operation_by_your_contact",nil)];
+            UIWindow *window = [self currentWindow];
+            if (window) {
+                [window makeToast:TwinmeLocalizedString(@"application_not_authorized_operation_by_your_contact",nil)];
+            }
         });
     } else if ([self hasSchedule]) {
         [self showSchedule];
@@ -1065,7 +1088,10 @@ static CGFloat DESIGN_NAME_DEFAULT_WIDTH = 420;
     if (self.contact) {
         if (![self.contact hasPrivatePeer]) {
             dispatch_async(dispatch_get_main_queue(), ^{
-                [[UIApplication sharedApplication].keyWindow makeToast:TwinmeLocalizedString(@"show_contact_view_controller_pending_message",nil)];
+                UIWindow *window = [self currentWindow];
+                if (window) {
+                    [window makeToast:TwinmeLocalizedString(@"show_contact_view_pending_message",nil)];
+                }
             });
             return;
         }
@@ -1129,7 +1155,7 @@ static CGFloat DESIGN_NAME_DEFAULT_WIDTH = 420;
         OnboardingConfirmView *onboardingConfirmView = [[OnboardingConfirmView alloc] init];
         onboardingConfirmView.bottomSheetViewDelegate = self;
         onboardingConfirmView.tag = OnboardingTypeRemoteCameraSettings;
-        [onboardingConfirmView initWithTitle:TwinmeLocalizedString(@"call_view_controller_camera_control_needs_help", nil) message: TwinmeLocalizedString(@"contact_capabilities_view_controller_camera_control_onboarding", nil) image:[UIImage imageNamed:@"OnboardingControlCamera"] action:TwinmeLocalizedString(@"application_ok", nil) actionColor:nil cancel:TwinmeLocalizedString(@"application_do_not_display", nil)];
+        [onboardingConfirmView initWithTitle:TwinmeLocalizedString(@"call_view_camera_control_needs_help", nil) message: TwinmeLocalizedString(@"contact_capabilities_view_camera_control_onboarding", nil) image:[UIImage imageNamed:@"OnboardingControlCamera"] action:TwinmeLocalizedString(@"application_ok", nil) actionColor:nil cancel:TwinmeLocalizedString(@"application_do_not_display", nil)];
         [onboardingConfirmView hideCancelAction];
         [self.navigationController.view addSubview:onboardingConfirmView];
         [onboardingConfirmView showConfirmView];
@@ -1175,7 +1201,7 @@ static CGFloat DESIGN_NAME_DEFAULT_WIDTH = 420;
     self.avatarView.image = self.contactAvatar;
     self.nameLabel.text =  self.contactName;
     
-    if ([self.contactDescription isEqual:TwinmeLocalizedString(@"side_menu_view_controller_about", nil)]) {
+    if ([self.contactDescription isEqual:TwinmeLocalizedString(@"navigation_view_about_twinme", nil)]) {
         self.descriptionLabel.text = @"";
     } else {
         self.descriptionLabel.text = self.contactDescription;
@@ -1241,10 +1267,10 @@ static CGFloat DESIGN_NAME_DEFAULT_WIDTH = 420;
         self.authentifiedRelationViewHeightConstraint.constant = Design.SETTING_CELL_HEIGHT;
         
         if (self.contact.certificationLevel == TLCertificationLevel4) {
-            self.authentifiedRelationLabel.text = TwinmeLocalizedString(@"authentified_relation_view_controller_title", nil);
+            self.authentifiedRelationLabel.text = TwinmeLocalizedString(@"authentified_relation_view_title", nil);
             self.authentifiedRelationImageView.image = [UIImage imageNamed:@"AuthentifiedRelationIcon"];
         } else {
-            self.authentifiedRelationLabel.text = TwinmeLocalizedString(@"authentified_relation_view_controller_to_be_certified_title", nil);
+            self.authentifiedRelationLabel.text = TwinmeLocalizedString(@"authentified_relation_view_to_be_certified_title", nil);
             self.authentifiedRelationImageView.image = [UIImage imageNamed:@"AuthentifiedRelationGreyIcon"];
         }
     }
@@ -1260,7 +1286,7 @@ static CGFloat DESIGN_NAME_DEFAULT_WIDTH = 420;
         dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
             CoachMarkViewController *coachMarkViewController = (CoachMarkViewController *)[[UIStoryboard storyboardWithName:@"iPhone" bundle:nil] instantiateViewControllerWithIdentifier:@"CoachMarkViewController"];
             CGRect clipRect = CGRectMake(self.settingsView.frame.origin.x, self.actionView.frame.origin.y + self.settingsView.frame.origin.y, self.settingsView.frame.size.width, self.settingsView.frame.size.height);
-            CoachMark *coachMark = [[CoachMark alloc]initWithMessage:TwinmeLocalizedString(@"show_contact_view_controller_settings_coach_mark", nil) tag:TAG_COACH_MARK_CONTACT_CAPABILITIES alignLeft:YES onTop:YES featureRect:clipRect featureRadius:0];
+            CoachMark *coachMark = [[CoachMark alloc]initWithMessage:TwinmeLocalizedString(@"show_contact_view_settings_coach_mark", nil) tag:TAG_COACH_MARK_CONTACT_CAPABILITIES alignLeft:YES onTop:YES featureRect:clipRect featureRadius:0];
             [coachMarkViewController initWithCoachMark:coachMark];
             coachMarkViewController.delegate = self;
             [coachMarkViewController showInView:self];
@@ -1376,17 +1402,17 @@ static CGFloat DESIGN_NAME_DEFAULT_WIDTH = 420;
         TLDateTime *end = dateTimeRange.end;
         
         if ([start.date isEqual:end.date]) {
-            message = [NSString stringWithFormat:TwinmeLocalizedString(@"show_call_view_controller_schedule_from_to", nil), [start.date formatDate], [start.time formatTime], [end.time formatTime]];
+            message = [NSString stringWithFormat:TwinmeLocalizedString(@"show_call_view_schedule_from_to", nil), [start.date formatDate], [start.time formatTime], [end.time formatTime]];
         } else {
             message = [NSString stringWithFormat:@"%@ %@", [start formatDateTime], [end formatDateTime]];
         }
     } else {
-        message = TwinmeLocalizedString(@"show_call_view_controller_schedule_message", nil);
+        message = TwinmeLocalizedString(@"show_call_view_schedule_message", nil);
     }
                 
     AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
     alertMessageView.alertMessageViewDelegate = self;
-    [alertMessageView initWithTitle:TwinmeLocalizedString(@"show_call_view_controller_schedule_call", nil) message:message];
+    [alertMessageView initWithTitle:TwinmeLocalizedString(@"show_call_view_schedule_call", nil) message:message];
     [self.tabBarController.view addSubview:alertMessageView];
     [alertMessageView showAlertView];
 }

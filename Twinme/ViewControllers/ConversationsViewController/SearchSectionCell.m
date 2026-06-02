@@ -71,7 +71,7 @@ static const int ddLogLevel = DDLogLevelWarning;
     
     self.allLabel.font = Design.FONT_BOLD34;
     self.allLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    self.allLabel.text = TwinmeLocalizedString(@"application_display", nil);
+    self.allLabel.text = TwinmeLocalizedString(@"application_display_all", nil);
     
     if ([[UIApplication sharedApplication] userInterfaceLayoutDirection] == UIUserInterfaceLayoutDirectionRightToLeft) {
         self.allLabel.textAlignment = NSTextAlignmentLeft;

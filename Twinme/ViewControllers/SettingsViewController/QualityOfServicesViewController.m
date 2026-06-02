@@ -243,7 +243,7 @@ static CGFloat TEXT_MARGIN = 44;
     self.titleLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
     self.titleLabel.font = Design.FONT_BOLD36;
     self.titleLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    self.titleLabel.text = TwinmeLocalizedString(@"about_view_controller_quality_of_service", nil);;
+    self.titleLabel.text = TwinmeLocalizedString(@"about_view_quality_of_service", nil);;
         
     self.qualityCollectionViewTopConstraint.constant *= Design.HEIGHT_RATIO;
     self.qualityCollectionViewHeightConstraint.constant *= Design.HEIGHT_RATIO;

@@ -90,7 +90,7 @@ static CGFloat DESIGN_TEXTFIELD_HEIGHT = 82;
             self.confirmView.alpha = 0.5f;
             self.deleteConfirmView.hidden = NO;
             self.deleteConfirmViewHeightConstraint.constant = DESIGN_TEXTFIELD_HEIGHT * Design.HEIGHT_RATIO;
-            self.messageLabel.text = TwinmeLocalizedString(@"delete_account_view_controller_confirm_message", nil);
+            self.messageLabel.text = TwinmeLocalizedString(@"deleted_account_view_confirm_message", nil);
             self.confirmLabel.text = TwinmeLocalizedString(@"application_confirm_deletion", nil);
         } else if ([self canDeleteAccount:self.deleteConfirmTextField.text]) {
             if ([self.bottomSheetViewDelegate respondsToSelector:@selector(didTapConfirm:)]) {
@@ -150,7 +150,7 @@ static CGFloat DESIGN_TEXTFIELD_HEIGHT = 82;
     self.avatarContainerView.hidden = YES;
     
     self.confirmView.backgroundColor = Design.DELETE_COLOR_RED;
-    self.confirmLabel.text = TwinmeLocalizedString(@"delete_account_view_controller_delete", nil);
+    self.confirmLabel.text = TwinmeLocalizedString(@"deleted_account_view_delete", nil);
         
     self.cancelLabel.textColor = Design.FONT_COLOR_DEFAULT;
     

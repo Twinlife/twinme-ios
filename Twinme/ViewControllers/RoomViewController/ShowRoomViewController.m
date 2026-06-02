@@ -272,8 +272,13 @@ static int MAX_ROOM_MEMBER = 5;
 - (int)getActionViewHeight {
     DDLogVerbose(@"%@ getActionViewHeight", LOG_TAG);
     
-    UIWindow *window = UIApplication.sharedApplication.keyWindow;
-    CGFloat safeAreaInset = window.safeAreaInsets.bottom;
+    UIWindow *window = [self currentWindow];
+    CGFloat safeAreaInset;
+    if (window) {
+        safeAreaInset = window.safeAreaInsets.bottom;
+    } else {
+        safeAreaInset = self.view.safeAreaInsets.bottom;
+    }
     
     return self.cleanView.frame.origin.y + self.cleanViewHeightConstraint.constant + safeAreaInset;
 }
@@ -441,14 +446,14 @@ static int MAX_ROOM_MEMBER = 5;
     
     self.chatLabel.font = Design.FONT_REGULAR28;
     self.chatLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    self.chatLabel.text = TwinmeLocalizedString(@"show_contact_view_controller_chat", nil);
+    self.chatLabel.text = TwinmeLocalizedString(@"show_contact_view_chat", nil);
     
     self.videoViewWidthConstraint.constant *= Design.WIDTH_RATIO;
     self.videoViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     self.videoViewTopConstraint.constant *= Design.HEIGHT_RATIO;
     UITapGestureRecognizer *videoViewGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleVideoTapGesture:)];
     [self.videoView addGestureRecognizer:videoViewGestureRecognizer];
-    [self.videoView setAccessibilityLabel:TwinmeLocalizedString(@"conversation_view_controller_video_call", nil)];
+    [self.videoView setAccessibilityLabel:TwinmeLocalizedString(@"conversation_view_video_call", nil)];
     
     self.videoRoundedView.backgroundColor = Design.VIDEO_CALL_COLOR;
     self.videoRoundedView.layer.cornerRadius = self.videoViewWidthConstraint.constant * 0.5;
@@ -457,7 +462,7 @@ static int MAX_ROOM_MEMBER = 5;
     
     self.videoLabel.font = Design.FONT_REGULAR28;
     self.videoLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    self.videoLabel.text = TwinmeLocalizedString(@"show_contact_view_controller_video", nil);
+    self.videoLabel.text = TwinmeLocalizedString(@"show_contact_view_video", nil);
     
     self.audioViewWidthConstraint.constant *= Design.WIDTH_RATIO;
     self.audioViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
@@ -474,7 +479,7 @@ static int MAX_ROOM_MEMBER = 5;
     
     self.audioLabel.font = Design.FONT_REGULAR28;
     self.audioLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    self.audioLabel.text = TwinmeLocalizedString(@"show_contact_view_controller_audio", nil);
+    self.audioLabel.text = TwinmeLocalizedString(@"show_contact_view_audio", nil);
     
     self.membersLabelTopConstraint.constant *= Design.HEIGHT_RATIO;
     self.membersLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
@@ -482,7 +487,7 @@ static int MAX_ROOM_MEMBER = 5;
     
     self.membersLabel.font = Design.FONT_BOLD26;
     self.membersLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    self.membersLabel.text = TwinmeLocalizedString(@"show_room_view_controller_room_title", nil).uppercaseString;
+    self.membersLabel.text = TwinmeLocalizedString(@"show_room_view_room_title", nil).uppercaseString;
     
     CGFloat screenWidth = [[UIScreen mainScreen] bounds].size.width;
     
@@ -515,13 +520,7 @@ static int MAX_ROOM_MEMBER = 5;
     
     self.memberIndicatorView.tintColor = Design.MAIN_COLOR;
     self.memberIndicatorView.hidesWhenStopped = YES;
-    
-    if (@available(iOS 13.0, *)) {
-        self.memberIndicatorView.activityIndicatorViewStyle = UIActivityIndicatorViewStyleMedium;
-    } else {
-        self.memberIndicatorView.activityIndicatorViewStyle = UIActivityIndicatorViewStyleGray;
-    }
-    
+    self.memberIndicatorView.activityIndicatorViewStyle = UIActivityIndicatorViewStyleMedium;
     [self.memberIndicatorView startAnimating];
     
     self.adminViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
@@ -533,7 +532,7 @@ static int MAX_ROOM_MEMBER = 5;
     
     self.adminLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
     self.adminLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
-    self.adminLabel.text = TwinmeLocalizedString(@"show_room_view_controller_admin_title", nil);
+    self.adminLabel.text = TwinmeLocalizedString(@"show_room_view_admin_title", nil);
     self.adminLabel.font = Design.FONT_REGULAR34;
     self.adminLabel.textColor = Design.FONT_COLOR_DEFAULT;
     
@@ -548,7 +547,7 @@ static int MAX_ROOM_MEMBER = 5;
     
     self.historyTitleLabel.font = Design.FONT_BOLD26;
     self.historyTitleLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    self.historyTitleLabel.text = TwinmeLocalizedString(@"show_contact_view_controller_history_title", nil).uppercaseString;
+    self.historyTitleLabel.text = TwinmeLocalizedString(@"show_contact_view_history_title", nil).uppercaseString;
     
     self.lastCallAccessoryViewTrailingConstraint.constant *= Design.WIDTH_RATIO;
     self.lastCallAccessoryViewHeightConstraint.constant = Design.ACCESSORY_HEIGHT;
@@ -567,7 +566,7 @@ static int MAX_ROOM_MEMBER = 5;
     
     self.lastCallLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
     self.lastCallLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
-    self.lastCallLabel.text = TwinmeLocalizedString(@"show_contact_view_controller_last_calls", nil);
+    self.lastCallLabel.text = TwinmeLocalizedString(@"show_contact_view_last_calls", nil);
     self.lastCallLabel.font = Design.FONT_REGULAR34;
     self.lastCallLabel.textColor = Design.FONT_COLOR_DEFAULT;
     
@@ -620,7 +619,7 @@ static int MAX_ROOM_MEMBER = 5;
     
     self.conversationsTitleLabel.font = Design.FONT_BOLD26;
     self.conversationsTitleLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    self.conversationsTitleLabel.text = TwinmeLocalizedString(@"conversations_view_controller_title", nil).uppercaseString;
+    self.conversationsTitleLabel.text = TwinmeLocalizedString(@"conversations_view_title", nil).uppercaseString;
     
     self.filesViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     self.filesViewTopConstraint.constant *= Design.HEIGHT_RATIO;
@@ -638,7 +637,7 @@ static int MAX_ROOM_MEMBER = 5;
     self.filesLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
     self.filesLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
     
-    self.filesLabel.text = TwinmeLocalizedString(@"conversation_files_view_controller_title", nil);
+    self.filesLabel.text = TwinmeLocalizedString(@"conversation_files_view_title", nil);
     self.filesLabel.font = Design.FONT_REGULAR34;
     self.filesLabel.textColor = Design.FONT_COLOR_DEFAULT;
     
@@ -663,7 +662,7 @@ static int MAX_ROOM_MEMBER = 5;
     self.exportLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
     self.exportLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
     
-    self.exportLabel.text = TwinmeLocalizedString(@"show_contact_view_controller_export_contents", nil);
+    self.exportLabel.text = TwinmeLocalizedString(@"show_contact_view_export_contents", nil);
     self.exportLabel.font = Design.FONT_REGULAR34;
     self.exportLabel.textColor = Design.FONT_COLOR_DEFAULT;
     
@@ -688,7 +687,7 @@ static int MAX_ROOM_MEMBER = 5;
     self.cleanLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
     self.cleanLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
     
-    self.cleanLabel.text = TwinmeLocalizedString(@"show_contact_view_controller_cleanup", nil);
+    self.cleanLabel.text = TwinmeLocalizedString(@"show_contact_view_cleanup", nil);
     self.cleanLabel.font = Design.FONT_REGULAR34;
     self.cleanLabel.textColor = Design.FONT_COLOR_DEFAULT;
     
@@ -729,7 +728,10 @@ static int MAX_ROOM_MEMBER = 5;
         [self startVideoCallWithPermissionCheck:NO];
     } else if (!self.room.capabilities.hasVideo) {
         dispatch_async(dispatch_get_main_queue(), ^{
-            [[UIApplication sharedApplication].keyWindow makeToast:TwinmeLocalizedString(@"application_not_authorized_operation",nil)];
+            UIWindow *window = [self currentWindow];
+            if (window) {
+                [window makeToast:TwinmeLocalizedString(@"application_not_authorized_operation",nil)];
+            }
         });
     }
 }
@@ -846,7 +848,10 @@ static int MAX_ROOM_MEMBER = 5;
         }
     } else if (!self.room.capabilities.hasAudio) {
         dispatch_async(dispatch_get_main_queue(), ^{
-            [[UIApplication sharedApplication].keyWindow makeToast:TwinmeLocalizedString(@"application_not_authorized_operation",nil)];
+            UIWindow *window = [self currentWindow];
+            if (window) {
+                [window makeToast:TwinmeLocalizedString(@"application_not_authorized_operation",nil)];
+            }
         });
     }
 }
@@ -909,7 +914,7 @@ static int MAX_ROOM_MEMBER = 5;
         if (![self.room.space hasPermission:TLSpacePermissionTypeMoveContact]) {
             AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
             alertMessageView.alertMessageViewDelegate = self;
-            [alertMessageView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:TwinmeLocalizedString(@"spaces_view_controller_permission_not_allowed", nil)];
+            [alertMessageView initWithTitle:TwinmeLocalizedString(@"deleted_account_view_warning", nil) message:TwinmeLocalizedString(@"spaces_view_permission_not_allowed", nil)];
             [self.tabBarController.view addSubview:alertMessageView];
             [alertMessageView showAlertView];
         } else {

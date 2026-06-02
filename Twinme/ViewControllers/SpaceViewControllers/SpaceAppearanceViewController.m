@@ -251,7 +251,7 @@ typedef enum {
     
     switch (section) {
         case SECTION_MODE:
-            sectionName = TwinmeLocalizedString(@"personalization_view_controller_mode", nil).uppercaseString;
+            sectionName = TwinmeLocalizedString(@"personalization_view_mode", nil).uppercaseString;
             break;
             
         case SECTION_APPEARANCE:
@@ -271,7 +271,7 @@ typedef enum {
     NSString *sectionName;
     switch (section) {
         case SECTION_MODE:
-            sectionName = TwinmeLocalizedString(@"personalization_view_controller_mode", nil).uppercaseString;
+            sectionName = TwinmeLocalizedString(@"personalization_view_mode", nil).uppercaseString;
             break;
             
         case SECTION_APPEARANCE:
@@ -326,7 +326,7 @@ typedef enum {
             cell = [[SettingsInformationCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:SETTINGS_INFORMATION_CELL_IDENTIFIER];
         }
         
-        [cell bindWithText:TwinmeLocalizedString(@"settings_space_view_controller_header_message", nil)];
+        [cell bindWithText:TwinmeLocalizedString(@"settings_space_view_header_message", nil)];
         
         return cell;
     } else if (indexPath.section == SECTION_MODE) {
@@ -350,7 +350,7 @@ typedef enum {
             
             cell.settingsActionDelegate = self;
             
-            [cell bindWithTitle:TwinmeLocalizedString(@"personalization_view_controller_system", nil) subTitle:nil icon:nil stateSwitch:self.displayMode == DisplayModeSystem tagSwitch:TAG_DISPLAY_MODE hiddenSwitch:NO disableSwitch:NO backgroundColor:Design.WHITE_COLOR hiddenSeparator:NO];
+            [cell bindWithTitle:TwinmeLocalizedString(@"personalization_view_system", nil) subTitle:nil icon:nil stateSwitch:self.displayMode == DisplayModeSystem tagSwitch:TAG_DISPLAY_MODE hiddenSwitch:NO disableSwitch:NO backgroundColor:Design.WHITE_COLOR hiddenSeparator:NO];
             
             return cell;
         }
@@ -368,7 +368,7 @@ typedef enum {
                 color = Design.MAIN_COLOR;
             }
             
-            [cell bindWithColor:color nameColor:TwinmeLocalizedString(@"space_appearance_view_controller_theme", nil) image:nil];
+            [cell bindWithColor:color nameColor:TwinmeLocalizedString(@"space_appearance_view_theme", nil) image:nil];
             
             return cell;
         } else {
@@ -377,7 +377,7 @@ typedef enum {
                 cell = [[TwinmeSettingsItemCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:TWINME_SETTINGS_CELL_IDENTIFIER];
             }
         
-            [cell bindWithTitle:TwinmeLocalizedString(@"conversations_view_controller_title", nil) hiddenAccessory:NO disableSetting:NO color:Design.FONT_COLOR_DEFAULT];
+            [cell bindWithTitle:TwinmeLocalizedString(@"conversations_view_title", nil) hiddenAccessory:NO disableSetting:NO color:Design.FONT_COLOR_DEFAULT];
             
             return cell;
         }
@@ -391,7 +391,7 @@ typedef enum {
     
     if (indexPath.section == SECTION_APPEARANCE) {
         if (indexPath.row == 0) {
-            [self openMenuColor:TwinmeLocalizedString(@"space_appearance_view_controller_theme", nil)];
+            [self openMenuColor:TwinmeLocalizedString(@"space_appearance_view_theme", nil)];
         } else {
             ConversationAppearanceViewController *conversationAppearanceViewController = (ConversationAppearanceViewController *)[[UIStoryboard storyboardWithName:@"iPhone" bundle:nil] instantiateViewControllerWithIdentifier:@"ConversationAppearanceViewController"];
             [conversationAppearanceViewController initWithSpace:self.space];
@@ -455,14 +455,9 @@ typedef enum {
             if (updatedSwitch.isOn) {
                 self.displayMode = DisplayModeSystem;
             } else {
-                if (@available(iOS 13.0, *)) {
-                    if ([UIScreen mainScreen].traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark){
-                        self.displayMode = DisplayModeDark;
-                    } else {
-                        self.displayMode = DisplayModeLight;
-                    }
-                }
-                else {
+                if ([UIScreen mainScreen].traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark){
+                    self.displayMode = DisplayModeDark;
+                } else {
                     self.displayMode = DisplayModeLight;
                 }
             }
@@ -488,7 +483,7 @@ typedef enum {
     
     self.view.backgroundColor = Design.WHITE_COLOR;
     
-    [self setNavigationTitle:TwinmeLocalizedString(@"settings_view_controller_title", nil)];
+    [self setNavigationTitle:TwinmeLocalizedString(@"navigation_view_settings", nil)];
         
     [self.tableView registerNib:[UINib nibWithNibName:@"SettingsItemCell" bundle:nil] forCellReuseIdentifier:SETTINGS_CELL_IDENTIFIER];
     [self.tableView registerNib:[UINib nibWithNibName:@"SettingsValueItemCell" bundle:nil] forCellReuseIdentifier:SETTINGS_VALUE_CELL_IDENTIFIER];

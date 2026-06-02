@@ -240,23 +240,23 @@ static const int ddLogLevel = DDLogLevelWarning;
     NSString *invitationStatus = @"";
     switch (self.invitationDescriptor.status) {
         case TLInvitationDescriptorStatusTypePending:
-            invitationStatus = TwinmeLocalizedString(@"conversation_view_controller_invitation_title", nil);
+            invitationStatus = TwinmeLocalizedString(@"conversation_view_invitation_title", nil);
             break;
             
         case TLInvitationDescriptorStatusTypeAccepted:
-            invitationStatus = TwinmeLocalizedString(@"conversation_view_controller_invitation_accepted", nil);
+            invitationStatus = TwinmeLocalizedString(@"conversation_view_invitation_accepted", nil);
             break;
             
         case TLInvitationDescriptorStatusTypeJoined:
-            invitationStatus = TwinmeLocalizedString(@"conversation_view_controller_invitation_joined", nil);
+            invitationStatus = TwinmeLocalizedString(@"conversation_view_invitation_joined", nil);
             break;
             
         case TLInvitationDescriptorStatusTypeRefused:
-            invitationStatus = TwinmeLocalizedString(@"conversation_view_controller_invitation_refused", nil);
+            invitationStatus = TwinmeLocalizedString(@"conversation_view_invitation_refused", nil);
             break;
             
         case TLInvitationDescriptorStatusTypeWithdrawn:
-            invitationStatus = TwinmeLocalizedString(@"conversation_view_controller_invitation_refused", nil);
+            invitationStatus = TwinmeLocalizedString(@"conversation_view_invitation_refused", nil);
             break;
             
         default:
@@ -284,7 +284,7 @@ static const int ddLogLevel = DDLogLevelWarning;
         self.bottomLeftRadius = [conversationViewController getRadiusWithMask:corners & ITEM_BOTTOM_LEFT];
     }
     
-    if (peerInvitationItem.visibleAvatar) {
+    if (peerInvitationItem.visibleAvatar && [conversationViewController displayPeerItemAvatar]) {
         self.avatarView.hidden = NO;
         self.avatarView.image = [conversationViewController getContactAvatarWithUUID:item.peerTwincodeOutboundId];
         
@@ -298,6 +298,17 @@ static const int ddLogLevel = DDLogLevelWarning;
     } else {
         self.avatarView.hidden = YES;
         self.avatarView.image = nil;
+        
+        if (![conversationViewController displayPeerItemAvatar]) {
+            self.avatarViewLeadingConstraint.constant = 0;
+            self.avatarViewHeightConstraint.constant = 0;
+            
+            if ([conversationViewController isSelectItemMode]) {
+                self.contentInvitationViewLeadingConstraint.constant = self.checkMarkViewLeadingConstraint.constant + self.checkMarkViewLeadingConstraint.constant + Design.AVATAR_CONVERSATION_LEADING;
+            } else {
+                self.contentInvitationViewLeadingConstraint.constant = Design.AVATAR_CONVERSATION_LEADING;
+            }            
+        }
     }
     
     if ([conversationViewController isMenuOpen]) {

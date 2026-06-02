@@ -69,7 +69,7 @@ static const int ddLogLevel = DDLogLevelWarning;
     self.backgroundColor = Design.WHITE_COLOR;
     
     self.avatarViewHeightConstraint.constant = Design.AVATAR_HEIGHT;
-    self.avatarViewLeadingConstraint.constant = Design.AVATAR_LEADING;
+    self.avatarViewLeadingConstraint.constant *= Design.WIDTH_RATIO;
     
     CALayer *avatarViewLayer = self.avatarView.layer;
     avatarViewLayer.cornerRadius = self.avatarViewHeightConstraint.constant * 0.5;
@@ -106,17 +106,43 @@ static const int ddLogLevel = DDLogLevelWarning;
     self.backgroundColor = backgroundColor;
     self.nameLabel.text = uiAnnotation.name;
     self.avatarView.image = uiAnnotation.avatar;
+    self.nameLabel.font = Design.FONT_REGULAR30;
+    self.nameLabel.textColor = Design.FONT_COLOR_DEFAULT;
     
     if (uiAnnotation.annotationType == TLDescriptorAnnotationTypeLike && uiAnnotation.uiReaction) {
         self.annotationImageView.image = uiAnnotation.uiReaction.reactionImage;
         self.annotationImageView.tintColor = uiAnnotation.uiReaction.reactionTintColor;
         self.annotationImageView.hidden = NO;
         self.dateInfoLabel.hidden = YES;
+    } else if (uiAnnotation.annotationType == TLDescriptorAnnotationTypeError && uiAnnotation.value > 0) {
+        NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:@""];
+        [attributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:uiAnnotation.name attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_MEDIUM32, NSFontAttributeName, Design.FONT_COLOR_DEFAULT, NSForegroundColorAttributeName, nil]]];
+        [attributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:@"\n"]];
+        
+        NSString *message = @"";
+        TLBaseServiceErrorCode errorCode = [TLConversationService toErrorCode:(int)uiAnnotation.value];
+        if (errorCode == TLBaseServiceErrorCodeFeatureNotSupportedByPeer) {
+            message = TwinmeLocalizedString(@"info_item_view_not_delivered_update", nil);
+        } else if (errorCode == TLBaseServiceErrorCodeExpired) {
+            message = TwinmeLocalizedString(@"info_item_view_not_delivered_expiration", nil);
+        } else if (errorCode == TLBaseServiceErrorCodeNoStorageSpace) {
+            message = TwinmeLocalizedString(@"info_item_view_not_delivered_storage", nil);
+        }
+        
+        [attributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:message attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_MEDIUM28, NSFontAttributeName, Design.FONT_COLOR_GREY, NSForegroundColorAttributeName, nil]]];
+        
+        self.nameLabel.attributedText = attributedString;
+        self.annotationImageView.hidden = NO;
+        self.annotationImageView.image = [UIImage imageNamed:@"ItemStateNotSent"];
+        self.annotationImageView.tintColor = [UIColor clearColor];
+        self.dateInfoLabel.text = @"";
     } else {
-        if (uiAnnotation.timestamp > 0) {
-            self.dateInfoLabel.text = [NSString formatItemTimeInterval:uiAnnotation.timestamp  / 1000];
-        } else {
+        if (uiAnnotation.value > 0) {
+            self.dateInfoLabel.text = [NSString formatItemTimeInterval:uiAnnotation.value  / 1000];
+        } else if (uiAnnotation.annotationType != TLDescriptorAnnotationTypePoll) {
             self.dateInfoLabel.text = @"-";
+        } else {
+            self.dateInfoLabel.text = @"";
         }
         
         self.annotationImageView.hidden = YES;
@@ -131,14 +157,12 @@ static const int ddLogLevel = DDLogLevelWarning;
 
 - (void)updateColor {
     
-    self.nameLabel.textColor = Design.FONT_COLOR_DEFAULT;
     self.separatorView.backgroundColor = Design.SEPARATOR_COLOR_GREY;
     self.dateInfoLabel.textColor = Design.FONT_COLOR_DEFAULT;
 }
 
 - (void)updateFont {
     
-    self.nameLabel.font = Design.FONT_REGULAR30;
     self.dateInfoLabel.font = Design.FONT_MEDIUM28;
 }
 

@@ -332,16 +332,16 @@ static UIColor *DESIGN_PLACEHOLDER_COLOR;
     } else {
         NSString *errorMessage;
         if (errorCode == TLBaseServiceErrorCodeExpired) {
-            errorMessage = TwinmeLocalizedString(@"in_app_subscription_view_controller_expired_code", nil);
+            errorMessage = TwinmeLocalizedString(@"in_app_subscription_view_expire_code", nil);
         } else if (errorCode == TLBaseServiceErrorCodeLimitReached) {
-            errorMessage = TwinmeLocalizedString(@"in_app_subscription_view_controller_used_code", nil);
+            errorMessage = TwinmeLocalizedString(@"in_app_subscription_view_used_code", nil);
         } else {
-            errorMessage = TwinmeLocalizedString(@"in_app_subscription_view_controller_invalid_code", nil);
+            errorMessage = TwinmeLocalizedString(@"in_app_subscription_view_invalid_code", nil);
         }
     
         AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
         alertMessageView.alertMessageViewDelegate = self;
-        [alertMessageView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:errorMessage];
+        [alertMessageView initWithTitle:TwinmeLocalizedString(@"deleted_account_view_warning", nil) message:errorMessage];
         [self.navigationController.view addSubview:alertMessageView];
         [alertMessageView showAlertView];
     }
@@ -388,7 +388,7 @@ static UIColor *DESIGN_PLACEHOLDER_COLOR;
     
     [self.view setBackgroundColor:Design.GREY_BACKGROUND_COLOR];
     
-    [self setNavigationTitle:TwinmeLocalizedString(@"add_contact_view_controller_title", nil)];
+    [self setNavigationTitle:TwinmeLocalizedString(@"add_contact_view_title", nil)];
     
     self.messageLabelWidthConstraint.constant *= Design.MIN_RATIO;
     self.messageLabelTopConstraint.constant *= Design.MIN_RATIO;
@@ -396,7 +396,7 @@ static UIColor *DESIGN_PLACEHOLDER_COLOR;
     [self.messageLabel setFont:Design.FONT_REGULAR30];
     self.messageLabel.textColor = Design.FONT_COLOR_GREY;
     
-    self.messageLabel.text = TwinmeLocalizedString(@"in_app_subscription_view_controller_invitation_code", nil);
+    self.messageLabel.text = TwinmeLocalizedString(@"in_app_subscription_view_invitation_code", nil);
 
     self.captureViewTopConstraint.constant *= Design.HEIGHT_RATIO;
     self.captureViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
@@ -418,7 +418,7 @@ static UIColor *DESIGN_PLACEHOLDER_COLOR;
     self.messageScanLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
     [self.messageScanLabel setFont:Design.FONT_MEDIUM32];
     self.messageScanLabel.textColor = [UIColor whiteColor];
-    self.messageScanLabel.text = TwinmeLocalizedString(@"add_contact_view_controller_scan_code", nil);
+    self.messageScanLabel.text = TwinmeLocalizedString(@"add_contact_view_scan_code", nil);
     
     self.messageNoPermissionScanLabelWidthConstraint.constant *= Design.WIDTH_RATIO;
     
@@ -453,7 +453,7 @@ static UIColor *DESIGN_PLACEHOLDER_COLOR;
     
     self.importFromGalleryLabel.font = Design.FONT_MEDIUM36;
     self.importFromGalleryLabel.textColor = [UIColor whiteColor];
-    self.importFromGalleryLabel.text = TwinmeLocalizedString(@"add_contact_view_controller_gallery_title", nil);
+    self.importFromGalleryLabel.text = TwinmeLocalizedString(@"add_contact_view_gallery_title", nil);
     
     self.twincodeViewTopConstraint.constant *= Design.HEIGHT_RATIO;
     self.twincodeViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
@@ -469,7 +469,7 @@ static UIColor *DESIGN_PLACEHOLDER_COLOR;
     self.twincodeTextField.textColor = Design.FONT_COLOR_DEFAULT;
     self.twincodeTextField.tintColor = Design.FONT_COLOR_DEFAULT;
     
-    self.twincodeTextField.attributedPlaceholder = [[NSAttributedString alloc]initWithString:TwinmeLocalizedString(@"scan_view_controller_paste_code", nil) attributes:[NSDictionary dictionaryWithObject:DESIGN_PLACEHOLDER_COLOR forKey:NSForegroundColorAttributeName]];
+    self.twincodeTextField.attributedPlaceholder = [[NSAttributedString alloc]initWithString:TwinmeLocalizedString(@"scan_view_paste_code", nil) attributes:[NSDictionary dictionaryWithObject:DESIGN_PLACEHOLDER_COLOR forKey:NSForegroundColorAttributeName]];
     [self.twincodeTextField setReturnKeyType:UIReturnKeyDone];
     self.twincodeTextField.delegate = self;
     [self.twincodeTextField addTarget:self action:@selector(textFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
@@ -564,7 +564,7 @@ static UIColor *DESIGN_PLACEHOLDER_COLOR;
         
     AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
     alertMessageView.alertMessageViewDelegate = self;
-    [alertMessageView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:TwinmeLocalizedString(@"capture_view_controller_incorrect_qrcode", nil)];
+    [alertMessageView initWithTitle:TwinmeLocalizedString(@"deleted_account_view_warning", nil) message:TwinmeLocalizedString(@"capture_view_incorrect_qrcode", nil)];
     [self.navigationController.view addSubview:alertMessageView];
     [alertMessageView showAlertView];
 }
