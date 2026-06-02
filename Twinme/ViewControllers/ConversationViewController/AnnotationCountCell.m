@@ -82,7 +82,7 @@ static const int ddLogLevel = DDLogLevelWarning;
     self.counterLabel.textColor = Design.FONT_COLOR_DEFAULT;
 }
 
-- (void)bindWithAnnotation:(TLDescriptorAnnotation *)descriptorAnnotation descriptorId:(TLDescriptorId *)descriptorId isPeerItem:(BOOL)isPeerItem {
+- (void)bindWithAnnotation:(TLDescriptorAnnotation *)descriptorAnnotation count:(int)count descriptorId:(TLDescriptorId *)descriptorId isPeerItem:(BOOL)isPeerItem {
     DDLogVerbose(@"%@ bindWithAnnotation: %@", LOG_TAG, descriptorAnnotation);
             
     self.descriptorId = descriptorId;
@@ -134,7 +134,7 @@ static const int ddLogLevel = DDLogLevelWarning;
             break;
     }
     
-    self.counterLabel.text = [NSString stringWithFormat:@"%d", descriptorAnnotation.count];
+    self.counterLabel.text = [NSString stringWithFormat:@"%d", count];
     
     [self updateColor];
 }

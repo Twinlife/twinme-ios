@@ -109,7 +109,7 @@ static int BOLD_VALUE = -2;
     }
 }
 
-+ (NSString *)formatBackupTimeInterval:(NSTimeInterval)interval {
++ (NSString *)formatBackupTimeInterval:(NSTimeInterval)interval isLastBackup:(BOOL)isLastBackup {
     
     NSDate *date = [NSDate dateWithTimeIntervalSince1970:interval];
     NSCalendar *calendar = [NSCalendar currentCalendar];
@@ -119,7 +119,9 @@ static int BOLD_VALUE = -2;
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc]init];
     dateFormatter.locale = [NSLocale currentLocale];
     
-    if ([calendar isDateInToday:date]) {
+    if (isLastBackup) {
+        [dateFormatter setDateStyle:NSDateFormatterShortStyle];
+    } else if ([calendar isDateInToday:date]) {
         [dateFormatter setDateStyle:NSDateFormatterNoStyle];
     } else if ([calendar isDateInYesterday:date]) {
         [dateFormatter setDoesRelativeDateFormatting:YES];
@@ -198,6 +200,19 @@ static int BOLD_VALUE = -2;
     }
 }
 
++ (NSString *)capitalizeFirstCharacter:(NSString *)string {
+    
+    if (!string || string.length == 0) {
+        return @"";
+    } else if (string.length == 1) {
+        return string.capitalizedString;
+    } else {
+        NSString *firstLetter = [string substringToIndex:1];
+        NSString *rest = [[string substringFromIndex:1] lowercaseString];
+        return [firstLetter stringByAppendingString:rest];
+    }
+}
+
 + (NSString *)convertEmoji:(NSString *)string {
     
     string = [string stringByReplacingOccurrencesOfString:@":-)" withString:HAPPY_EMOJI_CODE];
@@ -257,21 +272,11 @@ static int BOLD_VALUE = -2;
     
     NSRange range = NSMakeRange(0, text.length);
     NSMutableArray *excludeRanges = [[NSMutableArray alloc]init];
-    if (@available(iOS 13, *)) {
-        NSError *error = nil;
-        NSDataDetector *linkDetector = [NSDataDetector dataDetectorWithTypes:NSTextCheckingTypeLink error:&error];
-        NSArray *matches = [linkDetector matchesInString:text options:0 range:range];
-        for (NSTextCheckingResult *match in matches) {
-            [excludeRanges addObject:[NSValue valueWithRange:match.range]];
-        }
-    } else {
-        NSRegularExpression *urlRegularExpression = [NSRegularExpression regularExpressionWithPattern:
-                                                      URL_PATTERN options:NSRegularExpressionCaseInsensitive error:nil];
-        [urlRegularExpression enumerateMatchesInString:text options:NSMatchingReportProgress range:range usingBlock:^(NSTextCheckingResult *result, NSMatchingFlags flags, BOOL *stop) {
-            if (result.range.length > 0) {
-                [excludeRanges addObject:[NSValue valueWithRange:result.range]];
-            }
-        }];
+    NSError *error = nil;
+    NSDataDetector *linkDetector = [NSDataDetector dataDetectorWithTypes:NSTextCheckingTypeLink error:&error];
+    NSArray *matches = [linkDetector matchesInString:text options:0 range:range];
+    for (NSTextCheckingResult *match in matches) {
+        [excludeRanges addObject:[NSValue valueWithRange:match.range]];
     }
     
     NSMutableArray *styleRanges = [[NSMutableArray alloc]init];

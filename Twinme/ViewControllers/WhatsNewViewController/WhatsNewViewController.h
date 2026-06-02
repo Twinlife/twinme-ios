@@ -14,6 +14,7 @@
 
 @interface WhatsNewViewController : AbstractTwinmeViewController
 
+@property (nonatomic) BOOL currentVersion;
 @property (nonatomic) BOOL updateMode;
 
 - (void)showInView:(UIViewController *)view;

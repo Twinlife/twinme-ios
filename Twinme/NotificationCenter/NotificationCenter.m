@@ -410,11 +410,11 @@ typedef enum {
         return;
     }
     
-    [self messageNotificationWithContact:contact notification:notificationInfo conversationId:conversationId descriptor:descriptor];
+    [self messageNotificationWithContact:contact notification:notificationInfo conversationId:conversationId descriptor:descriptor annotation:nil];
 }
 
-- (void)messageNotificationWithContact:(nonnull id<TLOriginator>)contact notification:(nullable NotificationInfo *)notificationInfo conversationId:(nullable NSUUID *)conversationId descriptor:(nullable TLDescriptor *)descriptor {
-    DDLogVerbose(@"%@ messageNotificationWithContact: %@ conversationId: %@ descriptor: %@", LOG_TAG, contact, conversationId, descriptor);
+- (void)messageNotificationWithContact:(nonnull id<TLOriginator>)contact notification:(nullable NotificationInfo *)notificationInfo conversationId:(nullable NSUUID *)conversationId descriptor:(nullable TLDescriptor *)descriptor annotation:(nullable TLDescriptorAnnotation *)annotation {
+    DDLogVerbose(@"%@ messageNotificationWithContact: %@ conversationId: %@ descriptor: %@ annotation: %@", LOG_TAG, contact, conversationId, descriptor, annotation);
     
     if (!notificationInfo) {
         return;
@@ -472,15 +472,19 @@ typedef enum {
 
 }
 
-- (void)onUpdateAnnotationWithContact:(id<TLOriginator>)contact conversationId:(NSUUID *)conversationId descriptor:(TLDescriptor *)descriptor annotatingUser:(nonnull TLTwincodeOutbound *)annotatingUser {
+- (void)onUpdateAnnotationsWithContact:(id<TLOriginator>)contact conversationId:(NSUUID *)conversationId descriptor:(TLDescriptor *)descriptor annotatingUser:(nonnull TLTwincodeOutbound *)annotatingUser annotations:(nonnull NSSet<TLDescriptorAnnotation *> *)annotations {
     DDLogVerbose(@"%@ onUpdateAnnotationWithContact: %@ conversationId: %@ descriptor: %@ annotatingUser: %@", LOG_TAG, contact, conversationId, descriptor, annotatingUser);
     
-    NotificationInfo *notificationInfo = [self createNotificationAnnotationWithContact:contact conversationId:conversationId descriptor:descriptor annotatingUser:annotatingUser notificationId:nil];
-    if (!notificationInfo) {
-        return;
+    for (TLDescriptorAnnotation *annotation in annotations) {
+        NotificationInfo *notificationInfo = [self createNotificationAnnotationWithContact:contact conversationId:conversationId descriptor:descriptor annotatingUser:annotatingUser notificationId:nil annotation:annotation];
+        if (!notificationInfo) {
+            continue;
+        }
+        
+        [self messageNotificationWithContact:contact notification:notificationInfo conversationId:conversationId descriptor:descriptor annotation:annotation];
     }
     
-    [self messageNotificationWithContact:contact notification:notificationInfo conversationId:conversationId descriptor:descriptor];
+    
 }
 
 - (void)onSetActiveConversationWithConversationId:(nonnull NSUUID *)conversationId {
@@ -519,7 +523,7 @@ typedef enum {
         return;
     }
     
-    [self messageNotificationWithContact:group notification:notificationInfo conversationId:conversationId descriptor:nil];
+    [self messageNotificationWithContact:group notification:notificationInfo conversationId:conversationId descriptor:nil annotation:nil];
 }
 
 - (void)onNewContactWithContact:(id<TLOriginator>)contact {
@@ -530,7 +534,7 @@ typedef enum {
         return;
     }
     
-    [self messageNotificationWithContact:contact notification:notificationInfo conversationId:nil descriptor:nil];
+    [self messageNotificationWithContact:contact notification:notificationInfo conversationId:nil descriptor:nil annotation:nil];
 }
 
 - (void)onUnbindContactWithContact:(id<TLOriginator>)contact {
@@ -541,7 +545,7 @@ typedef enum {
         return;
     }
     
-    [self messageNotificationWithContact:contact notification:notificationInfo conversationId:nil descriptor:nil];
+    [self messageNotificationWithContact:contact notification:notificationInfo conversationId:nil descriptor:nil annotation:nil];
 }
 
 - (void)onUpdateContactWithContact:(id<TLOriginator>)contact updatedAttributes:(nonnull NSArray<TLAttributeNameValue *> *)updatedAttributes {
@@ -552,7 +556,7 @@ typedef enum {
         return;
     }
     
-    [self messageNotificationWithContact:contact notification:notificationInfo conversationId:nil descriptor:nil];
+    [self messageNotificationWithContact:contact notification:notificationInfo conversationId:nil descriptor:nil annotation:nil];
 }
 
 - (void)updateApplicationBadgeNumber:(NSInteger)applicationBadgeNumber {
@@ -648,9 +652,10 @@ typedef enum {
             case TLNotificationTypeNewAudioMessage:
             case TLNotificationTypeNewVideoMessage:
             case TLNotificationTypeNewFileMessage:
+            case TLNotificationTypeNewPollMessage:
             case TLNotificationTypeResetConversation:
             case TLNotificationTypeUpdatedAnnotation: {
-                [mainViewController selectTab:3];
+                [mainViewController selectTab:2];
                 selectedNavigationController = mainViewController.selectedViewController;
                 mainViewController.selectedViewController.navigationBarHidden = NO;
                 
@@ -667,13 +672,13 @@ typedef enum {
             case TLNotificationTypeUpdatedContact:
             case TLNotificationTypeUpdatedAvatarContact:
             case TLNotificationTypeDeletedContact: {
-                [mainViewController selectTab:2];
+                [mainViewController selectTab:1];
                 [ConversationsViewController showViewWithSubject:(id<TLOriginator>)subject navigationController:mainViewController.selectedViewController];
                 break;
             }
                 
             case TLNotificationTypeNewGroupJoined: {
-                [mainViewController selectTab:3];
+                [mainViewController selectTab:2];
                 ShowGroupViewController *showGroupViewController = [[UIStoryboard storyboardWithName:@"Group" bundle:nil] instantiateViewControllerWithIdentifier:@"ShowGroupViewController"];
                 [showGroupViewController initWithGroup:(TLGroup *)subject];
                 [selectedNavigationController pushViewController:showGroupViewController animated:YES];
@@ -739,7 +744,7 @@ typedef enum {
         ApplicationDelegate *delegate = (ApplicationDelegate *)[[UIApplication sharedApplication] delegate];
         MainViewController *mainViewController = delegate.mainViewController;
         
-        [mainViewController selectTab:1];
+        [mainViewController selectTab:0];
         
         TwinmeNavigationController *selectedNavigationController = mainViewController.selectedViewController;
         if ([selectedNavigationController.topViewController isKindOfClass:[ConversationViewController class]]) {
@@ -918,7 +923,7 @@ typedef enum {
         return;
     }
     
-    [self messageNotificationWithContact:originator notification:notificationInfo conversationId:nil descriptor:nil];
+    [self messageNotificationWithContact:originator notification:notificationInfo conversationId:nil descriptor:nil annotation:nil];
 }
 
 - (void)showContactWithNotification:(SystemNotification *)systemNotification {
@@ -974,7 +979,7 @@ typedef enum {
             return;
         }
         
-        [self messageNotificationWithContact:conference notification:notificationInfo conversationId:nil descriptor:nil];
+        [self messageNotificationWithContact:conference notification:notificationInfo conversationId:nil descriptor:nil annotation:nil];
     }
 }
 

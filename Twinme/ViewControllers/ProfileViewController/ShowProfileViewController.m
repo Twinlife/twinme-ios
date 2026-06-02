@@ -186,6 +186,7 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     
     self.profile = profile;
     self.isActiveProfile = isActive;
+    [self.editIdentityService refreshWithProfile:self.profile];
     [self updateProfile];
 }
 
@@ -343,7 +344,7 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     self.addContactView.layer.cornerRadius = self.addContactViewHeightConstraint.constant * 0.5;
     self.addContactView.clipsToBounds = YES;
     [self.addContactView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleAddContactTapGesture:)]];
-    self.addContactView.accessibilityLabel = TwinmeLocalizedString(@"add_contact_view_controller_title", nil);
+    self.addContactView.accessibilityLabel = TwinmeLocalizedString(@"add_contact_view_title", nil);
     
     self.addContactImageViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     self.addContactImageView.tintColor = [UIColor whiteColor];
@@ -355,7 +356,7 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     self.twincodeView.backgroundColor = Design.MAIN_COLOR;
     self.twincodeView.userInteractionEnabled = YES;
     self.twincodeView.isAccessibilityElement = YES;
-    self.twincodeView.accessibilityLabel = TwinmeLocalizedString(@"show_profile_view_controller_twincode_title", nil);
+    self.twincodeView.accessibilityLabel = TwinmeLocalizedString(@"profile_view_twincode_title", nil);
     self.twincodeView.layer.cornerRadius = Design.CONTAINER_RADIUS;
     self.twincodeView.clipsToBounds = YES;
     [self.twincodeView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTwincodeTapGesture:)]];
@@ -367,7 +368,7 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     
     self.twincodeLabel.font = Design.FONT_MEDIUM36;
     self.twincodeLabel.textColor = [UIColor whiteColor];
-    self.twincodeLabel.text = TwinmeLocalizedString(@"show_profile_view_controller_twincode_title", nil);
+    self.twincodeLabel.text = TwinmeLocalizedString(@"profile_view_twincode_title", nil);
     
     [self.twincodeLabel setContentHuggingPriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisHorizontal];
         
@@ -378,7 +379,7 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     
     self.messageLabel.font = Design.FONT_REGULAR26;
     self.messageLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    self.messageLabel.text = TwinmeLocalizedString(@"show_profile_view_controller_message", nil);
+    self.messageLabel.text = TwinmeLocalizedString(@"profile_view_message", nil);
     
     self.nameLabel.text = TwinmeLocalizedString(@"application_profile", nil);
     
@@ -394,7 +395,7 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     self.noProfileLabel.font = Design.FONT_MEDIUM34;
     self.noProfileLabel.textColor = Design.FONT_COLOR_DEFAULT;
     [self.noProfileLabel setAdjustsFontSizeToFitWidth:YES];
-    self.noProfileLabel.text = TwinmeLocalizedString(@"add_contact_view_controller_onboarding_message", nil);
+    self.noProfileLabel.text = TwinmeLocalizedString(@"add_contact_view_onboarding_message", nil);
     self.noProfileLabel.hidden = YES;
     
     self.createProfileViewBottomConstraint.constant *= Design.HEIGHT_RATIO;
@@ -408,7 +409,7 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     self.createProfileView.clipsToBounds = YES;
     self.createProfileView.hidden = YES;
     self.createProfileView.isAccessibilityElement = YES;
-    self.createProfileView.accessibilityLabel = TwinmeLocalizedString(@"show_profile_view_controller_create_profile", nil);
+    self.createProfileView.accessibilityLabel = TwinmeLocalizedString(@"profile_view_create_profile", nil);
     [self.createProfileView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleCreateProfileTapGesture:)]];
     
     self.createProfileLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
@@ -416,7 +417,7 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
 
     self.createProfileLabel.font = Design.FONT_MEDIUM34;
     self.createProfileLabel.textColor = [UIColor whiteColor];
-    self.createProfileLabel.text = TwinmeLocalizedString(@"show_profile_view_controller_create_profile", nil);
+    self.createProfileLabel.text = TwinmeLocalizedString(@"profile_view_create_profile", nil);
     
     self.transferLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
     self.transferLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
@@ -425,7 +426,7 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     self.transferLabel.font = Design.FONT_REGULAR26;
     self.transferLabel.textColor = Design.FONT_COLOR_DEFAULT;
     
-    NSMutableAttributedString *transferAttributedString = [[NSMutableAttributedString alloc] initWithString:TwinmeLocalizedString(@"account_view_controller_transfer_from_another_device", nil)];
+    NSMutableAttributedString *transferAttributedString = [[NSMutableAttributedString alloc] initWithString:TwinmeLocalizedString(@"account_view_transfer_from_another_device", nil)];
     [transferAttributedString addAttribute:NSUnderlineStyleAttributeName value:@1 range:NSMakeRange(0,
                                                                                                  [transferAttributedString length])];
     [self.transferLabel setAttributedText:transferAttributedString];
@@ -515,15 +516,20 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
         
         if (!self.avatar) {
             [self.editIdentityService getImageWithProfile:self.profile withBlock:^(UIImage *image) {
-                self.avatar = image;
+                if (!self.avatar) {
+                    self.avatar = image;
+                }
+                
+                self.avatarView.image = self.avatar;
             }];
+        } else {
+            self.avatarView.image = self.avatar;
         }
         
-        self.avatarView.image = self.avatar;
         self.nameLabel.text = self.profile.name;
         self.identityDescription = self.profile.objectDescription;
         
-        if ([self.identityDescription isEqual:TwinmeLocalizedString(@"side_menu_view_controller_about", nil)]) {
+        if ([self.identityDescription isEqual:TwinmeLocalizedString(@"navigation_view_about_twinme", nil)]) {
             self.descriptionLabel.text = @"";
         } else {
             self.descriptionLabel.text = self.identityDescription;

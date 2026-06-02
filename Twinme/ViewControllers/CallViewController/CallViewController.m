@@ -438,7 +438,7 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
     // If we are connected, start the animation.
     self.connected = [self.callService isConnected];
     if (!self.connected && !self.networkAlertView) {
-        self.networkAlertView = [[AlertView alloc] initNetWorkAlertWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) alertViewDelegate:self twinmeContext:self.twinmeContext viewController:self];
+        self.networkAlertView = [[AlertView alloc] initNetWorkAlertWithTitle:TwinmeLocalizedString(@"deleted_account_view_warning", nil) alertViewDelegate:self twinmeContext:self.twinmeContext viewController:self];
         [self.networkAlertView showNetworkAlertView];
     }
 }
@@ -566,7 +566,10 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
             message = TwinmeLocalizedString(@"application_not_authorized_operation_by_your_contact",nil);
         }
         dispatch_async(dispatch_get_main_queue(), ^{
-            [[UIApplication sharedApplication].keyWindow makeToast:message];
+            UIWindow *window = [self currentWindow];
+            if (window) {
+                [window makeToast:message];
+            }
         });
         return;
     }
@@ -576,8 +579,8 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
         defaultConfirmView.bottomSheetViewDelegate = self;
         defaultConfirmView.forceDarkMode = YES;
         defaultConfirmView.tag = CONTROL_CAMERA_STOP_TAG;
-        NSString *message = [NSString stringWithFormat:TwinmeLocalizedString(@"call_view_controller_camera_control_remotely", nil), self.originator.name];
-        [defaultConfirmView initWithTitle:TwinmeLocalizedString(@"call_view_controller_camera_control", nil) message:message image:nil avatar:nil action: TwinmeLocalizedString(@"call_view_controller_camera_control_stop", nil) actionColor:Design.DELETE_COLOR_RED cancel:TwinmeLocalizedString(@"application_cancel", nil)];
+        NSString *message = [NSString stringWithFormat:TwinmeLocalizedString(@"call_view_camera_control_remotely", nil), self.originator.name];
+        [defaultConfirmView initWithTitle:TwinmeLocalizedString(@"call_view_camera_control", nil) message:message image:nil avatar:nil action: TwinmeLocalizedString(@"call_view_camera_control_stop", nil) actionColor:Design.DELETE_COLOR_RED cancel:TwinmeLocalizedString(@"application_cancel", nil)];
         [self.view addSubview:defaultConfirmView];
         [defaultConfirmView showConfirmView];
         return;
@@ -618,7 +621,10 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
     CallState *call = [self.callService currentCall];
     if (call && ![call isOneOnOneVideoCall]) {
         dispatch_async(dispatch_get_main_queue(), ^{
-            [[UIApplication sharedApplication].keyWindow makeToast:TwinmeLocalizedString(@"call_view_controller_certify_video_message", nil)];
+            UIWindow *window = [self currentWindow];
+            if (window) {
+                [window makeToast:TwinmeLocalizedString(@"call_view_certify_video_message", nil)];
+            }
         });
         return;
     }
@@ -643,12 +649,12 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
         
         NSString *message;
         if ([self.participant remoteActiveCamera] > 0) {
-            message = [NSString stringWithFormat:TwinmeLocalizedString(@"call_view_controller_camera_control_message", nil), self.originator.name];
+            message = [NSString stringWithFormat:TwinmeLocalizedString(@"call_view_camera_control_message", nil), self.originator.name];
         } else {
-            message = [NSString stringWithFormat:TwinmeLocalizedString(@"call_view_controller_camera_control_remotely", nil), self.originator.name];
+            message = [NSString stringWithFormat:TwinmeLocalizedString(@"call_view_camera_control_remotely", nil), self.originator.name];
         }
         
-        [defaultConfirmView initWithTitle:TwinmeLocalizedString(@"call_view_controller_camera_control", nil) message:message image:nil avatar:nil action: TwinmeLocalizedString(@"call_view_controller_camera_control_stop", nil) actionColor:Design.DELETE_COLOR_RED cancel:TwinmeLocalizedString(@"application_cancel", nil)];
+        [defaultConfirmView initWithTitle:TwinmeLocalizedString(@"call_view_camera_control", nil) message:message image:nil avatar:nil action: TwinmeLocalizedString(@"call_view_camera_control_stop", nil) actionColor:Design.DELETE_COLOR_RED cancel:TwinmeLocalizedString(@"application_cancel", nil)];
         [self.view addSubview:defaultConfirmView];
         [defaultConfirmView showConfirmView];
     } else {
@@ -659,7 +665,7 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
             onboardingConfirmView.bottomSheetViewDelegate = self;
             onboardingConfirmView.tag = ONBOARDING_REMOTE_CAMERA;
             onboardingConfirmView.forceDarkMode = YES;
-            [onboardingConfirmView initWithTitle:TwinmeLocalizedString(@"call_view_controller_camera_control_needs_help", nil) message: TwinmeLocalizedString(@"call_view_controller_camera_control_onboarding_part_2", nil) image:[UIImage imageNamed:@"OnboardingControlCamera"] action:TwinmeLocalizedString(@"application_ok", nil) actionColor:nil cancel:TwinmeLocalizedString(@"application_do_not_display", nil)];
+            [onboardingConfirmView initWithTitle:TwinmeLocalizedString(@"call_view_camera_control_needs_help", nil) message: TwinmeLocalizedString(@"call_view_camera_control_onboarding_part_2", nil) image:[UIImage imageNamed:@"OnboardingControlCamera"] action:TwinmeLocalizedString(@"application_ok", nil) actionColor:nil cancel:TwinmeLocalizedString(@"application_do_not_display", nil)];
             
             [self.view addSubview:onboardingConfirmView];
             [onboardingConfirmView showConfirmView];            
@@ -693,8 +699,8 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
         InvitationCodeConfirmView *invitationCodeConfirmView = [[InvitationCodeConfirmView alloc] init];
         invitationCodeConfirmView.bottomSheetViewDelegate = self;
         invitationCodeConfirmView.forceDarkMode = YES;
-        [invitationCodeConfirmView initWithTitle:self.currentSpace.profile.name message:TwinmeLocalizedString(@"group_member_view_controller_invite_personnal_relation", nil) avatar:image icon:[UIImage imageNamed:@"ActionBarAddContact"]];
-        [invitationCodeConfirmView setConfirmTitle:TwinmeLocalizedString(@"add_contact_view_controller_invite", nil)];
+        [invitationCodeConfirmView initWithTitle:self.currentSpace.profile.name message:TwinmeLocalizedString(@"group_member_view_invite_personnal_relation", nil) avatar:image icon:[UIImage imageNamed:@"ActionBarAddContact"]];
+        [invitationCodeConfirmView setConfirmTitle:TwinmeLocalizedString(@"add_contact_view_invite", nil)];
         [self.view addSubview:invitationCodeConfirmView];
         [invitationCodeConfirmView showConfirmView];
         
@@ -972,14 +978,18 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
             [self.playerStreamingAudioView stopStreaming];
             break;
             
-        case StreamingEventError:
+        case StreamingEventError: {
             needsUpdateParticipants = YES;
             self.streamPlayer = nil;
             [self.playerStreamingAudioView stopStreaming];
             
             dispatch_async(dispatch_get_main_queue(), ^{
-                [[UIApplication sharedApplication].keyWindow makeToast:TwinmeLocalizedString(@"streaming_audio_view_controller_error_message", nil)];
+                UIWindow *window = [self currentWindow];
+                if (window) {
+                    [window makeToast:TwinmeLocalizedString(@"streaming_audio_view_error_message", nil)];
+                }
             });
+        }
             break;
             
         case StreamingEventUnsupported: {
@@ -988,7 +998,10 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
             [self.playerStreamingAudioView stopStreaming];
             
             dispatch_async(dispatch_get_main_queue(), ^{
-                [[UIApplication sharedApplication].keyWindow makeToast:[NSString stringWithFormat:TwinmeLocalizedString(@"streaming_audio_view_controller_unsupported_message", nil), self.contactName]];
+                UIWindow *window = [self currentWindow];
+                if (window) {
+                    [window makeToast:[NSString stringWithFormat:TwinmeLocalizedString(@"streaming_audio_view_unsupported_message", nil), self.contactName]];
+                }
             });
         }
             break;
@@ -1143,11 +1156,11 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
     
     switch (self.currentAudioDeviceType) {
         case AudioDeviceTypeBluetooth:
-            updateAudioMessage = TwinmeLocalizedString(@"call_view_controller_connected_bluetooth", nil);
+            updateAudioMessage = TwinmeLocalizedString(@"call_view_connected_bluetooth", nil);
             break;
             
         case AudioDeviceTypeSpeakerPhone:
-            updateAudioMessage = TwinmeLocalizedString(@"call_view_controller_connected_speaker", nil);
+            updateAudioMessage = TwinmeLocalizedString(@"call_view_connected_speaker", nil);
             break;
             
         default:
@@ -1157,7 +1170,10 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
     CallStatus callStatus = [self.callService callStatus];
     if (CALL_IS_ACTIVE(callStatus) && ![updateAudioMessage isEqualToString:@""]) {
         dispatch_async(dispatch_get_main_queue(), ^{
-            [[UIApplication sharedApplication].keyWindow makeToast:updateAudioMessage];
+            UIWindow *window = [self currentWindow];
+            if (window) {
+                [window makeToast:updateAudioMessage];
+            }
         });
     }
     
@@ -1199,7 +1215,7 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
     // The peer closed the connection, display a message on the view and prepare to close it.
     if (message.terminateReason == TLPeerConnectionServiceTerminateReasonSuccess) {
         [self updateView:CallStatusTerminated];
-        self.terminatedLabel.text = [NSString stringWithFormat:TwinmeLocalizedString(@"video_call_view_controller_terminate_success %@", nil), self.contactName];
+        self.terminatedLabel.text = [NSString stringWithFormat:TwinmeLocalizedString(@"video_call_view_terminate_success", nil), self.contactName];
         [self.terminatedLabel sizeToFit];
         
         self.showCallQuality = [self.twinmeApplication askCallQualityWithCallDuration:self.elapsedTime];
@@ -1373,7 +1389,7 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
     AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
     alertMessageView.alertMessageViewDelegate = self;
     alertMessageView.forceDarkMode = YES;
-    [alertMessageView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:[NSString stringWithFormat:TwinmeLocalizedString(@"call_view_controller_not_supported_group_call_message", nil), [callParticipantView getName]]];
+    [alertMessageView initWithTitle:TwinmeLocalizedString(@"deleted_account_view_warning", nil) message:[NSString stringWithFormat:TwinmeLocalizedString(@"call_view_not_supported_group_call_message", nil), [callParticipantView getName]]];
     [self.view addSubview:alertMessageView];
     [alertMessageView showAlertView];
 }
@@ -1622,8 +1638,8 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
             defaultConfirmView.bottomSheetViewDelegate = self;
             defaultConfirmView.forceDarkMode = YES;
             defaultConfirmView.tag = CONTROL_CAMERA_STOP_TAG;
-            NSString *message = [NSString stringWithFormat:TwinmeLocalizedString(@"call_view_controller_camera_control_remotely", nil), self.originator.name];
-            [defaultConfirmView initWithTitle:TwinmeLocalizedString(@"call_view_controller_camera_control", nil) message:message image:nil avatar:nil action: TwinmeLocalizedString(@"call_view_controller_camera_control_stop", nil) actionColor:Design.DELETE_COLOR_RED cancel:TwinmeLocalizedString(@"application_cancel", nil)];
+            NSString *message = [NSString stringWithFormat:TwinmeLocalizedString(@"call_view_camera_control_remotely", nil), self.originator.name];
+            [defaultConfirmView initWithTitle:TwinmeLocalizedString(@"call_view_camera_control", nil) message:message image:nil avatar:nil action: TwinmeLocalizedString(@"call_view_camera_control_stop", nil) actionColor:Design.DELETE_COLOR_RED cancel:TwinmeLocalizedString(@"application_cancel", nil)];
             [self.view addSubview:defaultConfirmView];
             [defaultConfirmView showConfirmView];
         } else {
@@ -1948,16 +1964,16 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
     self.messageLabel.font = Design.FONT_REGULAR34;
     self.messageLabel.textColor = [UIColor whiteColor];
     if (self.isVideoCall) {
-        self.messageLabel.text = TwinmeLocalizedString(@"video_call_view_controller_calling", nil);
+        self.messageLabel.text = TwinmeLocalizedString(@"video_call_view_calling", nil);
     } else {
-        self.messageLabel.text = TwinmeLocalizedString(@"audio_call_view_controller_calling", nil);
+        self.messageLabel.text = TwinmeLocalizedString(@"audio_call_view_calling", nil);
     }
     
     self.transferLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
     self.transferLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
     self.transferLabel.font = Design.FONT_REGULAR34;
     self.transferLabel.textColor = [UIColor whiteColor];
-    self.transferLabel.text = TwinmeLocalizedString(@"call_view_controller_transfer_call_message", nil);
+    self.transferLabel.text = TwinmeLocalizedString(@"call_view_transfer_call_message", nil);
     self.transferLabel.hidden = YES;
     
     self.answerCallViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
@@ -2024,7 +2040,7 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
     self.conversationView.callConversationDelegate = self;
         
     self.addParticipantView.hidden = YES;
-    self.addParticipantView.accessibilityLabel = TwinmeLocalizedString(@"room_members_view_controller_participants_title", nil);
+    self.addParticipantView.accessibilityLabel = TwinmeLocalizedString(@"room_members_view_participants_title", nil);
     
     self.addParticipantImageViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     [self.addParticipantImageView setTintColor:[UIColor whiteColor]];
@@ -2119,32 +2135,31 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
         self.answerCallView.hidden = YES;
         self.menuView.hidden = NO;
         self.callInfoView.hidden = YES;
-        self.messageLabel.text = TwinmeLocalizedString(@"video_call_view_controller_connecting", nil);
-        
+        self.messageLabel.text = TwinmeLocalizedString(@"video_call_view_connecting", nil);        
     } else if (CALL_IS_INCOMING(callStatus)) { // CallModeIncomingCall:
         self.declineView.hidden = NO;
         self.answerCallView.hidden = NO;
         self.menuView.hidden = YES;
         self.callInfoView.hidden = YES;
         if (CALL_IS_VIDEO(callStatus)) {
-            self.messageLabel.text = TwinmeLocalizedString(@"video_call_view_controller_calling", nil);
+            self.messageLabel.text = TwinmeLocalizedString(@"video_call_view_calling", nil);
         } else {
-            self.messageLabel.text = TwinmeLocalizedString(@"audio_call_view_controller_calling", nil);
+            self.messageLabel.text = TwinmeLocalizedString(@"audio_call_view_calling", nil);
         }
         
     } else if (CALL_IS_OUTGOING(callStatus)) {
         if (CALL_IS_VIDEO(callStatus)) {
-            self.messageLabel.text = TwinmeLocalizedString(@"video_call_view_controller_calling", nil);
+            self.messageLabel.text = TwinmeLocalizedString(@"video_call_view_calling", nil);
         } else {
-            self.messageLabel.text = TwinmeLocalizedString(@"audio_call_view_controller_calling", nil);
+            self.messageLabel.text = TwinmeLocalizedString(@"audio_call_view_calling", nil);
         }
         self.menuView.hidden = NO;
         self.callInfoView.hidden = YES;
     } else if (callStatus == CallStatusInVideoBell) {
         if (self.isVideoCall) {
-            self.messageLabel.text = TwinmeLocalizedString(@"video_call_view_controller_calling", nil);
+            self.messageLabel.text = TwinmeLocalizedString(@"video_call_view_calling", nil);
         } else {
-            self.messageLabel.text = TwinmeLocalizedString(@"audio_call_view_controller_calling", nil);
+            self.messageLabel.text = TwinmeLocalizedString(@"audio_call_view_calling", nil);
         }
         self.answerCallView.hidden = YES;
         self.declineView.hidden = YES;
@@ -2282,7 +2297,10 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
                 self.streamPlayer = nil;
                 
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    [[UIApplication sharedApplication].keyWindow makeToast:TwinmeLocalizedString(@"streaming_audio_view_controller_error_message", nil)];
+                    UIWindow *window = [self currentWindow];
+                    if (window) {
+                        [window makeToast:TwinmeLocalizedString(@"streaming_audio_view_error_message", nil)];
+                    }
                 });
                 
             } else if (streamingStatus == StreamingStatusUnSupported) {
@@ -2292,7 +2310,10 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
                 self.streamPlayer = nil;
                 
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    [[UIApplication sharedApplication].keyWindow makeToast:[NSString stringWithFormat:TwinmeLocalizedString(@"streaming_audio_view_controller_unsupported_message", nil), self.contactName]];
+                    UIWindow *window = [self currentWindow];
+                    if (window) {
+                        [window makeToast:[NSString stringWithFormat:TwinmeLocalizedString(@"streaming_audio_view_unsupported_message", nil), self.contactName]];
+                    }
                 });
             }
         }
@@ -2453,8 +2474,8 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
         defaultConfirmView.bottomSheetViewDelegate = self;
         defaultConfirmView.forceDarkMode = YES;
         defaultConfirmView.tag = CONTROL_CAMERA_ANSWER_TAG;
-        NSString *message = [NSString stringWithFormat:TwinmeLocalizedString(@"call_view_controller_camera_control_confirm_message", nil), self.originator.name];
-        [defaultConfirmView initWithTitle:TwinmeLocalizedString(@"call_view_controller_camera_control", nil) message:message image:nil avatar:nil action: TwinmeLocalizedString(@"application_accept", nil) actionColor:nil cancel:TwinmeLocalizedString(@"application_cancel", nil)];
+        NSString *message = [NSString stringWithFormat:TwinmeLocalizedString(@"call_view_camera_control_confirm_message", nil), self.originator.name];
+        [defaultConfirmView initWithTitle:TwinmeLocalizedString(@"call_view_camera_control", nil) message:message image:nil avatar:nil action: TwinmeLocalizedString(@"application_accept", nil) actionColor:nil cancel:TwinmeLocalizedString(@"application_cancel", nil)];
         [self.view addSubview:defaultConfirmView];
         [defaultConfirmView showConfirmView];
     } else if (event == CallParticipantEventCameraControlGranted) {
@@ -2465,8 +2486,8 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
         AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
         alertMessageView.alertMessageViewDelegate = self;
         alertMessageView.forceDarkMode = YES;
-        NSString *message = [NSString stringWithFormat:TwinmeLocalizedString(@"call_view_controller_camera_control_denied", nil), self.originator.name];
-        [alertMessageView initWithTitle:TwinmeLocalizedString(@"call_view_controller_camera_control", nil) message:message];
+        NSString *message = [NSString stringWithFormat:TwinmeLocalizedString(@"call_view_camera_control_denied", nil), self.originator.name];
+        [alertMessageView initWithTitle:TwinmeLocalizedString(@"call_view_camera_control", nil) message:message];
         [self.view addSubview:alertMessageView];
         [alertMessageView showAlertView];
         callParticipant.isWaitingForCameraControlAnswer = NO;
@@ -2728,7 +2749,11 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
                 isMainParticipant = YES;
             }
             
-            BOOL isLandscape = [UIApplication sharedApplication].statusBarOrientation != UIInterfaceOrientationPortrait;
+            UIWindow *currentWindow = [self currentWindow];
+            BOOL isLandscape = NO;
+            if (currentWindow) {
+                isLandscape = UIInterfaceOrientationIsLandscape(currentWindow.windowScene.interfaceOrientation);
+            }
             
             [callParticipantView setPosition:isMainParticipant parentViewWidth:self.participantsView.frame.size.width parentViewHeight:self.participantsView.frame.size.height numberParticipants:numberParticipants position:position hideName:self.menuHidden isLandscape:isLandscape];
             
@@ -2840,7 +2865,13 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
     }
     [UIDevice currentDevice].proximityMonitoringEnabled = self.proximityMonitoringEnabled;
     
-    if ([UIApplication sharedApplication].statusBarOrientation != UIInterfaceOrientationPortrait) {
+    BOOL isLandscape = NO;
+    UIWindow *currentWindow = [self currentWindow];
+    if (currentWindow) {
+        isLandscape = UIInterfaceOrientationIsLandscape(currentWindow.windowScene.interfaceOrientation);
+    }
+    
+    if (isLandscape) {
         [[UIDevice currentDevice] setValue:[NSNumber numberWithInt:UIInterfaceOrientationPortrait] forKey:@"orientation"];
     }
     
@@ -2871,7 +2902,7 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
     
     if (!isHoldCall) {
         if (terminateReason == TLPeerConnectionServiceTerminateReasonSuccess) {
-            self.terminatedLabel.text = TwinmeLocalizedString(@"video_call_view_controller_terminate", nil);
+            self.terminatedLabel.text = TwinmeLocalizedString(@"video_call_view_terminate", nil);
             [self.terminatedLabel sizeToFit];
         } else {
             self.terminatedLabel.text = @"";
@@ -2909,9 +2940,15 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
 - (void)setupFrameSize {
     DDLogVerbose(@"%@ setupFrameSize", LOG_TAG);
     
-    if (!self.statusBarOrientation || self.statusBarOrientation != [[UIApplication sharedApplication] statusBarOrientation]) {
+    UIWindow *currentWindow = [self currentWindow];
+    UIInterfaceOrientation interfaceOrientation = UIInterfaceOrientationUnknown;
+    if (currentWindow) {
+        interfaceOrientation = currentWindow.windowScene.interfaceOrientation;
+    }
+    
+    if (interfaceOrientation != UIInterfaceOrientationUnknown && (!self.statusBarOrientation || self.statusBarOrientation != interfaceOrientation)) {
         
-        self.statusBarOrientation = [[UIApplication sharedApplication] statusBarOrientation];
+        self.statusBarOrientation = interfaceOrientation;
         self.participantsViewInitialized = NO;
     }
 }
@@ -3024,11 +3061,11 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
         onboardingConfirmView.forceDarkMode = YES;
         
         UIImage *image = [self.twinmeApplication darkModeEnable:[self currentSpaceSettings]] ? [UIImage imageNamed:@"OnboardingAuthentifiedRelationDark"] : [UIImage imageNamed:@"OnboardingAuthentifiedRelation"];
-        NSString *message = [NSString stringWithFormat:TwinmeLocalizedString(@"call_view_controller_certify_onboarding_start_message", nil), self.contactName];
+        NSString *message = [NSString stringWithFormat:TwinmeLocalizedString(@"call_view_certify_onboarding_start_message", nil), self.contactName];
         
-        [onboardingConfirmView initWithTitle:TwinmeLocalizedString(@"authentified_relation_view_controller_to_be_certified_title", nil) message:message image:image action:TwinmeLocalizedString(@"authentified_relation_view_controller_start", nil) actionColor:nil cancel:nil];
+        [onboardingConfirmView initWithTitle:TwinmeLocalizedString(@"authentified_relation_view_to_be_certified_title", nil) message:message image:image action:TwinmeLocalizedString(@"authentified_relation_view_start", nil) actionColor:nil cancel:nil];
         [onboardingConfirmView hideCancelAction];
-        NSMutableAttributedString *attributedTitle = [[NSMutableAttributedString alloc] initWithString:TwinmeLocalizedString(@"authentified_relation_view_controller_to_be_certified_title", nil) attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_BOLD36, NSFontAttributeName, Design.FONT_COLOR_DEFAULT, NSForegroundColorAttributeName, nil]];
+        NSMutableAttributedString *attributedTitle = [[NSMutableAttributedString alloc] initWithString:TwinmeLocalizedString(@"authentified_relation_view_to_be_certified_title", nil) attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_BOLD36, NSFontAttributeName, Design.FONT_COLOR_DEFAULT, NSForegroundColorAttributeName, nil]];
         [onboardingConfirmView updateTitle:attributedTitle];
         
         [self.view addSubview:onboardingConfirmView];
@@ -3160,7 +3197,7 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
     DDLogVerbose(@"%@ titleWithTerminateReason: %d", LOG_TAG, terminateReason);
     
     if (terminateReason == TLPeerConnectionServiceTerminateReasonSchedule) {
-        return TwinmeLocalizedString(@"show_call_view_controller_schedule_call", nil);
+        return TwinmeLocalizedString(@"show_call_view_schedule_call", nil);
     }
     
     return TwinmeLocalizedString(@"application_name", nil);
@@ -3170,46 +3207,46 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
     DDLogVerbose(@"%@ messageWithTerminateReason: %d", LOG_TAG, terminateReason);
     
     if (!self.contactName) {
-        return TwinmeLocalizedString(@"video_call_view_controller_terminate", nil);
+        return TwinmeLocalizedString(@"video_call_view_terminate", nil);
     }
     
     switch(terminateReason) {
         case TLPeerConnectionServiceTerminateReasonBusy:
-            return [NSString stringWithFormat:TwinmeLocalizedString(@"video_call_view_controller_terminate_busy %@", nil), self.contactName];
+            return [NSString stringWithFormat:TwinmeLocalizedString(@"video_call_view_terminate_busy", nil), self.contactName];
             
         case TLPeerConnectionServiceTerminateReasonCancel:
-            return [NSString stringWithFormat:TwinmeLocalizedString(@"video_call_view_controller_terminate_cancel %@", nil), self.contactName];
+            return [NSString stringWithFormat:TwinmeLocalizedString(@"video_call_view_terminate_cancel", nil), self.contactName];
             
         case TLPeerConnectionServiceTerminateReasonConnectivityError:
-            return TwinmeLocalizedString(@"video_call_view_controller_terminate_connectivity_error", nil);
+            return TwinmeLocalizedString(@"video_call_view_terminate_connectivity_error", nil);
             
         case TLPeerConnectionServiceTerminateReasonDecline:
-            return [NSString stringWithFormat:TwinmeLocalizedString(@"video_call_view_controller_terminate_decline %@", nil), self.contactName];
+            return [NSString stringWithFormat:TwinmeLocalizedString(@"video_call_view_terminate_decline", nil), self.contactName];
             
         case TLPeerConnectionServiceTerminateReasonDisconnected:
-            return TwinmeLocalizedString(@"video_call_view_controller_terminate_disconnected_error", nil);
+            return TwinmeLocalizedString(@"video_call_view_terminate_disconnected", nil);
             
         case TLPeerConnectionServiceTerminateReasonNotAuthorized:
-            return TwinmeLocalizedString(@"video_call_view_controller_terminate_not_authorized", nil);
+            return TwinmeLocalizedString(@"audio_call_view_terminate_not_authorized", nil);
             
         case TLPeerConnectionServiceTerminateReasonGone:
             if (self.elapsedTime > 0) {
-                return [NSString stringWithFormat:TwinmeLocalizedString(@"call_view_controller_error_call_interrupted", nil), terminateReason];
+                return [NSString stringWithFormat:TwinmeLocalizedString(@"call_view_error_call_interrupted", nil), terminateReason];
             } else {
-                return [NSString stringWithFormat:TwinmeLocalizedString(@"video_call_view_controller_terminate_gone %@", nil), self.contactName];
+                return [NSString stringWithFormat:TwinmeLocalizedString(@"video_call_view_terminate_gone", nil), self.contactName];
             }
         
         case TLPeerConnectionServiceTerminateReasonRevoked:
-            return [NSString stringWithFormat:TwinmeLocalizedString(@"video call terminated: %@ has revoked this identity", nil), self.contactName];
+            return [NSString stringWithFormat:TwinmeLocalizedString(@"video_call_view_terminate_revoked", nil), self.contactName];
             
         case TLPeerConnectionServiceTerminateReasonSuccess:
-            return [NSString stringWithFormat:TwinmeLocalizedString(@"video_call_view_controller_terminate_success %@", nil), self.contactName];
+            return [NSString stringWithFormat:TwinmeLocalizedString(@"video_call_view_terminate_success", nil), self.contactName];
             
         case TLPeerConnectionServiceTerminateReasonTimeout:
             if (self.outgoingCall) {
-                return [NSString stringWithFormat:TwinmeLocalizedString(@"video_call_view_controller_terminate_timeout %@", nil), self.contactName];
+                return [NSString stringWithFormat:TwinmeLocalizedString(@"video_call_view_terminate_timeout", nil), self.contactName];
             }
-            return TwinmeLocalizedString(@"video_call_view_controller_terminate", nil);
+            return TwinmeLocalizedString(@"video_call_view_terminate", nil);
             
         case TLPeerConnectionServiceTerminateReasonSchedule:
             if(self.outgoingCall){
@@ -3221,24 +3258,24 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
                     TLDateTime *end = dateTimeRange.end;
                     
                     if ([start.date isEqual:end.date]) {
-                        return [NSString stringWithFormat:TwinmeLocalizedString(@"show_call_view_controller_schedule_from_to", nil), [start.date formatDate], [start.time formatTime], [end.time formatTime]];
+                        return [NSString stringWithFormat:TwinmeLocalizedString(@"show_call_view_schedule_from_to", nil), [start.date formatDate], [start.time formatTime], [end.time formatTime]];
                     } else {
                         return [NSString stringWithFormat:@"%@ %@", [start formatDateTime], [end formatDateTime]];
                     }
                 }
                 
-                return TwinmeLocalizedString(@"show_call_view_controller_schedule_message", nil);
+                return TwinmeLocalizedString(@"show_call_view_schedule_message", nil);
             }
             
         default: {
             NSString *reason;
             if (self.elapsedTime > 0) {
-                reason = [NSString stringWithFormat:TwinmeLocalizedString(@"call_view_controller_error_call_interrupted", nil), terminateReason];
+                reason = [NSString stringWithFormat:TwinmeLocalizedString(@"call_view_error_call_interrupted", nil), terminateReason];
             } else {
-                reason = [NSString stringWithFormat:TwinmeLocalizedString(@"call_view_controller_error_call_not_go_thru", nil), terminateReason];
+                reason = [NSString stringWithFormat:TwinmeLocalizedString(@"call_view_error_call_not_go_thru", nil), terminateReason];
             }
                         
-            return [NSString stringWithFormat:@"%@\n%@", reason, TwinmeLocalizedString(@"call_view_controller_try_to_call_back", nil)];
+            return [NSString stringWithFormat:@"%@\n%@", reason, TwinmeLocalizedString(@"call_view_try_to_call_back", nil)];
         }
     }
 }
@@ -3251,7 +3288,7 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
         dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
             CoachMarkViewController *coachMarkViewController = (CoachMarkViewController *)[[UIStoryboard storyboardWithName:@"iPhone" bundle:nil] instantiateViewControllerWithIdentifier:@"CoachMarkViewController"];
             CGRect clipRect = CGRectMake(self.addParticipantView.frame.origin.x, self.addParticipantView.frame.origin.y + self.addParticipantView.frame.size.height, self.addParticipantView.frame.size.height, self.addParticipantView.frame.size.height);
-            CoachMark *coachMark = [[CoachMark alloc]initWithMessage:TwinmeLocalizedString(@"call_view_controller_coach_mark", nil) tag:TAG_COACH_MARK_ADD_PARTICIPANT_TO_CALL alignLeft:NO onTop:NO featureRect:clipRect featureRadius:self.addParticipantView.frame.size.height * 0.5f];
+            CoachMark *coachMark = [[CoachMark alloc]initWithMessage:TwinmeLocalizedString(@"call_view_coach_mark", nil) tag:TAG_COACH_MARK_ADD_PARTICIPANT_TO_CALL alignLeft:NO onTop:NO featureRect:clipRect featureRadius:self.addParticipantView.frame.size.height * 0.5f];
             [coachMarkViewController initWithCoachMark:coachMark];
             coachMarkViewController.delegate = self;
             [coachMarkViewController showInView:self.navigationController];
@@ -3520,7 +3557,7 @@ static NSInteger ONBOARDING_REMOTE_CAMERA = 1;
     CallStatus callStatus = [self.callService callStatus];
     if (callStatus == CallStatusWaiting) {
         self.callInfoView.hidden = NO;
-        [self.callInfoView updateMessage:TwinmeLocalizedString(@"call_view_controller_waiting_conference_call", nil)];
+        [self.callInfoView updateMessage:TwinmeLocalizedString(@"call_view_waiting_conference_call", nil)];
     }
 }
 

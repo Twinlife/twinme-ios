@@ -73,7 +73,7 @@ static const int ddLogLevel = DDLogLevelWarning;
     
     self.rightTitle.font = Design.FONT_BOLD26;
     self.rightTitle.textColor = Design.MAIN_COLOR;
-    self.rightTitle.text = TwinmeLocalizedString(@"application_display", nil).uppercaseString
+    self.rightTitle.text = TwinmeLocalizedString(@"application_display_all", nil).uppercaseString
     ;
     
     if ([[UIApplication sharedApplication] userInterfaceLayoutDirection] == UIUserInterfaceLayoutDirectionRightToLeft) {

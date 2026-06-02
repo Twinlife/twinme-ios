@@ -212,15 +212,15 @@ typedef enum {
         NSString *text = @"";
         switch (indexPath.section) {
             case SECTION_ALLOW_INVITATION:
-                text = TwinmeLocalizedString(@"create_group_view_controller_member_allow_invitation_message", nil);
+                text = TwinmeLocalizedString(@"create_group_view_member_allow_invitation_message", nil);
                 break;
                 
             case SECTION_ALLOW_MESSAGE:
-                text = TwinmeLocalizedString(@"create_group_view_controller_member_allow_post_message", nil);
+                text = TwinmeLocalizedString(@"create_group_view_member_allow_post_message", nil);
                 break;
             
             case SECTION_ALLOW_INVITE_MEMBER_AS_CONTACT:
-                text = TwinmeLocalizedString(@"create_group_view_controller_member_allow_invite_member_as_contact_message", nil);
+                text = TwinmeLocalizedString(@"create_group_view_member_allow_invite_member_as_contact_message", nil);
                 break;
                                 
             default:
@@ -247,21 +247,21 @@ typedef enum {
                 switchState = self.allowInvitation;
                 hiddenSwitch = NO;
                 tag = TAG_ALLOW_INVITATION;
-                title = TwinmeLocalizedString(@"create_group_view_controller_member_allow_invitation_title", nil);
+                title = TwinmeLocalizedString(@"create_group_view_member_allow_invitation_title", nil);
                 break;
                 
             case SECTION_ALLOW_MESSAGE:
                 switchState = self.allowMessage;
                 hiddenSwitch = NO;
                 tag = TAG_ALLOW_MESSAGE;
-                title = TwinmeLocalizedString(@"create_group_view_controller_member_allow_post_title", nil);
+                title = TwinmeLocalizedString(@"create_group_view_member_allow_post_title", nil);
                 break;
                 
             case SECTION_ALLOW_INVITE_MEMBER_AS_CONTACT:
                 switchState = self.allowInviteMemberAsContact;
                 hiddenSwitch = NO;
                 tag = TAG_ALLOW_INVITE_MEMBER_AS_CONTACT;
-                title = TwinmeLocalizedString(@"create_group_view_controller_member_allow_invite_member_as_contact_title", nil);
+                title = TwinmeLocalizedString(@"create_group_view_member_allow_invite_member_as_contact_title", nil);
                 break;
                 
             default:
@@ -288,7 +288,7 @@ typedef enum {
     
     self.view.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
     
-    [self setNavigationTitle:TwinmeLocalizedString(@"settings_view_controller_authorization_title", nil)];
+    [self setNavigationTitle:TwinmeLocalizedString(@"settings_view_authorization_title", nil)];
     
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     self.tableView.rowHeight = UITableViewAutomaticDimension;

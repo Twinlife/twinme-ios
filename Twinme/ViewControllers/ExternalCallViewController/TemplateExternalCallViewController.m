@@ -135,13 +135,13 @@ typedef enum {
 
     switch (section) {
         case SECTION_CONFERENCE:
-            sectionName = TwinmeLocalizedString(@"create_external_call_view_controller_conference_call_title", nil);
+            sectionName = TwinmeLocalizedString(@"create_external_call_view_conference_call_title", nil);
             badgeTitle = TwinmeLocalizedString(@"application_new", nil);
             settingsSectionHeaderCell.delegate = self;
             break;
             
         case SECTION_DIRECT:
-            sectionName = TwinmeLocalizedString(@"create_external_call_view_controller_direct_call_title", nil);
+            sectionName = TwinmeLocalizedString(@"create_external_call_view_direct_call_title", nil);
             break;
             
         case SECTION_DEFAULT:
@@ -172,7 +172,7 @@ typedef enum {
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath  {
     
-    return Design.CELL_HEIGHT;
+    return UITableViewAutomaticDimension;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -263,11 +263,13 @@ typedef enum {
     self.definesPresentationContext = YES;
     self.view.backgroundColor = Design.WHITE_COLOR;
     
-    [self setNavigationTitle:TwinmeLocalizedString(@"template_space_view_controller_template_title", nil).capitalizedString];
+    [self setNavigationTitle:TwinmeLocalizedString(@"template_space_view_template_title", nil).capitalizedString];
     
     self.templatesTableView.delegate = self;
     self.templatesTableView.dataSource = self;
     self.templatesTableView.backgroundColor = Design.WHITE_COLOR;
+    self.templatesTableView.rowHeight = UITableViewAutomaticDimension;
+    self.templatesTableView.estimatedRowHeight =  Design.CELL_HEIGHT;
     self.templatesTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     [self.templatesTableView registerNib:[UINib nibWithNibName:@"TemplateExternalCallCell" bundle:nil] forCellReuseIdentifier:TEMPLATE_EXTERNAL_CALL_CELL_IDENTIFIER];
     [self.templatesTableView registerNib:[UINib nibWithNibName:@"SettingsSectionHeaderCell" bundle:nil] forCellReuseIdentifier:HEADER_SETTINGS_CELL_IDENTIFIER];
@@ -310,7 +312,7 @@ typedef enum {
     
     OnboardingConfirmView *onboardingConfirmView = [[OnboardingConfirmView alloc] init];
     onboardingConfirmView.bottomSheetViewDelegate = self;
-    [onboardingConfirmView initWithTitle:TwinmeLocalizedString(@"create_external_call_view_controller_conference_call_title", nil) message: TwinmeLocalizedString(@"create_external_call_view_controller_onboarding_part_1_message_1", nil) image:[UIImage imageNamed:@"OnboardingClickToCall"] action:TwinmeLocalizedString(@"application_ok", nil) actionColor:nil cancel:nil];
+    [onboardingConfirmView initWithTitle:TwinmeLocalizedString(@"create_external_call_view_conference_call_title", nil) message: TwinmeLocalizedString(@"create_external_call_view_onboarding_part_1_message_1", nil) image:[UIImage imageNamed:@"OnboardingClickToCall"] action:TwinmeLocalizedString(@"application_ok", nil) actionColor:nil cancel:nil];
     [onboardingConfirmView hideCancelAction];
     
     [self.navigationController.view addSubview:onboardingConfirmView];

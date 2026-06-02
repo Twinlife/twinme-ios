@@ -283,7 +283,7 @@ static const int GET_CONTACTS_DONE = 1 << 15;
 - (void)dispose {
     DDLogVerbose(@"%@ dispose", LOG_TAG);
     
-    [self.twinmeContext removeDelegate:self.twinmeContextDelegate];
+    [super dispose];
 }
 
 #pragma mark - Private methods

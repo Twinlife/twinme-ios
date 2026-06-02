@@ -52,7 +52,7 @@ static const int ddLogLevel = DDLogLevelWarning;
     
     [super initViews];
     
-    self.confirmLabel.text = TwinmeLocalizedString(@"fullscreen_qrcode_view_controller_generate_code_title", nil);
+    self.confirmLabel.text = TwinmeLocalizedString(@"fullscreen_qrcode_view_generate_code_title", nil);
     
     self.iconView.backgroundColor = ICON_BACKGROUND_COLOR;
     self.iconImageView.tintColor = [UIColor whiteColor];

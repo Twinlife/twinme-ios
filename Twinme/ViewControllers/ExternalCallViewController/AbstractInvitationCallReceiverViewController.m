@@ -124,6 +124,7 @@ static UIColor *DESIGN_GREEN_VIEW_COLOR;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *shareImageViewHeightConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *shareImageViewLeadingConstraint;
 @property (weak, nonatomic) IBOutlet UIImageView *shareImageView;
+@property (weak, nonatomic) IBOutlet UIActivityIndicatorView *activityIndicatorView;
 
 @property BOOL saveQRCodeInGallery;
 
@@ -212,15 +213,15 @@ static UIColor *DESIGN_GREEN_VIEW_COLOR;
     [self.callReceiverService getImageWithCallReceiver:self.callReceiver withBlock:^(UIImage *image) {
         NSString *message;
         if (self.callReceiver.isTransfer) {
-            message = [NSString stringWithFormat:@"%@\n%@", TwinmeLocalizedString(@"transfert_call_view_controller_delete_message", nil), TwinmeLocalizedString(@"transfert_call_view_controller_delete_confirm_message", nil)];
+            message = [NSString stringWithFormat:@"%@\n%@", TwinmeLocalizedString(@"transfert_call_view_delete_message", nil), TwinmeLocalizedString(@"transfert_call_view_delete_confirm_message", nil)];
         } else {
-            message = [NSString stringWithFormat:@"%@\n%@", TwinmeLocalizedString(@"edit_external_call_view_controller_message", nil), TwinmeLocalizedString(@"edit_external_call_view_controller_confirm_message", nil)];
+            message = [NSString stringWithFormat:@"%@\n%@", TwinmeLocalizedString(@"edit_external_call_view_delete_message", nil), TwinmeLocalizedString(@"edit_external_call_view_delete_confirm_message", nil)];
         }
         
         DeleteConfirmView *deleteConfirmView = [[DeleteConfirmView alloc] init];
         deleteConfirmView.bottomSheetViewDelegate = self;
         deleteConfirmView.deleteConfirmType = DeleteConfirmTypeOriginator;
-        [deleteConfirmView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:message avatar:image icon:[UIImage imageNamed:@"ActionBarDelete"]];
+        [deleteConfirmView initWithTitle:TwinmeLocalizedString(@"deleted_account_view_warning", nil) message:message avatar:image icon:[UIImage imageNamed:@"ActionBarDelete"]];
         [self.view addSubview:deleteConfirmView];
         [deleteConfirmView showConfirmView];
     }];
@@ -334,9 +335,9 @@ static UIColor *DESIGN_GREEN_VIEW_COLOR;
     [self.view setBackgroundColor:[UIColor blackColor]];
     
     if (self.callReceiver.isTransfer) {
-        [self setNavigationTitle:TwinmeLocalizedString(@"premium_services_view_controller_transfert_title", nil)];
+        [self setNavigationTitle:TwinmeLocalizedString(@"premium_services_view_transfert_title", nil)];
     } else {
-        [self setNavigationTitle:TwinmeLocalizedString(@"premium_services_view_controller_click_to_call_title", nil)];
+        [self setNavigationTitle:TwinmeLocalizedString(@"premium_services_view_click_to_call_title", nil)];
     }
     
     self.invitationViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
@@ -403,7 +404,7 @@ static UIColor *DESIGN_GREEN_VIEW_COLOR;
     
     [self.messageLabel setFont:Design.FONT_REGULAR30];
     self.messageLabel.textColor = [UIColor whiteColor];
-    self.messageLabel.text = TwinmeLocalizedString(@"invitation_call_view_controller_message", nil);
+    self.messageLabel.text = TwinmeLocalizedString(@"invitation_call_view_message", nil);
     
     self.qrcodeViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     self.qrcodeViewTopConstraint.constant *= Design.HEIGHT_RATIO;
@@ -460,7 +461,7 @@ static UIColor *DESIGN_GREEN_VIEW_COLOR;
     UITapGestureRecognizer *generateCodeGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleGenerateTwincodeTapGesture:)];
     [self.generateView addGestureRecognizer:generateCodeGestureRecognizer];
     self.generateView.isAccessibilityElement = YES;
-    self.generateView.accessibilityLabel = TwinmeLocalizedString(@"main_view_controller_reset_conversation", nil);
+    self.generateView.accessibilityLabel = TwinmeLocalizedString(@"main_view_reset_conversation", nil);
     
     self.generateRoundedViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     self.generateRoundedView.clipsToBounds = YES;
@@ -476,7 +477,7 @@ static UIColor *DESIGN_GREEN_VIEW_COLOR;
     
     self.generateLabel.font = Design.FONT_MEDIUM28;
     self.generateLabel.textColor = [UIColor whiteColor];
-    self.generateLabel.text = TwinmeLocalizedString(@"main_view_controller_reset_conversation", nil);
+    self.generateLabel.text = TwinmeLocalizedString(@"main_view_reset_conversation", nil);
     
     self.shareViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     self.shareViewWidthConstraint.constant *= Design.WIDTH_RATIO;
@@ -487,7 +488,7 @@ static UIColor *DESIGN_GREEN_VIEW_COLOR;
     self.shareView.layer.cornerRadius = self.shareViewHeightConstraint.constant * 0.5;
     self.shareView.clipsToBounds = YES;
     self.shareView.isAccessibilityElement = YES;
-    self.shareView.accessibilityLabel = TwinmeLocalizedString(@"invitation_call_view_controller_share", nil);
+    self.shareView.accessibilityLabel = TwinmeLocalizedString(@"invitation_call_view_share", nil);
     [self.shareView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSocialTapGesture)]];
     
     self.shareImageViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
@@ -502,9 +503,9 @@ static UIColor *DESIGN_GREEN_VIEW_COLOR;
     self.shareLabel.textColor = [UIColor whiteColor];
     
     if (self.callReceiver.isTransfer) {
-        self.shareLabel.text = TwinmeLocalizedString(@"transfert_call_view_controller_share", nil);
+        self.shareLabel.text = TwinmeLocalizedString(@"transfert_call_view_share", nil);
     } else {
-        self.shareLabel.text = TwinmeLocalizedString(@"invitation_call_view_controller_share", nil);
+        self.shareLabel.text = TwinmeLocalizedString(@"invitation_call_view_share", nil);
     }
     
     [self.shareLabel setContentHuggingPriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisHorizontal];
@@ -514,12 +515,18 @@ static UIColor *DESIGN_GREEN_VIEW_COLOR;
     
     self.shareSubLabel.font = Design.FONT_REGULAR24;
     self.shareSubLabel.textColor = Design.FONT_COLOR_GREY;
-    self.shareSubLabel.text = TwinmeLocalizedString(@"add_contact_view_controller_social_subtitle", nil);
+    self.shareSubLabel.text = TwinmeLocalizedString(@"add_contact_view_social_subtitle", nil);
     
     self.invitationView.hidden = NO;
     self.messageLabel.hidden = NO;
     self.shareView.hidden = NO;
     self.shareLabel.hidden = NO;
+    
+    self.activityIndicatorView.hidesWhenStopped = YES;
+    
+    if ([self.twinmeApplication darkModeEnable:[self.twinmeContext defaultSpaceSettings]]) {
+        self.activityIndicatorView.color = [UIColor whiteColor];
+    }
 }
 
 - (void)finish {
@@ -548,23 +555,13 @@ static UIColor *DESIGN_GREEN_VIEW_COLOR;
     PHAuthorizationStatus photoAuthorizationStatus = [DeviceAuthorization devicePhotoAuthorizationStatus];
     switch (photoAuthorizationStatus) {
         case PHAuthorizationStatusNotDetermined: {
-            if (@available(iOS 14, *)) {
-                [PHPhotoLibrary requestAuthorizationForAccessLevel:PHAccessLevelAddOnly handler:^(PHAuthorizationStatus authorizationStatus) {
-                    if ([DeviceAuthorization devicePhotoAuthorizationAccessGranted:authorizationStatus]) {
-                        dispatch_async(dispatch_get_main_queue(), ^(void) {
-                            [self saveQRCode];
-                        });
-                    }
-                }];
-            } else {
-                [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus authorizationStatus) {
-                    if ([DeviceAuthorization devicePhotoAuthorizationAccessGranted:authorizationStatus]) {
-                        dispatch_async(dispatch_get_main_queue(), ^(void) {
-                            [self saveQRCode];
-                        });
-                    }
-                }];
-            }
+            [PHPhotoLibrary requestAuthorizationForAccessLevel:PHAccessLevelAddOnly handler:^(PHAuthorizationStatus authorizationStatus) {
+                if ([DeviceAuthorization devicePhotoAuthorizationAccessGranted:authorizationStatus]) {
+                    dispatch_async(dispatch_get_main_queue(), ^(void) {
+                        [self saveQRCode];
+                    });
+                }
+            }];
             break;
         }
             
@@ -597,9 +594,9 @@ static UIColor *DESIGN_GREEN_VIEW_COLOR;
     if (self.callReceiver) {
         NSString *message;
         if (self.callReceiver.isTransfer) {
-            message = TwinmeLocalizedString(@"transfert_call_view_controller_gallery_message", nil);
+            message = TwinmeLocalizedString(@"transfert_call_view_gallery_message", nil);
         } else {
-            message = [NSString stringWithFormat:TwinmeLocalizedString(@"invitation_call_view_controller_save_message", nil), self.callReceiver.name];
+            message = [NSString stringWithFormat:TwinmeLocalizedString(@"invitation_call_view_save_message", nil), self.callReceiver.name];
         }
         
         clickToCallView = [[ClickToCallView alloc] initWithName:self.callReceiver.name avatar:avatar qrcode:self.qrcodeImageView.image twincodeId:self.callReceiver.twincodeOutboundId message:message];
@@ -630,12 +627,18 @@ static UIColor *DESIGN_GREEN_VIEW_COLOR;
         if (success) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 self.saveQRCodeInGallery = NO;
+                
+                NSString *message;
                 if (self.callReceiver.isTransfer) {
-                    [[UIApplication sharedApplication].keyWindow makeToast:TwinmeLocalizedString(@"transfert_call_view_controller_saved_message",nil)];
+                    message = TwinmeLocalizedString(@"transfert_call_view_saved_message",nil);
                 } else {
-                    [[UIApplication sharedApplication].keyWindow makeToast:TwinmeLocalizedString(@"capture_view_controller_qrcode_saved",nil)];
+                    message = TwinmeLocalizedString(@"capture_view_qrcode_saved",nil);
                 }
                 
+                UIWindow *window = [self currentWindow];
+                if (window) {
+                    [window makeToast:TwinmeLocalizedString(@"capture_view_qrcode_saved",nil)];
+                }
             });
         }
     }];
@@ -649,14 +652,14 @@ static UIColor *DESIGN_GREEN_VIEW_COLOR;
         [self.callReceiverService getImageWithCallReceiver:self.callReceiver withBlock:^(UIImage *image) {
             NSString *message;
             if (self.callReceiver.isTransfer) {
-                message = TwinmeLocalizedString(@"transfert_call_view_controller_reset_message", nil);
+                message = TwinmeLocalizedString(@"transfert_call_view_reset_message", nil);
             } else {
-                message = TwinmeLocalizedString(@"invitation_call_view_controller_generate_code_message", nil);
+                message = TwinmeLocalizedString(@"invitation_call_view_generate_code_message", nil);
             }
             
             ResetInvitationConfirmView *resetInvitationConfirmView = [[ResetInvitationConfirmView alloc] init];
             resetInvitationConfirmView.bottomSheetViewDelegate = self;
-            [resetInvitationConfirmView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:message avatar:image icon:[UIImage imageNamed:@"GenerateCode"]];
+            [resetInvitationConfirmView initWithTitle:TwinmeLocalizedString(@"deleted_account_view_warning", nil) message:message avatar:image icon:[UIImage imageNamed:@"GenerateCode"]];
             [self.navigationController.view addSubview:resetInvitationConfirmView];
             [resetInvitationConfirmView showConfirmView];
         }];
@@ -680,8 +683,11 @@ static UIColor *DESIGN_GREEN_VIEW_COLOR;
         [self hapticFeedBack:UIImpactFeedbackStyleHeavy];
 
         [[UIPasteboard generalPasteboard] setString:self.uri.uri];
-        
-        [[UIApplication sharedApplication].keyWindow makeToast:TwinmeLocalizedString(@"conversation_view_controller_menu_item_view_copy_message",nil)];
+    
+        UIWindow *window = [self currentWindow];
+        if (window) {
+            [window makeToast:TwinmeLocalizedString(@"conversation_view_menu_item_view_copy_message",nil)];
+        }
     }
 }
 
@@ -694,9 +700,9 @@ static UIColor *DESIGN_GREEN_VIEW_COLOR;
     NSMutableString *message = [[NSMutableString alloc] initWithString:@""];
     
     if ([self.callReceiver isConference]) {
-        [message appendString:[NSString stringWithFormat:TwinmeLocalizedString(@"invitation_call_view_controller_invite_message", nil), self.uri.uri, name]];
+        [message appendString:[NSString stringWithFormat:TwinmeLocalizedString(@"invitation_call_view_invite_message", nil), self.uri.uri, name]];
     } else {
-        [message appendString:[NSString stringWithFormat:TwinmeLocalizedString(@"invitation_call_view_controller_invite_message", nil), self.uri.uri, name]];
+        [message appendString:[NSString stringWithFormat:TwinmeLocalizedString(@"invitation_call_view_invite_message", nil), self.uri.uri, name]];
     }
     
     TLCapabilities *capabilities;
@@ -790,19 +796,24 @@ static UIColor *DESIGN_GREEN_VIEW_COLOR;
                 [dateFormatter setTimeZone:[NSTimeZone localTimeZone]];
                 
                 [message appendString:@"\n\n"];
-                [message appendString:TwinmeLocalizedString(@"create_external_call_view_controller_link_validity", nil)];
+                [message appendString:TwinmeLocalizedString(@"create_external_call_view_link_validity", nil)];
                 [message appendString:@"\n"];
-                [message appendString:TwinmeLocalizedString(@"show_call_view_controller_setting_start", nil)];
+                [message appendString:TwinmeLocalizedString(@"show_call_view_settings_start", nil)];
                 [message appendString:@" : "];
                 [message appendString:[dateFormatter stringFromDate:startDate]];
                 [message appendString:@"\n"];
-                [message appendString:TwinmeLocalizedString(@"show_call_view_controller_setting_end", nil)];
+                [message appendString:TwinmeLocalizedString(@"show_call_view_settings_end", nil)];
                 [message appendString:@" : "];
                 [message appendString:[dateFormatter stringFromDate:endDate]];
                 
-                [dateFormatter setDateFormat:@"YYYYMMdd"];
+                [dateFormatter setDateFormat:@"yyMMdd"];
                 
-                NSString *fileName = [NSString stringWithFormat:@"%@-call-%@.ics", TwinmeLocalizedString(@"application_name", nil), [dateFormatter stringFromDate:startDate]];
+                NSString *callType = @"call";
+                if ([self.callReceiver isConference]) {
+                    callType = @"meet";
+                }
+                
+                NSString *fileName = [NSString stringWithFormat:@"%@-%@-%@.ics", TwinmeLocalizedString(@"application_name", nil), callType, [dateFormatter stringFromDate:startDate]];
                 NSString *path = [NSTemporaryDirectory() stringByAppendingPathComponent:fileName];
                 scheduleUrl = [NSURL fileURLWithPath:path];
                 [fileContent writeToFile:path atomically:YES encoding:NSUTF8StringEncoding error:nil];
@@ -814,13 +825,13 @@ static UIColor *DESIGN_GREEN_VIEW_COLOR;
                 TLTime *scheduleEndTime = weeklyTimeRange.end;
                 
                 [message appendString:@"\n\n"];
-                [message appendString:TwinmeLocalizedString(@"create_external_call_view_controller_link_validity", nil)];
+                [message appendString:TwinmeLocalizedString(@"create_external_call_view_link_validity", nil)];
                 [message appendString:@"\n"];
-                [message appendString:TwinmeLocalizedString(@"show_call_view_controller_setting_start", nil)];
+                [message appendString:TwinmeLocalizedString(@"show_call_view_settings_start", nil)];
                 [message appendString:@" : "];
                 [message appendString:[scheduleStartTime formatTime]];
                 [message appendString:@"\n"];
-                [message appendString:TwinmeLocalizedString(@"show_call_view_controller_setting_end", nil)];
+                [message appendString:TwinmeLocalizedString(@"show_call_view_settings_end", nil)];
                 [message appendString:@" : "];
                 [message appendString:[scheduleEndTime formatTime]];
                 [message appendString:@"\n\n"];
@@ -895,14 +906,27 @@ static UIColor *DESIGN_GREEN_VIEW_COLOR;
     [self.callReceiverService getImageWithCallReceiver:self.callReceiver withBlock:^(UIImage *image) {
         self.avatarView.image = image;
     }];
-    self.qrcodeImageView.image = [Utils makeQRCodeWithUri:self.uri scale:10];
+    
+    [self.activityIndicatorView startAnimating];
+    __weak typeof(self) weakSelf = self;
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        UIImage *qrImage = [Utils makeQRCodeWithUri:weakSelf.uri scale:10];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (!weakSelf) {
+                return;
+            }
+            [self.activityIndicatorView stopAnimating];
+            weakSelf.qrcodeImageView.image = qrImage;
+        });
+    });
+    
     self.nameLabel.text = self.callReceiver.name;
     self.twincodeLabel.text = self.uri.label;
     
     if (self.callReceiver.isTransfer) {
-        self.messageLabel.text = TwinmeLocalizedString(@"transfert_call_view_controller_message", nil);
+        self.messageLabel.text = TwinmeLocalizedString(@"transfert_call_view_message", nil);
     } else {
-        self.messageLabel.text = TwinmeLocalizedString(@"invitation_call_view_controller_message", nil);
+        self.messageLabel.text = TwinmeLocalizedString(@"invitation_call_view_message", nil);
     }
 }
 

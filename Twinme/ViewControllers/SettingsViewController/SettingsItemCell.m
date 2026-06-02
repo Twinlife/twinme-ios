@@ -100,9 +100,17 @@ static const int ddLogLevel = DDLogLevelWarning;
 }
 
 - (void)resetMargins {
+    DDLogVerbose(@"%@ resetMargins", LOG_TAG);
     
     self.titleLeadingConstraint.constant = 0;
     self.choiceSwitchTrailingConstraint.constant = 0;
+}
+
+- (void)updateMargins:(CGFloat)value {
+    DDLogVerbose(@"%@ updateMargins: %f", LOG_TAG, value);
+    
+    self.iconViewLeadingConstraint.constant = value;
+    self.titleLeadingConstraint.constant = self.iconViewLeadingConstraint.constant * 2 + self.iconViewHeightConstraint.constant;
 }
 
 - (void)bindWithTitle:(NSString *)title subTitle:(NSString *)subTitle icon:(UIImage *)icon stateSwitch:(BOOL)switchState tagSwitch:(int)tagSwitch hiddenSwitch:(BOOL)hiddenSwitch disableSwitch:(BOOL)disableSwitch backgroundColor:(UIColor *)backgroundColor hiddenSeparator:(BOOL)hiddenSeparator {

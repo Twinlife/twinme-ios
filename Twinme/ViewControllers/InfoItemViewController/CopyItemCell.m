@@ -74,13 +74,13 @@ static const int ddLogLevel = DDLogLevelWarning;
     DDLogVerbose(@"%@ bindWithItem: %@", LOG_TAG, item);
     
     if (([item isClearLocalItem]) || !item.copyAllowed) {
-        self.allowCopyLabel.text =  TwinmeLocalizedString(@"info_item_view_controller_may_not_be_copied", nil);
-        self.allowCopyImageView.image = [UIImage imageNamed:@"NotAllowedCopyIcon"];
+        self.allowCopyLabel.text =  TwinmeLocalizedString(@"info_item_view_may_not_be_copied", nil);
+        self.allowCopyImageView.image = [[UIImage imageNamed:@"NotAllowedCopyIcon"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     } else {
-        self.allowCopyLabel.text =  TwinmeLocalizedString(@"info_item_view_controller_may_be_copied", nil);
-        self.allowCopyImageView.image = [UIImage imageNamed:@"AllowedCopyIcon"];
+        self.allowCopyLabel.text =  TwinmeLocalizedString(@"info_item_view_may_be_copied", nil);
+        self.allowCopyImageView.image = [[UIImage imageNamed:@"AllowedCopyIcon"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     }
-    
+
     [self updateFont];
     [self updateColor];
 }
@@ -100,6 +100,7 @@ static const int ddLogLevel = DDLogLevelWarning;
     
     self.allowCopyLabel.textColor = Design.FONT_COLOR_DEFAULT;
     self.separatorView.backgroundColor = Design.SEPARATOR_COLOR_GREY;
+    self.allowCopyImageView.tintColor = Design.BLACK_COLOR;
 }
 
 @end

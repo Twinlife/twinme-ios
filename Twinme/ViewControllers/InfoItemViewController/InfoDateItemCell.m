@@ -57,7 +57,7 @@ static const int ddLogLevel = DDLogLevelWarning;
     self.contentView.backgroundColor = Design.WHITE_COLOR;
     
     self.avatarViewHeightConstraint.constant = Design.AVATAR_HEIGHT;
-    self.avatarViewLeadingConstraint.constant = Design.AVATAR_LEADING;
+    self.avatarViewLeadingConstraint.constant *= Design.WIDTH_RATIO;
     
     CALayer *avatarViewLayer = self.avatarView.layer;
     avatarViewLayer.cornerRadius = self.avatarViewHeightConstraint.constant * 0.5;
@@ -113,12 +113,14 @@ static const int ddLogLevel = DDLogLevelWarning;
             break;
             
         case InfoItemTypeUpdated:
+
             if (item.updatedTimestamp > 0) {
                 self.dateInfoLabel.text = [NSString formatItemTimeInterval:item.updatedTimestamp / 1000];
             }
             break;
             
         case InfoItemTypeDeleted:
+
             if (item.peerDeletedTimestamp > 0) {
                 self.dateInfoLabel.text = [NSString formatItemTimeInterval:item.peerDeletedTimestamp / 1000];
             }

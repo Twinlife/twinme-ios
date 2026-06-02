@@ -8,6 +8,9 @@
 
 #import <CocoaLumberjack.h>
 
+#import <Photos/Photos.h>
+#import <PhotosUI/PhotosUI.h>
+
 #import <Twinlife/TLTwincodeOutboundService.h>
 #import <Twinme/TLProfile.h>
 #import <Twinme/TLGroup.h>
@@ -36,7 +39,7 @@ static const int ddLogLevel = DDLogLevelWarning;
 // Interface: EditGroupViewController ()
 //
 
-@interface EditGroupViewController () <EditGroupServiceDelegate, UITextFieldDelegate, BottomSheetViewDelegate, UITextViewDelegate, UIAdaptivePresentationControllerDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate, MenuPhotoViewDelegate>
+@interface EditGroupViewController () <EditGroupServiceDelegate, UITextFieldDelegate, BottomSheetViewDelegate, UITextViewDelegate, UIAdaptivePresentationControllerDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate, MenuPhotoViewDelegate, PHPickerViewControllerDelegate>
 
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *avatarPlaceholderImageViewHeightConstraint;
 @property (weak, nonatomic) IBOutlet UIImageView *avatarPlaceholderImageView;
@@ -206,7 +209,7 @@ static const int ddLogLevel = DDLogLevelWarning;
 -(void)textViewDidBeginEditing:(UITextView *)textView {
     DDLogVerbose(@"%@ textViewDidBeginEditing: %@", LOG_TAG, textView);
     
-    if ([textView.text isEqualToString:TwinmeLocalizedString(@"side_menu_view_controller_about", nil)]) {
+    if ([textView.text isEqualToString:TwinmeLocalizedString(@"navigation_view_about_twinme", nil)]) {
         textView.text = @"";
         textView.textColor = Design.FONT_COLOR_DEFAULT;
     }
@@ -235,7 +238,7 @@ static const int ddLogLevel = DDLogLevelWarning;
     DDLogVerbose(@"%@ textViewDidEndEditing: %@", LOG_TAG, textView);
     
     if ([textView.text isEqualToString:@""]) {
-        textView.text = TwinmeLocalizedString(@"side_menu_view_controller_about", nil);
+        textView.text = TwinmeLocalizedString(@"navigation_view_about_twinme", nil);
         textView.textColor = Design.PLACEHOLDER_COLOR;
     }
 }
@@ -269,6 +272,51 @@ static const int ddLogLevel = DDLogLevelWarning;
     
     self.navigationController.navigationBarHidden = YES;
     [pickerController dismissViewControllerAnimated:YES completion:nil];
+}
+
+#pragma mark - PHPickerViewControllerDelegate
+
+- (void)picker:(PHPickerViewController *)pickerController didFinishPicking:(NSArray<PHPickerResult *> *)results API_AVAILABLE(ios(14)){
+    DDLogVerbose(@"%@ picker: %@", LOG_TAG, pickerController);
+        
+    [self showProgressIndicator];
+    
+    [pickerController dismissViewControllerAnimated:YES completion:^{
+        if (!results || results.count == 0) {
+            [self hideProgressIndicator];
+            return;
+        }
+    
+        PHPickerResult *result = results.firstObject;
+        if ([result.itemProvider hasItemConformingToTypeIdentifier:UTTypeImage.identifier]) {
+            [result.itemProvider loadDataRepresentationForTypeIdentifier:UTTypeImage.identifier
+                                                       completionHandler:^(NSData * _Nullable data,
+                                                                           NSError * _Nullable error) {
+                
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    if (!error) {
+                        [self hideProgressIndicator];
+       
+                        self.largeAvatar = [UIImage imageWithData:data];
+                        self.avatar = [self.largeAvatar resizeImage];
+                        
+                        CATransition *animation = [CATransition animation];
+                        animation.type = kCATransitionFade;
+                        animation.subtype = kCATransitionFromTop;
+                        animation.duration = 0.5;
+                        [self.avatarView.layer addAnimation:animation forKey:nil];
+                        self.avatarView.image = self.largeAvatar;
+                        self.noAvatarImageView.hidden = YES;
+                        self.avatarView.backgroundColor = [UIColor clearColor];
+                        
+                        [self setUpdated];
+                    }
+                });
+            }];
+        } else {
+            [self hideProgressIndicator];
+        }
+    }];
 }
 
 #pragma mark - UIAdaptivePresentationControllerDelegate
@@ -469,7 +517,7 @@ static const int ddLogLevel = DDLogLevelWarning;
         self.descriptionTextView.textColor = Design.FONT_COLOR_DEFAULT;
         self.counterDescriptionLabel.text = [NSString stringWithFormat:@"%lu/%d", (unsigned long)self.descriptionTextView.text.length, MAX_DESCRIPTION_LENGTH];
     } else {
-        self.descriptionTextView.text = TwinmeLocalizedString(@"side_menu_view_controller_about", nil);
+        self.descriptionTextView.text = TwinmeLocalizedString(@"navigation_view_about_twinme", nil);
         self.descriptionTextView.textColor = Design.PLACEHOLDER_COLOR;
         self.counterDescriptionLabel.text = [NSString stringWithFormat:@"0/%d", MAX_DESCRIPTION_LENGTH];
     }
@@ -514,7 +562,7 @@ static const int ddLogLevel = DDLogLevelWarning;
     } else {
         self.editAvatarView.hidden = YES;
         self.avatarPlaceholderImageView.hidden = YES;
-        self.removeLabel.text = TwinmeLocalizedString(@"show_group_view_controller_leave", nil);
+        self.removeLabel.text = TwinmeLocalizedString(@"show_group_view_leave", nil);
     }
 }
 
@@ -611,7 +659,7 @@ static const int ddLogLevel = DDLogLevelWarning;
         }
         
         NSString *updatedDescription =  [self.descriptionTextView.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
-        if ([updatedDescription isEqualToString:TwinmeLocalizedString(@"side_menu_view_controller_about", nil)]) {
+        if ([updatedDescription isEqualToString:TwinmeLocalizedString(@"navigation_view_about_twinme", nil)]) {
             updatedDescription = @"";
         }
         
@@ -636,16 +684,16 @@ static const int ddLogLevel = DDLogLevelWarning;
     if (sender.state == UIGestureRecognizerStateEnded) {
         
         [self.editGroupService getImageWithGroup:self.group withBlock:^(UIImage *image) {
-            NSString *message = [NSString stringWithFormat:@"%@\n%@", TwinmeLocalizedString(@"show_group_view_controller_leave_message", nil), TwinmeLocalizedString(@"show_group_view_controller_leave_message_confirm", nil)];
+            NSString *message = [NSString stringWithFormat:@"%@\n%@", TwinmeLocalizedString(@"show_group_view_leave_message", nil), TwinmeLocalizedString(@"show_group_view_leave_confirm_message", nil)];
             
             if ([self.group isOwner]) {
-                message = [NSString stringWithFormat:@"%@\n%@", TwinmeLocalizedString(@"show_group_view_controller_remove_message", nil), TwinmeLocalizedString(@"show_group_view_controller_remove_message_confirm", nil)];
+                message = [NSString stringWithFormat:@"%@\n%@", TwinmeLocalizedString(@"show_group_view_remove_message", nil), TwinmeLocalizedString(@"show_group_view_remove_confirm_message", nil)];
             }
             
             DeleteConfirmView *deleteConfirmView = [[DeleteConfirmView alloc] init];
             deleteConfirmView.bottomSheetViewDelegate = self;
             deleteConfirmView.deleteConfirmType = DeleteConfirmTypeOriginator;
-            [deleteConfirmView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:message avatar:image icon:[UIImage imageNamed:@"ActionBarDelete"]];
+            [deleteConfirmView initWithTitle:TwinmeLocalizedString(@"deleted_account_view_warning", nil) message:message avatar:image icon:[UIImage imageNamed:@"ActionBarDelete"]];
             [deleteConfirmView setConfirmTitle:TwinmeLocalizedString(@"application_confirm", nil)];
             [self.view addSubview:deleteConfirmView];
             [deleteConfirmView showConfirmView];
@@ -695,22 +743,13 @@ static const int ddLogLevel = DDLogLevelWarning;
 - (void)selectPhoto {
     DDLogVerbose(@"%@ selectPhoto", LOG_TAG);
     
-    UIImagePickerController *picker = [[UIImagePickerController alloc] init];
-    picker.delegate = self;
-    picker.presentationController.delegate = self;
-    picker.allowsEditing = YES;
-    picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+    PHPickerConfiguration *config = [[PHPickerConfiguration alloc] init];
+    config.selectionLimit = 1;
+    config.filter = [PHPickerFilter imagesFilter];
     
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-        CGSize size = self.view.bounds.size;
-        picker.modalPresentationStyle = UIModalPresentationPopover;
-        picker.popoverPresentationController.sourceView = self.view;
-        picker.popoverPresentationController.sourceRect = CGRectMake(size.width / 2., size.height * 0.2, size.width * 0.6, size.height * 0.7);
-        picker.popoverPresentationController.permittedArrowDirections = UIPopoverArrowDirectionAny;
-        [self presentViewController:picker animated:YES completion:nil];
-    } else {
-        [self presentViewController:picker animated:YES completion:nil];
-    }
+    PHPickerViewController *pickerViewController = [[PHPickerViewController alloc] initWithConfiguration:config];
+    pickerViewController.delegate = self;
+    [self presentViewController:pickerViewController animated:YES completion:nil];
 }
 
 - (void)openMenuPhoto {
@@ -752,7 +791,7 @@ static const int ddLogLevel = DDLogLevelWarning;
     self.counterDescriptionLabel.textColor = Design.FONT_COLOR_DEFAULT;
     self.counterNameLabel.textColor = Design.FONT_COLOR_DEFAULT;
     
-    if ([self.descriptionTextView.text isEqualToString:TwinmeLocalizedString(@"side_menu_view_controller_about", nil)]) {
+    if ([self.descriptionTextView.text isEqualToString:TwinmeLocalizedString(@"navigation_view_about_twinme", nil)]) {
         self.descriptionTextView.textColor = Design.PLACEHOLDER_COLOR;
     } else {
         self.descriptionTextView.textColor = Design.FONT_COLOR_DEFAULT;

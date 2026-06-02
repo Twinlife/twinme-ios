@@ -52,22 +52,22 @@
     
     switch (self.welcomePart) {
         case WelcomePartOne:
-            self.message = TwinmeLocalizedString(@"welcome_view_controller_step1_message", nil);
+            self.message = TwinmeLocalizedString(@"welcome_view_step1_message", nil);
             self.image = darkMode ? [UIImage imageNamed:@"OnboardingStep1Dark"] : [UIImage imageNamed:@"OnboardingStep1"];;
             break;
             
         case WelcomePartTwo:
-            self.message = TwinmeLocalizedString(@"welcome_view_controller_step2_message", nil);
+            self.message = TwinmeLocalizedString(@"welcome_view_step2_message", nil);
             self.image = darkMode ? [UIImage imageNamed:@"OnboardingStep2Dark"] : [UIImage imageNamed:@"OnboardingStep2"];
             break;
             
         case WelcomePartThree:
-            self.message = TwinmeLocalizedString(@"welcome_view_controller_step3_message", nil);
+            self.message = TwinmeLocalizedString(@"welcome_view_step3_message", nil);
             self.image = darkMode ? [UIImage imageNamed:@"OnboardingStep3Dark"] : [UIImage imageNamed:@"OnboardingStep3"];
             break;
             
         case WelcomePartFour:
-            self.message = TwinmeLocalizedString(@"quality_of_services_view_controller_step2_message", nil);
+            self.message = TwinmeLocalizedString(@"quality_of_service_view_step2_message", nil);
             self.image = darkMode ? [UIImage imageNamed:@"QualityServiceStep2Dark"]:[UIImage imageNamed:@"QualityServiceStep2"];
             break;
                         

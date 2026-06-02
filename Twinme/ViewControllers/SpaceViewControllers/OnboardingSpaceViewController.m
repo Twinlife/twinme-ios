@@ -278,7 +278,7 @@ static CGFloat DESIGN_TEXT_MARGIN = 30;
     
     self.titleLabel.font = Design.FONT_BOLD36;
     self.titleLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    self.titleLabel.text = TwinmeLocalizedString(@"premium_services_view_controller_space_title", nil);;
+    self.titleLabel.text = TwinmeLocalizedString(@"premium_services_view_space_title", nil);;
         
     self.onboardingCollectionViewTopConstraint.constant *= Design.HEIGHT_RATIO;
     
@@ -344,26 +344,26 @@ static CGFloat DESIGN_TEXT_MARGIN = 30;
     
     CGFloat heightCell = 0;
     if (index == self.firstPartIndex) {
-        NSString *message = TwinmeLocalizedString(@"spaces_view_controller_message", nil);
+        NSString *message = TwinmeLocalizedString(@"spaces_view_message", nil);
         heightCell = (DESIGN_ONBOARDING_SPACE_FIRST_PART_CELL_HEIGHT * Design.HEIGHT_RATIO) + [self getHeightText:message];
     } else if (index == self.secondPartIndex) {
-        NSMutableString *message = [[NSMutableString alloc] initWithString:TwinmeLocalizedString(@"create_space_view_controller_onboarding_message_part_1", nil)];
+        NSMutableString *message = [[NSMutableString alloc] initWithString:TwinmeLocalizedString(@"create_space_view_onboarding_message_part_1", nil)];
         [message appendString:@"\n\n"];
-        [message appendString:TwinmeLocalizedString(@"create_space_view_controller_onboarding_message_part_2", nil)];
+        [message appendString:TwinmeLocalizedString(@"create_space_view_onboarding_message_part_2", nil)];
         [message appendString:@"\n\n"];
-        [message appendString:TwinmeLocalizedString(@"create_space_view_controller_onboarding_message_part_3", nil)];
+        [message appendString:TwinmeLocalizedString(@"create_space_view_onboarding_message_part_3", nil)];
         CGFloat height = (DESIGN_ONBOARDING_SPACE_SECOND_PART_CELL_HEIGHT * Design.HEIGHT_RATIO);
         heightCell = height + [self getHeightText:message];
     } else if (index == self.thirdPartIndex) {
-        NSMutableString *message = [[NSMutableString alloc] initWithString:TwinmeLocalizedString(@"create_space_view_controller_onboarding_message_part_4", nil)];
+        NSMutableString *message = [[NSMutableString alloc] initWithString:TwinmeLocalizedString(@"create_space_view_onboarding_message_part_4", nil)];
         [message appendString:@"\n\n"];
-        [message appendString:TwinmeLocalizedString(@"create_space_view_controller_onboarding_message_part_5", nil)];
+        [message appendString:TwinmeLocalizedString(@"create_space_view_onboarding_message_part_5", nil)];
         [message appendString:@"\n\n"];
-        [message appendString:TwinmeLocalizedString(@"create_space_view_controller_onboarding_message_part_6", nil)];
+        [message appendString:TwinmeLocalizedString(@"create_space_view_onboarding_message_part_6", nil)];
         [message appendString:@"\n\n"];
-        [message appendString:TwinmeLocalizedString(@"create_space_view_controller_onboarding_message_part_7", nil)];
+        [message appendString:TwinmeLocalizedString(@"create_space_view_onboarding_message_part_7", nil)];
         [message appendString:@"\n\n"];
-        [message appendString:TwinmeLocalizedString(@"create_space_view_controller_onboarding_message_part_8", nil)];
+        [message appendString:TwinmeLocalizedString(@"create_space_view_onboarding_message_part_8", nil)];
         
         CGFloat height = self.startFromSupportSection ? (DESIGN_ONBOARDING_SPACE_THIRD_PART_CELL_SMALL_HEIGHT * Design.HEIGHT_RATIO) : (DESIGN_ONBOARDING_SPACE_THIRD_PART_CELL_HEIGHT * Design.HEIGHT_RATIO);
         heightCell = height + [self getHeightText:message];

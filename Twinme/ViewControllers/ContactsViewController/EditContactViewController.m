@@ -166,7 +166,7 @@ static const int ddLogLevel = DDLogLevelWarning;
         } else if (self.contact.peerDescription) {
             self.contactDescription = self.contact.peerDescription;
         } else {
-            self.contactDescription = TwinmeLocalizedString(@"side_menu_view_controller_about", nil);
+            self.contactDescription = TwinmeLocalizedString(@"navigation_view_about_twinme", nil);
         }
         [self.editContactService initWithContact:self.contact];
     } else {
@@ -211,7 +211,7 @@ static const int ddLogLevel = DDLogLevelWarning;
 -(void)textViewDidBeginEditing:(UITextView *)textView {
     DDLogVerbose(@"%@ textViewDidBeginEditing: %@", LOG_TAG, textView);
     
-    if ([textView.text isEqualToString:TwinmeLocalizedString(@"side_menu_view_controller_about", nil)]) {
+    if ([textView.text isEqualToString:TwinmeLocalizedString(@"navigation_view_about_twinme", nil)]) {
         textView.text = @"";
         textView.textColor = Design.FONT_COLOR_DEFAULT;
     }
@@ -240,7 +240,7 @@ static const int ddLogLevel = DDLogLevelWarning;
     DDLogVerbose(@"%@ textViewDidEndEditing: %@", LOG_TAG, textView);
     
     if ([textView.text isEqualToString:@""]) {
-        textView.text = TwinmeLocalizedString(@"side_menu_view_controller_about", nil);
+        textView.text = TwinmeLocalizedString(@"navigation_view_about_twinme", nil);
         textView.textColor = Design.PLACEHOLDER_COLOR;
     }
 }
@@ -356,7 +356,7 @@ static const int ddLogLevel = DDLogLevelWarning;
     self.descriptionTextView.textColor = Design.PLACEHOLDER_COLOR;
     self.descriptionTextView.tintColor = Design.FONT_COLOR_DEFAULT;
     self.descriptionTextView.delegate = self;
-    self.descriptionTextView.text = TwinmeLocalizedString(@"side_menu_view_controller_about", nil);
+    self.descriptionTextView.text = TwinmeLocalizedString(@"navigation_view_about_twinme", nil);
     self.descriptionTextView.textContainer.lineFragmentPadding = 0;
     self.descriptionTextView.textContainerInset = UIEdgeInsetsZero;
     self.descriptionTextView.text = self.contactDescription;
@@ -372,7 +372,7 @@ static const int ddLogLevel = DDLogLevelWarning;
         self.descriptionTextView.textColor = Design.FONT_COLOR_DEFAULT;
         self.counterDescriptionLabel.text = [NSString stringWithFormat:@"%lu/%d", (unsigned long)self.descriptionTextView.text.length, MAX_DESCRIPTION_LENGTH];
     } else {
-        self.descriptionTextView.text = TwinmeLocalizedString(@"side_menu_view_controller_about", nil);
+        self.descriptionTextView.text = TwinmeLocalizedString(@"navigation_view_about_twinme", nil);
         self.descriptionTextView.textColor = Design.PLACEHOLDER_COLOR;
         self.counterDescriptionLabel.text = [NSString stringWithFormat:@"0/%d", MAX_DESCRIPTION_LENGTH];
     }
@@ -502,7 +502,7 @@ static const int ddLogLevel = DDLogLevelWarning;
         }
         
         NSString *updatedContactDescription = self.descriptionTextView.text;
-        if (updatedContactDescription.length == 0 || [updatedContactDescription isEqualToString:TwinmeLocalizedString(@"side_menu_view_controller_about", nil)]) {
+        if (updatedContactDescription.length == 0 || [updatedContactDescription isEqualToString:TwinmeLocalizedString(@"navigation_view_about_twinme", nil)]) {
             updatedContactDescription = self.contact.peerDescription;
         }
         
@@ -522,9 +522,9 @@ static const int ddLogLevel = DDLogLevelWarning;
         deleteConfirmView.bottomSheetViewDelegate = self;
         deleteConfirmView.deleteConfirmType = DeleteConfirmTypeOriginator;
         
-        NSString *message = [NSString stringWithFormat:@"%@\n%@", TwinmeLocalizedString(@"edit_contact_view_controller_message", nil), TwinmeLocalizedString(@"edit_contact_view_controller_confirm_message", nil)];
+        NSString *message = [NSString stringWithFormat:@"%@\n%@", TwinmeLocalizedString(@"edit_contact_view_message", nil), TwinmeLocalizedString(@"edit_contact_view_confirm_message", nil)];
         
-        [deleteConfirmView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:message avatar:self.contactAvatar icon:[UIImage imageNamed:@"ActionBarDelete"]];
+        [deleteConfirmView initWithTitle:TwinmeLocalizedString(@"deleted_account_view_warning", nil) message:message avatar:self.contactAvatar icon:[UIImage imageNamed:@"ActionBarDelete"]];
         [self.view addSubview:deleteConfirmView];
         [deleteConfirmView showConfirmView];
     }
@@ -556,7 +556,7 @@ static const int ddLogLevel = DDLogLevelWarning;
     self.counterNameLabel.textColor = Design.FONT_COLOR_DEFAULT;
     self.counterDescriptionLabel.textColor = Design.FONT_COLOR_DEFAULT;
     
-    if ([self.descriptionTextView.text isEqualToString:TwinmeLocalizedString(@"side_menu_view_controller_about", nil)]) {
+    if ([self.descriptionTextView.text isEqualToString:TwinmeLocalizedString(@"navigation_view_about_twinme", nil)]) {
         self.descriptionTextView.textColor = Design.PLACEHOLDER_COLOR;
     } else {
         self.descriptionTextView.textColor = Design.FONT_COLOR_DEFAULT;

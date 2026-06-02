@@ -66,7 +66,7 @@ static const int ddLogLevel = DDLogLevelWarning;
     DDLogVerbose(@"%@ initViews", LOG_TAG);
     
     [self.view setBackgroundColor:Design.WHITE_COLOR];
-    [self setNavigationTitle:TwinmeLocalizedString(@"feedback_view_controller_logs", nil)];
+    [self setNavigationTitle:TwinmeLocalizedString(@"feedback_view_logs", nil)];
     
     self.logsViewTopConstraint.constant *= Design.HEIGHT_RATIO;
     self.logsViewBottomConstraint.constant *= Design.HEIGHT_RATIO;

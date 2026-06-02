@@ -149,9 +149,9 @@ static NSString *SETTINGS_INFORMATION_CELL_IDENTIFIER = @"SettingsInformationCel
     NSString *title = @"";
     
     if (section == LEGAL_VIEW_SECTION) {
-        title = TwinmeLocalizedString(@"about_view_controller_legal", nil);
+        title = TwinmeLocalizedString(@"about_view_legal", nil);
     } else {
-        title = TwinmeLocalizedString(@"about_view_controller_open_source", nil);
+        title = TwinmeLocalizedString(@"about_view_open_source", nil);
     }
     
     [settingsSectionHeaderCell bindWithTitle:title backgroundColor:Design.LIGHT_GREY_BACKGROUND_COLOR hideSeparator:NO uppercaseString:YES];
@@ -171,7 +171,7 @@ static NSString *SETTINGS_INFORMATION_CELL_IDENTIFIER = @"SettingsInformationCel
         settingsSectionFooterCell = [[SettingsSectionFooterCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:FOOTER_SETTINGS_CELL_IDENTIFIER];
     }
     
-    [settingsSectionFooterCell bindWithTitle:TwinmeLocalizedString(@"about_view_controller_copyright", nil)];
+    [settingsSectionFooterCell bindWithTitle:TwinmeLocalizedString(@"about_view_copyright", nil)];
     
     return settingsSectionFooterCell;
 }
@@ -186,7 +186,7 @@ static NSString *SETTINGS_INFORMATION_CELL_IDENTIFIER = @"SettingsInformationCel
                 cell = [[AboutCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:ABOUT_CELL_IDENTIFIER];
             }
             
-            [cell bindWithText:TwinmeLocalizedString(@"about_view_controller_message", nil)];
+            [cell bindWithText:TwinmeLocalizedString(@"about_view_message", nil)];
             return cell;
         } else if (indexPath.row == 1) {
             SettingsValueItemCell *cell = [tableView dequeueReusableCellWithIdentifier:SETTINGS_VALUE_CELL_IDENTIFIER];
@@ -195,7 +195,7 @@ static NSString *SETTINGS_INFORMATION_CELL_IDENTIFIER = @"SettingsInformationCel
             }
             
             NSString *version = [[NSBundle mainBundle] objectForInfoDictionaryKey: @"CFBundleShortVersionString"];
-            [cell bindWithTitle:TwinmeLocalizedString(@"about_view_controller_version", nil) value:version hiddenAccessory:![self.twinmeApplication.lastVersionManager isCurrentVersion]];
+            [cell bindWithTitle:TwinmeLocalizedString(@"about_view_version", nil) value:version hiddenAccessory:![self.twinmeApplication.lastVersionManager isCurrentVersion]];
             
             return cell;
         } else {
@@ -215,7 +215,7 @@ static NSString *SETTINGS_INFORMATION_CELL_IDENTIFIER = @"SettingsInformationCel
             cell = [[SettingsInformationCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:SETTINGS_INFORMATION_CELL_IDENTIFIER];
         }
                 
-        [cell bindWithText:TwinmeLocalizedString(@"about_view_controller_open_source_information", nil)];
+        [cell bindWithText:TwinmeLocalizedString(@"about_view_open_source_information", nil)];
         
         return cell;
     } else {
@@ -229,11 +229,11 @@ static NSString *SETTINGS_INFORMATION_CELL_IDENTIFIER = @"SettingsInformationCel
         if (indexPath.section == LEGAL_VIEW_SECTION) {
             switch (indexPath.row) {
                 case TERMS_OF_SERVICE_ROW:
-                    title = TwinmeLocalizedString(@"about_view_controller_terms_of_use", nil);
+                    title = TwinmeLocalizedString(@"about_view_terms_of_use", nil);
                     break;
                     
                 case PRIVACY_POLICY_ROW:
-                    title = TwinmeLocalizedString(@"about_view_controller_privacy_policy", nil);
+                    title = TwinmeLocalizedString(@"about_view_privacy_policy", nil);
                     break;
                     
                 default:
@@ -242,11 +242,11 @@ static NSString *SETTINGS_INFORMATION_CELL_IDENTIFIER = @"SettingsInformationCel
         } else {
             switch (indexPath.row) {
                 case OPEN_SOURCE_ROW:
-                    title = TwinmeLocalizedString(@"about_view_controller_application_code", nil);
+                    title = TwinmeLocalizedString(@"about_view_application_code", nil);
                     break;
                     
                 case LICENCES_ROW:
-                    title = TwinmeLocalizedString(@"about_view_controller_open_sources_licences", nil);
+                    title = TwinmeLocalizedString(@"about_view_open_sources_licences", nil);
                     break;
                     
                 default:
@@ -268,30 +268,31 @@ static NSString *SETTINGS_INFORMATION_CELL_IDENTIFIER = @"SettingsInformationCel
     if (indexPath.section == ABOUT_VIEW_SECTION && indexPath.row == 1) {
         if ([self.twinmeApplication.lastVersionManager isCurrentVersion]) {
             WhatsNewViewController *whatsNewViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"WhatsNewViewController"];
+            whatsNewViewController.currentVersion = YES;
             [whatsNewViewController showInView:self.navigationController];
         }
     } else if (indexPath.section == LEGAL_VIEW_SECTION) {
         if (indexPath.row == TERMS_OF_SERVICE_ROW) {
             WebViewController *webViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"WebViewController"];
             webViewController.fileName = TwinmeLocalizedString(@"terms_of_use_url", nil);
-            webViewController.name = TwinmeLocalizedString(@"about_view_controller_terms_of_use", nil);
+            webViewController.name = TwinmeLocalizedString(@"about_view_terms_of_use", nil);
             [self.navigationController pushViewController:webViewController animated:YES];
         } else if (indexPath.row == PRIVACY_POLICY_ROW) {
             WebViewController *webViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"WebViewController"];
             webViewController.fileName = TwinmeLocalizedString(@"privacy_policy_url", nil);
-            webViewController.name = TwinmeLocalizedString(@"about_view_controller_privacy_policy", nil);
+            webViewController.name = TwinmeLocalizedString(@"about_view_privacy_policy", nil);
             [self.navigationController pushViewController:webViewController animated:YES];
         }
     } else if (indexPath.section == OPEN_SOURCE_VIEW_SECTION) {
         if (indexPath.row == OPEN_SOURCE_ROW) {
             WebViewController *webViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"WebViewController"];
             webViewController.fileName = TwinmeLocalizedString(@"opensource_url", nil);
-            webViewController.name = TwinmeLocalizedString(@"about_view_controller_application_code", nil);
+            webViewController.name = TwinmeLocalizedString(@"about_view_application_code", nil);
             [self.navigationController pushViewController:webViewController animated:YES];
         } else if (indexPath.row == LICENCES_ROW) {
             WebViewController *webViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"WebViewController"];
             webViewController.fileName = TwinmeLocalizedString(@"licenses_url", nil);
-            webViewController.name = TwinmeLocalizedString(@"about_view_controller_open_sources_licences", nil);
+            webViewController.name = TwinmeLocalizedString(@"about_view_open_sources_licences", nil);
             [self.navigationController pushViewController:webViewController animated:YES];
         }
     }
@@ -304,6 +305,7 @@ static NSString *SETTINGS_INFORMATION_CELL_IDENTIFIER = @"SettingsInformationCel
     
     WhatsNewViewController *whatsNewViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"WhatsNewViewController"];
     whatsNewViewController.updateMode = YES;
+    whatsNewViewController.currentVersion = YES;
     [whatsNewViewController showInView:self.navigationController];
 }
 
@@ -314,7 +316,7 @@ static NSString *SETTINGS_INFORMATION_CELL_IDENTIFIER = @"SettingsInformationCel
     
     self.view.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
     
-    [self setNavigationTitle:TwinmeLocalizedString(@"side_menu_view_controller_about", nil)];
+    [self setNavigationTitle:TwinmeLocalizedString(@"navigation_view_about_twinme", nil)];
     
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     [self.tableView registerNib:[UINib nibWithNibName:@"AboutCell" bundle:nil] forCellReuseIdentifier:ABOUT_CELL_IDENTIFIER];

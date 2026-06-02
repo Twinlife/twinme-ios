@@ -38,8 +38,6 @@
 
 #import <TwinmeCommon/MainViewController.h>
 #import <TwinmeCommon/TwinmeNavigationController.h>
-#import "ShareViewController.h"
-#import "RestoreViewController.h"
 #import <TwinmeCommon/UIViewController+Utils.h>
 #import "Configuration.h"
 #import <TwinmeCommon/TwinmeApplication.h>
@@ -68,6 +66,19 @@ static const int ddLogLevel = DDLogLevelWarning;
 @property (nonatomic) BOOL allowNotificationsStatus;
 @property (nonatomic) BOOL pushKitReady;
 @property (nonatomic) int pushKitInitCount;
+
+- (void)attachWindow:(nullable UIWindow *)window;
+- (void)sceneDidEnterBackground;
+- (void)sceneWillEnterForeground;
+- (void)sceneDidBecomeActive;
+- (BOOL)handleUserActivity:(nonnull NSUserActivity *)userActivity;
+- (BOOL)handleOpenURL:(nonnull NSURL *)url options:(nullable NSDictionary<UIApplicationOpenURLOptionsKey, id> *)options;
+
+@end
+
+@interface SceneDelegate : UIResponder <UIWindowSceneDelegate>
+
+@property (nonatomic, nullable) UIWindow *window;
 
 @end
 
@@ -130,41 +141,22 @@ static const int ddLogLevel = DDLogLevelWarning;
 
     [self checkAllowNotifications];
 
-    if (@available(iOS 13.0, *)) {
-        // Use the Apple remote notification for messages, must match NotificationService extension deployment.
-        // This forces us to use CallKit after a PushKit message is received.
-        [application registerForRemoteNotifications];
-    }
+    // Use the Apple remote notification for messages, must match NotificationService extension deployment.
+    // This forces us to use CallKit after a PushKit message is received.
+    [application registerForRemoteNotifications];
 
     // Register for VoIP notifications
     self.voipRegistry = [[PKPushRegistry alloc] initWithQueue:dispatch_get_main_queue()];
     self.voipRegistry.delegate = self;
     self.voipRegistry.desiredPushTypes = [NSSet setWithObject:PKPushTypeVoIP];
 
-    [self.window makeKeyAndVisible];
-    
-    // Preloads keyboard so there's no lag on initial keyboard appearance
-    UITextField *lagFreeField = [[UITextField alloc] init];
-    [self.window addSubview:lagFreeField];
-    [lagFreeField becomeFirstResponder];
-    [lagFreeField resignFirstResponder];
-    [lagFreeField removeFromSuperview];
     return YES;
 }
 
 - (void)applicationDidEnterBackground:(UIApplication *)application {
     DDLogVerbose(@"%@ applicationDidEnterBackground: %@", LOG_TAG, application);
     
-    self.inBackground = YES;
-    [self.twinmeContext applicationDidEnterBackground:self];
-    [self.callService applicationDidEnterBackground:application];
-    [self.twinmeApplication.notificationCenter applicationDidEnterBackground:application];
-    
-    // When we enter in background, make sure the view receives the viewWillDisappear so that it
-    // knows it is not visible.  Useful for the conversation view which must not mark as-read
-    // the messages it receives while in background.
-    [self.window.rootViewController beginAppearanceTransition:NO animated:NO];
-    [self.window.rootViewController endAppearanceTransition];
+    [self sceneDidEnterBackground];
 }
 
 - (void)checkAllowNotifications {
@@ -181,42 +173,13 @@ static const int ddLogLevel = DDLogLevelWarning;
 - (void)applicationWillEnterForeground:(UIApplication *)application {
     DDLogVerbose(@"%@ applicationWillEnterForeground: %@", LOG_TAG, application);
 
-    [self checkAllowNotifications];
-    [self.twinmeContext applicationDidBecomeActive:self];
-    [self.callService applicationWillEnterForeground:application];
-    self.inBackground = NO;
-
-    // If we have not received the pushkit token, force another registration by clearing the desiredPushTypes
-    // and setting them again.
-    if (!self.pushKitReady && self.pushKitInitCount < 5) {
-        self.pushKitInitCount++;
-        self.voipRegistry.desiredPushTypes = [[NSSet alloc] init];
-        self.voipRegistry.desiredPushTypes = [NSSet setWithObject:PKPushTypeVoIP];
-    }
-
-    // When we enter the foreground, make visible again the previous view so that viewWillAppear is triggered.
-    [self.window.rootViewController beginAppearanceTransition:YES animated:NO];
-    [self.window.rootViewController endAppearanceTransition];
+    [self sceneWillEnterForeground];
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
     DDLogVerbose(@"%@ applicationDidBecomeActive: %@", LOG_TAG, application);
     
-    if (self.inBackground) {
-        [self.twinmeContext applicationDidBecomeActive:self];
-        self.inBackground = NO;
-    }
-    
-    // If the TwinmeLite account is migrated to Twinme+, the account is not reconnectable and we MUST not continue.
-    // Redirect to the Splash screen that will display some message: the application must be uninstalled.
-    if (![[self.twinmeContext getAccountService] isReconnectable]) {
-        UIViewController *splashScreenViewController = [self.mainViewController.storyboard instantiateViewControllerWithIdentifier:@"SplashScreenViewController"];
-        if ([self.mainViewController isInitialized]) {
-            [self.mainViewController presentViewController:splashScreenViewController animated:YES completion:nil];
-        }
-    }
-    
-    [self.twinmeApplication.notificationCenter applicationDidBecomeActive:application];
+    [self sceneDidBecomeActive];
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application {
@@ -228,82 +191,14 @@ static const int ddLogLevel = DDLogLevelWarning;
 
 - (BOOL)application:(UIApplication *)application continueUserActivity:(NSUserActivity *)userActivity restorationHandler:(void (^)(NSArray * _Nullable))restorationHandler {
     DDLogVerbose(@"%@ application: %@ continueUserActivity openURL: %@ sourceApplication: %@", LOG_TAG, application, userActivity.webpageURL, userActivity.activityType);
-    
-    if ([userActivity.activityType isEqualToString: NSUserActivityTypeBrowsingWeb]) {
-        NSURL *url = userActivity.webpageURL;
-        return [self.twinmeContext openURL:url options:nil];
-    }
 
-    if (@available(iOS 13.0, *)) {
-        BOOL startAudioCall = [userActivity.activityType isEqualToString:INStartAudioCallIntentIdentifier];
-        BOOL startVideoCall = [userActivity.activityType isEqualToString:INStartVideoCallIntentIdentifier];
-        if (startAudioCall || startVideoCall) {
-            INStartCallIntent *intent = (INStartCallIntent *)userActivity.interaction.intent;
-            INPerson *contact = intent.contacts.firstObject;
-            self.mainViewController.inPersonToCall = contact;
-            self.mainViewController.startVideoCall = startVideoCall;
-            
-            if ([self.mainViewController isInitialized]) {
-                [self.mainViewController startCallFromRecents];
-            }
-        }
-    }
-    return YES;
+    return [self handleUserActivity:userActivity];
 }
 
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey, id> *)options {
     DDLogVerbose(@"%@ application: %@ openURL: %@ options: %@", LOG_TAG, application, url, options);
-        
-    if (!url) {
-        return NO;
-    }
 
-    // Always call the twinme context openURL to handle correct setup of twinlife framework.
-    // In particular, we may need to reload some conversation operations for the conversation
-    // scheduler in case some operation was created by the ShareExtension.
-    BOOL result = [self.twinmeContext openURL:url options:options];
-    if (result) {
-        return result;
-    }
-
-    // Special action triggered by:
-    // - the ShareExtension to redirect and display the conversation,
-    // - the iOS Social profile link to display the contact or group.
-    if ([url.scheme isEqualToString:[TLTwinmeContext APPLICATION_SCHEME]]) {
-        [self.mainViewController onOpenURL:url];
-        return YES;
-    }
-
-    if ([url.scheme isEqualToString:@"file"]) {
-        UIViewController *topViewController = self.mainViewController.navigationController.topViewController;
-        
-        if (topViewController.presentedViewController) {
-            [topViewController.presentedViewController dismissViewControllerAnimated:NO completion:^{
-            }];
-        }
-                
-        if ([self.mainViewController isInitialized]) {
-            if ([url.pathExtension isEqual:[TLTwinlife BACKUP_EXTENSION]]) {
-                RestoreViewController *restoreViewController = [[UIStoryboard storyboardWithName:@"Backup" bundle:nil] instantiateViewControllerWithIdentifier:@"RestoreViewController"];
-                [restoreViewController initWithFilePath:url verifyMode:NO];
-                TwinmeNavigationController *navigationController = [[TwinmeNavigationController alloc] initWithRootViewController:restoreViewController];
-                [self.mainViewController presentViewController:navigationController animated:YES completion:nil];
-            } else {
-                ShareViewController *shareViewController = [self.mainViewController.storyboard instantiateViewControllerWithIdentifier:@"ShareViewController"];
-                shareViewController.fileURL = url;
-                
-                TwinmeNavigationController *navigationController = [[TwinmeNavigationController alloc]initWithRootViewController:shareViewController];
-                [self.mainViewController presentViewController:navigationController animated:YES completion:nil];
-            }
-        } else {
-            self.mainViewController.shareContentURL = url;
-        }
-
-        // This URL is recognized and we handle it.
-        return YES;
-    }
-
-    return NO;
+    return [self handleOpenURL:url options:options];
 }
 
 - (void)application:(UIApplication *)application performFetchWithCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandler {
@@ -335,13 +230,6 @@ static const int ddLogLevel = DDLogLevelWarning;
     
     UIApplication *application = [UIApplication sharedApplication];
     return [application backgroundTimeRemaining];
-}
-
-- (void)setMinimumBackgroundFetchInterval:(NSTimeInterval)delay {
-    DDLogVerbose(@"%@ setMinimumBackgroundFetchInterval: %f", LOG_TAG, delay);
-    
-    UIApplication *application = [UIApplication sharedApplication];
-    [application setMinimumBackgroundFetchInterval:delay];
 }
 
 - (BOOL)allowNotifications {
@@ -376,10 +264,8 @@ static const int ddLogLevel = DDLogLevelWarning;
     [self.twinmeContext setPushNotificationWithVariant:TL_MANAGEMENT_SERVICE_PUSH_NOTIFICATION_REMOTE_VARIANT token:token];
     
     // Callkit is disabled and we cannot use PushKit: invalidate the PushKit token but still set the VoIP variant.
-    if (@available(iOS 13.0, *)) {
-        if (!self.enableCallkit) {
-            [self.twinmeContext setPushNotificationWithVariant:TL_MANAGEMENT_SERVICE_PUSH_NOTIFICATION_VOIP_VARIANT token:TL_MANAGEMENT_SERVICE_PUSH_NOTIFICATION_VOIP_DISABLED];
-        }
+    if (!self.enableCallkit) {
+        [self.twinmeContext setPushNotificationWithVariant:TL_MANAGEMENT_SERVICE_PUSH_NOTIFICATION_VOIP_VARIANT token:TL_MANAGEMENT_SERVICE_PUSH_NOTIFICATION_VOIP_DISABLED];
     }
 }
 
@@ -418,11 +304,9 @@ static const int ddLogLevel = DDLogLevelWarning;
     self.pushKitReady = YES;
 
     // Callkit is disabled and we cannot use PushKit: invalidate the PushKit token but still set the VoIP variant.
-    if (@available(iOS 13.0, *)) {
-        if (!self.enableCallkit) {
-            [self.twinmeContext setPushNotificationWithVariant:TL_MANAGEMENT_SERVICE_PUSH_NOTIFICATION_VOIP_VARIANT token:TL_MANAGEMENT_SERVICE_PUSH_NOTIFICATION_VOIP_DISABLED];
-            return;
-        }
+    if (!self.enableCallkit) {
+        [self.twinmeContext setPushNotificationWithVariant:TL_MANAGEMENT_SERVICE_PUSH_NOTIFICATION_VOIP_VARIANT token:TL_MANAGEMENT_SERVICE_PUSH_NOTIFICATION_VOIP_DISABLED];
+        return;
     }
     
     NSData *deviceToken = credentials.token;
@@ -459,13 +343,8 @@ static const int ddLogLevel = DDLogLevelWarning;
 
     dispatch_semaphore_wait(semaphore, dispatch_time(DISPATCH_TIME_NOW, PUSH_NOTIFICATION_TIMEOUT));
 
-    BOOL iosPushKitCrashSyndrome;
-    if (@available(iOS 13.0, *)) { // Must match NotificationService deployment version
-        iosPushKitCrashSyndrome = YES;
-    } else {
-        iosPushKitCrashSyndrome = NO;
-    }
-    
+    BOOL iosPushKitCrashSyndrome = YES; // Must match NotificationService deployment version
+
     if (notificationContent) {
         NSUUID *peerConnectionId = notificationContent.sessionId;
         id<TLOriginator> originator = notificationContent.originator;
@@ -518,20 +397,236 @@ static const int ddLogLevel = DDLogLevelWarning;
         }
     }];
     
-    if (@available(iOS 13.0, *)) {
-        // Use the Apple remote notification for messages, must match NotificationService extension deployment.
-        // This forces us to use CallKit after a PushKit message is received.
-        [application registerForRemoteNotifications];
-    }
+    // Use the Apple remote notification for messages, must match NotificationService extension deployment.
+    // This forces us to use CallKit after a PushKit message is received.
+    [application registerForRemoteNotifications];
 }
 
 #pragma mark - Private methods
+
+- (void)attachWindow:(UIWindow *)window {
+    DDLogVerbose(@"%@ attachWindow: %@", LOG_TAG, window);
+
+    if (self.window == window) {
+        return;
+    }
+
+    self.window = window;
+    [self.window makeKeyAndVisible];
+
+    // Preload the keyboard on the scene window to avoid the first-show lag.
+    UITextField *lagFreeField = [[UITextField alloc] init];
+    [self.window addSubview:lagFreeField];
+    [lagFreeField becomeFirstResponder];
+    [lagFreeField resignFirstResponder];
+    [lagFreeField removeFromSuperview];
+}
+
+- (void)sceneDidEnterBackground {
+    DDLogVerbose(@"%@ sceneDidEnterBackground", LOG_TAG);
+
+    self.inBackground = YES;
+    [self.twinmeContext applicationDidEnterBackground:self];
+    [self.callService applicationDidEnterBackground:[UIApplication sharedApplication]];
+    [self.twinmeApplication.notificationCenter applicationDidEnterBackground:[UIApplication sharedApplication]];
+
+    // Keep the existing visibility semantics for conversation screens when the scene goes offscreen.
+    [self.window.rootViewController beginAppearanceTransition:NO animated:NO];
+    [self.window.rootViewController endAppearanceTransition];
+}
+
+- (void)sceneWillEnterForeground {
+    DDLogVerbose(@"%@ sceneWillEnterForeground", LOG_TAG);
+
+    [self checkAllowNotifications];
+    [self.twinmeContext applicationDidBecomeActive:self];
+    [self.callService applicationWillEnterForeground:[UIApplication sharedApplication]];
+    self.inBackground = NO;
+
+    if (!self.pushKitReady && self.pushKitInitCount < 5) {
+        self.pushKitInitCount++;
+        self.voipRegistry.desiredPushTypes = [[NSSet alloc] init];
+        self.voipRegistry.desiredPushTypes = [NSSet setWithObject:PKPushTypeVoIP];
+    }
+
+    [self.window.rootViewController beginAppearanceTransition:YES animated:NO];
+    [self.window.rootViewController endAppearanceTransition];
+}
+
+- (void)sceneDidBecomeActive {
+    DDLogVerbose(@"%@ sceneDidBecomeActive", LOG_TAG);
+
+    if (self.inBackground) {
+        [self.twinmeContext applicationDidBecomeActive:self];
+        self.inBackground = NO;
+    }
+
+    if (![[self.twinmeContext getAccountService] isReconnectable]) {
+        UIViewController *splashScreenViewController = [self.mainViewController.storyboard instantiateViewControllerWithIdentifier:@"SplashScreenViewController"];
+        if ([self.mainViewController isInitialized]) {
+            [self.mainViewController presentViewController:splashScreenViewController animated:YES completion:nil];
+        }
+    }
+
+    [self.twinmeApplication.notificationCenter applicationDidBecomeActive:[UIApplication sharedApplication]];
+}
+
+- (BOOL)handleUserActivity:(NSUserActivity *)userActivity {
+    DDLogVerbose(@"%@ handleUserActivity: %@", LOG_TAG, userActivity.activityType);
+
+    if ([userActivity.activityType isEqualToString:NSUserActivityTypeBrowsingWeb]) {
+        NSURL *url = userActivity.webpageURL;
+        return url ? [self.twinmeContext openURL:url options:nil] : NO;
+    }
+
+    BOOL startAudioCall = NO;
+    BOOL startVideoCall = NO;
+    
+    
+    INPerson *contact = nil;
+    if ([userActivity.interaction.intent isKindOfClass:[INStartCallIntent class]]) {
+        INStartCallIntent *intent = (INStartCallIntent *)userActivity.interaction.intent;
+        if (intent.callCapability == INCallCapabilityAudioCall) {
+            startAudioCall = YES;
+        } else if (intent.callCapability == INCallCapabilityVideoCall) {
+            startVideoCall = YES;
+        }
+        contact = intent.contacts.firstObject;
+    } else if ([userActivity.interaction.intent isKindOfClass:[INStartAudioCallIntent class]]) {
+        INStartAudioCallIntent *audioIntent = (INStartAudioCallIntent *)userActivity.interaction.intent;
+        startAudioCall = YES;
+        contact = audioIntent.contacts.firstObject;
+    } else if ([userActivity.interaction.intent isKindOfClass:[INStartVideoCallIntent class]]) {
+        INStartVideoCallIntent *videoIntent = (INStartVideoCallIntent *)userActivity.interaction.intent;
+        startVideoCall = YES;
+        contact = videoIntent.contacts.firstObject;
+    }
+
+    if ((startAudioCall || startVideoCall) && contact) {
+        self.mainViewController.inPersonToCall = contact;
+        self.mainViewController.startVideoCall = startVideoCall;
+
+        if ([self.mainViewController isInitialized]) {
+            [self.mainViewController startCallFromRecents];
+        }
+    }
+
+    return YES;
+}
+
+- (BOOL)handleOpenURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey, id> *)options {
+    DDLogVerbose(@"%@ handleOpenURL: %@ options: %@", LOG_TAG, url, options);
+
+    if (!url) {
+        return NO;
+    }
+
+    // Always call the twinme context openURL to handle correct setup of twinlife framework.
+    // In particular, we may need to reload some conversation operations for the conversation
+    // scheduler in case some operation was created by the ShareExtension.
+    BOOL result = [self.twinmeContext openURL:url options:options];
+    if (result) {
+        return YES;
+    }
+
+    if ([url.scheme isEqualToString:[TLTwinmeContext APPLICATION_SCHEME]]) {
+        [self.mainViewController onOpenURL:url];
+        return YES;
+    }
+
+    if ([url.scheme isEqualToString:@"file"]) {
+        UIViewController *topViewController = self.mainViewController.navigationController.topViewController;
+
+        if (topViewController.presentedViewController) {
+            [topViewController.presentedViewController dismissViewControllerAnimated:NO completion:^{
+            }];
+        }
+
+        self.mainViewController.shareContentURL = url;
+        
+        if ([self.mainViewController isInitialized]) {
+            [self.mainViewController handleShareContentURL];
+        }
+        
+        return YES;
+    }
+
+    return NO;
+}
 
 - (void)initTwinmeContext {
     DDLogVerbose(@"%@ initTwinmeContext", LOG_TAG);
     
     _twinmeApplication = [[TwinmeApplication alloc] init];
     _twinmeContext = [[TLTwinmeContext alloc] initWithTwinmeApplication:self.twinmeApplication configuration:[[Configuration alloc] init]];
+}
+
+@end
+
+@implementation SceneDelegate
+
+- (void)scene:(UIScene *)scene willConnectToSession:(UISceneSession *)session options:(UISceneConnectionOptions *)connectionOptions {
+    DDLogVerbose(@"%@ scene: %@ willConnectToSession: %@ options: %@", LOG_TAG, scene, session, connectionOptions);
+   
+    if (![scene isKindOfClass:[UIWindowScene class]]) {
+        return;
+    }
+
+    ApplicationDelegate *delegate = (ApplicationDelegate *)UIApplication.sharedApplication.delegate;
+    NSArray<UIOpenURLContext *> *urlContexts = connectionOptions.URLContexts.allObjects;
+    NSArray<NSUserActivity *> *userActivities = connectionOptions.userActivities.allObjects;
+
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [delegate attachWindow:self.window];
+
+        for (UIOpenURLContext *urlContext in urlContexts) {
+            [delegate handleOpenURL:urlContext.URL options:nil];
+        }
+
+        for (NSUserActivity *userActivity in userActivities) {
+            [delegate handleUserActivity:userActivity];
+        }
+    });
+}
+
+- (void)sceneDidBecomeActive:(UIScene *)scene {
+    DDLogVerbose(@"%@ sceneDidBecomeActive: %@", LOG_TAG, scene);
+    
+    ApplicationDelegate *delegate = (ApplicationDelegate *)UIApplication.sharedApplication.delegate;
+    [delegate attachWindow:self.window];
+    [delegate sceneDidBecomeActive];
+}
+
+- (void)sceneWillEnterForeground:(UIScene *)scene {
+    DDLogVerbose(@"%@ sceneWillEnterForeground: %@", LOG_TAG, scene);
+    
+    ApplicationDelegate *delegate = (ApplicationDelegate *)UIApplication.sharedApplication.delegate;
+    [delegate attachWindow:self.window];
+    [delegate sceneWillEnterForeground];
+}
+
+- (void)sceneDidEnterBackground:(UIScene *)scene {
+    DDLogVerbose(@"%@ sceneDidEnterBackground: %@", LOG_TAG, scene);
+    
+    ApplicationDelegate *delegate = (ApplicationDelegate *)UIApplication.sharedApplication.delegate;
+    [delegate attachWindow:self.window];
+    [delegate sceneDidEnterBackground];
+}
+
+- (void)scene:(UIScene *)scene continueUserActivity:(NSUserActivity *)userActivity {
+    DDLogVerbose(@"%@ scene: %@ continueUserActivity: %@", LOG_TAG, scene, userActivity);
+    
+    ApplicationDelegate *delegate = (ApplicationDelegate *)UIApplication.sharedApplication.delegate;
+    [delegate handleUserActivity:userActivity];
+}
+
+- (void)scene:(UIScene *)scene openURLContexts:(NSSet<UIOpenURLContext *> *)URLContexts {
+    DDLogVerbose(@"%@ scene: %@ openURLContexts: %@", LOG_TAG, scene, URLContexts);
+    
+    ApplicationDelegate *delegate = (ApplicationDelegate *)UIApplication.sharedApplication.delegate;
+    for (UIOpenURLContext *urlContext in URLContexts) {
+        [delegate handleOpenURL:urlContext.URL options:nil];
+    }
 }
 
 @end

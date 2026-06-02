@@ -195,20 +195,20 @@ typedef enum {
     NSString *badgeTitle = nil;
     switch (section) {
         case SECTION_CALL_PERMISSIONS:
-            sectionName = TwinmeLocalizedString(@"settings_view_controller_authorization_title", nil);
+            sectionName = TwinmeLocalizedString(@"settings_view_authorization_title", nil);
             break;
             
         case SECTION_CONTROL_CAMERA:
-            sectionName = TwinmeLocalizedString(@"call_view_controller_camera_control", nil);
+            sectionName = TwinmeLocalizedString(@"call_view_camera_control", nil);
             hideSeparator = YES;
             break;
             
         case SECTION_DISCREET_RELATION:
-            sectionName = TwinmeLocalizedString(@"privacy_view_controller_title", nil);
+            sectionName = TwinmeLocalizedString(@"privacy_view_title", nil);
             break;
             
         case SECTION_PROGRAMMED_CALL:
-            sectionName = TwinmeLocalizedString(@"show_call_view_controller_schedule_call", nil).uppercaseString;;
+            sectionName = TwinmeLocalizedString(@"show_call_view_schedule_call", nil).uppercaseString;;
             hideSeparator = YES;
             break;
             
@@ -234,15 +234,15 @@ typedef enum {
         NSString *text = @"";
         switch (indexPath.section) {
             case SECTION_CONTROL_CAMERA:
-                text = TwinmeLocalizedString(@"contact_capabilities_view_controller_information_camera_control", nil);
+                text = TwinmeLocalizedString(@"contact_capabilities_view_camera_control_information", nil);
                 break;
                 
             case SECTION_DISCREET_RELATION:
-                text = TwinmeLocalizedString(@"contact_capabilities_view_controller_information_discreet_relation", nil);
+                text = TwinmeLocalizedString(@"contact_capabilities_view_information_discreet_relation", nil);
                 break;
                 
             case SECTION_PROGRAMMED_CALL:
-                text = [self isGroupCapabilities] ? TwinmeLocalizedString(@"group_capabilities_view_controller_information_programmed_call", nil) : TwinmeLocalizedString(@"contact_capabilities_view_controller_information_programmed_call", nil);
+                text = [self isGroupCapabilities] ? TwinmeLocalizedString(@"group_capabilities_view_information_programmed_call", nil) : TwinmeLocalizedString(@"contact_capabilities_view_information_programmed_call", nil);
                 break;
                 
             default:
@@ -260,11 +260,11 @@ typedef enum {
         
         NSString *value;
         if (self.zoomable == TLVideoZoomableNever) {
-            value = TwinmeLocalizedString(@"contact_capabilities_view_controller_camera_control_never", nil);
+            value = TwinmeLocalizedString(@"contact_capabilities_view_camera_control_never", nil);
         } else if (self.zoomable  == TLVideoZoomableAsk) {
-            value = TwinmeLocalizedString(@"contact_capabilities_view_controller_camera_control_ask", nil);
+            value = TwinmeLocalizedString(@"contact_capabilities_view_camera_control_ask", nil);
         } else {
-            value = TwinmeLocalizedString(@"contact_capabilities_view_controller_camera_control_allow", nil);
+            value = TwinmeLocalizedString(@"contact_capabilities_view_camera_control_allow", nil);
         }
         
         [cell bindWithTitle:nil value:value];
@@ -288,12 +288,12 @@ typedef enum {
                     switchState = self.allowAudioCall;
                     hiddenSwitch = NO;
                     tag = TAG_ALLOW_AUDIO_CALL;
-                    title = [self isGroupCapabilities] ? TwinmeLocalizedString(@"group_capabilities_view_controller_information_audio_call", nil) : TwinmeLocalizedString(@"contact_capabilities_view_controller_information_audio_call", nil);
+                    title = [self isGroupCapabilities] ? TwinmeLocalizedString(@"group_capabilities_view_information_audio_call", nil) : TwinmeLocalizedString(@"contact_capabilities_view_information_audio_call", nil);
                 } else {
                     switchState = self.allowVideoCall;
                     hiddenSwitch = NO;
                     tag = TAG_ALLOW_VIDEO_CALL;
-                    title = [self isGroupCapabilities] ? TwinmeLocalizedString(@"group_capabilities_view_controller_information_video_call", nil) : TwinmeLocalizedString(@"contact_capabilities_view_controller_information_video_call", nil);
+                    title = [self isGroupCapabilities] ? TwinmeLocalizedString(@"group_capabilities_view_information_video_call", nil) : TwinmeLocalizedString(@"contact_capabilities_view_information_video_call", nil);
                 }
                 
                 break;
@@ -302,14 +302,14 @@ typedef enum {
                 switchState = self.discreetRelation;
                 hiddenSwitch = NO;
                 tag = TAG_DISCREET_RELATION;
-                title = TwinmeLocalizedString(@"contact_capabilities_view_controller_discreet_relation", nil);
+                title = TwinmeLocalizedString(@"contact_capabilities_view_discreet_relation", nil);
                 break;
                 
             case SECTION_PROGRAMMED_CALL:
                 switchState = self.scheduleEnable;
                 hiddenSwitch = NO;
                 tag = TAG_ENABLE_SCHEDULE;
-                title = TwinmeLocalizedString(@"show_call_view_controller_setting_limited", nil);
+                title = TwinmeLocalizedString(@"show_call_view_settings_limited", nil);
                 break;
                 
             default:
@@ -383,7 +383,7 @@ typedef enum {
     
     self.view.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
     
-    [self setNavigationTitle:TwinmeLocalizedString(@"contact_capabilities_view_controller_call_settings", nil)];
+    [self setNavigationTitle:TwinmeLocalizedString(@"contact_capabilities_view_call_settings", nil)];
     
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     self.tableView.rowHeight = UITableViewAutomaticDimension;
@@ -416,7 +416,7 @@ typedef enum {
     if (hideCancel || [self.twinmeApplication startOnboarding:OnboardingTypeRemoteCameraSettings]) {
         OnboardingConfirmView *onboardingConfirmView = [[OnboardingConfirmView alloc] init];
         onboardingConfirmView.bottomSheetViewDelegate = self;
-        [onboardingConfirmView initWithTitle:TwinmeLocalizedString(@"call_view_controller_camera_control_needs_help", nil) message: TwinmeLocalizedString(@"contact_capabilities_view_controller_camera_control_onboarding", nil) image:[UIImage imageNamed:@"OnboardingControlCamera"] action:TwinmeLocalizedString(@"application_ok", nil) actionColor:nil cancel:TwinmeLocalizedString(@"application_do_not_display", nil)];
+        [onboardingConfirmView initWithTitle:TwinmeLocalizedString(@"call_view_camera_control_needs_help", nil) message: TwinmeLocalizedString(@"contact_capabilities_view_camera_control_onboarding", nil) image:[UIImage imageNamed:@"OnboardingControlCamera"] action:TwinmeLocalizedString(@"application_ok", nil) actionColor:nil cancel:TwinmeLocalizedString(@"application_do_not_display", nil)];
         
         if (hideCancel) {
             [onboardingConfirmView hideCancelAction];

@@ -232,7 +232,7 @@ static const long long WARNING_ORIGINAL_SIZE = 1024 * 1024 * 10;
 - (void)textViewDidBeginEditing:(UITextView *)textView {
     DDLogVerbose(@"%@ textViewDidBeginEditing: %@", LOG_TAG, textView);
     
-    if ([textView.text isEqualToString:TwinmeLocalizedString(@"conversation_view_controller_message", nil)]) {
+    if ([textView.text isEqualToString:TwinmeLocalizedString(@"conversation_view_message", nil)]) {
         textView.text = @"";
         textView.textColor = [UIColor whiteColor];
     }
@@ -248,7 +248,7 @@ static const long long WARNING_ORIGINAL_SIZE = 1024 * 1024 * 10;
     DDLogVerbose(@"%@ textViewDidEndEditing: %@", LOG_TAG, textView);
     
     if ([textView.text isEqualToString:@""]) {
-        textView.text = TwinmeLocalizedString(@"conversation_view_controller_message", nil);
+        textView.text = TwinmeLocalizedString(@"conversation_view_message", nil);
         textView.textColor = Design.PLACEHOLDER_COLOR;
     }
 }
@@ -458,7 +458,7 @@ static const long long WARNING_ORIGINAL_SIZE = 1024 * 1024 * 10;
     self.messageTextView.returnKeyType = UIReturnKeyDefault;
     self.messageTextView.keyboardAppearance = UIKeyboardAppearanceDark;
     self.messageTextView.delegate = self;
-    self.messageTextView.text = TwinmeLocalizedString(@"conversation_view_controller_message", nil);
+    self.messageTextView.text = TwinmeLocalizedString(@"conversation_view_message", nil);
     self.messageTextView.textColor = Design.PLACEHOLDER_COLOR;
     
     self.sendViewLeadingConstraint.constant *= Design.WIDTH_RATIO;
@@ -468,7 +468,7 @@ static const long long WARNING_ORIGINAL_SIZE = 1024 * 1024 * 10;
     self.sendView.backgroundColor = Design.MAIN_COLOR;
     self.sendView.clipsToBounds = YES;
     self.sendView.layer.cornerRadius =  self.sendViewHeightConstraint.constant * 0.5f;
-    self.sendView.accessibilityLabel = TwinmeLocalizedString(@"feedback_view_controller_send", nil);
+    self.sendView.accessibilityLabel = TwinmeLocalizedString(@"feedback_view_send", nil);
     self.sendView.isAccessibilityElement = YES;
     [self.sendView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSendTapGesture:)]];
     
@@ -617,7 +617,7 @@ static const long long WARNING_ORIGINAL_SIZE = 1024 * 1024 * 10;
     defaultConfirmView.bottomSheetViewDelegate = self;
     defaultConfirmView.forceDarkMode = YES;
     
-    [defaultConfirmView initWithTitle:TwinmeLocalizedString(@"account_migration_view_controller_state_send_files", nil) message:TwinmeLocalizedString(@"conversation_view_controller_send_file_warning", nil) image:nil avatar:nil action: TwinmeLocalizedString(@"application_confirm", nil) actionColor:nil cancel:TwinmeLocalizedString(@"application_cancel", nil)];
+    [defaultConfirmView initWithTitle:TwinmeLocalizedString(@"account_migration_view_state_send_files", nil) message:TwinmeLocalizedString(@"conversation_view_send_file_warning", nil) image:nil avatar:nil action: TwinmeLocalizedString(@"application_confirm", nil) actionColor:nil cancel:TwinmeLocalizedString(@"application_cancel", nil)];
 
     [self.view addSubview:defaultConfirmView];
     [defaultConfirmView showConfirmView];
@@ -634,11 +634,11 @@ static const long long WARNING_ORIGINAL_SIZE = 1024 * 1024 * 10;
     NSByteCountFormatter *formatter = [[NSByteCountFormatter alloc] init];
     formatter.countStyle = NSByteCountFormatterCountStyleFile;
     
-    NSMutableString *message = [[NSMutableString alloc] initWithString:[NSString stringWithFormat: TwinmeLocalizedString(@"conversation_view_controller_send_quality_size", nil), [formatter stringFromByteCount:size]]];
+    NSMutableString *message = [[NSMutableString alloc] initWithString:[NSString stringWithFormat: TwinmeLocalizedString(@"conversation_view_send_quality_size", nil), [formatter stringFromByteCount:size]]];
     [message appendString:@"\n\n"];
-    [message appendString:TwinmeLocalizedString(@"conversation_view_controller_send_quality_warning", nil)];
+    [message appendString:TwinmeLocalizedString(@"conversation_view_send_quality_warning", nil)];
     
-    [defaultConfirmView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:message image:nil avatar:nil action: TwinmeLocalizedString(@"conversation_view_controller_send_quality_standard", nil) actionColor:nil cancel:TwinmeLocalizedString(@"conversation_view_controller_media_quality_original", nil)];
+    [defaultConfirmView initWithTitle:TwinmeLocalizedString(@"deleted_account_view_warning", nil) message:message image:nil avatar:nil action: TwinmeLocalizedString(@"conversation_view_send_quality_standard", nil) actionColor:nil cancel:TwinmeLocalizedString(@"conversation_view_media_quality_original", nil)];
 
     [self.view addSubview:defaultConfirmView];
     [defaultConfirmView showConfirmView];

@@ -41,6 +41,8 @@ typedef enum {
     ItemTypePeerCall,
     ItemTypeInvitationContact,
     ItemTypePeerInvitationContact,
+    ItemTypePoll,
+    ItemTypePeerPoll,
     ItemTypeClear,
     ItemTypePeerClear,
     ItemTypeInfoDate,
@@ -74,6 +76,15 @@ typedef enum {
 @class TLDescriptorAnnotation;
 @class ConversationViewController;
 
+@interface AnnotationWithCount : NSObject
+
+@property (nonnull, readonly) TLDescriptorAnnotation *annotation;
+@property (readonly) int count;
+
+- (nonnull instancetype)initWithAnnotation:(nonnull TLDescriptorAnnotation *)annotation count:(int)count;
+
+@end
+
 @interface Item : NSObject
 
 @property (readonly) ItemType type;
@@ -95,7 +106,8 @@ typedef enum {
 @property BOOL replyAllowed;
 @property (nullable) TLDescriptorId *replyTo;
 @property (nullable) TLDescriptor *replyToDescriptor;
-@property (nullable) NSArray<TLDescriptorAnnotation *> *likeDescriptorAnnotations;
+@property (nonnull) NSArray<AnnotationWithCount *> *likeDescriptorAnnotations;
+@property (nullable) TLDescriptorAnnotation *errorAnnotation;
 @property BOOL selected;
 
 - (nonnull instancetype)initWithType:(ItemType)type descriptor:(nonnull TLDescriptor *)descriptor;

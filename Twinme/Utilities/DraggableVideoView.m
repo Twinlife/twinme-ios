@@ -9,6 +9,7 @@
 #import "DraggableVideoView.h"
 
 #import <TwinmeCommon/Design.h>
+#import <TwinmeCommon/UIViewController+Utils.h>
 
 #define DESIGN_INSET 40
 #define VIEW_BORDER 8
@@ -38,9 +39,14 @@ static CGFloat DESIGN_SAFE_AREA_HEIGHT_INSET = 0;
     
     DESIGN_VIEW_BORDER = Design.MIN_RATIO * VIEW_BORDER;
     
-    UIWindow *window = UIApplication.sharedApplication.keyWindow;
-    DESIGN_SAFE_AREA_WIDTH_INSET = window.safeAreaInsets.left;
-    DESIGN_SAFE_AREA_HEIGHT_INSET = window.safeAreaInsets.top;
+    UIWindow *window = [UIViewController currentWindow];
+    if (window) {
+        DESIGN_SAFE_AREA_WIDTH_INSET = window.safeAreaInsets.left;
+        DESIGN_SAFE_AREA_HEIGHT_INSET = window.safeAreaInsets.top;
+    } else {
+        DESIGN_SAFE_AREA_WIDTH_INSET = 0;
+        DESIGN_SAFE_AREA_HEIGHT_INSET = 0;
+    }
     
     if (DESIGN_SAFE_AREA_WIDTH_INSET == 0) {
         DESIGN_SAFE_AREA_WIDTH_INSET = DESIGN_INSET * Design.MIN_RATIO;

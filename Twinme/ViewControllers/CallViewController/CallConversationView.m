@@ -222,7 +222,7 @@ static const int ddLogLevel = DDLogLevelWarning;
     
     [self scrollToBottom];
     
-    if ([textView.text isEqualToString:TwinmeLocalizedString(@"conversation_view_controller_message", nil)]) {
+    if ([textView.text isEqualToString:TwinmeLocalizedString(@"conversation_view_message", nil)]) {
         textView.text = @"";
         textView.textColor = [UIColor whiteColor];
     }
@@ -244,7 +244,7 @@ static const int ddLogLevel = DDLogLevelWarning;
     DDLogVerbose(@"%@ textViewDidEndEditing: %@", LOG_TAG, textView);
     
     if ([textView.text isEqualToString:@""]) {
-        textView.text = TwinmeLocalizedString(@"conversation_view_controller_message", nil);
+        textView.text = TwinmeLocalizedString(@"conversation_view_message", nil);
         textView.textColor = Design.PLACEHOLDER_COLOR;
     }
 }
@@ -396,7 +396,7 @@ static const int ddLogLevel = DDLogLevelWarning;
     self.messageTextView.font = Design.FONT_REGULAR32;
     self.messageTextView.keyboardAppearance = UIKeyboardAppearanceDark;
     self.messageTextView.textColor = [UIColor whiteColor];
-    self.messageTextView.text = TwinmeLocalizedString(@"conversation_view_controller_message", nil);
+    self.messageTextView.text = TwinmeLocalizedString(@"conversation_view_message", nil);
     self.messageTextView.delegate = self;
     
     self.sendImageViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
@@ -408,7 +408,7 @@ static const int ddLogLevel = DDLogLevelWarning;
     self.sendView.backgroundColor = Design.MAIN_COLOR;
     self.sendView.clipsToBounds = YES;
     self.sendView.layer.cornerRadius =  self.sendViewHeightConstraint.constant * 0.5f;
-    self.sendView.accessibilityLabel = TwinmeLocalizedString(@"feedback_view_controller_send", nil);
+    self.sendView.accessibilityLabel = TwinmeLocalizedString(@"feedback_view_send", nil);
     self.sendView.isAccessibilityElement = YES;
     
     UITapGestureRecognizer *sendTapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSendViewTapGesture:)];

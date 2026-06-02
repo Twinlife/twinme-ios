@@ -137,7 +137,7 @@ static UIColor *DESIGN_ITEM_COLOR;
         self.videoLoader = nil;
     }
     
-    self.replyTitleLabel.text = [NSString stringWithFormat:TwinmeLocalizedString(@"conversation_view_controller_reply_to", nil), contactName];
+    self.replyTitleLabel.text = [NSString stringWithFormat:TwinmeLocalizedString(@"conversation_view_reply_to", nil), contactName];
     
     switch (item.type) {
         case ItemTypeMessage: {
@@ -232,7 +232,7 @@ static UIColor *DESIGN_ITEM_COLOR;
             
         case ItemTypeAudio:
         case ItemTypePeerAudio: {
-            self.itemLabel.text = TwinmeLocalizedString(@"conversation_view_controller_audio_message", nil);
+            self.itemLabel.text = TwinmeLocalizedString(@"conversation_view_audio_message", nil);
             self.itemLabel.hidden = NO;
             self.itemImageView.hidden = YES;
             break;

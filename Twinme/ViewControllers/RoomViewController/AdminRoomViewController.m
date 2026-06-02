@@ -8,6 +8,9 @@
 
 #import <CocoaLumberjack.h>
 
+#import <Photos/Photos.h>
+#import <PhotosUI/PhotosUI.h>
+
 #import <Twinme/TLContact.h>
 #import <Twinme/TLProfile.h>
 #import <Twinme/UIImage+Resize.h>
@@ -45,7 +48,7 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
 // Interface: AdminRoomViewController ()
 //
 
-@interface AdminRoomViewController () <UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITextFieldDelegate, UITextViewDelegate,  EditRoomServiceDelegate, MenuPhotoViewDelegate, BottomSheetViewDelegate>
+@interface AdminRoomViewController () <UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITextFieldDelegate, UITextViewDelegate,  EditRoomServiceDelegate, MenuPhotoViewDelegate, BottomSheetViewDelegate, PHPickerViewControllerDelegate>
 
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *avatarPlaceholderImageViewHeightConstraint;
 @property (weak, nonatomic) IBOutlet UIImageView *avatarPlaceholderImageView;
@@ -249,7 +252,7 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
 - (void)onGetRoomConfigNotFound {
     DDLogVerbose(@"%@ onGetRoomConfigNotFound", LOG_TAG);
     
-    self.descriptionTextView.text = TwinmeLocalizedString(@"admin_room_view_controller_welcome_message", nil);
+    self.descriptionTextView.text = TwinmeLocalizedString(@"admin_room_view_welcome_message", nil);
 }
 
 - (void)onUpdateRoom:(nonnull TLContact *)room {
@@ -288,7 +291,7 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
 - (void)textViewDidBeginEditing:(UITextView *)textView {
     DDLogVerbose(@"%@ textViewDidBeginEditing: %@", LOG_TAG, textView);
     
-    if (textView == self.descriptionTextView && [self.descriptionTextView.text isEqualToString:TwinmeLocalizedString(@"admin_room_view_controller_welcome_message", nil)]) {
+    if (textView == self.descriptionTextView && [self.descriptionTextView.text isEqualToString:TwinmeLocalizedString(@"admin_room_view_welcome_message", nil)]) {
         self.descriptionTextView.text = @"";
         self.descriptionTextView.textColor = Design.FONT_COLOR_DEFAULT;
     }
@@ -312,7 +315,7 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     DDLogVerbose(@"%@ textViewDidEndEditing: %@", LOG_TAG, textView);
     
     if (textView == self.descriptionTextView && [self.descriptionTextView.text isEqualToString:@""]) {
-        self.descriptionTextView.text = TwinmeLocalizedString(@"admin_room_view_controller_welcome_message", nil);
+        self.descriptionTextView.text = TwinmeLocalizedString(@"admin_room_view_welcome_message", nil);
         self.descriptionTextView.textColor = Design.PLACEHOLDER_COLOR;
     }
 }
@@ -338,6 +341,50 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     
     self.navigationController.navigationBarHidden = YES;
     [pickerController dismissViewControllerAnimated:YES completion:nil];
+}
+
+#pragma mark - PHPickerViewControllerDelegate
+
+- (void)picker:(PHPickerViewController *)pickerController didFinishPicking:(NSArray<PHPickerResult *> *)results API_AVAILABLE(ios(14)){
+    DDLogVerbose(@"%@ picker: %@", LOG_TAG, pickerController);
+        
+    [self showProgressIndicator];
+    
+    [pickerController dismissViewControllerAnimated:YES completion:^{
+        if (!results || results.count == 0) {
+            [self hideProgressIndicator];
+            return;
+        }
+    
+        PHPickerResult *result = results.firstObject;
+        if ([result.itemProvider hasItemConformingToTypeIdentifier:UTTypeImage.identifier]) {
+            [result.itemProvider loadDataRepresentationForTypeIdentifier:UTTypeImage.identifier
+                                                       completionHandler:^(NSData * _Nullable data,
+                                                                           NSError * _Nullable error) {
+                
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    if (!error) {
+                        [self hideProgressIndicator];
+       
+                        self.avatarPlaceholderImageView.hidden = NO;
+                        self.updatedLargeAvatar = [UIImage imageWithData:data];
+                        self.updatedAvatar = [self.updatedLargeAvatar resizeImage];
+                        
+                        CATransition *animation = [CATransition animation];
+                        animation.type = kCATransitionFade;
+                        animation.subtype = kCATransitionFromTop;
+                        animation.duration = 0.5;
+                        [self.avatarView.layer addAnimation:animation forKey:nil];
+                        
+                        self.avatarView.image = self.updatedLargeAvatar;
+                        [self setUpdated];
+                    }
+                });
+            }];
+        } else {
+            [self hideProgressIndicator];
+        }
+    }];
 }
 
 #pragma mark - UIAdaptivePresentationControllerDelegate
@@ -435,7 +482,7 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     
     self.avatarPlaceholderImageViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     
-    self.nameLabel.text = TwinmeLocalizedString(@"show_room_view_controller_room_title", nil);
+    self.nameLabel.text = TwinmeLocalizedString(@"show_room_view_room_title", nil);
     
     self.nameViewTopConstraint.constant *= Design.HEIGHT_RATIO;
     self.nameViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
@@ -474,7 +521,7 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     self.descriptionTextView.textColor = Design.PLACEHOLDER_COLOR;
     self.descriptionTextView.tintColor = Design.FONT_COLOR_DEFAULT;
     self.descriptionTextView.delegate = self;
-    self.descriptionTextView.text = TwinmeLocalizedString(@"admin_room_view_controller_welcome_message", nil);
+    self.descriptionTextView.text = TwinmeLocalizedString(@"admin_room_view_welcome_message", nil);
     self.descriptionTextView.textContainer.lineFragmentPadding = 0;
     self.descriptionTextView.textContainerInset = UIEdgeInsetsZero;
     
@@ -499,7 +546,7 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     self.settingsView.userInteractionEnabled = true;
     self.settingsView.backgroundColor = Design.WHITE_COLOR;
     self.settingsView.isAccessibilityElement = YES;
-    self.settingsView.accessibilityLabel = TwinmeLocalizedString(@"settings_view_controller_title", nil);
+    self.settingsView.accessibilityLabel = TwinmeLocalizedString(@"navigation_view_settings", nil);
     
     UITapGestureRecognizer *settingsViewGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSettingsTapGesture:)];
     [self.settingsView addGestureRecognizer:settingsViewGestureRecognizer];
@@ -508,7 +555,7 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     self.settingsLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
     self.settingsLabel.font = Design.FONT_REGULAR34;
     self.settingsLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    self.settingsLabel.text = TwinmeLocalizedString(@"settings_view_controller_title", nil);
+    self.settingsLabel.text = TwinmeLocalizedString(@"navigation_view_settings", nil);
     
     self.settingsImageViewLeadingConstraint.constant *= Design.WIDTH_RATIO;
     self.settingsImageViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
@@ -526,7 +573,7 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     self.inviteView.userInteractionEnabled = true;
     self.inviteView.backgroundColor = Design.WHITE_COLOR;
     self.inviteView.isAccessibilityElement = YES;
-    self.inviteView.accessibilityLabel = TwinmeLocalizedString(@"show_room_view_controller_invite_participants", nil);
+    self.inviteView.accessibilityLabel = TwinmeLocalizedString(@"show_room_view_invite_participants", nil);
     
     UITapGestureRecognizer *inviteViewGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleInviteTapGesture:)];
     [self.inviteView addGestureRecognizer:inviteViewGestureRecognizer];
@@ -535,7 +582,7 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     self.inviteLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
     self.inviteLabel.font = Design.FONT_REGULAR34;
     self.inviteLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    self.inviteLabel.text = TwinmeLocalizedString(@"show_room_view_controller_invite_participants", nil);
+    self.inviteLabel.text = TwinmeLocalizedString(@"show_room_view_invite_participants", nil);
     
     self.inviteImageViewLeadingConstraint.constant *= Design.WIDTH_RATIO;
     self.inviteImageViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
@@ -554,7 +601,7 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     self.invitationCodeView.userInteractionEnabled = true;
     self.invitationCodeView.backgroundColor = Design.WHITE_COLOR;
     self.invitationCodeView.isAccessibilityElement = YES;
-    self.invitationCodeView.accessibilityLabel = TwinmeLocalizedString(@"show_profile_view_controller_twincode_title", nil);
+    self.invitationCodeView.accessibilityLabel = TwinmeLocalizedString(@"profile_view_twincode_title", nil);
     
     UITapGestureRecognizer *invitationCodeViewGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleInvitationCodeTapGesture:)];
     [self.invitationCodeView addGestureRecognizer:invitationCodeViewGestureRecognizer];
@@ -563,7 +610,7 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     self.invitationCodeLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
     self.invitationCodeLabel.font = Design.FONT_REGULAR34;
     self.invitationCodeLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    self.invitationCodeLabel.text = TwinmeLocalizedString(@"show_profile_view_controller_twincode_title", nil);
+    self.invitationCodeLabel.text = TwinmeLocalizedString(@"profile_view_twincode_title", nil);
     
     self.invitationCodeImageViewLeadingConstraint.constant *= Design.WIDTH_RATIO;
     self.invitationCodeImageViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
@@ -668,7 +715,7 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     }
     
     NSString *updatedDescription =  [self.descriptionTextView.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
-    if ([updatedDescription isEqualToString:TwinmeLocalizedString(@"admin_room_view_controller_welcome_message", nil)]) {
+    if ([updatedDescription isEqualToString:TwinmeLocalizedString(@"admin_room_view_welcome_message", nil)]) {
         updatedDescription = @"";
     }
     
@@ -766,21 +813,13 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
 - (void)selectPhoto {
     DDLogVerbose(@"%@ selectPhoto", LOG_TAG);
     
-    UIImagePickerController *picker = [[UIImagePickerController alloc] init];
-    picker.delegate = self;
-    picker.allowsEditing = YES;
-    picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+    PHPickerConfiguration *config = [[PHPickerConfiguration alloc] init];
+    config.selectionLimit = 1;
+    config.filter = [PHPickerFilter imagesFilter];
     
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-        CGSize size = self.view.bounds.size;
-        picker.modalPresentationStyle = UIModalPresentationPopover;
-        picker.popoverPresentationController.sourceView = self.view;
-        picker.popoverPresentationController.sourceRect = CGRectMake(size.width * 0.5, size.height * 0.2, size.width * 0.6, size.height * 0.7);
-        picker.popoverPresentationController.permittedArrowDirections = UIPopoverArrowDirectionAny;
-        [self presentViewController:picker animated:YES completion:nil];
-    } else {
-        [self presentViewController:picker animated:YES completion:nil];
-    }
+    PHPickerViewController *pickerViewController = [[PHPickerViewController alloc] initWithConfiguration:config];
+    pickerViewController.delegate = self;
+    [self presentViewController:pickerViewController animated:YES completion:nil];
 }
 
 - (void)openMenuPhoto {

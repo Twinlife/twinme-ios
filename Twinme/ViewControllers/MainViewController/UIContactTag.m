@@ -30,13 +30,13 @@ static UIColor *DESIGN_PENDING_BORDER_COLOR;
     
     switch (self.contactTag) {
         case ContactTagPending:
-            self.title = TwinmeLocalizedString(@"show_contact_view_controller_pending", nil);
+            self.title = TwinmeLocalizedString(@"show_contact_view_pending", nil);
             self.backgroundColor = [UIColor colorWithRed:255./255. green:147./255. blue:0./255. alpha:0.12];
             self.foregroundColor = [UIColor colorWithRed:255./255. green:147./255. blue:0./255. alpha:1];
             break;
             
         case ContactTagRevoked:
-            self.title = TwinmeLocalizedString(@"show_contact_view_controller_revoked", nil);
+            self.title = TwinmeLocalizedString(@"show_contact_view_revoked", nil);
             self.backgroundColor = [UIColor colorWithRed:253./255. green:96./255. blue:93./255. alpha:0.12];
             self.foregroundColor = [UIColor colorWithRed:253./255. green:96./255. blue:93./255. alpha:1];
             break;

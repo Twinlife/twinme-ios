@@ -28,6 +28,6 @@
 
 @property (weak, nonatomic) id<MenuReactionDelegate> menuReactionDelegate;
 
-- (void)openMenu:(BOOL)isPeerItem;
+- (void)openMenu:(BOOL)isPeerItem displayAvatar:(BOOL)displayAvatar;;
 
 @end

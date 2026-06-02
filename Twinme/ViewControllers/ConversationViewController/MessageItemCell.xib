@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="22146" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="24765" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22122"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24743"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -54,6 +54,12 @@
                             <constraint firstItem="OmC-Z8-OmX" firstAttribute="top" secondItem="QN1-Gv-gwO" secondAttribute="top" constant="28" id="WwJ-CZ-exO"/>
                         </constraints>
                     </view>
+                    <imageView hidden="YES" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="InfoItem" translatesAutoresizingMaskIntoConstraints="NO" id="Oh2-nW-cWa">
+                        <rect key="frame" x="640" y="78" width="38" height="38"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="38" id="KN7-W8-CLD"/>
+                        </constraints>
+                    </imageView>
                     <label opaque="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dY9-x3-S9G" customClass="DecoratedLabel">
                         <rect key="frame" x="698" y="97" width="0.0" height="0.0"/>
                         <fontDescription key="fontDescription" type="system" pointSize="36"/>
@@ -106,6 +112,7 @@
                             <constraint firstAttribute="height" constant="36" id="UUa-i3-sn9"/>
                             <constraint firstItem="GBR-oj-cGz" firstAttribute="leading" secondItem="bIc-hy-cJ3" secondAttribute="leading" id="X2g-7i-fNi"/>
                             <constraint firstAttribute="trailing" secondItem="GBR-oj-cGz" secondAttribute="trailing" id="mr9-av-kua"/>
+                            <constraint firstAttribute="width" secondItem="bIc-hy-cJ3" secondAttribute="height" multiplier="1:1" id="wio-K5-4aJ"/>
                         </constraints>
                     </view>
                 </subviews>
@@ -118,6 +125,7 @@
                     <constraint firstItem="fpx-j6-DWd" firstAttribute="top" relation="greaterThanOrEqual" secondItem="H2p-sc-9uM" secondAttribute="top" priority="750" constant="18" id="E6m-1e-Az9"/>
                     <constraint firstItem="bIc-hy-cJ3" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="36" id="F3R-vb-lH8"/>
                     <constraint firstItem="dY9-x3-S9G" firstAttribute="top" relation="greaterThanOrEqual" secondItem="H2p-sc-9uM" secondAttribute="top" priority="750" constant="18" id="F7w-fM-hpa"/>
+                    <constraint firstItem="Oh2-nW-cWa" firstAttribute="centerY" secondItem="dY9-x3-S9G" secondAttribute="centerY" id="HaK-CJ-dGJ"/>
                     <constraint firstAttribute="trailing" secondItem="KCc-IJ-JkD" secondAttribute="leading" constant="-40" id="IKO-cc-vrw"/>
                     <constraint firstItem="fpx-j6-DWd" firstAttribute="trailing" secondItem="dY9-x3-S9G" secondAttribute="trailing" id="Irn-9D-KLg"/>
                     <constraint firstItem="KCc-IJ-JkD" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="Lep-Wt-SqW"/>
@@ -130,6 +138,7 @@
                     <constraint firstItem="faU-Ez-RJP" firstAttribute="trailing" secondItem="dY9-x3-S9G" secondAttribute="trailing" id="cSn-ga-85U"/>
                     <constraint firstAttribute="bottom" secondItem="WCv-TT-yUT" secondAttribute="bottom" id="crR-vA-3gs"/>
                     <constraint firstItem="hEm-iE-ck2" firstAttribute="width" secondItem="dY9-x3-S9G" secondAttribute="width" id="eYs-6b-ykw"/>
+                    <constraint firstItem="Oh2-nW-cWa" firstAttribute="width" secondItem="Oh2-nW-cWa" secondAttribute="height" multiplier="1:1" id="ie8-s8-6cD"/>
                     <constraint firstItem="hEm-iE-ck2" firstAttribute="height" secondItem="dY9-x3-S9G" secondAttribute="height" id="jnm-sA-sbT"/>
                     <constraint firstItem="d3p-la-g1p" firstAttribute="bottom" secondItem="dY9-x3-S9G" secondAttribute="top" id="kt9-a7-kRa"/>
                     <constraint firstItem="WCv-TT-yUT" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" id="pdH-9q-WWU"/>
@@ -137,7 +146,7 @@
                     <constraint firstItem="fpx-j6-DWd" firstAttribute="bottom" secondItem="dY9-x3-S9G" secondAttribute="bottom" id="rwm-hd-nNc"/>
                     <constraint firstItem="QN1-Gv-gwO" firstAttribute="trailing" secondItem="dY9-x3-S9G" secondAttribute="trailing" id="tEL-xC-1vj"/>
                     <constraint firstItem="dY9-x3-S9G" firstAttribute="trailing" secondItem="jOt-hX-hRb" secondAttribute="leading" constant="-10" id="tcV-RP-Gav"/>
-                    <constraint firstItem="bIc-hy-cJ3" firstAttribute="width" secondItem="bIc-hy-cJ3" secondAttribute="height" multiplier="1:1" id="wio-K5-4aJ"/>
+                    <constraint firstItem="dY9-x3-S9G" firstAttribute="leading" secondItem="Oh2-nW-cWa" secondAttribute="trailing" constant="20" id="vNg-NL-nmR"/>
                     <constraint firstItem="hEm-iE-ck2" firstAttribute="leading" secondItem="dY9-x3-S9G" secondAttribute="leading" id="zbK-hW-foV"/>
                 </constraints>
             </tableViewCellContentView>
@@ -155,6 +164,9 @@
                 <outlet property="contentLabelBottomConstraint" destination="rfW-dD-4Qm" id="i7F-8h-6fm"/>
                 <outlet property="contentLabelTopConstraint" destination="F7w-fM-hpa" id="fd4-mk-W0u"/>
                 <outlet property="contentLabelTrailingConstraint" destination="tcV-RP-Gav" id="0NQ-z0-9ND"/>
+                <outlet property="infoImageView" destination="Oh2-nW-cWa" id="o9Y-6n-oWj"/>
+                <outlet property="infoImageViewHeightConstraint" destination="KN7-W8-CLD" id="t5O-Uv-YBw"/>
+                <outlet property="infoImageViewTrailinConstraint" destination="vNg-NL-nmR" id="Dwt-cM-0IS"/>
                 <outlet property="overlayView" destination="WCv-TT-yUT" id="ynM-2t-Gfs"/>
                 <outlet property="replyActionImageView" destination="KCc-IJ-JkD" id="yJ6-RH-iUh"/>
                 <outlet property="replyActionImageViewHeightConstraint" destination="Rok-72-iDW" id="YzB-de-Gtc"/>
@@ -184,12 +196,9 @@
             <point key="canvasLocation" x="139" y="141"/>
         </tableViewCell>
     </objects>
-    <designables>
-        <designable name="d3p-la-g1p"/>
-        <designable name="dY9-x3-S9G"/>
-    </designables>
     <resources>
         <image name="CheckMarkGrey" width="22" height="22"/>
+        <image name="InfoItem" width="18" height="18"/>
         <image name="ReplyItem" width="15" height="15"/>
     </resources>
 </document>

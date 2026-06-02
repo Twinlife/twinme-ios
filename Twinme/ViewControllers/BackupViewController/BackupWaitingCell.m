@@ -57,7 +57,7 @@ static const int ddLogLevel = DDLogLevelWarning;
     
     self.waitLabel.font = Design.FONT_REGULAR32;
     self.waitLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    self.waitLabel.text = TwinmeLocalizedStringFromTable(@"backup_view_controller_wait_message", @"LocalizableBackup", nil);
+    self.waitLabel.text = TwinmeLocalizedStringFromTable(@"backup_view_wait_message", @"LocalizableBackup", nil);
     
     self.activityIndicatorViewTopContstraint.constant *= Design.HEIGHT_RATIO;
     self.activityIndicatorViewBottomConstraint.constant *= Design.HEIGHT_RATIO;

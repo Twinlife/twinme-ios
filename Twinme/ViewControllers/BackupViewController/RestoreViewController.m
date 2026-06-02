@@ -80,7 +80,7 @@ static NSInteger HEADER_INFO_VIEW_TAG = 1001;
 @property (nonatomic) BackupService *backupService;
 @property (nonatomic) NSMutableArray *backupWords;
 @property (nonatomic, nonnull, readonly) MnemonicCodeUtils *mnemonicCodeUtils;
-@property (nonatomic) NSURL *backupPath;
+@property (nonatomic) NSURL *backupURL;
 @property (nonatomic) TLRestoreState restoreState;
 @property (nonatomic) TLBackupServiceTerminateReason terminateReason;
 @property (nonatomic, nullable) RestoreReport *restoreReport;
@@ -145,9 +145,9 @@ static NSInteger HEADER_INFO_VIEW_TAG = 1001;
     
     [super viewWillAppear:animated];
     
-    if (self.backupPath && !self.checkFileSignature) {
+    if (self.backupURL && !self.checkFileSignature) {
         self.checkFileSignature = YES;
-        [self.backupService checkFileSignatureWithBackupPath:self.backupPath.path];
+        [self.backupService checkFileSignatureWithBackupPath:self.backupURL.path];
     }
     
     [self updateContent];
@@ -204,16 +204,20 @@ static NSInteger HEADER_INFO_VIEW_TAG = 1001;
     DDLogVerbose(@"%@ didPasteItemNotification: %@", LOG_TAG, notification);
     
     NSString *pastedContent = (NSString *)notification.object;
-    
     if (pastedContent) {
         [self pasteWords:pastedContent];
     }
 }
 
-- (void)initWithFilePath:(NSURL *)filePath verifyMode:(BOOL)verifyMode {
-    DDLogVerbose(@"%@ initWithFilePath: %@ verifyMode: %@", LOG_TAG, filePath, verifyMode ? @"YES" : @"NO");
+- (void)initWithFileURL:(NSURL *)fileURL verifyMode:(BOOL)verifyMode pickFileInApp:(BOOL)pickFileInApp {
+    DDLogVerbose(@"%@ initWithFileURL: %@ verifyMode: %@ pickFileInApp: %@", LOG_TAG, fileURL, verifyMode ? @"YES" : @"NO", pickFileInApp ? @"YES" : @"NO");
     
-    self.backupPath = filePath;
+    if (!pickFileInApp) {
+        [self copyFile:fileURL];
+    } else {
+        self.backupURL = fileURL;
+    }
+    
     self.verifyMode = verifyMode;
 }
 
@@ -369,7 +373,7 @@ static NSInteger HEADER_INFO_VIEW_TAG = 1001;
                 cell = [[BackupInfoCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:BACKUP_INFO_CELL_IDENTIFIER];
             }
             
-            NSString *fileName = self.backupPath.lastPathComponent;
+            NSString *fileName = self.backupURL.lastPathComponent;
             [cell bindWithTitle:fileName];
             return cell;
         }
@@ -384,12 +388,12 @@ static NSInteger HEADER_INFO_VIEW_TAG = 1001;
             
             if (self.verifyMode) {
                 if (self.isVerifyBackupTerminated && self.restoreReport && ![self.restoreReport isRestoreUpToDate]) {
-                    [cell bindWithTitle:TwinmeLocalizedStringFromTable(@"backup_view_controller_new_backup", @"LocalizableBackup", nil) enable:self.canRestore backgroundColor:Design.LIGHT_GREY_BACKGROUND_COLOR];
+                    [cell bindWithTitle:TwinmeLocalizedStringFromTable(@"backup_view_new_backup", @"LocalizableBackup", nil) enable:self.canRestore backgroundColor:Design.LIGHT_GREY_BACKGROUND_COLOR];
                 } else {
-                    [cell bindWithTitle:TwinmeLocalizedStringFromTable(@"account_view_controller_backup_verify", @"LocalizableBackup", nil) enable:self.canRestore backgroundColor:Design.LIGHT_GREY_BACKGROUND_COLOR];
+                    [cell bindWithTitle:TwinmeLocalizedStringFromTable(@"account_view_backup_verify", @"LocalizableBackup", nil) enable:self.canRestore backgroundColor:Design.LIGHT_GREY_BACKGROUND_COLOR];
                 }
             } else {
-                [cell bindWithTitle:TwinmeLocalizedStringFromTable(@"restore_view_controller_restore", @"LocalizableBackup", nil) enable:self.canRestore backgroundColor:Design.LIGHT_GREY_BACKGROUND_COLOR];
+                [cell bindWithTitle:TwinmeLocalizedStringFromTable(@"restore_view_restore", @"LocalizableBackup", nil) enable:self.canRestore backgroundColor:Design.LIGHT_GREY_BACKGROUND_COLOR];
             }
             
             return cell;
@@ -481,13 +485,13 @@ static NSInteger HEADER_INFO_VIEW_TAG = 1001;
         NSString *actionTitle;
         
         if (self.verifyMode) {
-            title = TwinmeLocalizedStringFromTable(@"account_view_controller_backup_verify", @"LocalizableBackup", nil);
-            message = TwinmeLocalizedStringFromTable(@"restore_view_controller_onboarding_verify", @"LocalizableBackup", nil);
+            title = TwinmeLocalizedStringFromTable(@"account_view_backup_verify", @"LocalizableBackup", nil);
+            message = TwinmeLocalizedStringFromTable(@"restore_view_onboarding_verify", @"LocalizableBackup", nil);
             actionTitle = TwinmeLocalizedString(@"application_confirm", nil);
         } else {
-            title = TwinmeLocalizedString(@"delete_account_view_controller_warning", nil);
-            message = TwinmeLocalizedStringFromTable(@"restore_view_controller_warning", @"LocalizableBackup", nil);
-            actionTitle = TwinmeLocalizedStringFromTable(@"restore_view_controller_restore", @"LocalizableBackup", nil);
+            title = TwinmeLocalizedString(@"deleted_account_view_warning", nil);
+            message = TwinmeLocalizedStringFromTable(@"restore_view_warning", @"LocalizableBackup", nil);
+            actionTitle = TwinmeLocalizedStringFromTable(@"restore_view_restore", @"LocalizableBackup", nil);
         }
         
         [defaultConfirmView initWithTitle:title message:message image:nil avatar:nil action:actionTitle actionColor:nil cancel:TwinmeLocalizedString(@"application_cancel", nil)];
@@ -590,9 +594,9 @@ static NSInteger HEADER_INFO_VIEW_TAG = 1001;
     self.view.backgroundColor = Design.WHITE_COLOR;
     
     if (self.verifyMode) {
-        [self setNavigationTitle:TwinmeLocalizedStringFromTable(@"account_view_controller_backup_verify", @"LocalizableBackup", nil)];
+        [self setNavigationTitle:TwinmeLocalizedStringFromTable(@"account_view_backup_verify", @"LocalizableBackup", nil)];
     } else {
-        [self setNavigationTitle:TwinmeLocalizedStringFromTable(@"restore_view_controller_title", @"LocalizableBackup", nil)];
+        [self setNavigationTitle:TwinmeLocalizedStringFromTable(@"restore_view_title", @"LocalizableBackup", nil)];
     }
     
     self.cancelBarButtonItem = [[UIBarButtonItem alloc]initWithTitle:TwinmeLocalizedString(@"application_cancel", nil) style:UIBarButtonItemStylePlain target:self action:@selector(cancel:)];
@@ -712,19 +716,19 @@ static NSInteger HEADER_INFO_VIEW_TAG = 1001;
     if (errorCode == TLBackupServiceErrorCodeNoSpaceLeft) {
         message = TwinmeLocalizedString(@"application_error_no_storage_space", nil);
     } else if (errorCode == TLBackupServiceErrorCodeInvalidKey) {
-        message = TwinmeLocalizedStringFromTable(@"backup_view_controller_error_words", @"LocalizableBackup", nil);
+        message = TwinmeLocalizedStringFromTable(@"backup_view_error_words", @"LocalizableBackup", nil);
     } else if (errorCode == TLBackupServiceErrorCodeDifferentAccount) {
-        message = TwinmeLocalizedStringFromTable(@"restore_view_controller_verify_same_account", @"LocalizableBackup", nil);
+        message = TwinmeLocalizedStringFromTable(@"restore_view_verify_same_account", @"LocalizableBackup", nil);
     } else if (errorCode == TLBackupServiceErrorCodeInvalidFile && !self.isBackupHeaderInfoOK) {
-        message = TwinmeLocalizedStringFromTable(@"restore_view_controller_not_supported_message", @"LocalizableBackup", nil);
+        message = TwinmeLocalizedStringFromTable(@"restore_view_file_not_supported", @"LocalizableBackup", nil);
     } else {
-        message = TwinmeLocalizedStringFromTable(@"restore_view_controller_error_message", @"LocalizableBackup", nil);
+        message = TwinmeLocalizedStringFromTable(@"restore_view_error_message", @"LocalizableBackup", nil);
     }
     
     AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
     alertMessageView.alertMessageViewDelegate = self;
     alertMessageView.tag = errorCode;
-    [alertMessageView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:message];
+    [alertMessageView initWithTitle:TwinmeLocalizedString(@"deleted_account_view_warning", nil) message:message];
     [self.navigationController.view addSubview:alertMessageView];
     [alertMessageView showAlertView];
 }
@@ -735,7 +739,7 @@ static NSInteger HEADER_INFO_VIEW_TAG = 1001;
     AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
     alertMessageView.alertMessageViewDelegate = self;
     alertMessageView.tag = HEADER_INFO_VIEW_TAG;
-    [alertMessageView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:TwinmeLocalizedStringFromTable(@"restore_view_controller_application_error", @"LocalizableBackup", nil)];
+    [alertMessageView initWithTitle:TwinmeLocalizedString(@"deleted_account_view_warning", nil) message:TwinmeLocalizedStringFromTable(@"restore_view_application_error", @"LocalizableBackup", nil)];
     [self.navigationController.view addSubview:alertMessageView];
     [alertMessageView showAlertView];
 }
@@ -779,9 +783,9 @@ static NSInteger HEADER_INFO_VIEW_TAG = 1001;
     }
     
     if (self.verifyMode) {
-        [self.backupService startVerifyWithPassword:password backupPath:self.backupPath.path];
+        [self.backupService startVerifyWithPassword:password backupPath:self.backupURL.path];
     } else {
-        [self.backupService startRestoreWithPassword:password backupPath:self.backupPath.path];
+        [self.backupService startRestoreWithPassword:password backupPath:self.backupURL.path];
     }
     
     [self updateContent];
@@ -792,7 +796,7 @@ static NSInteger HEADER_INFO_VIEW_TAG = 1001;
     
     BackupContentConfirmView *backupContentConfirmView = [[BackupContentConfirmView alloc] init];
     backupContentConfirmView.bottomSheetViewDelegate = self;
-    [backupContentConfirmView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:TwinmeLocalizedStringFromTable(@"restore_view_controller_confirm", @"LocalizableBackup", nil) avatar:nil icon:nil];
+    [backupContentConfirmView initWithTitle:TwinmeLocalizedString(@"deleted_account_view_warning", nil) message:TwinmeLocalizedStringFromTable(@"restore_view_confirm", @"LocalizableBackup", nil) avatar:nil icon:nil];
     [backupContentConfirmView initWithRestoreReport:self.restoreReport isLastBackup:self.isLastBackup];
     [self.navigationController.view addSubview:backupContentConfirmView];
     [backupContentConfirmView showConfirmView];
@@ -811,43 +815,43 @@ static NSInteger HEADER_INFO_VIEW_TAG = 1001;
     NSString *restoreStateText = @"";
     switch (self.restoreState) {
         case TLRestoreStateStarting:
-            restoreStateText = self.verifyMode ? TwinmeLocalizedStringFromTable(@"restore_view_controller_state_restore_verify_starting", @"LocalizableBackup", nil) : TwinmeLocalizedStringFromTable(@"restore_view_controller_state_starting", @"LocalizableBackup", nil);
+            restoreStateText = self.verifyMode ? TwinmeLocalizedStringFromTable(@"restore_view_state_restore_verify_starting", @"LocalizableBackup", nil) : TwinmeLocalizedStringFromTable(@"restore_view_state_restore_starting", @"LocalizableBackup", nil);
             break;
             
         case TLRestoreStateRestoreAccount:
-            restoreStateText = self.verifyMode ? TwinmeLocalizedStringFromTable(@"restore_view_controller_state_restore_verify_account", @"LocalizableBackup", nil) : TwinmeLocalizedStringFromTable(@"restore_view_controller_state_restore_account", @"LocalizableBackup", nil);
+            restoreStateText = self.verifyMode ? TwinmeLocalizedStringFromTable(@"restore_view_state_restore_verify_account", @"LocalizableBackup", nil) : TwinmeLocalizedStringFromTable(@"restore_view_state_restore_account", @"LocalizableBackup", nil);
             break;
             
         case TLRestoreStateRestoreData:
-            restoreStateText = self.verifyMode ? TwinmeLocalizedStringFromTable(@"restore_view_controller_state_restore_verify_data", @"LocalizableBackup", nil) : TwinmeLocalizedStringFromTable(@"restore_view_controller_state_restore_data", @"LocalizableBackup", nil);
+            restoreStateText = self.verifyMode ? TwinmeLocalizedStringFromTable(@"restore_view_state_restore_verify_data", @"LocalizableBackup", nil) : TwinmeLocalizedStringFromTable(@"restore_view_state_restore_data", @"LocalizableBackup", nil);
             break;
             
         case TLRestoreStateWaitConfirm:
-            restoreStateText = TwinmeLocalizedStringFromTable(@"restore_view_controller_state_wait_confirm", @"LocalizableBackup", nil);
+            restoreStateText = TwinmeLocalizedStringFromTable(@"restore_view_state_restore_wait_confirm", @"LocalizableBackup", nil);
             break;
             
         case TLRestoreStateTerminated:
             
             if (self.verifyMode) {
-                restoreStateTitle = TwinmeLocalizedStringFromTable(@"backup_view_controller_verify_completed", @"LocalizableBackup", nil);
+                restoreStateTitle = TwinmeLocalizedStringFromTable(@"backup_view_verify_completed", @"LocalizableBackup", nil);
                 if (self.restoreReport && self.restoreReport.isRestoreUpToDate) {
                     if (self.isLastBackup) {
-                        restoreStateText = TwinmeLocalizedStringFromTable(@"backup_view_controller_verify_up_to_date", @"LocalizableBackup", nil);
+                        restoreStateText = TwinmeLocalizedStringFromTable(@"backup_view_verify_up_to_date", @"LocalizableBackup", nil);
                     } else {
-                        restoreStateText = [NSString stringWithFormat:@"%@\n\n%@", TwinmeLocalizedStringFromTable(@"restore_view_controller_more_recent_backup", @"LocalizableBackup", nil), TwinmeLocalizedStringFromTable(@"backup_view_controller_verify_up_to_date", @"LocalizableBackup", nil)];
+                        restoreStateText = [NSString stringWithFormat:@"%@\n\n%@", TwinmeLocalizedStringFromTable(@"restore_view_more_recent_backup", @"LocalizableBackup", nil), TwinmeLocalizedStringFromTable(@"backup_view_verify_up_to_date", @"LocalizableBackup", nil)];
                     }
                 } else if (self.restoreReport) {
                     if (self.isLastBackup) {
-                        restoreStateText = TwinmeLocalizedStringFromTable(@"backup_view_controller_content_diff_message", @"LocalizableBackup", nil);
+                        restoreStateText = TwinmeLocalizedStringFromTable(@"backup_view_content_diff_message", @"LocalizableBackup", nil);
                     } else {
-                        restoreStateText = [NSString stringWithFormat:@"%@\n\n%@", TwinmeLocalizedStringFromTable(@"restore_view_controller_more_recent_backup", @"LocalizableBackup", nil), TwinmeLocalizedStringFromTable(@"backup_view_controller_content_diff_message", @"LocalizableBackup", nil)];
+                        restoreStateText = [NSString stringWithFormat:@"%@\n\n%@", TwinmeLocalizedStringFromTable(@"restore_view_more_recent_backup", @"LocalizableBackup", nil), TwinmeLocalizedStringFromTable(@"backup_view_content_diff_message", @"LocalizableBackup", nil)];
                     }
                 } else {
                     restoreStateTitle = TwinmeLocalizedString(@"application_canceled_operation", nil);
                 }
             } else {
-                restoreStateTitle = TwinmeLocalizedStringFromTable(@"restore_view_controller_success", @"LocalizableBackup", nil);
-                restoreStateText = TwinmeLocalizedStringFromTable(@"restore_view_controller_success_message", @"LocalizableBackup", nil);
+                restoreStateTitle = TwinmeLocalizedStringFromTable(@"restore_view_success", @"LocalizableBackup", nil);
+                restoreStateText = TwinmeLocalizedStringFromTable(@"restore_view_success_message", @"LocalizableBackup", nil);
             }
             break;
             
@@ -855,7 +859,7 @@ static NSInteger HEADER_INFO_VIEW_TAG = 1001;
             
             if (!self.verifyMode) {
                 restoreStateTitle = TwinmeLocalizedString(@"application_canceled_operation", nil);
-                restoreStateText = TwinmeLocalizedString(@"account_migration_view_controller_cancel_message", nil);
+                restoreStateText = TwinmeLocalizedString(@"account_migration_view_cancel_message", nil);
             }
             
             break;
@@ -892,24 +896,41 @@ static NSInteger HEADER_INFO_VIEW_TAG = 1001;
             
             if (![self.restoreReport.profiles isStatsUpToDate]) {
                 [self.restoreItems addObject:[[UIRestoreItem alloc] initWithType:UIRestoreItemTypeSection text:TwinmeLocalizedString(@"application_profile", nil) icon:nil value:-1 color:nil]];
-                [self.restoreItems addObject:[[UIRestoreItem alloc] initWithType:UIRestoreItemTypeContent text:TwinmeLocalizedStringFromTable(@"restore_view_controller_content_profile_reset", @"LocalizableBackup", nil) icon:[UIImage imageNamed:@"GenerateCode"] value:-1 color:Design.SWITCH_BORDER_COLOR]];
-                [self.restoreItems addObject:[[UIRestoreItem alloc] initWithType:UIRestoreItemTypeInfo text:TwinmeLocalizedStringFromTable(@"restore_view_controller_content_profile_reset_message", @"LocalizableBackup", nil) icon:nil value:-1 color:nil]];
+                [self.restoreItems addObject:[[UIRestoreItem alloc] initWithType:UIRestoreItemTypeContent text:TwinmeLocalizedStringFromTable(@"restore_view_content_profile_reset", @"LocalizableBackup", nil) icon:[UIImage imageNamed:@"GenerateCode"] value:-1 color:Design.SWITCH_BORDER_COLOR]];
+                [self.restoreItems addObject:[[UIRestoreItem alloc] initWithType:UIRestoreItemTypeInfo text:TwinmeLocalizedStringFromTable(@"restore_view_content_profile_reset_message", @"LocalizableBackup", nil) icon:nil value:-1 color:nil]];
             }
             
             if (![self.restoreReport.contacts isStatsUpToDate]) {
-                [self.restoreItems addObject:[[UIRestoreItem alloc] initWithType:UIRestoreItemTypeSection text:TwinmeLocalizedString(@"contacts_view_controller_title", nil) icon:nil value:-1 color:nil]];
+                [self.restoreItems addObject:[[UIRestoreItem alloc] initWithType:UIRestoreItemTypeSection text:TwinmeLocalizedString(@"contacts_view_title", nil) icon:nil value:-1 color:nil]];
                 
                 if (self.restoreReport.contacts.added != 0) {
-                    [self.restoreItems addObject:[[UIRestoreItem alloc] initWithType:UIRestoreItemTypeContent text:TwinmeLocalizedStringFromTable(@"backup_view_controller_content_diff_added", @"LocalizableBackup", nil) icon:[UIImage imageNamed:@"ContactsIcon"] value:self.restoreReport.contacts.added color:Design.SWITCH_BORDER_COLOR]];
+                    [self.restoreItems addObject:[[UIRestoreItem alloc] initWithType:UIRestoreItemTypeContent text:TwinmeLocalizedStringFromTable(@"backup_view_content_diff_added", @"LocalizableBackup", nil) icon:[UIImage imageNamed:@"ContactsIcon"] value:self.restoreReport.contacts.added color:Design.SWITCH_BORDER_COLOR]];
                 }
                 
                 if (self.restoreReport.contacts.modified != 0) {
-                    [self.restoreItems addObject:[[UIRestoreItem alloc] initWithType:UIRestoreItemTypeContent text:TwinmeLocalizedStringFromTable(@"backup_view_controller_content_diff_updated", @"LocalizableBackup", nil) icon:[UIImage imageNamed:@"ActionEdit"] value:self.restoreReport.contacts.modified color:Design.SWITCH_BORDER_COLOR]];
+                    [self.restoreItems addObject:[[UIRestoreItem alloc] initWithType:UIRestoreItemTypeContent text:TwinmeLocalizedStringFromTable(@"backup_view_content_diff_updated", @"LocalizableBackup", nil) icon:[UIImage imageNamed:@"ActionEdit"] value:self.restoreReport.contacts.modified color:Design.SWITCH_BORDER_COLOR]];
                 }
                 
                 if (self.restoreReport.contacts.deleted != 0) {
-                    [self.restoreItems addObject:[[UIRestoreItem alloc] initWithType:UIRestoreItemTypeContent text:TwinmeLocalizedStringFromTable(@"backup_view_controller_content_diff_deleted", @"LocalizableBackup", nil) icon:[UIImage imageNamed:@"DeleteItem"] value:self.restoreReport.contacts.deleted color:nil]];
-                    [self.restoreItems addObject:[[UIRestoreItem alloc] initWithType:UIRestoreItemTypeInfo text:TwinmeLocalizedStringFromTable(@"restore_view_controller_content_contact_deleted_message", @"LocalizableBackup", nil) icon:nil value:-1 color:nil]];
+                    [self.restoreItems addObject:[[UIRestoreItem alloc] initWithType:UIRestoreItemTypeContent text:TwinmeLocalizedStringFromTable(@"backup_view_content_diff_deleted", @"LocalizableBackup", nil) icon:[UIImage imageNamed:@"DeleteItem"] value:self.restoreReport.contacts.deleted color:nil]];
+                    [self.restoreItems addObject:[[UIRestoreItem alloc] initWithType:UIRestoreItemTypeInfo text:TwinmeLocalizedStringFromTable(@"restore_view_content_contact_deleted_message", @"LocalizableBackup", nil) icon:nil value:-1 color:nil]];
+                }
+            }
+            
+            if (![self.restoreReport.groups isStatsUpToDate]) {
+                [self.restoreItems addObject:[[UIRestoreItem alloc] initWithType:UIRestoreItemTypeSection text:TwinmeLocalizedString(@"share_view_group_list", nil) icon:nil value:-1 color:nil]];
+                
+                if (self.restoreReport.groups.added != 0) {
+                    [self.restoreItems addObject:[[UIRestoreItem alloc] initWithType:UIRestoreItemTypeContent text:TwinmeLocalizedStringFromTable(@"backup_view_content_diff_added", @"LocalizableBackup", nil) icon:[UIImage imageNamed:@"GroupsIcon"] value:self.restoreReport.groups.added color:Design.SWITCH_BORDER_COLOR]];
+                }
+                
+                if (self.restoreReport.groups.modified != 0) {
+                    [self.restoreItems addObject:[[UIRestoreItem alloc] initWithType:UIRestoreItemTypeContent text:TwinmeLocalizedStringFromTable(@"backup_view_content_diff_updated", @"LocalizableBackup", nil) icon:[UIImage imageNamed:@"ActionEdit"] value:self.restoreReport.groups.modified color:Design.SWITCH_BORDER_COLOR]];
+                }
+                
+                if (self.restoreReport.groups.deleted != 0) {
+                    [self.restoreItems addObject:[[UIRestoreItem alloc] initWithType:UIRestoreItemTypeContent text:TwinmeLocalizedStringFromTable(@"backup_view_content_diff_deleted", @"LocalizableBackup", nil) icon:[UIImage imageNamed:@"DeleteItem"] value:self.restoreReport.groups.deleted color:nil]];
+                    [self.restoreItems addObject:[[UIRestoreItem alloc] initWithType:UIRestoreItemTypeInfo text:TwinmeLocalizedStringFromTable(@"restore_view_content_contact_deleted_message", @"LocalizableBackup", nil) icon:nil value:-1 color:nil]];
                 }
             }
             
@@ -949,11 +970,38 @@ static NSInteger HEADER_INFO_VIEW_TAG = 1001;
     }
     
     if (incorrectWordToPaste) {
-        [[UIApplication sharedApplication].keyWindow makeToast:TwinmeLocalizedStringFromTable(@"restore_view_controller_paste_error", @"LocalizableBackup", nil)];
+        UIWindow *window = [self currentWindow];
+        if (window) {
+            [window makeToast:TwinmeLocalizedStringFromTable(@"restore_view_paste_error", @"LocalizableBackup", nil)];
+        }
     }
     
     self.canRestore = [self isAllWordsCompleted];
     [self.tableView reloadData];
+}
+
+- (void)copyFile:(NSURL *)fileURL {
+    DDLogVerbose(@"%@ copyFile", LOG_TAG);
+    
+    BOOL access = [fileURL startAccessingSecurityScopedResource];
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSString *fileName = fileURL.lastPathComponent;
+    NSURL *tmpUrl = [NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingPathComponent:fileName]];
+    NSError *error = nil;
+    if ([fileManager fileExistsAtPath:tmpUrl.path]) {
+        [fileManager removeItemAtPath:tmpUrl.path error:nil];
+    }
+
+    BOOL success = [fileManager copyItemAtURL:fileURL toURL:tmpUrl error:&error];
+    if (access) {
+        [fileURL stopAccessingSecurityScopedResource];
+    }
+    
+    if (success) {
+        self.backupURL = tmpUrl;
+    } else {
+        [self finish];
+    }
 }
 
 - (void)updateFont {

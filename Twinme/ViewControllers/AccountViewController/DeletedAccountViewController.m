@@ -93,7 +93,7 @@ static const int ddLogLevel = DDLogLevelWarning;
     self.messageLabelTopConstraint.constant *= Design.HEIGHT_RATIO;
     self.messageLabel.font = Design.FONT_REGULAR36;
     self.messageLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    self.messageLabel.text = TwinmeLocalizedString(@"deleted_account_view_controller_message", nil);
+    self.messageLabel.text = TwinmeLocalizedString(@"deleted_account_view_message", nil);
 }
 
 - (void)updateFont {

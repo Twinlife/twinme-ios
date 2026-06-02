@@ -92,27 +92,32 @@
                 break;
             }
                 
+            case TLDescriptorTypePollDescriptor: {
+                lastMessage = [[NSAttributedString alloc]initWithString:TwinmeLocalizedString(@"notification_center_poll_message_received", nil)];
+                break;
+            }
+                
             case TLDescriptorTypeCallDescriptor: {
                 TLCallDescriptor *callDescriptor = (TLCallDescriptor *)self.lastDescriptor;
             
                 if (!callDescriptor.isAccepted && callDescriptor.isIncoming) {
-                    lastMessage = [[NSAttributedString alloc]initWithString:TwinmeLocalizedString(@"history_view_controller_missed_call", nil)];
+                    lastMessage = [[NSAttributedString alloc]initWithString:TwinmeLocalizedString(@"calls_view_missed_call", nil)];
                 } else if (callDescriptor.isIncoming) {
-                    lastMessage = [[NSAttributedString alloc]initWithString:TwinmeLocalizedString(@"history_view_controller_incoming_call", nil)];
+                    lastMessage = [[NSAttributedString alloc]initWithString:TwinmeLocalizedString(@"calls_view_incoming_call", nil)];
                 } else {
-                    lastMessage = [[NSAttributedString alloc]initWithString:TwinmeLocalizedString(@"history_view_controller_outgoing_call", nil)];
+                    lastMessage = [[NSAttributedString alloc]initWithString:TwinmeLocalizedString(@"calls_view_outgoing_call", nil)];
                 }
                 
                 break;
             }
                 
             case TLDescriptorTypeClearDescriptor: {
-                lastMessage = [[NSAttributedString alloc]initWithString:TwinmeLocalizedString(@"notification_center_message_cleanup_conversation", nil)];
+                lastMessage = [[NSAttributedString alloc]initWithString:TwinmeLocalizedString(@"notification_center_cleanup_conversation", nil)];
                 break;
             }
                 
             case TLDescriptorTypeInvitationDescriptor:
-                lastMessage = [[NSAttributedString alloc]initWithString:TwinmeLocalizedString(@"notification_center_group_invitation_received", nil)];
+                lastMessage = [[NSAttributedString alloc]initWithString:TwinmeLocalizedString(@"notification_center_invitation_group_received", nil)];
                 break;
                 
             case TLDescriptorTypeTwincodeDescriptor: {

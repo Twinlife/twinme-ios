@@ -714,7 +714,10 @@ static NSString *FULL_SCREEN_VIDEO_CELL_IDENTIFIER = @"FullScreenVideoCellIdenti
         }
         
         if (!copyAllowed) {
-            [[UIApplication sharedApplication].keyWindow makeToast:TwinmeLocalizedString(@"conversation_view_controller_menu_item_view_operation_not_allowed",nil)];
+            UIWindow *window = [self currentWindow];
+            if (window) {
+                [window makeToast:TwinmeLocalizedString(@"conversation_view_menu_item_view_operation_not_allowed",nil)];
+            }
             return;
         } else if (!isAvailable) {
             return;
@@ -751,7 +754,10 @@ static NSString *FULL_SCREEN_VIDEO_CELL_IDENTIFIER = @"FullScreenVideoCellIdenti
         }
         
         if ((self.currentItem.type == ItemTypeVideo || self.currentItem.type == ItemTypePeerVideo) && self.videoItem && ![self.videoItem isVideoFormatSupported]) {
-            [[UIApplication sharedApplication].keyWindow makeToast:TwinmeLocalizedString(@"conversation_view_controller_unsupported_media",nil)];
+            UIWindow *window = [self currentWindow];
+            if (window) {
+                [window makeToast:TwinmeLocalizedString(@"conversation_view_unsupported_media",nil)];
+            }
             return;
         }
         
@@ -798,7 +804,10 @@ static NSString *FULL_SCREEN_VIDEO_CELL_IDENTIFIER = @"FullScreenVideoCellIdenti
         }
         
         if (!copyAllowed) {
-            [[UIApplication sharedApplication].keyWindow makeToast:TwinmeLocalizedString(@"conversation_view_controller_menu_item_view_operation_not_allowed",nil)];
+            UIWindow *window = [self currentWindow];
+            if (window) {
+                [window makeToast:TwinmeLocalizedString(@"conversation_view_menu_item_view_operation_not_allowed",nil)];
+            }
             return;
         } else if (!isAvailable) {
             return;
@@ -807,19 +816,11 @@ static NSString *FULL_SCREEN_VIDEO_CELL_IDENTIFIER = @"FullScreenVideoCellIdenti
         PHAuthorizationStatus photoAuthorizationStatus = [DeviceAuthorization devicePhotoAuthorizationStatus];
         switch (photoAuthorizationStatus) {
             case PHAuthorizationStatusNotDetermined: {
-                if (@available(iOS 14, *)) {
-                    [PHPhotoLibrary requestAuthorizationForAccessLevel:PHAccessLevelAddOnly handler:^(PHAuthorizationStatus authorizationStatus) {
-                        if ([DeviceAuthorization devicePhotoAuthorizationAccessGranted:authorizationStatus]) {
-                            [self saveMediaInGallery:urlToSave isVideo:isVideo];
-                        }
-                    }];
-                } else {
-                    [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus authorizationStatus) {
-                        if ([DeviceAuthorization devicePhotoAuthorizationAccessGranted:authorizationStatus]) {
-                            [self saveMediaInGallery:urlToSave isVideo:isVideo];
-                        }
-                    }];
-                }
+                [PHPhotoLibrary requestAuthorizationForAccessLevel:PHAccessLevelAddOnly handler:^(PHAuthorizationStatus authorizationStatus) {
+                    if ([DeviceAuthorization devicePhotoAuthorizationAccessGranted:authorizationStatus]) {
+                        [self saveMediaInGallery:urlToSave isVideo:isVideo];
+                    }
+                }];
                 break;
             }
                 
@@ -863,8 +864,10 @@ static NSString *FULL_SCREEN_VIDEO_CELL_IDENTIFIER = @"FullScreenVideoCellIdenti
         } completionHandler:^(BOOL success, NSError *error) {
             if (success) {
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    [[UIApplication sharedApplication].keyWindow makeToast:TwinmeLocalizedString(@"conversation_view_controller_menu_item_view_save_message",nil)];
-                    
+                    UIWindow *window = [self currentWindow];
+                    if (window) {
+                        [window makeToast:TwinmeLocalizedString(@"conversation_view_menu_item_view_save_message",nil)];
+                    }
                 });
             }
         }];
@@ -958,7 +961,7 @@ static NSString *FULL_SCREEN_VIDEO_CELL_IDENTIFIER = @"FullScreenVideoCellIdenti
             break;
     }
     
-    NSString *message = TwinmeLocalizedString(@"cleanup_view_controller_delete_confirmation_message", nil);
+    NSString *message = TwinmeLocalizedString(@"cleanup_view_delete_confirmation_message", nil);
 
     if (!copyAllowed) {
         message = TwinmeLocalizedString(@"application_operation_irreversible", nil);
@@ -968,7 +971,7 @@ static NSString *FULL_SCREEN_VIDEO_CELL_IDENTIFIER = @"FullScreenVideoCellIdenti
     deleteConfirmView.bottomSheetViewDelegate = self;
     deleteConfirmView.forceDarkMode = YES;
     deleteConfirmView.deleteConfirmType = DeleteConfirmTypeFile;
-    [deleteConfirmView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:message avatar:avatar icon:[UIImage imageNamed:@"ActionBarDelete"]];
+    [deleteConfirmView initWithTitle:TwinmeLocalizedString(@"deleted_account_view_warning", nil) message:message avatar:avatar icon:[UIImage imageNamed:@"ActionBarDelete"]];
    
     [self.view addSubview:deleteConfirmView];
     [deleteConfirmView showConfirmView];

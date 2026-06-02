@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2017-2021 twinlife SA.
+ *  Copyright (c) 2017-2026 twinlife SA.
  *  SPDX-License-Identifier: AGPL-3.0-only
  *
  *  Contributors:
@@ -7,6 +7,7 @@
  *   Chedi Baccari (Chedi.Baccari@twinlife-systems.com)
  *   Fabrice Trescartes (Fabrice.Trescartes@twin.life)
  *   Stephane Carrez (Stephane.Carrez@twin.life)
+ *   Romain Kolb  (romain.kolb@skyrock.com)
  */
 
 #import "ItemCell.h"
@@ -80,9 +81,9 @@
     NSAssert(YES, @"abstract method");
 }
 
-- (CGFloat)annotationWidth:(TLDescriptorAnnotation *)descriptorAnnotation {
-    
-    if (descriptorAnnotation.count == 1) {
+- (CGFloat)annotationWidth:(AnnotationWithCount *)annotation {
+
+    if (annotation.count == 1) {
         return Design.ANNOTATION_CELL_WIDTH_NORMAL;
     } else {
         return Design.ANNOTATION_CELL_WIDTH_LARGE;
@@ -101,7 +102,7 @@
         width += Design.ANNOTATION_CELL_WIDTH_NORMAL;
     }
     
-    for (TLDescriptorAnnotation *descriptorAnnotation in self.item.likeDescriptorAnnotations) {
+    for (AnnotationWithCount *descriptorAnnotation in self.item.likeDescriptorAnnotations) {
         width += [self annotationWidth:descriptorAnnotation];
     }
     

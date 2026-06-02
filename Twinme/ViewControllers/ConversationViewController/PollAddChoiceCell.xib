@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="PollAddChoiceCellIdentifier" id="KGk-i7-Jjw" customClass="PollAddChoiceCell">
+            <rect key="frame" x="0.0" y="0.0" width="750" height="160"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
+                <rect key="frame" x="0.0" y="0.0" width="750" height="160"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Gr1-Qk-HUA">
+                        <rect key="frame" x="34" y="10" width="682" height="140"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text=".choice" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9tt-qK-neL">
+                                <rect key="frame" x="34" y="20" width="55" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text=".count" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="NVA-xf-cIT">
+                                <rect key="frame" x="600" y="20" width="48" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="n5I-Za-8Hf">
+                                <rect key="frame" x="34" y="61" width="614" height="69"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits"/>
+                            </textField>
+                        </subviews>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="9tt-qK-neL" firstAttribute="leading" secondItem="Gr1-Qk-HUA" secondAttribute="leading" constant="34" id="7ph-lV-4wa"/>
+                            <constraint firstItem="9tt-qK-neL" firstAttribute="top" secondItem="Gr1-Qk-HUA" secondAttribute="top" constant="20" id="Elh-kK-K2h"/>
+                            <constraint firstItem="n5I-Za-8Hf" firstAttribute="top" secondItem="9tt-qK-neL" secondAttribute="bottom" constant="20" id="Kc8-c4-F7L"/>
+                            <constraint firstAttribute="height" constant="140" id="Lhd-2k-dC3"/>
+                            <constraint firstAttribute="trailing" secondItem="n5I-Za-8Hf" secondAttribute="trailing" constant="34" id="M4j-mI-3wU"/>
+                            <constraint firstAttribute="trailing" secondItem="NVA-xf-cIT" secondAttribute="trailing" constant="34" id="NNs-NF-FVt"/>
+                            <constraint firstAttribute="bottom" secondItem="n5I-Za-8Hf" secondAttribute="bottom" constant="10" id="WfQ-mm-NTl"/>
+                            <constraint firstItem="NVA-xf-cIT" firstAttribute="top" secondItem="9tt-qK-neL" secondAttribute="top" id="fZL-aP-uT4"/>
+                            <constraint firstItem="n5I-Za-8Hf" firstAttribute="leading" secondItem="Gr1-Qk-HUA" secondAttribute="leading" constant="34" id="wIW-Og-WQe"/>
+                        </constraints>
+                    </view>
+                </subviews>
+                <constraints>
+                    <constraint firstAttribute="trailing" secondItem="Gr1-Qk-HUA" secondAttribute="trailing" constant="34" id="Tji-sh-3K2"/>
+                    <constraint firstItem="Gr1-Qk-HUA" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="a5E-1S-1QJ"/>
+                    <constraint firstItem="Gr1-Qk-HUA" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="34" id="j8n-v3-jhW"/>
+                </constraints>
+            </tableViewCellContentView>
+            <viewLayoutGuide key="safeArea" id="aW0-zy-SZf"/>
+            <connections>
+                <outlet property="choiceCounterLabel" destination="NVA-xf-cIT" id="TX1-ok-pmH"/>
+                <outlet property="choiceCounterLabelTrailingConstraint" destination="NNs-NF-FVt" id="NWE-d7-Oj4"/>
+                <outlet property="choiceTextField" destination="n5I-Za-8Hf" id="NXb-sx-fyd"/>
+                <outlet property="choiceTextFieldBottomConstraint" destination="WfQ-mm-NTl" id="7wl-RK-46X"/>
+                <outlet property="choiceTextFieldLeadingConstraint" destination="wIW-Og-WQe" id="aia-Qm-Ato"/>
+                <outlet property="choiceTextFieldTopConstraint" destination="Kc8-c4-F7L" id="2fI-3N-ZSR"/>
+                <outlet property="choiceTextFieldTrailingConstraint" destination="M4j-mI-3wU" id="Gwe-tp-jdA"/>
+                <outlet property="choiceTitleLabel" destination="9tt-qK-neL" id="sdS-dR-MET"/>
+                <outlet property="choiceTitleLabelLeadingConstraint" destination="7ph-lV-4wa" id="79p-Ey-9de"/>
+                <outlet property="choiceTitleLabelTopConstraint" destination="Elh-kK-K2h" id="mNz-vc-zKd"/>
+                <outlet property="containerView" destination="Gr1-Qk-HUA" id="fQI-m7-3de"/>
+                <outlet property="containerViewHeightConstraint" destination="Lhd-2k-dC3" id="3BT-Wn-KiF"/>
+                <outlet property="containerViewLeadingConstraint" destination="j8n-v3-jhW" id="YbA-qG-i1E"/>
+                <outlet property="containerViewTrailingConstraint" destination="Tji-sh-3K2" id="9Rv-kk-VfU"/>
+            </connections>
+            <point key="canvasLocation" x="-263" y="-1"/>
+        </tableViewCell>
+    </objects>
+    <resources>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+    </resources>
+</document>

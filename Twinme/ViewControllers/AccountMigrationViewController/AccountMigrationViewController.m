@@ -255,9 +255,9 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
     }
     
     if (!status.isConnected) {
-        self.informationLabel.text = TwinmeLocalizedString(@"account_migration_view_controller_state_wait_connect", nil);
+        self.informationLabel.text = TwinmeLocalizedString(@"account_migration_view_state_wait_connect", nil);
     } else if (self.state == TLAccountMigrationStateStarting) {
-        self.informationLabel.text = TwinmeLocalizedString(@"account_migration_view_controller_network_message", nil);
+        self.informationLabel.text = TwinmeLocalizedString(@"account_migration_view_network_message", nil);
     } else if (self.state != TLAccountMigrationStateStopped && self.state != TLAccountMigrationStateTerminated && self.state != TLAccountMigrationStateCanceled && self.state != TLAccountMigrationStateError) {
         self.informationLabel.text = @"";
     }
@@ -265,20 +265,20 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
     if (peerInfo && localInfo) {
         NSString *message;
         if (peerInfo.databaseFileSize >= localInfo.localDatabaseAvailableSize) {
-            message = TwinmeLocalizedString(@"account_migration_view_controller_not_enough_space_to_receive", nil);
+            message = TwinmeLocalizedString(@"account_migration_view_not_enough_space_to_receive", nil);
         } else if (localInfo.databaseFileSize >= peerInfo.localDatabaseAvailableSize) {
-            message = TwinmeLocalizedString(@"account_migration_view_controller_not_enough_space_to_upload", nil);
+            message = TwinmeLocalizedString(@"account_migration_view_not_enough_space_to_upload", nil);
         } else if (peerInfo.totalFileSize >= localInfo.localFileAvailableSize) {
-            message = TwinmeLocalizedString(@"account_migration_view_controller_not_enough_space_for_files", nil);
+            message = TwinmeLocalizedString(@"account_migration_view_not_enough_space_for_files", nil);
         } else if (localInfo.totalFileSize >= peerInfo.localFileAvailableSize) {
-            message = TwinmeLocalizedString(@"account_migration_view_controller_not_enough_space_for_files", nil);
+            message = TwinmeLocalizedString(@"account_migration_view_not_enough_space_for_files", nil);
         }
         
         if (message && !self.isAlertMessage) {
             self.isAlertMessage = YES;
             AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
             alertMessageView.alertMessageViewDelegate = self;
-            [alertMessageView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:message];
+            [alertMessageView initWithTitle:TwinmeLocalizedString(@"deleted_account_view_warning", nil) message:message];
             [self.tabBarController.view addSubview:alertMessageView];
             [alertMessageView showAlertView];
         }
@@ -366,7 +366,7 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
     
     [self.view setBackgroundColor:Design.WHITE_COLOR];
     
-    [self setNavigationTitle:TwinmeLocalizedString(@"account_view_controller_migration_title", nil)];
+    [self setNavigationTitle:TwinmeLocalizedString(@"account_view_migration_title", nil)];
     
     self.informationLabelTopConstraint.constant *= Design.HEIGHT_RATIO;
     self.informationLabelWidthConstraint.constant *= Design.WIDTH_RATIO;
@@ -394,22 +394,24 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
     self.progressView.progressTintColor = Design.MAIN_COLOR;
     self.progressView.clipsToBounds = true;
     
-    CALayer *layer = [self.progressView.layer.sublayers objectAtIndex:1];
-    layer.cornerRadius = 2.5;
-    self.progressView.progress = 0;
-    
     if (self.progressView.subviews.count > 1) {
         self.progressView.subviews[1].clipsToBounds = true;
-        self.progressView.transform = CGAffineTransformMakeScale(1.0, 2.5f);
+        self.progressView.transform = CGAffineTransformMakeScale(1.0, Design.PROGRESS_VIEW_SCALE);
     }
     
-    self.progressView.layer.cornerRadius = self.progressView.frame.size.height * 0.5;
+    if (self.progressView.layer.sublayers.count > 1) {
+        CALayer *layer = [self.progressView.layer.sublayers objectAtIndex:1];
+        layer.cornerRadius =  self.progressView.frame.size.height * 0.5;
+        self.progressView.layer.cornerRadius = self.progressView.frame.size.height * 0.5;
+    }
+    
+    self.progressView.progress = 0;
     
     self.stateLabelTopConstraint.constant *= Design.HEIGHT_RATIO;
     self.stateLabelWidthConstraint.constant *= Design.WIDTH_RATIO;
     self.stateLabel.font = Design.FONT_BOLD28;
     self.stateLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    self.stateLabel.text = TwinmeLocalizedString(@"show_contact_view_controller_pending", nil);
+    self.stateLabel.text = TwinmeLocalizedString(@"show_contact_view_pending", nil);
     
     self.migrationImageViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     self.migrationImageViewTopConstraint.constant *= Design.HEIGHT_RATIO;
@@ -429,7 +431,7 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
     self.startLabelWidthConstraint.constant *= Design.WIDTH_RATIO;
     self.startLabel.font = Design.FONT_MEDIUM34;
     self.startLabel.textColor = [UIColor whiteColor];
-    self.startLabel.text = TwinmeLocalizedString(@"account_migration_view_controller_start", nil);
+    self.startLabel.text = TwinmeLocalizedString(@"account_migration_view_start", nil);
     
     self.declineViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     
@@ -453,7 +455,7 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
     self.cancelView.backgroundColor = Design.BUTTON_RED_COLOR;
     self.cancelView.userInteractionEnabled = YES;
     self.cancelView.isAccessibilityElement = YES;
-    self.cancelView.accessibilityLabel = TwinmeLocalizedString(@"account_migration_view_controller_stop", nil);
+    self.cancelView.accessibilityLabel = TwinmeLocalizedString(@"account_migration_view_stop", nil);
     self.cancelView.layer.cornerRadius = Design.CONTAINER_RADIUS;
     self.cancelView.clipsToBounds = YES;
     [self.cancelView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleCancelTapGesture:)]];
@@ -462,7 +464,7 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
     self.cancelLabelWidthConstraint.constant *= Design.WIDTH_RATIO;
     [self.cancelLabel setFont:Design.FONT_MEDIUM34];
     self.cancelLabel.textColor = [UIColor whiteColor];
-    self.cancelLabel.text = TwinmeLocalizedString(@"account_migration_view_controller_stop", nil);
+    self.cancelLabel.text = TwinmeLocalizedString(@"account_migration_view_stop", nil);
     
     if (self.startFromSplashScreen) {
         self.declineView.hidden = YES;
@@ -512,14 +514,14 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
         
         if (self.state == TLAccountMigrationStateCanceled) {
             self.cancelView.hidden = NO;
-            self.informationLabel.text = TwinmeLocalizedString(@"account_migration_view_controller_cancel_message", nil);
-            self.stateLabel.text = TwinmeLocalizedString(@"account_migration_view_controller_state_canceled", nil);
+            self.informationLabel.text = TwinmeLocalizedString(@"account_migration_view_cancel_message", nil);
+            self.stateLabel.text = TwinmeLocalizedString(@"account_migration_view_state_canceled", nil);
             
             [self finish];
         } else {
             self.cancelView.hidden = YES;
-            self.informationLabel.text = TwinmeLocalizedString(@"account_migration_view_controller_close_message", nil);
-            self.stateLabel.text = TwinmeLocalizedString(@"account_migration_view_controller_success_message", nil);
+            self.informationLabel.text = TwinmeLocalizedString(@"account_migration_view_close_message", nil);
+            self.stateLabel.text = TwinmeLocalizedString(@"account_migration_view_success_message", nil);
         }
     } else if (self.state == TLAccountMigrationStateError) {
         self.startView.hidden = YES;
@@ -527,11 +529,11 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
         self.cancelView.hidden = NO;
                 
         if (status.errorCode == TLAccountMigrationErrorCodeNoSpaceLeft) {
-            self.stateLabel.text = TwinmeLocalizedString(@"account_migration_view_controller_not_enough_space_for_files", nil);
+            self.stateLabel.text = TwinmeLocalizedString(@"account_migration_view_not_enough_space_for_files", nil);
             self.informationLabel.text = TwinmeLocalizedString(@"application_migration_no_storage_space_message", nil);
         } else {
-            self.stateLabel.text = TwinmeLocalizedString(@"account_migration_view_controller_state_canceled", nil);
-            self.informationLabel.text = [NSString stringWithFormat:@"%@ \n %ld", TwinmeLocalizedString(@"cleanup_view_controller_error", nil), (long)status.errorCode];
+            self.stateLabel.text = TwinmeLocalizedString(@"account_migration_view_state_canceled", nil);
+            self.informationLabel.text = [NSString stringWithFormat:@"%@ \n %ld", TwinmeLocalizedString(@"cleanup_view_error", nil), (long)status.errorCode];
         }
         
         self.cancelLabel.text = TwinmeLocalizedString(@"application_cancel", nil);
@@ -540,8 +542,8 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
         self.declineView.hidden = YES;
         self.cancelView.hidden = YES;
         
-        self.stateLabel.text = TwinmeLocalizedString(@"account_migration_view_controller_success_message", nil);
-        self.informationLabel.text = TwinmeLocalizedString(@"account_migration_view_controller_close_message", nil);
+        self.stateLabel.text = TwinmeLocalizedString(@"account_migration_view_success_message", nil);
+        self.informationLabel.text = TwinmeLocalizedString(@"account_migration_view_close_message", nil);
     }
 }
 
@@ -550,23 +552,23 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
     
     switch (state) {
         case TLAccountMigrationStateNegociate:
-            return TwinmeLocalizedString(@"account_migration_view_controller_state_negotiate", nil);
+            return TwinmeLocalizedString(@"account_migration_view_state_negotiate", nil);
         case TLAccountMigrationStateListFiles:
-            return TwinmeLocalizedString(@"account_migration_view_controller_state_list_files", nil);
+            return TwinmeLocalizedString(@"account_migration_view_state_list_files", nil);
         case TLAccountMigrationStateSendFiles:
-            return TwinmeLocalizedString(@"account_migration_view_controller_state_send_files", nil);
+            return TwinmeLocalizedString(@"account_migration_view_state_send_files", nil);
         case TLAccountMigrationStateSendSettings:
-            return TwinmeLocalizedString(@"account_migration_view_controller_state_send_settings", nil);
+            return TwinmeLocalizedString(@"account_migration_view_state_send_settings", nil);
         case TLAccountMigrationStateSendDatabase:
-            return TwinmeLocalizedString(@"account_migration_view_controller_state_send_database", nil);
+            return TwinmeLocalizedString(@"account_migration_view_state_send_database", nil);
         case TLAccountMigrationStateWaitFiles:
-            return TwinmeLocalizedString(@"account_migration_view_controller_state_wait_files", nil);
+            return TwinmeLocalizedString(@"account_migration_view_state_wait_files", nil);
         case TLAccountMigrationStateSendAccount:
-            return TwinmeLocalizedString(@"account_migration_view_controller_state_send_account", nil);
+            return TwinmeLocalizedString(@"account_migration_view_state_send_account", nil);
         case TLAccountMigrationStateWaitAccount:
-            return TwinmeLocalizedString(@"account_migration_view_controller_state_wait_account", nil);
+            return TwinmeLocalizedString(@"account_migration_view_state_wait_account", nil);
         case TLAccountMigrationStateTerminate:
-            return TwinmeLocalizedString(@"account_migration_view_controller_state_terminate", nil);
+            return TwinmeLocalizedString(@"account_migration_view_state_terminate", nil);
         default:
             break;
     }
@@ -595,7 +597,7 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
     migrationConfirmView.bottomSheetViewDelegate = self;
     
     UIImage *image = [self.twinmeApplication darkModeEnable:[self currentSpaceSettings]] ? [UIImage imageNamed:@"OnboardingMigrationDark"] : [UIImage imageNamed:@"OnboardingMigration"];
-    [migrationConfirmView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:TwinmeLocalizedString(@"account_migration_view_controller_confirm_cancel_message", nil) image:image avatar:nil action:TwinmeLocalizedString(@"account_migration_view_controller_stop", nil) actionColor:Design.DELETE_COLOR_RED cancel:nil];
+    [migrationConfirmView initWithTitle:TwinmeLocalizedString(@"deleted_account_view_warning", nil) message:TwinmeLocalizedString(@"account_migration_view_confirm_cancel_message", nil) image:image avatar:nil action:TwinmeLocalizedString(@"account_migration_view_stop", nil) actionColor:Design.DELETE_COLOR_RED cancel:nil];
     [self.navigationController.view addSubview:migrationConfirmView];
     [migrationConfirmView showConfirmView];
 }

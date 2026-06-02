@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="22505" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="24765" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22504"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24743"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -79,7 +79,7 @@
                 </subviews>
                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                 <constraints>
-                    <constraint firstItem="Wqi-oM-IG1" firstAttribute="trailing" secondItem="rSp-79-ZdL" secondAttribute="leading" constant="-18" id="BRB-LX-4tu"/>
+                    <constraint firstItem="rSp-79-ZdL" firstAttribute="leading" secondItem="Wqi-oM-IG1" secondAttribute="trailing" constant="18" id="BRB-LX-4tu"/>
                     <constraint firstAttribute="bottom" secondItem="IJj-4e-FRV" secondAttribute="bottom" id="Es5-Ea-KDj"/>
                     <constraint firstAttribute="trailing" secondItem="IJj-4e-FRV" secondAttribute="trailing" id="F9v-z4-e4y"/>
                     <constraint firstItem="6TY-Jf-F1j" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="L6s-nk-2G3"/>

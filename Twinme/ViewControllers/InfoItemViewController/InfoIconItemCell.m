@@ -91,7 +91,7 @@ static const int ddLogLevel = DDLogLevelWarning;
         case InfoItemTypeDeleted:
             self.iconView.image = [UIImage imageNamed:@"ToolbarTrash"];
             self.iconView.tintColor = Design.DELETE_COLOR_RED;
-            self.titleLabel.text = TwinmeLocalizedString(@"info_item_view_controller_deleted", nil);
+            self.titleLabel.text = TwinmeLocalizedString(@"info_item_view_deleted", nil);
             if (item.peerDeletedTimestamp > 0) {
                 self.dateInfoLabel.text = [NSString formatItemTimeInterval:item.peerDeletedTimestamp / 1000];
             }

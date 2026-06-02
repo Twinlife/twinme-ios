@@ -19,6 +19,6 @@
 @property (nonatomic) TLDayOfWeek dayOfWeek;
 @property (nonatomic) BOOL isSelected;
 
-- (instancetype)initWithDay:(nonnull NSString *)day dayOfWeek:(TLDayOfWeek)dayOfWeek isSelected:(BOOL)isSelected;
+- (nonnull instancetype)initWithDay:(nonnull NSString *)day dayOfWeek:(TLDayOfWeek)dayOfWeek isSelected:(BOOL)isSelected;
 
 @end

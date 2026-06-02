@@ -38,7 +38,7 @@ static const int ddLogLevel = DDLogLevelWarning;
 static UIColor *DESIGN_BAR_COLOR;
 static NSArray* DESIGN_BACKGROUND_GRADIENT_COLORS_BLACK;
 
-static const CGFloat DESIGN_ACTION_PREVIEW_HEIGHT = 380;
+static const CGFloat DESIGN_ACTION_PREVIEW_HEIGHT = 420;
 
 //
 // Interface: FullScreenVideoCell ()
@@ -98,6 +98,7 @@ static const CGFloat DESIGN_ACTION_PREVIEW_HEIGHT = 380;
     [super awakeFromNib];
     
     UITapGestureRecognizer *tapContentGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onTouchUpInsideContentView:)];
+    tapContentGesture.cancelsTouchesInView = NO;
     [self.contentView addGestureRecognizer:tapContentGesture];
     
     self.actionViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
@@ -108,6 +109,7 @@ static const CGFloat DESIGN_ACTION_PREVIEW_HEIGHT = 380;
     
     self.playView.userInteractionEnabled = YES;
     UITapGestureRecognizer *playPauseTapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handlePlayViewTapGestureRecognizer:)];
+    playPauseTapGesture.cancelsTouchesInView = NO;
     [self.playView addGestureRecognizer:playPauseTapGesture];
     
     self.playImageViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
@@ -131,7 +133,7 @@ static const CGFloat DESIGN_ACTION_PREVIEW_HEIGHT = 380;
     
     self.messageLabel.textColor = [UIColor whiteColor];
     self.messageLabel.font = Design.FONT_REGULAR32;
-    self.messageLabel.text = TwinmeLocalizedString(@"conversation_view_controller_unsupported_media", nil);
+    self.messageLabel.text = TwinmeLocalizedString(@"conversation_view_unsupported_media", nil);
     self.messageLabel.hidden = YES;
     
     self.sliderTopConstraint.constant *= Design.HEIGHT_RATIO;

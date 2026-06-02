@@ -262,7 +262,7 @@ static const int CONTACTS_VIEW_SECTION = 1;
     AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
     alertMessageView.tag = LIMIT_ALERT_VIEW_TAG;
     alertMessageView.alertMessageViewDelegate = self;
-    [alertMessageView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:[NSString stringWithFormat:TwinmeLocalizedString(@"application_group_limit_reached %@", nil), [NSString convertWithLocale:[NSString stringWithFormat:@"%d",[TLConversationService MAX_GROUP_MEMBERS]]]]];
+    [alertMessageView initWithTitle:TwinmeLocalizedString(@"deleted_account_view_warning", nil) message:[NSString stringWithFormat:TwinmeLocalizedString(@"application_group_limit_reached", nil), [NSString convertWithLocale:[NSString stringWithFormat:@"%d", [self maxGroupMembers]]]]];
     [self.navigationController.view addSubview:alertMessageView];
     [alertMessageView showAlertView];
 }
@@ -519,19 +519,20 @@ static const int CONTACTS_VIEW_SECTION = 1;
         
     } else {
         BOOL isMaxGroupMembers = NO;
+        int maxGroupMembers = [self maxGroupMembers];
         if (self.group) {
             int selectedMembersCount = (int) (self.uiMembers.count - self.uiInvitedMembers.count);
-            if (([self.groupConversation groupMembersWithFilter:TLGroupMemberFilterTypeJoinedMembers].count + selectedMembersCount) >= [TLConversationService MAX_GROUP_MEMBERS]) {
+            if (([self.groupConversation groupMembersWithFilter:TLGroupMemberFilterTypeJoinedMembers].count + selectedMembersCount) >= maxGroupMembers) {
                 isMaxGroupMembers  = YES;
             }
-        } else if ((self.uiMembers.count + 1) >= [TLConversationService MAX_GROUP_MEMBERS]) {
+        } else if ((self.uiMembers.count + 1) >= maxGroupMembers) {
             isMaxGroupMembers  = YES;
         }
         
         if (isMaxGroupMembers) {
             AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
             alertMessageView.alertMessageViewDelegate = self;
-            [alertMessageView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:[NSString stringWithFormat:TwinmeLocalizedString(@"application_group_limit_reached %@", nil), [NSString convertWithLocale:[NSString stringWithFormat:@"%d",[TLConversationService MAX_GROUP_MEMBERS]]]]];
+            [alertMessageView initWithTitle:TwinmeLocalizedString(@"deleted_account_view_warning", nil) message:[NSString stringWithFormat:TwinmeLocalizedString(@"application_group_limit_reached", nil), [NSString convertWithLocale:[NSString stringWithFormat:@"%d", maxGroupMembers]]]];
             [self.navigationController.view addSubview:alertMessageView];
             [alertMessageView showAlertView];
             
@@ -583,7 +584,7 @@ static const int CONTACTS_VIEW_SECTION = 1;
     self.titleLabel.textAlignment = NSTextAlignmentCenter;
     self.titleLabel.font = Design.FONT_BOLD34;
     self.titleLabel.textColor = [UIColor whiteColor];
-    self.titleLabel.text = TwinmeLocalizedString(@"add_group_member_view_controller_title", nil);
+    self.titleLabel.text = TwinmeLocalizedString(@"add_group_member_view_title", nil);
     self.titleLabel.numberOfLines = 2;
     
     self.navigationItem.titleView = self.titleLabel;
@@ -614,15 +615,11 @@ static const int CONTACTS_VIEW_SECTION = 1;
     contactSearchBar.backgroundColor = Design.NAVIGATION_BAR_BACKGROUND_COLOR;
     contactSearchBar.delegate = self;
     
-    if (@available(iOS 13.0, *)) {
-        self.searchController.searchBar.backgroundColor = [UIColor clearColor];
-        self.searchController.searchBar.searchTextField.backgroundColor = Design.POPUP_BACKGROUND_COLOR;
-        self.searchController.searchBar.searchTextField.tintColor = [UIColor darkGrayColor];
-        self.searchController.searchBar.translucent = NO;
-        self.navigationItem.searchController = self.searchController;
-    } else {
-        self.membersTableView.tableHeaderView = self.searchController.searchBar;
-    }
+    self.searchController.searchBar.backgroundColor = [UIColor clearColor];
+    self.searchController.searchBar.searchTextField.backgroundColor = Design.POPUP_BACKGROUND_COLOR;
+    self.searchController.searchBar.searchTextField.tintColor = [UIColor darkGrayColor];
+    self.searchController.searchBar.translucent = NO;
+    self.navigationItem.searchController = self.searchController;
     
     self.membersTableView.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
     self.membersTableView.delegate = self;
@@ -680,9 +677,9 @@ static const int CONTACTS_VIEW_SECTION = 1;
         memberCount++;
     }
     
-    NSMutableAttributedString *titleAttributedString = [[NSMutableAttributedString alloc] initWithString:TwinmeLocalizedString(@"add_group_member_view_controller_title", nil) attributes:[NSDictionary dictionaryWithObject:Design.FONT_BOLD34 forKey:NSFontAttributeName]];
+    NSMutableAttributedString *titleAttributedString = [[NSMutableAttributedString alloc] initWithString:TwinmeLocalizedString(@"add_group_member_view_title", nil) attributes:[NSDictionary dictionaryWithObject:Design.FONT_BOLD34 forKey:NSFontAttributeName]];
     [titleAttributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:@"\n"]];
-    [titleAttributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"%d / %d", memberCount, [TLConversationService MAX_GROUP_MEMBERS]] attributes:[NSDictionary dictionaryWithObject:Design.FONT_REGULAR30 forKey:NSFontAttributeName]]];
+    [titleAttributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"%d / %d", memberCount, [self maxGroupMembers]] attributes:[NSDictionary dictionaryWithObject:Design.FONT_REGULAR30 forKey:NSFontAttributeName]]];
     self.titleLabel.attributedText = titleAttributedString;
     
     [self.membersTableView reloadSections:[NSIndexSet indexSetWithIndex:SELECTED_MEMBERS_VIEW_SECTION] withRowAnimation:UITableViewRowAnimationNone];
@@ -732,6 +729,11 @@ static const int CONTACTS_VIEW_SECTION = 1;
     return -1;
 }
 
+- (int)maxGroupMembers {
+    
+    return self.group ? [self.group maxGroupMembers] : [TLConversationService MAX_GROUP_MEMBERS];
+}
+
 - (void)updateFont {
     DDLogVerbose(@"%@ updateFont", LOG_TAG);
     
@@ -751,18 +753,14 @@ static const int CONTACTS_VIEW_SECTION = 1;
     self.view.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
     self.membersTableView.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
     
-    if (@available(iOS 13.0, *)) {
-        self.searchController.searchBar.backgroundColor = [UIColor clearColor];
-        self.searchController.searchBar.searchTextField.backgroundColor = Design.POPUP_BACKGROUND_COLOR;
-        self.searchController.searchBar.searchTextField.tintColor = Design.FONT_COLOR_DEFAULT;
-        self.searchController.searchBar.searchTextField.textColor = Design.FONT_COLOR_DEFAULT;
-        
-        UIImageView *glassIconImageView = (UIImageView *)self.searchController.searchBar.searchTextField.leftView;
-        glassIconImageView.image = [glassIconImageView.image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-        glassIconImageView.tintColor = Design.PLACEHOLDER_COLOR;
-    } else {
-        self.searchController.searchBar.backgroundColor = Design.NAVIGATION_BAR_BACKGROUND_COLOR;
-    }
+    self.searchController.searchBar.backgroundColor = [UIColor clearColor];
+    self.searchController.searchBar.searchTextField.backgroundColor = Design.POPUP_BACKGROUND_COLOR;
+    self.searchController.searchBar.searchTextField.tintColor = Design.FONT_COLOR_DEFAULT;
+    self.searchController.searchBar.searchTextField.textColor = Design.FONT_COLOR_DEFAULT;
+    
+    UIImageView *glassIconImageView = (UIImageView *)self.searchController.searchBar.searchTextField.leftView;
+    glassIconImageView.image = [glassIconImageView.image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    glassIconImageView.tintColor = Design.PLACEHOLDER_COLOR;
     
     if ([self.twinmeApplication darkModeEnable:[self currentSpaceSettings]]) {
         self.searchController.searchBar.keyboardAppearance = UIKeyboardAppearanceDark;

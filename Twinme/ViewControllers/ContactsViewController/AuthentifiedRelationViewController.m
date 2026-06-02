@@ -76,6 +76,7 @@ static const CGFloat DESIGN_HIGHLIGHT_VIEW_CORNER_RADIUS = 4;
 @property (weak, nonatomic) IBOutlet UILabel *messageNoPermissionScanLabel;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *messageLabelWidthConstraint;
 @property (weak, nonatomic) IBOutlet UILabel *messageLabel;
+@property (weak, nonatomic) IBOutlet UIActivityIndicatorView *activityIndicatorView;
 
 @property UIView *highlightView;
 @property AVCaptureSession *captureSession;
@@ -132,13 +133,13 @@ static const CGFloat DESIGN_HIGHLIGHT_VIEW_CORNER_RADIUS = 4;
         onboardingConfirmView.bottomSheetViewDelegate = self;
 
         UIImage *image = [self.twinmeApplication darkModeEnable:[self currentSpaceSettings]] ? [UIImage imageNamed:@"OnboardingAuthentifiedRelationDark"] : [UIImage imageNamed:@"OnboardingAuthentifiedRelation"];
-        NSString *message =  TwinmeLocalizedString(@"authentified_relation_view_controller_onboarding_message", nil);
+        NSString *message =  TwinmeLocalizedString(@"authentified_relation_view_onboarding_message", nil);
         
-        NSMutableAttributedString *attributedTitle = [[NSMutableAttributedString alloc] initWithString:TwinmeLocalizedString(@"authentified_relation_view_controller_to_be_certified_title", nil) attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_BOLD36, NSFontAttributeName, Design.FONT_COLOR_DEFAULT, NSForegroundColorAttributeName, nil]];
+        NSMutableAttributedString *attributedTitle = [[NSMutableAttributedString alloc] initWithString:TwinmeLocalizedString(@"authentified_relation_view_to_be_certified_title", nil) attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_BOLD36, NSFontAttributeName, Design.FONT_COLOR_DEFAULT, NSForegroundColorAttributeName, nil]];
         [attributedTitle appendAttributedString:[[NSMutableAttributedString alloc] initWithString:@"\n\n"]];
-        [attributedTitle appendAttributedString:[[NSMutableAttributedString alloc] initWithString:TwinmeLocalizedString(@"authentified_relation_view_controller_onboarding_subtitle", nil) attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_MEDIUM34, NSFontAttributeName, Design.FONT_COLOR_GREY, NSForegroundColorAttributeName, nil]]];
+        [attributedTitle appendAttributedString:[[NSMutableAttributedString alloc] initWithString:TwinmeLocalizedString(@"authentified_relation_view_onboarding_subtitle", nil) attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_MEDIUM34, NSFontAttributeName, Design.FONT_COLOR_GREY, NSForegroundColorAttributeName, nil]]];
                 
-        [onboardingConfirmView initWithTitle:TwinmeLocalizedString(@"authentified_relation_view_controller_to_be_certified_title", nil) message:message image:image action:TwinmeLocalizedString(@"authentified_relation_view_controller_start", nil) actionColor:nil cancel:TwinmeLocalizedString(@"application_do_not_display", nil)];
+        [onboardingConfirmView initWithTitle:TwinmeLocalizedString(@"authentified_relation_view_to_be_certified_title", nil) message:message image:image action:TwinmeLocalizedString(@"authentified_relation_view_start", nil) actionColor:nil cancel:TwinmeLocalizedString(@"application_do_not_display", nil)];
         [onboardingConfirmView updateTitle:attributedTitle];
         
         [self.navigationController.view addSubview:onboardingConfirmView];
@@ -346,7 +347,7 @@ static const CGFloat DESIGN_HIGHLIGHT_VIEW_CORNER_RADIUS = 4;
     
     [self.view setBackgroundColor:Design.GREY_BACKGROUND_COLOR];
     
-    [self setNavigationTitle:TwinmeLocalizedString(@"authentified_relation_view_controller_to_be_certified_title", nil)];
+    [self setNavigationTitle:TwinmeLocalizedString(@"authentified_relation_view_to_be_certified_title", nil)];
     
     self.certifiedViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     self.certifiedViewWidthConstraint.constant *= Design.WIDTH_RATIO;
@@ -366,7 +367,7 @@ static const CGFloat DESIGN_HIGHLIGHT_VIEW_CORNER_RADIUS = 4;
     
     self.fingerPrintTitle.font = Design.FONT_MEDIUM32;
     self.fingerPrintTitle.textColor = Design.FONT_COLOR_DEFAULT;
-    self.fingerPrintTitle.text = TwinmeLocalizedString(@"authentified_relation_view_controller_relation_print_title", nil);
+    self.fingerPrintTitle.text = TwinmeLocalizedString(@"authentified_relation_view_relation_print_title", nil);
     
     self.fingerPrintContentViewTopConstraint.constant *= Design.HEIGHT_RATIO;
     self.fingerPrintContentViewBottomConstraint.constant *= Design.HEIGHT_RATIO;
@@ -409,7 +410,7 @@ static const CGFloat DESIGN_HIGHLIGHT_VIEW_CORNER_RADIUS = 4;
     
     [self.messageScanLabel setFont:Design.FONT_MEDIUM32];
     self.messageScanLabel.textColor = [UIColor whiteColor];
-    self.messageScanLabel.text = TwinmeLocalizedString(@"add_contact_view_controller_scan_code", nil);
+    self.messageScanLabel.text = TwinmeLocalizedString(@"add_contact_view_scan_code", nil);
     
     self.messageNoPermissionScanLabelWidthConstraint.constant *= Design.WIDTH_RATIO;
     
@@ -429,6 +430,12 @@ static const CGFloat DESIGN_HIGHLIGHT_VIEW_CORNER_RADIUS = 4;
     [self.captureView addSubview:self.highlightView];
     [self.captureView bringSubviewToFront:self.highlightView];
     self.captureView.hidden = YES;
+    
+    self.activityIndicatorView.hidesWhenStopped = YES;
+    
+    if ([self.twinmeApplication darkModeEnable:[self.twinmeContext defaultSpaceSettings]]) {
+        self.activityIndicatorView.color = [UIColor whiteColor];
+    }
     
     [self updateQRCode];
 }
@@ -465,25 +472,25 @@ static const CGFloat DESIGN_HIGHLIGHT_VIEW_CORNER_RADIUS = 4;
     
     switch (errorCode) {
         case TLBaseServiceErrorCodeBadRequest:
-            message = TwinmeLocalizedString(@"add_contact_view_controller_scan_error_incorect_link", nil);
+            message = TwinmeLocalizedString(@"add_contact_view_scan_error_incorrect_link", nil);
             break;
             
         case TLBaseServiceErrorCodeFeatureNotImplemented:
-            message = TwinmeLocalizedString(@"add_contact_view_controller_scan_error_not_managed_link", nil);
+            message = TwinmeLocalizedString(@"add_contact_view_scan_error_not_managed_link", nil);
             break;
             
         case TLBaseServiceErrorCodeItemNotFound:
-            message = TwinmeLocalizedString(@"add_contact_view_controller_scan_error_corrupt_link", nil);
+            message = TwinmeLocalizedString(@"add_contact_view_scan_error_corrupt_link", nil);
             break;
             
         default:
-            message = TwinmeLocalizedString(@"capture_view_controller_incorrect_qrcode", nil);
+            message = TwinmeLocalizedString(@"capture_view_incorrect_qrcode", nil);
             break;
     }
     
     AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
     alertMessageView.alertMessageViewDelegate = self;
-    [alertMessageView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:message];
+    [alertMessageView initWithTitle:TwinmeLocalizedString(@"deleted_account_view_warning", nil) message:message];
     [self.tabBarController.view addSubview:alertMessageView];
     [alertMessageView showAlertView];
 }
@@ -521,8 +528,18 @@ static const CGFloat DESIGN_HIGHLIGHT_VIEW_CORNER_RADIUS = 4;
                 [self updateContact];
                 
                 if (self.contact.certificationLevel != TLCertificationLevel4) {
-                    UIImage *qrCode = [Utils makeQRCodeWithUri:self.certifiedLink scale:10];
-                    self.qrcodeView.image = qrCode;
+                    [self.activityIndicatorView startAnimating];
+                    __weak typeof(self) weakSelf = self;
+                    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                        UIImage *qrImage = [Utils makeQRCodeWithUri:weakSelf.certifiedLink scale:10];
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            if (!weakSelf) {
+                                return;
+                            }
+                            [self.activityIndicatorView stopAnimating];
+                            self.qrcodeView.image = qrImage;
+                        });
+                    });
                 }
             }
         }];
@@ -534,30 +551,30 @@ static const CGFloat DESIGN_HIGHLIGHT_VIEW_CORNER_RADIUS = 4;
     
     if (self.contact.certificationLevel == TLCertificationLevel2
         || (self.contact.certificationLevel == TLCertificationLevel1 && !self.contact.publicPeerTwincodeOutboundId)) {
-        [self setNavigationTitle:TwinmeLocalizedString(@"authentified_relation_view_controller_to_be_certified_title", nil)];
+        [self setNavigationTitle:TwinmeLocalizedString(@"authentified_relation_view_to_be_certified_title", nil)];
         self.captureView.hidden = NO;
         self.certifiedView.hidden = YES;
         self.fingerPrintView.hidden = YES;
         
         [self setupCaptureSession];
         self.previewLayer.frame = self.captureView.bounds;
-        self.messageLabel.text = [NSString stringWithFormat:TwinmeLocalizedString(@"authentified_relation_view_controller_level_2", nil), self.contact.name];
+        self.messageLabel.text = [NSString stringWithFormat:TwinmeLocalizedString(@"authentified_relation_view_level_2", nil), self.contact.name];
     } else {
         self.captureView.hidden = YES;
         
         if (self.contact.certificationLevel != TLCertificationLevel4) {
-            [self setNavigationTitle:TwinmeLocalizedString(@"authentified_relation_view_controller_to_be_certified_title", nil)];
+            [self setNavigationTitle:TwinmeLocalizedString(@"authentified_relation_view_to_be_certified_title", nil)];
             self.qrcodeView.hidden = NO;
             self.certifiedView.hidden = NO;
             self.fingerPrintView.hidden = YES;
-            self.messageLabel.text = [NSString stringWithFormat:TwinmeLocalizedString(@"authentified_relation_view_controller_level_3", nil), self.contact.name];
+            self.messageLabel.text = [NSString stringWithFormat:TwinmeLocalizedString(@"authentified_relation_view_level_3", nil), self.contact.name];
         } else {
-            [self setNavigationTitle:TwinmeLocalizedString(@"authentified_relation_view_controller_title", nil)];
+            [self setNavigationTitle:TwinmeLocalizedString(@"authentified_relation_view_title", nil)];
             self.qrcodeView.hidden = YES;
             self.certifiedView.hidden = YES;
             self.fingerPrintView.hidden = NO;
             
-            self.messageLabel.text = [NSString stringWithFormat:@"%@\n\n %@", [NSString stringWithFormat:TwinmeLocalizedString(@"authentified_relation_view_controller_level_4", nil), self.contact.name], TwinmeLocalizedString(@"authentified_relation_view_controller_relation_print_message", nil)];
+            self.messageLabel.text = [NSString stringWithFormat:@"%@\n\n %@", [NSString stringWithFormat:TwinmeLocalizedString(@"authentified_relation_view_level_4", nil), self.contact.name], TwinmeLocalizedString(@"authentified_relation_view_relation_print_message", nil)];
             
             if (self.certifiedLink) {
                 [self updateFingerPrint];
@@ -603,7 +620,7 @@ static const CGFloat DESIGN_HIGHLIGHT_VIEW_CORNER_RADIUS = 4;
     
     SuccessAuthentifiedRelationView *successAuthentifiedRelationView = [[SuccessAuthentifiedRelationView alloc] init];
     successAuthentifiedRelationView.bottomSheetViewDelegate = self;
-    [successAuthentifiedRelationView initWithTitle:self.contact.name message:[NSString stringWithFormat:TwinmeLocalizedString(@"authentified_relation_view_controller_certified_message", nil), self.contact.name] avatar:self.contactAvatar icon:nil];
+    [successAuthentifiedRelationView initWithTitle:self.contact.name message:[NSString stringWithFormat:TwinmeLocalizedString(@"authentified_relation_view_certified_message", nil), self.contact.name] avatar:self.contactAvatar icon:nil];
     [self.navigationController.view addSubview:successAuthentifiedRelationView];
     [successAuthentifiedRelationView showConfirmView];
 }

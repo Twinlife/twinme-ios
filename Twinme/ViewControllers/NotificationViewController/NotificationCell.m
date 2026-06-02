@@ -196,88 +196,99 @@ static UIColor *DESIGN_TIME_COLOR;
     NSString *messageType = @"";
     switch (notification.notificationType) {
         case TLNotificationTypeNewContact:
-            messageType = TwinmeLocalizedString(@"notification_view_controller_item_new_contact", nil);
+            messageType = TwinmeLocalizedString(@"notifications_view_item_new_contact", nil);
             self.typeView.image = [UIImage imageNamed:@"NotificationNewContact"];
             break;
             
         case TLNotificationTypeUpdatedContact:
-            messageType = TwinmeLocalizedString(@"notification_view_controller_item_updated_contact_name", nil);
+            messageType = TwinmeLocalizedString(@"notifications_view_item_updated_contact_name", nil);
             self.typeView.image = [UIImage imageNamed:@"NotificationUpdateContact"];
             break;
             
         case TLNotificationTypeUpdatedAvatarContact:
-            messageType = TwinmeLocalizedString(@"notification_view_controller_item_updated_contact_avatar", nil);
+            messageType = TwinmeLocalizedString(@"notifications_view_item_updated_contact_avatar", nil);
             self.typeView.image = [UIImage imageNamed:@"NotificationUpdateContact"];
             break;
             
         case TLNotificationTypeDeletedContact:
-            messageType = TwinmeLocalizedString(@"notification_view_controller_item_deleted_contact", nil);
+            messageType = TwinmeLocalizedString(@"notifications_view_item_deleted_contact", nil);
             self.typeView.image = [UIImage imageNamed:@"NotificationRemoveContact"];
             self.typeView.tintColor = Design.DELETE_COLOR_RED;
             break;
             
         case TLNotificationTypeMissedAudioCall:
-            messageType = TwinmeLocalizedString(@"notification_view_controller_item_audio_call", nil);
+            messageType = TwinmeLocalizedString(@"notifications_view_item_audio_call", nil);
             self.typeView.image = [UIImage imageNamed:@"NotificationAudioCall"];
             break;
             
         case TLNotificationTypeMissedVideoCall:
-            messageType = TwinmeLocalizedString(@"notification_view_controller_item_video_call", nil);
+            messageType = TwinmeLocalizedString(@"notifications_view_item_video_call", nil);
             self.typeView.image = [UIImage imageNamed:@"NotificationVideoCall"];
             break;
             
         case TLNotificationTypeResetConversation:
-            messageType = TwinmeLocalizedString(@"notification_view_controller_item_cleanup_conversation", nil);
+            messageType = TwinmeLocalizedString(@"notifications_view_item_cleanup_message", nil);
             self.typeView.image = [UIImage imageNamed:@"ToolbarTrash"];
             self.typeView.tintColor = Design.DELETE_COLOR_RED;
             break;
             
         case TLNotificationTypeNewTextMessage:
-            messageType = TwinmeLocalizedString(@"notification_view_controller_item_text_message", nil);
+            messageType = TwinmeLocalizedString(@"notifications_view_item_text_message", nil);
             self.typeView.image = [UIImage imageNamed:@"NotificationTextMessage"];
             break;
             
         case TLNotificationTypeNewImageMessage:
-            messageType = TwinmeLocalizedString(@"notification_view_controller_item_image_message", nil);
+            messageType = TwinmeLocalizedString(@"notifications_view_item_image_message", nil);
             self.typeView.image = [UIImage imageNamed:@"NotificationImageMessage"];
             break;
             
         case TLNotificationTypeNewAudioMessage:
-            messageType = TwinmeLocalizedString(@"notification_view_controller_item_audio_message", nil);
+            messageType = TwinmeLocalizedString(@"notifications_view_item_audio_message", nil);
             self.typeView.image = [UIImage imageNamed:@"NotificationAudioMessage"];
             self.typeView.tintColor = Design.BLACK_COLOR;
             break;
             
         case TLNotificationTypeNewVideoMessage:
-            messageType = TwinmeLocalizedString(@"notification_view_controller_item_video_message", nil);
+            messageType = TwinmeLocalizedString(@"notifications_view_item_video_message", nil);
             self.typeView.image = [UIImage imageNamed:@"NotificationVideoMessage"];
             break;
             
         case TLNotificationTypeNewFileMessage:
-            messageType = TwinmeLocalizedString(@"notification_view_controller_item_file_message", nil);
+            messageType = TwinmeLocalizedString(@"notifications_view_item_file_message", nil);
             self.typeView.image = [UIImage imageNamed:@"NotificationFileMessage"];
             self.typeView.tintColor = Design.BLACK_COLOR;
             break;
             
+        case TLNotificationTypeNewPollMessage:
+            messageType = TwinmeLocalizedString(@"notifications_view_item_poll_message", nil);
+            self.typeView.image = [UIImage imageNamed:@"PollIcon"];
+            break;
+            
         case TLNotificationTypeNewGroupInvitation:
-            messageType = TwinmeLocalizedString(@"notification_view_controller_item_group_invitation", nil);
+            messageType = TwinmeLocalizedString(@"notifications_view_item_invitation_group", nil);
             self.typeView.image = [UIImage imageNamed:@"NotificationInvitationGroup"];
             break;
             
         case TLNotificationTypeNewGroupJoined:
-            messageType = TwinmeLocalizedString(@"notification_view_controller_item_join_group", nil);
+            messageType = TwinmeLocalizedString(@"notifications_view_item_join_group", nil);
             self.typeView.image = [UIImage imageNamed:@"NotificationJoinGroup"];
             break;
             
         case TLNotificationTypeNewContactInvitation:
-            messageType = TwinmeLocalizedString(@"notification_view_controller_item_invitation", nil);
+            messageType = TwinmeLocalizedString(@"notifications_view_item_invitation", nil);
             self.typeView.image = [UIImage imageNamed:@"NotificationInvitationGroup"];
             break;
             
         case TLNotificationTypeUpdatedAnnotation:
-            messageType = TwinmeLocalizedString(@"notification_center_reaction_message", nil);
-            self.typeView.image = [UIReaction getNotificationImageWithReactionType:notification.annotationValue];
-            self.typeView.tintColor = Design.BLACK_COLOR;
+            if (notification.annotationType == TLDescriptorAnnotationTypeLike) {
+                messageType = TwinmeLocalizedString(@"notification_center_reaction_message", nil);
+                self.typeView.image = [UIReaction getNotificationImageWithReactionType:notification.annotationValue];
+                self.typeView.tintColor = Design.BLACK_COLOR;
+            } else if (notification.annotationType == TLDescriptorAnnotationTypePoll) {
+                messageType = TwinmeLocalizedString(@"notification_center_poll_vote", nil);
+                self.typeView.image = [UIImage imageNamed:@"PollIcon"];
+            }
+            
             break;
             
         case TLNotificationTypeDeletedGroup:

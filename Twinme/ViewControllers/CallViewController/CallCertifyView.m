@@ -12,6 +12,7 @@
 
 #import <TwinmeCommon/Design.h>
 #import <TwinmeCommon/WordCheckChallenge.h>
+#import <TwinmeCommon/UIViewController+Utils.h>
 
 #import "UIView+GradientBackgroundColor.h"
 
@@ -125,7 +126,12 @@ static CGFloat DESIGN_BOTTOM_MARGIN_LANDSCAPE = 80.f;
     
     [self updateGradientBounds];
     
-    if ([UIApplication sharedApplication].statusBarOrientation != UIInterfaceOrientationPortrait) {
+    UIWindow *currentWindow = [UIViewController currentWindow];
+    BOOL isLandscape = NO;
+    if (currentWindow) {
+        isLandscape = UIInterfaceOrientationIsLandscape(currentWindow.windowScene.interfaceOrientation);
+    }
+    if (isLandscape) {
         self.confirmViewBottomConstraint.constant = Design.HEIGHT_RATIO * DESIGN_BOTTOM_MARGIN_LANDSCAPE;
     } else {
         self.confirmViewBottomConstraint.constant = Design.HEIGHT_RATIO * DESIGN_BOTTOM_MARGIN_PORTRAIT;
@@ -138,8 +144,8 @@ static CGFloat DESIGN_BOTTOM_MARGIN_LANDSCAPE = 80.f;
     self.avatarView.image = self.avatar;
     self.nameLabel.text = self.name;
     
-    self.messageLabel.text = [NSString stringWithFormat:TwinmeLocalizedString(@"call_view_controller_repeat_word", nil), self.name];
-    self.successLabel.text = [NSString stringWithFormat:TwinmeLocalizedString(@"authentified_relation_view_controller_certified_message", nil), self.name];
+    self.messageLabel.text = [NSString stringWithFormat:TwinmeLocalizedString(@"call_view_repeat_word", nil), self.name];
+    self.successLabel.text = [NSString stringWithFormat:TwinmeLocalizedString(@"authentified_relation_view_certified_message", nil), self.name];
 }
 
 - (void)updateWord:(WordCheckChallenge *)wordCheckChallenge {
@@ -168,13 +174,13 @@ static CGFloat DESIGN_BOTTOM_MARGIN_LANDSCAPE = 80.f;
     if (wordCheckChallenge.checker) {
         self.cancelView.hidden = NO;
         self.confirmView.hidden = NO;
-        self.titleLabel.text = TwinmeLocalizedString(@"call_view_controller_confirm_word_title", nil);
-        self.messageLabel.text = [NSString stringWithFormat:TwinmeLocalizedString(@"call_view_controller_confirm_word", nil), self.name];
+        self.titleLabel.text = TwinmeLocalizedString(@"call_view_confirm_word_title", nil);
+        self.messageLabel.text = [NSString stringWithFormat:TwinmeLocalizedString(@"call_view_confirm_word", nil), self.name];
     } else {
         self.cancelView.hidden = YES;
         self.confirmView.hidden = YES;
-        self.titleLabel.text = TwinmeLocalizedString(@"call_view_controller_repeat_word_title", nil);
-        self.messageLabel.text = [NSString stringWithFormat:TwinmeLocalizedString(@"call_view_controller_repeat_word", nil), self.name];
+        self.titleLabel.text = TwinmeLocalizedString(@"call_view_repeat_word_title", nil);
+        self.messageLabel.text = [NSString stringWithFormat:TwinmeLocalizedString(@"call_view_repeat_word", nil), self.name];
     }
 }
 
@@ -210,7 +216,7 @@ static CGFloat DESIGN_BOTTOM_MARGIN_LANDSCAPE = 80.f;
     self.cancelView.hidden = YES;
     self.confirmView.hidden = YES;
     
-    self.messageLabel.text = [NSString stringWithFormat:TwinmeLocalizedString(@"call_view_controller_certify_error_message", nil), self.name];
+    self.messageLabel.text = [NSString stringWithFormat:TwinmeLocalizedString(@"call_view_certify_error_message", nil), self.name];
         
     dispatch_time_t closeTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(DELAY_CLOSE * NSEC_PER_SEC));
     dispatch_after(closeTime, dispatch_get_main_queue(), ^(void){
@@ -232,7 +238,7 @@ static CGFloat DESIGN_BOTTOM_MARGIN_LANDSCAPE = 80.f;
     
     self.titleLabel.textColor = [UIColor whiteColor];
     self.titleLabel.font = Design.FONT_MEDIUM54;
-    self.titleLabel.text = TwinmeLocalizedString(@"call_view_controller_repeat_word_title", nil);;
+    self.titleLabel.text = TwinmeLocalizedString(@"call_view_repeat_word_title", nil);;
     
     self.messageLabelTopConstraint.constant *= Design.HEIGHT_RATIO;
     self.messageLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;

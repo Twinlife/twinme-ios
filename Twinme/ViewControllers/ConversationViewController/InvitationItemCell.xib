@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="22505" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="24765" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22504"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24743"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -20,6 +20,12 @@
                         <rect key="frame" x="0.0" y="0.0" width="750" height="156"/>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     </view>
+                    <imageView hidden="YES" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="InfoItem" translatesAutoresizingMaskIntoConstraints="NO" id="IoA-EP-4bJ">
+                        <rect key="frame" x="118" y="59" width="38" height="38"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="38" id="msz-Vy-I5E"/>
+                        </constraints>
+                    </imageView>
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="d5G-J4-tse">
                         <rect key="frame" x="118" y="18" width="580" height="120"/>
                         <subviews>
@@ -82,9 +88,11 @@
                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                 <constraints>
                     <constraint firstItem="85S-cs-1mt" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" id="4eJ-YX-V87"/>
+                    <constraint firstItem="IoA-EP-4bJ" firstAttribute="leading" secondItem="d5G-J4-tse" secondAttribute="leading" id="Dee-jw-E3q"/>
                     <constraint firstItem="0JX-VW-QNZ" firstAttribute="leading" secondItem="d5G-J4-tse" secondAttribute="leading" id="Eph-23-Unn"/>
                     <constraint firstItem="85S-cs-1mt" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" id="GFu-jv-fMj"/>
                     <constraint firstItem="0JX-VW-QNZ" firstAttribute="trailing" secondItem="d5G-J4-tse" secondAttribute="trailing" id="Gbm-7x-1Hx"/>
+                    <constraint firstItem="IoA-EP-4bJ" firstAttribute="width" secondItem="IoA-EP-4bJ" secondAttribute="height" multiplier="1:1" id="Iis-xb-0Cv"/>
                     <constraint firstItem="0JX-VW-QNZ" firstAttribute="top" secondItem="d5G-J4-tse" secondAttribute="top" id="N1c-TZ-cZk"/>
                     <constraint firstItem="d5G-J4-tse" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="18" id="Oha-dC-wth"/>
                     <constraint firstItem="0v0-3V-6Xf" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="Vcp-er-iiw"/>
@@ -95,6 +103,7 @@
                     <constraint firstItem="d5G-J4-tse" firstAttribute="trailing" secondItem="Sq8-tA-ryU" secondAttribute="leading" constant="-10" id="fU6-cj-Dox"/>
                     <constraint firstItem="0JX-VW-QNZ" firstAttribute="bottom" secondItem="d5G-J4-tse" secondAttribute="bottom" id="fbE-4Z-37e"/>
                     <constraint firstItem="Sq8-tA-ryU" firstAttribute="bottom" secondItem="d5G-J4-tse" secondAttribute="bottom" id="fdW-oM-cL1"/>
+                    <constraint firstItem="IoA-EP-4bJ" firstAttribute="centerY" secondItem="d5G-J4-tse" secondAttribute="centerY" id="uDx-3Q-wh5"/>
                     <constraint firstItem="d5G-J4-tse" firstAttribute="bottom" secondItem="H2p-sc-9uM" secondAttribute="bottom" constant="-18" id="ueG-EP-diY"/>
                 </constraints>
             </tableViewCellContentView>
@@ -114,6 +123,8 @@
                 <outlet property="groupImageView" destination="Qiv-mO-yvW" id="snr-Nx-nUV"/>
                 <outlet property="groupImageViewHeightConstraint" destination="TUq-wG-pwF" id="2Rz-eL-5ne"/>
                 <outlet property="groupImageViewLeadingConstraint" destination="bPL-W8-qJS" id="xP8-59-bQs"/>
+                <outlet property="infoImageView" destination="IoA-EP-4bJ" id="IhG-7G-hA8"/>
+                <outlet property="infoImageViewHeightConstraint" destination="msz-Vy-I5E" id="u7M-pC-utV"/>
                 <outlet property="invitationLabel" destination="mfR-jo-Vbb" id="L33-ra-pPF"/>
                 <outlet property="invitationLabelBottomConstraint" destination="XtQ-uI-Acg" id="gXW-YH-8hQ"/>
                 <outlet property="invitationLabelLeadingConstraint" destination="863-C6-DXW" id="Z6B-DQ-ufv"/>
@@ -130,5 +141,6 @@
     </objects>
     <resources>
         <image name="CheckMarkGrey" width="22" height="22"/>
+        <image name="InfoItem" width="18" height="18"/>
     </resources>
 </document>

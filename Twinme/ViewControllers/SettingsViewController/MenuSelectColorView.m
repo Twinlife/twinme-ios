@@ -17,6 +17,7 @@
 #import <TwinmeCommon/ApplicationDelegate.h>
 #import <TwinmeCommon/Design.h>
 #import <TwinmeCommon/TwinmeApplication.h>
+#import <TwinmeCommon/UIViewController+Utils.h>
 
 #import <Twinme/TLTwinmeContext.h>
 
@@ -286,7 +287,7 @@ static CGFloat DESIGN_COLLECTION_CELL_WIDTH = 70;
     
     self.colorLabel.textColor = Design.FONT_COLOR_DEFAULT;
     self.colorLabel.font = Design.FONT_BOLD28;
-    self.colorLabel.text = TwinmeLocalizedString(@"personalization_view_controller_menu_choose_color", nil).uppercaseString;
+    self.colorLabel.text = TwinmeLocalizedString(@"personalization_view_menu_choose_color", nil).uppercaseString;
     
     self.colorViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     self.colorViewWidthConstraint.constant *= Design.WIDTH_RATIO;
@@ -324,7 +325,7 @@ static CGFloat DESIGN_COLLECTION_CELL_WIDTH = 70;
     
     self.enterColorLabel.textColor = Design.FONT_COLOR_DEFAULT;
     self.enterColorLabel.font = Design.FONT_BOLD28;
-    self.enterColorLabel.text = TwinmeLocalizedString(@"personalization_view_controller_menu_enter_color", nil).uppercaseString;
+    self.enterColorLabel.text = TwinmeLocalizedString(@"personalization_view_menu_enter_color", nil).uppercaseString;
     
     self.enterColorView.backgroundColor = Design.TEXTFIELD_BACKGROUND_COLOR;
     self.enterColorView.layer.cornerRadius = Design.CONTAINER_RADIUS;
@@ -375,8 +376,12 @@ static CGFloat DESIGN_COLLECTION_CELL_WIDTH = 70;
     UITapGestureRecognizer *cancelViewGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleCancelTapGesture:)];
     [self.cancelView addGestureRecognizer:cancelViewGestureRecognizer];
     
-    UIWindow *window = UIApplication.sharedApplication.keyWindow;
-    self.cancelViewBottomConstraint.constant = window.safeAreaInsets.bottom;
+    UIWindow *window = [UIViewController currentWindow];
+    if (window) {
+        self.cancelViewBottomConstraint.constant = window.safeAreaInsets.bottom;
+    } else {
+        self.cancelViewBottomConstraint.constant = self.safeAreaInsets.bottom;
+    }
     
     self.cancelLabel.font = Design.FONT_MEDIUM38;
     self.cancelLabel.textColor = Design.FONT_COLOR_DEFAULT;

@@ -13,6 +13,7 @@
 #import <MediaPlayer/MediaPlayer.h>
 #import <MobileCoreServices/UTCoreTypes.h>
 #import <MobileCoreServices/UTType.h>
+#import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 
 #import <Utils/NSString+Utils.h>
 
@@ -57,12 +58,17 @@ static CGFloat DESIGN_THUMBNAIL_SIZE = 120;
 @property (weak, nonatomic) IBOutlet UICollectionView *thumbnailCollectionView;
 @property (weak, nonatomic) IBOutlet UIView *overlayView;
 @property (weak, nonatomic) IBOutlet UIActivityIndicatorView *activityIndicatorView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *stateLabelLeadingConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *stateLabelTrailingConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *stateLabelTopConstraint;
+@property (weak, nonatomic) IBOutlet UILabel *stateLabel;
 
 @property (nonatomic) NSInteger currentItemIndex;
 @property (nonatomic) NSMutableArray *files;
 @property (nonatomic) int countFilePicking;
 @property (nonatomic) BOOL endFilePicking;
 @property (nonatomic) BOOL pickMediaError;
+@property (nonatomic) BOOL pickerExportingFile;
 
 @end
 
@@ -84,6 +90,7 @@ static CGFloat DESIGN_THUMBNAIL_SIZE = 120;
         _files = [[NSMutableArray alloc]init];
         _endFilePicking = NO;
         _pickMediaError = NO;
+        _pickerExportingFile = NO;
         _countFilePicking = 0;
         _currentItemIndex = 0;
     }
@@ -134,6 +141,13 @@ static CGFloat DESIGN_THUMBNAIL_SIZE = 120;
 
 - (void)send:(BOOL)allowCopyText allowCopyFile:(BOOL)allowCopyFile {
     DDLogVerbose(@"%@ send: %@ allowCopyFile: %@", LOG_TAG, allowCopyText ? @"YES" : @"NO", allowCopyFile ? @"YES" : @"NO");
+    
+    self.overlayView.hidden = NO;
+    if (![self.activityIndicatorView isAnimating]) {
+        [self.activityIndicatorView startAnimating];
+    }
+    
+    self.stateLabel.text = TwinmeLocalizedString(@"preview_files_view_resize_message", nil);
     
     self.countFilePicking = 0;
     self.endFilePicking = NO;
@@ -201,8 +215,13 @@ static CGFloat DESIGN_THUMBNAIL_SIZE = 120;
     
     if (self.endFilePicking && self.countFilePicking == 0) {
         
+        self.overlayView.hidden = YES;
+        if ([self.activityIndicatorView isAnimating]) {
+            [self.activityIndicatorView stopAnimating];
+        }
+        
         NSString *message = self.messageTextView.text;
-        if ([self.messageTextView.text isEqualToString:TwinmeLocalizedString(@"conversation_view_controller_message", nil)]) {
+        if ([self.messageTextView.text isEqualToString:TwinmeLocalizedString(@"conversation_view_message", nil)]) {
             message = @"";
         }
         
@@ -221,7 +240,7 @@ static CGFloat DESIGN_THUMBNAIL_SIZE = 120;
         AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
         alertMessageView.alertMessageViewDelegate = self;
         alertMessageView.forceDarkMode = YES;
-        [alertMessageView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:TwinmeLocalizedString(@"application_error_media_not_supported", nil)];
+        [alertMessageView initWithTitle:TwinmeLocalizedString(@"deleted_account_view_warning", nil) message:TwinmeLocalizedString(@"application_error_media_not_supported", nil)];
         [self.view addSubview:alertMessageView];
         [alertMessageView showAlertView];
     }
@@ -263,8 +282,9 @@ static CGFloat DESIGN_THUMBNAIL_SIZE = 120;
         self.endFilePicking = NO;
         self.pickMediaError = NO;
         
-        CFStringRef mediaType = (__bridge CFStringRef)([info objectForKey:@"UIImagePickerControllerMediaType"]);
-        if (UTTypeConformsTo(mediaType, kUTTypeMovie)) {
+        NSString *mediaType = info[UIImagePickerControllerMediaType];
+        UTType *type = [UTType typeWithIdentifier:mediaType];
+        if ([type conformsToType:UTTypeMovie]) {
             self.countFilePicking++;
             NSURL *url = [info objectForKey:@"UIImagePickerControllerMediaURL"];
             AVURLAsset *avAsset = [AVURLAsset URLAssetWithURL:url options:nil];
@@ -296,7 +316,7 @@ static CGFloat DESIGN_THUMBNAIL_SIZE = 120;
             } else {
                 [self addPreviewVideo:url];
             }
-        } else if (UTTypeConformsTo(mediaType, kUTTypeImage)) {
+        } else  if ([type conformsToType:UTTypeImage]) {
             
             UIImage *originalImage = [info objectForKey:@"UIImagePickerControllerOriginalImage"];
             NSURL *urlImage = [info objectForKey:@"UIImagePickerControllerImageURL"];
@@ -307,7 +327,12 @@ static CGFloat DESIGN_THUMBNAIL_SIZE = 120;
                 PHImageRequestOptions *imageRequestOptions = [[PHImageRequestOptions alloc] init];
                 imageRequestOptions.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
                 imageRequestOptions.networkAccessAllowed = YES;
-                [[PHImageManager defaultManager] requestImageDataForAsset:asset options:imageRequestOptions resultHandler:^(NSData * _Nullable imageData, NSString * _Nullable dataUTI, UIImageOrientation orientation, NSDictionary * _Nullable info) {
+                [[PHImageManager defaultManager] requestImageDataAndOrientationForAsset:asset
+                                                                                options:imageRequestOptions
+                                                                          resultHandler:^(NSData * _Nullable imageData,
+                                                                                          NSString * _Nullable dataUTI,
+                                                                                          CGImagePropertyOrientation orientation,
+                                                                                          NSDictionary * _Nullable info) {
                     
                     if (imageData) {
                         NSString *imgExtension = @".jpg";
@@ -365,10 +390,10 @@ static CGFloat DESIGN_THUMBNAIL_SIZE = 120;
         self.pickMediaError = NO;
         
         for (PHPickerResult *result in results) {
-            if ([result.itemProvider hasItemConformingToTypeIdentifier:(NSString *)kUTTypeImage]) {
+            if ([result.itemProvider hasItemConformingToTypeIdentifier:UTTypeImage.identifier]) {
                 
                 self.countFilePicking++;
-                [result.itemProvider loadDataRepresentationForTypeIdentifier:(NSString *)kUTTypeImage
+                [result.itemProvider loadDataRepresentationForTypeIdentifier:UTTypeImage.identifier
                                                            completionHandler:^(NSData * _Nullable data,
                                                                                NSError * _Nullable error) {
                     if (!error) {
@@ -393,10 +418,10 @@ static CGFloat DESIGN_THUMBNAIL_SIZE = 120;
                         [self addPreviewImage:nil imageData:nil imageExtension:nil];
                     }
                 }];
-            } else if ([result.itemProvider hasItemConformingToTypeIdentifier:(NSString *)kUTTypeMovie]) {
+            } else if ([result.itemProvider hasItemConformingToTypeIdentifier:UTTypeMovie.identifier]) {
                 
                 self.countFilePicking++;
-                [result.itemProvider loadFileRepresentationForTypeIdentifier:(NSString *)kUTTypeMovie
+                [result.itemProvider loadFileRepresentationForTypeIdentifier:UTTypeMovie.identifier
                                                            completionHandler:^(NSURL * _Nullable url,
                                                                                NSError * _Nullable error) {
                     
@@ -471,10 +496,8 @@ static CGFloat DESIGN_THUMBNAIL_SIZE = 120;
             self.pickMediaError = YES;
         }
         
-        if (controller.documentPickerMode == UIDocumentPickerModeImport) {
-            self.countFilePicking++;
-            [self addPreviewFile:url fromPicker:YES];
-        }
+        self.countFilePicking++;
+        [self addPreviewFile:url fromPicker:YES];
     }
     
     self.endFilePicking = YES;
@@ -706,6 +729,14 @@ static CGFloat DESIGN_THUMBNAIL_SIZE = 120;
     self.activityIndicatorView.hidesWhenStopped = YES;
     self.activityIndicatorView.color = [UIColor whiteColor];
     
+    self.stateLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
+    self.stateLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
+    self.stateLabelTopConstraint.constant *= Design.HEIGHT_RATIO;
+
+    self.stateLabel.textColor = [UIColor whiteColor];
+    self.stateLabel.text = TwinmeLocalizedString(@"preview_files_view_resize_message", nil);
+    self.stateLabel.font = Design.FONT_REGULAR32;
+    
     [super initViews];
 }
 
@@ -805,9 +836,9 @@ static CGFloat DESIGN_THUMBNAIL_SIZE = 120;
     dispatch_async(dispatch_get_main_queue(), ^{
         
         UIDocumentInteractionController *documentInteractionController = [UIDocumentInteractionController interactionControllerWithURL:url];
-        
-        BOOL isImage = UTTypeConformsTo((__bridge CFStringRef _Nonnull)(documentInteractionController.UTI), kUTTypeImage);
-        BOOL isVideo = UTTypeConformsTo((__bridge CFStringRef _Nonnull)(documentInteractionController.UTI), kUTTypeMovie);
+        UTType *type = [UTType typeWithIdentifier:documentInteractionController.UTI];
+        BOOL isImage = (type && [type conformsToType:UTTypeImage]);
+        BOOL isVideo = (type && [type conformsToType:UTTypeMovie]);
         
         if (isImage) {
             UIPreviewMedia *previewMedia = [[UIPreviewMedia alloc]initWithUrl:url path:url.path size:CGSizeZero isVideo:NO];
@@ -900,28 +931,18 @@ static CGFloat DESIGN_THUMBNAIL_SIZE = 120;
 - (void)openGallery {
     DDLogVerbose(@"%@ openGallery", LOG_TAG);
     
-    if (@available(iOS 14, *)) {
-        PHPickerConfiguration *config = [[PHPickerConfiguration alloc] init];
-        config.selectionLimit = 10;
-        
-        PHPickerViewController *pickerViewController = [[PHPickerViewController alloc] initWithConfiguration:config];
-        pickerViewController.delegate = self;
-        [self presentViewController:pickerViewController animated:YES completion:nil];
-    } else {
-        UIImagePickerController *mediaPicker = [[UIImagePickerController alloc] init];
-        mediaPicker.delegate = self;
-        mediaPicker.modalPresentationStyle = UIModalPresentationFormSheet;
-        mediaPicker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
-        mediaPicker.mediaTypes = [[NSArray alloc]initWithObjects:(NSString *)kUTTypeMovie, (NSString *)kUTTypeImage, nil];
-        mediaPicker.videoQuality = UIImagePickerControllerQualityTypeHigh;
-        [self presentViewController:mediaPicker animated:YES completion:nil];
-    }
+    PHPickerConfiguration *config = [[PHPickerConfiguration alloc] init];
+    config.selectionLimit = 10;
+    
+    PHPickerViewController *pickerViewController = [[PHPickerViewController alloc] initWithConfiguration:config];
+    pickerViewController.delegate = self;
+    [self presentViewController:pickerViewController animated:YES completion:nil];
 }
 
 - (void)openFile {
     DDLogVerbose(@"%@ openFile", LOG_TAG);
     
-    UIDocumentPickerViewController *documentPicker = [[UIDocumentPickerViewController alloc] initWithDocumentTypes:@[(__bridge NSString*)(kUTTypeData),(__bridge NSString*)(kUTTypeContent)] inMode:UIDocumentPickerModeImport];
+    UIDocumentPickerViewController *documentPicker = [[UIDocumentPickerViewController alloc] initForOpeningContentTypes:@[UTTypeData, UTTypeContent] asCopy:YES];
     documentPicker.delegate = self;
     documentPicker.allowsMultipleSelection = YES;
     documentPicker.modalPresentationStyle = UIModalPresentationFormSheet;
@@ -972,12 +993,12 @@ static CGFloat DESIGN_THUMBNAIL_SIZE = 120;
             if ([self.activityIndicatorView isAnimating]) {
                 [self.activityIndicatorView stopAnimating];
             }
-            
+                        
             if (self.pickMediaError) {
                 AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
                 alertMessageView.alertMessageViewDelegate = self;
                 alertMessageView.forceDarkMode = YES;
-                [alertMessageView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:TwinmeLocalizedString(@"application_error_media_not_supported", nil)];
+                [alertMessageView initWithTitle:TwinmeLocalizedString(@"deleted_account_view_warning", nil) message:TwinmeLocalizedString(@"application_error_media_not_supported", nil)];
                 [self.view addSubview:alertMessageView];
                 [alertMessageView showAlertView];
             }
@@ -991,6 +1012,8 @@ static CGFloat DESIGN_THUMBNAIL_SIZE = 120;
             if (![self.activityIndicatorView isAnimating]) {
                 [self.activityIndicatorView startAnimating];
             }
+            
+            self.stateLabel.text = TwinmeLocalizedString(@"preview_files_view_retrieving_media_message", nil);
         }
     });
 }

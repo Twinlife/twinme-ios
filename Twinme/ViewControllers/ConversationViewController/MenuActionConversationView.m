@@ -83,6 +83,7 @@ static NSString *MENU_ACTION_CONVERSATION_CELL_IDENTIFIER = @"MenuActionConversa
     [self.actions addObject:[[UIActionConversation alloc]initWithConversationActionType:ConversationActionTypeCamera spaceSettings:[twinmeContext defaultSpaceSettings] enabled:self.sendAllowed]];
     [self.actions addObject:[[UIActionConversation alloc]initWithConversationActionType:ConversationActionTypeGallery spaceSettings:[twinmeContext defaultSpaceSettings] enabled:self.sendAllowed]];
     [self.actions addObject:[[UIActionConversation alloc]initWithConversationActionType:ConversationActionTypeFile spaceSettings:[twinmeContext defaultSpaceSettings] enabled:self.sendAllowed]];
+    [self.actions addObject:[[UIActionConversation alloc]initWithConversationActionType:ConversationActionTypePoll spaceSettings:[twinmeContext defaultSpaceSettings] enabled:self.sendAllowed]];
     [self.actions addObject:[[UIActionConversation alloc]initWithConversationActionType:ConversationActionTypeMediasAndFiles spaceSettings:[twinmeContext defaultSpaceSettings] enabled:YES]];
     [self.actions addObject:[[UIActionConversation alloc]initWithConversationActionType:ConversationActionTypeManageConversation spaceSettings:[twinmeContext defaultSpaceSettings] enabled:YES]];
     [self.actions addObject:[[UIActionConversation alloc]initWithConversationActionType:ConversationActionTypeReset spaceSettings:[twinmeContext defaultSpaceSettings] enabled:YES]];

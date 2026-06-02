@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2020-2024 twinlife SA.
+ *  Copyright (c) 2020-2026 twinlife SA.
  *  SPDX-License-Identifier: AGPL-3.0-only
  *
  *  Contributors:
@@ -13,12 +13,13 @@
 #import <Twinlife/TLConversationService.h>
 
 #import <Twinme/TLContact.h>
+#import <Twinme/TLTwinmeAttributes.h>
 
 #import <Utils/NSString+Utils.h>
 
 #import "LastCallsViewController.h"
 
-#import "CallCell.h"
+#import "LastCallCell.h"
 #import "CellActionView.h"
 
 #import <TwinmeCommon/CallsService.h>
@@ -40,7 +41,15 @@ static const int ddLogLevel = DDLogLevelVerbose;
 static const int ddLogLevel = DDLogLevelWarning;
 #endif
 
-static NSString *CALL_CELL_IDENTIFIER = @"CallCellIdentifier";
+static NSString *CALL_CELL_IDENTIFIER = @"LastCallCellIdentifier";
+
+static CGFloat DESIGN_ORIGINATOR_VIEW_WIDTH = 460;
+static CGFloat DESIGN_ORIGINATOR_MARGIN = 10;
+static CGFloat DESIGN_AVATAR_VIEW_HEIGHT = 42;
+
+static CGFloat ORIGINATOR_VIEW_WIDTH;
+static CGFloat ORIGINATOR_MARGIN;
+static CGFloat AVATAR_VIEW_HEIGHT;
 
 //
 // Interface: LastCallsViewController
@@ -59,17 +68,17 @@ static NSString *CALL_CELL_IDENTIFIER = @"CallCellIdentifier";
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *noCallLabelWidthConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *noCallLabelTopConstraint;
 @property (weak, nonatomic) IBOutlet UILabel *noCallLabel;
-@property (nonatomic) UISegmentedControl *segmentedControl;
 @property (nonatomic) UIBarButtonItem *resetCallsBarButtonItem;
+@property (nonatomic) UILabel *titleLabel;
+@property (nonatomic) UILabel *subTitleLabel;
+@property (nonatomic) UIImageView *avatarView;
 
 @property (nonatomic) NSMutableArray<TLCallDescriptor *> *allCalls;
-@property (nonatomic) NSArray<TLCallDescriptor *> *filteredCalls;
 @property (nonatomic) CallsService *callsService;
 @property (nonatomic) id<TLOriginator> callOriginator;
 @property (nonatomic) TLCallDescriptor *callDescriptor;
 @property (nonatomic) UIContact *uiContact;
 
-@property (nonatomic) BOOL videoCalls;
 @property (nonatomic) BOOL resetAllCalls;
 @property (nonatomic) BOOL needRefresh;
 @property (nonatomic) BOOL isCallReceiver;
@@ -85,6 +94,14 @@ static NSString *CALL_CELL_IDENTIFIER = @"CallCellIdentifier";
 
 @implementation LastCallsViewController
 
++ (void)initialize {
+    DDLogVerbose(@"%@ initialize", LOG_TAG);
+    
+    ORIGINATOR_VIEW_WIDTH = DESIGN_ORIGINATOR_VIEW_WIDTH * Design.WIDTH_RATIO;
+    ORIGINATOR_MARGIN = DESIGN_ORIGINATOR_MARGIN * Design.WIDTH_RATIO;
+    AVATAR_VIEW_HEIGHT = DESIGN_AVATAR_VIEW_HEIGHT * Design.HEIGHT_RATIO;
+}
+
 - (instancetype)initWithCoder:(NSCoder *)coder {
     DDLogVerbose(@"%@ initWithCoder: %@", LOG_TAG, coder);
     
@@ -92,8 +109,6 @@ static NSString *CALL_CELL_IDENTIFIER = @"CallCellIdentifier";
     
     if (self) {
         _allCalls = [[NSMutableArray alloc] init];
-        _filteredCalls = [[NSArray alloc] init];
-        _videoCalls = NO;
         _resetAllCalls = NO;
         _needRefresh = NO;
         _isCallReceiver = NO;
@@ -143,10 +158,12 @@ static NSString *CALL_CELL_IDENTIFIER = @"CallCellIdentifier";
     if (!self.isCallReceiver && [self.callOriginator isGroup]) {
         [self.callsService getImageWithGroup:(TLGroup *)self.callOriginator withBlock:^(UIImage *image) {
             [self.uiContact updateAvatar:image];
+            [self setupTitleView];
         }];
     } else {
         [self.callsService getImageWithContact:self.callOriginator withBlock:^(UIImage *image) {
             [self.uiContact updateAvatar:image];
+            [self setupTitleView];
         }];
     }
     
@@ -334,7 +351,7 @@ static NSString *CALL_CELL_IDENTIFIER = @"CallCellIdentifier";
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     DDLogVerbose(@"%@ tableView: %@ numberOfRowsInSection: %ld", LOG_TAG, tableView, (long)section);
     
-    return self.filteredCalls.count;
+    return self.allCalls.count;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath  {
@@ -345,20 +362,20 @@ static NSString *CALL_CELL_IDENTIFIER = @"CallCellIdentifier";
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     DDLogVerbose(@"%@ tableView: %@ cellForRowAtIndexPath: %@", LOG_TAG, tableView, indexPath);
     
-    if (indexPath.row == [self.filteredCalls count] - 1) {
+    if (indexPath.row == [self.allCalls count] - 1) {
         dispatch_async(dispatch_get_main_queue(), ^{
             [self getPreviousDescriptors];
         });
     }
     
-    CallCell *callCell = (CallCell *)[tableView dequeueReusableCellWithIdentifier:CALL_CELL_IDENTIFIER];
+    LastCallCell *callCell = (LastCallCell *)[tableView dequeueReusableCellWithIdentifier:CALL_CELL_IDENTIFIER];
     if (!callCell) {
-        callCell = [[CallCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:CALL_CELL_IDENTIFIER];
+        callCell = [[LastCallCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:CALL_CELL_IDENTIFIER];
     }
 
-    TLCallDescriptor *callDescriptor = [self.filteredCalls objectAtIndex:indexPath.row];
+    TLCallDescriptor *callDescriptor = [self.allCalls objectAtIndex:indexPath.row];
     UICall *uiCall = [[UICall alloc]initWithCall:[NSArray arrayWithObject:callDescriptor] uiContact:self.uiContact];
-    BOOL hideSeparator = indexPath.row + 1 == self.filteredCalls.count ? YES : NO;
+    BOOL hideSeparator = indexPath.row + 1 == self.allCalls.count ? YES : NO;
 
     [callCell bindWithCall:uiCall hideSeparator:hideSeparator];
     
@@ -368,7 +385,7 @@ static NSString *CALL_CELL_IDENTIFIER = @"CallCellIdentifier";
 - (UISwipeActionsConfiguration *)tableView:(UITableView *)tableView trailingSwipeActionsConfigurationForRowAtIndexPath:(NSIndexPath *)indexPath {
     
     // Get the callDescriptor now since the list could change while contextualActionWithStyle executes.
-    TLCallDescriptor *callDescriptor = [self.filteredCalls objectAtIndex:indexPath.row];
+    TLCallDescriptor *callDescriptor = [self.allCalls objectAtIndex:indexPath.row];
     UIContextualAction *deleteAction = [UIContextualAction contextualActionWithStyle:UIContextualActionStyleNormal title:TwinmeLocalizedString(@"application_remove", nil) handler:^(UIContextualAction * _Nonnull action, __kindof UIView * _Nonnull sourceView, void (^ _Nonnull completionHandler)(BOOL)) {
         [self handleDeleteHistory:callDescriptor];
     }];
@@ -398,17 +415,17 @@ static NSString *CALL_CELL_IDENTIFIER = @"CallCellIdentifier";
             return;
         }
         
-        self.callDescriptor = [self.filteredCalls objectAtIndex:indexPath.row];
+        self.callDescriptor = [self.allCalls objectAtIndex:indexPath.row];
         
         if ((!self.callDescriptor.isVideo && self.callOriginator.capabilities.hasAudio) || (self.callDescriptor.isVideo && self.callOriginator.capabilities.hasVideo)) {
             
             CallAgainConfirmView *callAgainConfirmView = [[CallAgainConfirmView alloc] init];
             callAgainConfirmView.bottomSheetViewDelegate = self;
             
-            NSString *message = TwinmeLocalizedString(@"conversation_view_controller_audio_call", nil);
+            NSString *message = TwinmeLocalizedString(@"conversation_view_audio_call", nil);
             UIImage *icon = [UIImage imageNamed:@"AudioCall"];
             if (self.callDescriptor.isVideo) {
-                message = TwinmeLocalizedString(@"conversation_view_controller_video_call", nil);
+                message = TwinmeLocalizedString(@"conversation_view_video_call", nil);
                 icon = [UIImage imageNamed:@"VideoCall"];
             }
             
@@ -480,28 +497,15 @@ static NSString *CALL_CELL_IDENTIFIER = @"CallCellIdentifier";
     self.view.backgroundColor = Design.WHITE_COLOR;
     
     self.resetCallsBarButtonItem = [[UIBarButtonItem alloc]initWithImage:[UIImage imageNamed:@"ActionBarDelete"] style:UIBarButtonItemStylePlain target:self action:@selector(handleResetTapGesture:)];
-    self.resetCallsBarButtonItem.accessibilityLabel = TwinmeLocalizedString(@"history_view_controller_reset_title", nil);
+    self.resetCallsBarButtonItem.accessibilityLabel = TwinmeLocalizedString(@"calls_view_reset_title", nil);
     self.resetCallsBarButtonItem.enabled = NO;
     self.navigationItem.rightBarButtonItem = self.resetCallsBarButtonItem;
-    
-    self.segmentedControl = [[UISegmentedControl alloc]initWithItems:@[TwinmeLocalizedString(@"last_calls_view_controller_audio", nil), TwinmeLocalizedString(@"last_calls_view_controller_video", nil)]];
-    [self.segmentedControl setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys: Design.FONT_REGULAR32, NSFontAttributeName, [UIColor whiteColor], NSForegroundColorAttributeName, nil] forState:UIControlStateNormal];
-    [self.segmentedControl setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys: Design.FONT_REGULAR32, NSFontAttributeName, Design.MAIN_COLOR, NSForegroundColorAttributeName, nil] forState:UIControlStateSelected];
-    self.segmentedControl.selectedSegmentIndex = 0;
-    self.segmentedControl.tintColor = [UIColor whiteColor];
-    
-    if (@available(iOS 13.0, *)) {
-        self.segmentedControl.selectedSegmentTintColor = [UIColor whiteColor];
-    }
-    [self.segmentedControl addTarget:self action:@selector(segmentedControlValueDidChange:) forControlEvents:UIControlEventValueChanged];
-    
-    self.navigationItem.titleView = self.segmentedControl;
     
     self.callsTableView.delegate = self;
     self.callsTableView.dataSource = self;
     self.callsTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     self.callsTableView.backgroundColor = Design.WHITE_COLOR;
-    [self.callsTableView registerNib:[UINib nibWithNibName:@"CallCell" bundle:nil] forCellReuseIdentifier:CALL_CELL_IDENTIFIER];
+    [self.callsTableView registerNib:[UINib nibWithNibName:@"LastCallCell" bundle:nil] forCellReuseIdentifier:CALL_CELL_IDENTIFIER];
     self.callsTableView.tableFooterView = [[UIView alloc] init];
     
     self.noCallImageViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
@@ -514,7 +518,7 @@ static NSString *CALL_CELL_IDENTIFIER = @"CallCellIdentifier";
     
     self.noCallTitleLabel.font = Design.FONT_MEDIUM34;
     self.noCallTitleLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    self.noCallTitleLabel.text = TwinmeLocalizedString(@"history_view_controller_no_call_title", nil);
+    self.noCallTitleLabel.text = TwinmeLocalizedString(@"calls_view_no_call_title", nil);
     self.noCallTitleLabel.hidden = YES;
     
     self.noCallLabelWidthConstraint.constant *= Design.WIDTH_RATIO;
@@ -522,8 +526,106 @@ static NSString *CALL_CELL_IDENTIFIER = @"CallCellIdentifier";
     
     self.noCallLabel.font = Design.FONT_MEDIUM28;
     self.noCallLabel.textColor = Design.FONT_COLOR_DESCRIPTION;
-    self.noCallLabel.text = TwinmeLocalizedString(@"history_view_controller_no_call_message", nil);
+    self.noCallLabel.text = TwinmeLocalizedString(@"calls_view_no_call_message", nil);
     self.noCallLabel.hidden = YES;
+}
+
+- (void)setupTitleView {
+    DDLogVerbose(@"%@ setupTitleView", LOG_TAG);
+    
+    if (!self.titleLabel && self.uiContact) {
+        CGFloat customTitleViewWidth = ORIGINATOR_VIEW_WIDTH;
+        CGFloat customTitleViewHeight = Design.STANDARD_NAVIGATION_BAR_HEIGHT;
+        
+        CGFloat titleLabelX = (customTitleViewHeight - Design.FONT_BOLD34.lineHeight) * 0.5;
+        if (self.callOriginator.isGroup) {
+            titleLabelX = (customTitleViewHeight - Design.FONT_BOLD34.lineHeight - Design.FONT_REGULAR34.lineHeight) * 0.5;
+        }
+        
+        UIView *customTitleView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, customTitleViewWidth, customTitleViewHeight)];
+        customTitleView.backgroundColor = [UIColor clearColor];
+        
+        self.titleLabel = [[UILabel alloc]initWithFrame:CGRectMake(AVATAR_VIEW_HEIGHT + ORIGINATOR_MARGIN, titleLabelX, customTitleViewWidth - AVATAR_VIEW_HEIGHT - ORIGINATOR_MARGIN, Design.FONT_BOLD34.lineHeight)];
+        self.titleLabel.semanticContentAttribute = UISemanticContentAttributeForceLeftToRight;
+        
+        self.titleLabel.textAlignment = NSTextAlignmentNatural;
+        self.titleLabel.font = Design.FONT_BOLD34;
+        self.titleLabel.textColor = [UIColor whiteColor];
+        self.titleLabel.text = self.uiContact.name;
+        self.titleLabel.clipsToBounds = YES;
+        self.titleLabel.numberOfLines = 1;
+        self.titleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+        
+        self.subTitleLabel = [[UILabel alloc]initWithFrame:CGRectMake(AVATAR_VIEW_HEIGHT + ORIGINATOR_MARGIN, titleLabelX + Design.FONT_BOLD34.lineHeight, customTitleViewWidth - AVATAR_VIEW_HEIGHT - ORIGINATOR_MARGIN, Design.FONT_REGULAR34.lineHeight)];
+        self.subTitleLabel.semanticContentAttribute = UISemanticContentAttributeForceLeftToRight;
+        self.subTitleLabel.textAlignment = NSTextAlignmentNatural;
+        self.subTitleLabel.font = Design.FONT_REGULAR24;
+        self.subTitleLabel.textColor = [UIColor whiteColor];
+        self.subTitleLabel.clipsToBounds = YES;
+        self.subTitleLabel.numberOfLines = 1;
+        
+        self.avatarView = [[UIImageView alloc] initWithImage:self.uiContact.avatar];
+        self.avatarView.semanticContentAttribute = UISemanticContentAttributeForceLeftToRight;
+        self.avatarView.contentMode = UIViewContentModeScaleAspectFit;
+        self.avatarView.frame = CGRectMake(0, (customTitleViewHeight - AVATAR_VIEW_HEIGHT) / 2 , AVATAR_VIEW_HEIGHT, AVATAR_VIEW_HEIGHT);
+        
+        self.avatarView.layer.cornerRadius = AVATAR_VIEW_HEIGHT / 2.0;
+        self.avatarView.clipsToBounds = YES;
+        
+        if ([self.uiContact.avatar isEqual:[TLTwinmeAttributes DEFAULT_GROUP_AVATAR]]) {
+            self.avatarView.backgroundColor = Design.GREY_ITEM;
+        } else {
+            self.avatarView.backgroundColor = [UIColor clearColor];
+        }
+        
+        CGFloat profileViewWidth = AVATAR_VIEW_HEIGHT + ORIGINATOR_MARGIN + self.titleLabel.intrinsicContentSize.width;
+        if (profileViewWidth > customTitleViewWidth) {
+            profileViewWidth = customTitleViewWidth;
+        }
+        customTitleView.frame = CGRectMake(0, 0, profileViewWidth, customTitleViewHeight);
+        [customTitleView addSubview:self.avatarView];
+        [customTitleView addSubview:self.titleLabel];
+        if ([self.uiContact.contact isGroup]) {
+            [customTitleView addSubview:self.subTitleLabel];
+        }
+        
+        if (![self.uiContact.contact isGroup]) {
+            TLContact *contact = (TLContact *)self.uiContact.contact;
+            if (contact.certificationLevel == TLCertificationLevel4) {
+                UIImageView *certifiedImageView = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"AuthentifiedRelationWhiteIcon"]];
+                certifiedImageView.frame = CGRectMake(AVATAR_VIEW_HEIGHT * 0.5, self.avatarView.center.y, AVATAR_VIEW_HEIGHT * 0.5, AVATAR_VIEW_HEIGHT * 0.5);
+                [customTitleView addSubview:certifiedImageView];
+            }
+        }
+        
+        self.navigationItem.titleView = customTitleView;
+        
+        if ([self.uiContact.contact isGroup]) {
+            self.titleLabel.text = self.callOriginator.name;
+            self.subTitleLabel.text = TwinmeLocalizedString(@"conversation_view_group_one_member", nil);
+        }
+    } else {
+
+        if ([self.uiContact.avatar isEqual:[TLTwinmeAttributes DEFAULT_GROUP_AVATAR]]) {
+            self.avatarView.backgroundColor = Design.GREY_ITEM;
+        } else {
+            self.avatarView.backgroundColor = [UIColor clearColor];
+        }
+        
+        self.titleLabel.text = self.uiContact.name;
+        
+        [self updateNavigationBarAvatar];
+    }
+}
+
+- (void)updateNavigationBarAvatar {
+    DDLogVerbose(@"%@ updateNavigationBarAvatar", LOG_TAG);
+    
+    if (self.avatarView && self.uiContact.avatar) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            self.avatarView.image = self.uiContact.avatar;
+        });
+    }
 }
 
 - (void)finish {
@@ -533,18 +635,6 @@ static NSString *CALL_CELL_IDENTIFIER = @"CallCellIdentifier";
         [self.callsService dispose];
         self.callsService = nil;
     }
-}
-
-- (IBAction)segmentedControlValueDidChange:(id)sender {
-    DDLogVerbose(@"%@ segmentedControlValueDidChange: %@", LOG_TAG, sender);
-    
-    if (self.segmentedControl.selectedSegmentIndex == 0) {
-        self.videoCalls = NO;
-    } else {
-        self.videoCalls = YES;
-    }
-    
-    [self updateCalls];
 }
 
 - (void)handleDeleteHistory:(TLCallDescriptor *)callDescriptor {
@@ -564,13 +654,9 @@ static NSString *CALL_CELL_IDENTIFIER = @"CallCellIdentifier";
 - (void)updateCalls {
     DDLogVerbose(@"%@ updateCalls", LOG_TAG);
     
-    self.filteredCalls = [self.allCalls filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(TLCallDescriptor *callDescriptor, NSDictionary *bindings) {
-        return [self showCall:callDescriptor];
-    }]];
-    
     [self.callsTableView reloadData];
     
-    if (self.filteredCalls.count == 0) {
+    if (self.allCalls.count == 0) {
         self.noCallImageView.hidden = NO;
         self.noCallTitleLabel.hidden = NO;
         self.noCallLabel.hidden = NO;
@@ -586,21 +672,11 @@ static NSString *CALL_CELL_IDENTIFIER = @"CallCellIdentifier";
     
     self.resetCallsBarButtonItem.enabled = self.allCalls.count > 0 ? YES : NO;
     
-    if (self.filteredCalls.count == 0 && ![self.callsService isGetDescriptorsDone]) {
+    if (self.allCalls.count == 0 && ![self.callsService isGetDescriptorsDone]) {
         dispatch_async(dispatch_get_main_queue(), ^{
             [self getPreviousDescriptors];
         });
     }
-}
-
-- (BOOL)showCall:(TLCallDescriptor *)callDescriptor {
-    DDLogVerbose(@"%@ showCall: %@", LOG_TAG, callDescriptor);
-    
-    if (self.videoCalls == callDescriptor.isVideo) {
-        return YES;
-    }
-    
-    return NO;
 }
 
 - (void)startAudioCallWithPermissionCheck {
@@ -728,9 +804,9 @@ static NSString *CALL_CELL_IDENTIFIER = @"CallCellIdentifier";
         deleteConfirmView.bottomSheetViewDelegate = self;
         deleteConfirmView.deleteConfirmType = DeleteConfirmTypeHistory;
         
-        NSString *message = [NSString stringWithFormat:@"%@\n\n%@", TwinmeLocalizedString(@"application_operation_irreversible", nil), TwinmeLocalizedString(@"history_view_controller_reset", nil)];
-        [deleteConfirmView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:message avatar:self.uiContact.avatar icon:[UIImage imageNamed:@"ActionBarDelete"]];
-        [deleteConfirmView setConfirmTitle:TwinmeLocalizedString(@"history_view_controller_reset_title", nil)];
+        NSString *message = [NSString stringWithFormat:@"%@\n\n%@", TwinmeLocalizedString(@"application_operation_irreversible", nil), TwinmeLocalizedString(@"calls_view_reset", nil)];
+        [deleteConfirmView initWithTitle:TwinmeLocalizedString(@"deleted_account_view_warning", nil) message:message avatar:self.uiContact.avatar icon:[UIImage imageNamed:@"ActionBarDelete"]];
+        [deleteConfirmView setConfirmTitle:TwinmeLocalizedString(@"calls_view_reset_title", nil)];
         
         [self.tabBarController.view addSubview:deleteConfirmView];
         [deleteConfirmView showConfirmView];
@@ -739,9 +815,6 @@ static NSString *CALL_CELL_IDENTIFIER = @"CallCellIdentifier";
 
 - (void)updateFont {
     DDLogVerbose(@"%@ updateFont", LOG_TAG);
-    
-    [self.segmentedControl setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys: Design.FONT_REGULAR32, NSFontAttributeName, [UIColor whiteColor], NSForegroundColorAttributeName, nil] forState:UIControlStateNormal];
-    [self.segmentedControl setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys: Design.FONT_REGULAR32, NSFontAttributeName, Design.MAIN_COLOR, NSForegroundColorAttributeName, nil] forState:UIControlStateSelected];
     
     self.noCallTitleLabel.font = Design.FONT_MEDIUM34;
     self.noCallLabel.font = Design.FONT_MEDIUM28;

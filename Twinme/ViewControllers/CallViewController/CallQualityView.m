@@ -101,9 +101,9 @@ static const int ddLogLevel = DDLogLevelWarning;
     UITapGestureRecognizer *starFourGestureRecognizer = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(handleStarTapGesture:)];
     [self.starFourImageView addGestureRecognizer:starFourGestureRecognizer];
         
-    self.titleLabel.text = TwinmeLocalizedString(@"call_view_controller_quality_title", nil);
-    self.messageLabel.text = TwinmeLocalizedString(@"call_view_controller_quality_message", nil);
-    self.confirmLabel.text = TwinmeLocalizedString(@"feedback_view_controller_send", nil);
+    self.titleLabel.text = TwinmeLocalizedString(@"call_view_quality_title", nil);
+    self.messageLabel.text = TwinmeLocalizedString(@"call_view_quality_message", nil);
+    self.confirmLabel.text = TwinmeLocalizedString(@"feedback_view_send", nil);
     
     [self updateStars];
 }

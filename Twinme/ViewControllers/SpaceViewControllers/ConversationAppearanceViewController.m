@@ -193,7 +193,7 @@ static CGFloat DESIGN_RESET_HEIGHT = 160;
                 cell = [[SettingsInformationCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:SETTINGS_INFORMATION_CELL_IDENTIFIER];
             }
             
-            [cell bindWithText:TwinmeLocalizedString(@"space_appearance_view_controller_background_message", nil)];
+            [cell bindWithText:TwinmeLocalizedString(@"space_appearance_view_background_message", nil)];
             
             return cell;
         } else {
@@ -221,7 +221,7 @@ static CGFloat DESIGN_RESET_HEIGHT = 160;
         premiumFeatureConfirmView.bottomSheetViewDelegate = self;
         [premiumFeatureConfirmView initWithPremiumFeature:[[UIPremiumFeature alloc]initWithFeatureType:FeatureTypeSpaces spaceSettings:[self currentSpaceSettings]] parentViewController:self.navigationController];
         
-        NSMutableAttributedString *attributedTitle = [[NSMutableAttributedString alloc] initWithString:TwinmeLocalizedString(@"personalization_view_controller_title", nil) attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_BOLD44, NSFontAttributeName, Design.FONT_COLOR_DEFAULT, NSForegroundColorAttributeName, nil]];
+        NSMutableAttributedString *attributedTitle = [[NSMutableAttributedString alloc] initWithString:TwinmeLocalizedString(@"personalization_view_title", nil) attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_BOLD44, NSFontAttributeName, Design.FONT_COLOR_DEFAULT, NSForegroundColorAttributeName, nil]];
         [premiumFeatureConfirmView updateTitle:attributedTitle];
         [self.navigationController.view addSubview:premiumFeatureConfirmView];
         [premiumFeatureConfirmView showConfirmView];
@@ -298,11 +298,11 @@ static CGFloat DESIGN_RESET_HEIGHT = 160;
     
     switch (row) {
         case PREVIEW_APPEARANCE_TITLE_ROW:
-            title = TwinmeLocalizedString(@"space_appearance_view_controller_preview_title", nil);
+            title = TwinmeLocalizedString(@"space_appearance_view_preview_title", nil);
             break;
             
         case BACKGROUND_APPEARANCE_TITLE_ROW:
-            title = TwinmeLocalizedString(@"space_appearance_view_controller_background_title", nil);
+            title = TwinmeLocalizedString(@"space_appearance_view_background_title", nil);
             break;
             
         case BACKGROUND_COLOR_ROW:
@@ -310,35 +310,35 @@ static CGFloat DESIGN_RESET_HEIGHT = 160;
             break;
             
         case BACKGROUND_TEXT_ROW:
-            title = TwinmeLocalizedString(@"space_appareance_view_controller_background_text_title", nil);
+            title = TwinmeLocalizedString(@"space_appearance_view_background_text_title", nil);
             break;
             
         case ITEM_APPEARANCE_TITLE_ROW:
-            title = TwinmeLocalizedString(@"space_appearance_view_controller_container_title", nil);
+            title = TwinmeLocalizedString(@"space_appearance_view_container_title", nil);
             break;
             
         case ITEM_BACKGROUND_COLOR_ROW:
-            title = TwinmeLocalizedString(@"space_appearance_view_controller_container_background_message", nil);
+            title = TwinmeLocalizedString(@"space_appearance_view_container_background_message", nil);
             break;
             
         case PEER_ITEM_BACKGROUND_COLOR_ROW:
-            title = TwinmeLocalizedString(@"space_appearance_view_controller_container_background_peer_message", nil);
+            title = TwinmeLocalizedString(@"space_appearance_view_container_background_peer_message", nil);
             break;
             
         case ITEM_BORDER_COLOR_ROW:
-            title = TwinmeLocalizedString(@"space_appearance_view_controller_container_border_message", nil);
+            title = TwinmeLocalizedString(@"space_appearance_view_container_border_message", nil);
             break;
             
         case PEER_ITEM_BORDER_COLOR_ROW:
-            title = TwinmeLocalizedString(@"space_appearance_view_controller_container_border_peer_message", nil);
+            title = TwinmeLocalizedString(@"space_appearance_view_container_border_peer_message", nil);
             break;
             
         case ITEM_TEXT_COLOR_ROW:
-            title = TwinmeLocalizedString(@"space_appearance_view_controller_container_text_message", nil);
+            title = TwinmeLocalizedString(@"space_appearance_view_container_text_message", nil);
             break;
             
         case PEER_ITEM_TEXT_COLOR_ROW:
-            title = TwinmeLocalizedString(@"space_appearance_view_controller_container_text_peer_message", nil);
+            title = TwinmeLocalizedString(@"space_appearance_view_container_text_peer_message", nil);
             break;
             
         default:

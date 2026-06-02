@@ -137,6 +137,21 @@ static CGFloat MAX_COMPRESSION = 0.8f;
 @end
 
 //
+// Protocol: PollActionDelegate
+//
+
+@class TLPollDescriptor;
+@class TLChoice;
+
+@protocol PollActionDelegate <NSObject>
+
+- (void)resultsPoll:(TLPollDescriptor *)pollDescriptor;
+
+- (void)selectChoice:(TLChoice *)choice pollDescriptor:(TLPollDescriptor *)pollDescriptor votes:(NSDictionary<NSUUID *, NSArray<TLChoice *> *> *)votes;
+
+@end
+
+//
 // Protocol: MenuActionDelegate
 //
 
@@ -167,6 +182,16 @@ static CGFloat MAX_COMPRESSION = 0.8f;
 @protocol SelectItemDelegate <NSObject>
 
 - (void)didSelectItem:(Item *)item;
+
+@end
+
+//
+// Protocol: InfoItemDelegate
+//
+
+@protocol InfoItemDelegate <NSObject>
+
+- (void)didTapInfoItem:(Item *)item;
 
 @end
 
@@ -252,6 +277,10 @@ static CGFloat MAX_COMPRESSION = 0.8f;
 
 - (UIImage *)getContactAvatarWithUUID:(NSUUID *)peerTwincodeOutboundId;
 
+- (BOOL)isUserVote:(NSUUID *)peerTwincodeOutboundId;
+
+- (UIImage *)getPollAvatarWithUUID:(NSUUID *)peerTwincodeOutboundId;
+
 - (BOOL)isSameDayWithDate1:(NSDate *)date1 date2:(NSDate *)date2;
 
 - (void)pushFileWithPath:(NSString *)path type:(TLDescriptorType)type toBeDeleted:(BOOL)toBeDeleted allowCopy:(BOOL)allowCopy;
@@ -261,6 +290,8 @@ static CGFloat MAX_COMPRESSION = 0.8f;
 - (BOOL)isMenuOpen;
 
 - (BOOL)isSelectItemMode;
+
+- (BOOL)displayPeerItemAvatar;
 
 - (UIFont *)getMessageFont;
 

@@ -84,7 +84,7 @@
     self.addContactView.clipsToBounds = YES;
     self.addContactView.layer.cornerRadius = self.addContactViewHeightConstraint.constant * 0.5;
     self.addContactView.backgroundColor = Design.MAIN_COLOR;
-    self.addContactView.accessibilityLabel = TwinmeLocalizedString(@"add_contact_view_controller_title", nil);
+    self.addContactView.accessibilityLabel = TwinmeLocalizedString(@"add_contact_view_title", nil);
     
     UITapGestureRecognizer *addContactTapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleAddContactTapGesture:)];
     [self.addContactView addGestureRecognizer:addContactTapGesture];

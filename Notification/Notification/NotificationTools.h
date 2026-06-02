@@ -54,7 +54,7 @@
 - (nullable NotificationInfo *)createNotificationDescriptorWithContact:(nonnull id<TLOriginator>)contact conversationId:(nonnull NSUUID *)conversationId descriptor:(nonnull TLDescriptor *)descriptor notificationId:(nullable NSUUID *)notificationId;
 
 /// Create a new notification for a change in annotation on a descriptor.
-- (nullable NotificationInfo *)createNotificationAnnotationWithContact:(nonnull id<TLOriginator>)contact conversationId:(nonnull NSUUID *)conversationId descriptor:(nonnull TLDescriptor *)descriptor annotatingUser:(nullable TLTwincodeOutbound *)annotatingUser notificationId:(nullable NSUUID *)notificationId;
+- (nullable NotificationInfo *)createNotificationAnnotationWithContact:(nonnull id<TLOriginator>)contact conversationId:(nonnull NSUUID *)conversationId descriptor:(nonnull TLDescriptor *)descriptor annotatingUser:(nullable TLTwincodeOutbound *)annotatingUser notificationId:(nullable NSUUID *)notificationId annotation:(nonnull TLDescriptorAnnotation *)annotation;
 
 /// Create a new notification after a user joined the group.
 - (nullable NotificationInfo *)createNotificationJoinGroupWithGroup:(nonnull id<TLOriginator>)group conversationId:(nonnull NSUUID *)conversationId notificationId:(nullable NSUUID *)notificationId;

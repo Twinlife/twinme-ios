@@ -27,6 +27,7 @@
 #import <QuartzCore/QuartzCore.h>
 #import <objc/runtime.h>
 #import <TwinmeCommon/Design.h>
+#import <TwinmeCommon/UIViewController+Utils.h>
 
 NSString * CSToastPositionTop       = @"CSToastPositionTop";
 NSString * CSToastPositionCenter    = @"CSToastPositionCenter";
@@ -366,7 +367,7 @@ static const NSString * CSToastQueueKey             = @"CSToastQueueKey";
         activityView.layer.shadowOffset = style.shadowOffset;
     }
     
-    UIActivityIndicatorView *activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
+    UIActivityIndicatorView *activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleMedium];
     activityIndicatorView.center = CGPointMake(activityView.bounds.size.width / 2, activityView.bounds.size.height / 2);
     [activityView addSubview:activityIndicatorView];
     [activityIndicatorView startAnimating];
@@ -434,8 +435,13 @@ static const NSString * CSToastQueueKey             = @"CSToastQueueKey";
         self.maxHeightPercentage = 0.8;
         self.horizontalPadding = 10.0;
         
-        UIWindow *window = UIApplication.sharedApplication.keyWindow;
-        CGFloat safeAreaInset = window.safeAreaInsets.top;
+        UIWindow *window = [UIViewController currentWindow];
+        CGFloat safeAreaInset;
+        if (window) {
+            safeAreaInset = window.safeAreaInsets.top;
+        } else {
+            safeAreaInset = 0.0;
+        }
         
         self.verticalPadding = safeAreaInset;
         self.cornerRadius = 45 * Design.HEIGHT_RATIO;

@@ -84,7 +84,7 @@ static NSString *MENU_ITEM_CELL_IDENTIFIER = @"MenuItemCellIdentifier";
     self.canEditMessage = edit;
 }
 
-- (void)openMenu:(Item *)item menuType:(MenuType)menuType {
+- (void)openMenu:(Item *)item menuType:(MenuType)menuType displayAvatar:(BOOL)displayAvatar {
     DDLogVerbose(@"%@ openMenu: %@ menuType: %d", LOG_TAG, item, menuType);
     
     self.item = item;
@@ -98,24 +98,28 @@ static NSString *MENU_ITEM_CELL_IDENTIFIER = @"MenuItemCellIdentifier";
     }
     
     if (self.item.isPeerItem) {
-        self.menuTableViewLeadingConstraint.constant = DESIGN_LEADING_MENU * Design.WIDTH_RATIO;
+        if (displayAvatar) {
+            self.menuTableViewLeadingConstraint.constant = DESIGN_LEADING_MENU * Design.WIDTH_RATIO;
+        } else {
+            self.menuTableViewLeadingConstraint.constant = Design.AVATAR_CONVERSATION_LEADING;
+        }
     } else {
         self.menuTableViewLeadingConstraint.constant = Design.DISPLAY_WIDTH - (self.menuTableViewWidthConstraint.constant + DESIGN_TRAILING_MENU * Design.WIDTH_RATIO);
     }
     
     switch (menuType) {
         case MenuTypeText:
-            [self.actionsArray addObject:[[UIMenuItemAction alloc]initWithTitle:TwinmeLocalizedString(@"conversation_view_controller_menu_item_view_info_title", nil) image:[UIImage imageNamed:@"InfoItem"] actionType:ActionTypeInfo]];
+            [self.actionsArray addObject:[[UIMenuItemAction alloc]initWithTitle:TwinmeLocalizedString(@"conversation_view_menu_item_view_info_title", nil) image:[UIImage imageNamed:@"InfoItem"] actionType:ActionTypeInfo]];
             
             if (!self.item.isPeerItem && self.canEditMessage) {
                 [self.actionsArray addObject:[[UIMenuItemAction alloc]initWithTitle:TwinmeLocalizedString(@"application_edit", nil) image:[UIImage imageNamed:@"EditMessageIcon"] actionType:ActionTypeEdit]];
             }
             
-            [self.actionsArray addObject:[[UIMenuItemAction alloc]initWithTitle:TwinmeLocalizedString(@"conversation_view_controller_menu_item_view_reply_title", nil) image:[UIImage imageNamed:@"ReplyItem"] actionType:ActionTypeReply]];
-            [self.actionsArray addObject:[[UIMenuItemAction alloc]initWithTitle:TwinmeLocalizedString(@"conversation_view_controller_menu_item_view_forward_title", nil) image:[UIImage imageNamed:@"ForwardItem"] actionType:ActionTypeForward]];
-            [self.actionsArray addObject:[[UIMenuItemAction alloc]initWithTitle:TwinmeLocalizedString(@"conversation_view_controller_menu_item_view_share_title", nil) image:[UIImage imageNamed:@"ShareItem"] actionType:ActionTypeShare]];
-            [self.actionsArray addObject:[[UIMenuItemAction alloc]initWithTitle:TwinmeLocalizedString(@"conversation_view_controller_menu_item_view_copy_title", nil) image:[UIImage imageNamed:@"CopyItem"] actionType:ActionTypeCopy]];
-            [self.actionsArray addObject:[[UIMenuItemAction alloc]initWithTitle:TwinmeLocalizedString(@"conversation_view_controller_menu_item_view_delete_title", nil) image:[UIImage imageNamed:@"ToolbarTrash"] actionType:ActionTypeDelete]];
+            [self.actionsArray addObject:[[UIMenuItemAction alloc]initWithTitle:TwinmeLocalizedString(@"conversation_view_menu_item_view_reply_title", nil) image:[UIImage imageNamed:@"ReplyItem"] actionType:ActionTypeReply]];
+            [self.actionsArray addObject:[[UIMenuItemAction alloc]initWithTitle:TwinmeLocalizedString(@"conversation_view_menu_item_view_forward_title", nil) image:[UIImage imageNamed:@"ForwardItem"] actionType:ActionTypeForward]];
+            [self.actionsArray addObject:[[UIMenuItemAction alloc]initWithTitle:TwinmeLocalizedString(@"conversation_view_menu_item_view_share_title", nil) image:[UIImage imageNamed:@"ShareItem"] actionType:ActionTypeShare]];
+            [self.actionsArray addObject:[[UIMenuItemAction alloc]initWithTitle:TwinmeLocalizedString(@"conversation_view_menu_item_view_copy_title", nil) image:[UIImage imageNamed:@"CopyItem"] actionType:ActionTypeCopy]];
+            [self.actionsArray addObject:[[UIMenuItemAction alloc]initWithTitle:TwinmeLocalizedString(@"conversation_view_menu_item_view_delete_title", nil) image:[UIImage imageNamed:@"ToolbarTrash"] actionType:ActionTypeDelete]];
             [self.actionsArray addObject:[[UIMenuItemAction alloc]initWithTitle:TwinmeLocalizedString(@"application_select_more", nil) image:[UIImage imageNamed:@"SelectMoreItem"] actionType:ActionTypeSelectMore]];
             break;
             
@@ -123,20 +127,26 @@ static NSString *MENU_ITEM_CELL_IDENTIFIER = @"MenuItemCellIdentifier";
         case MenuTypeVideo:
         case MenuTypeAudio:
         case MenuTypeFile:
-            [self.actionsArray addObject:[[UIMenuItemAction alloc]initWithTitle:TwinmeLocalizedString(@"conversation_view_controller_menu_item_view_info_title", nil) image:[UIImage imageNamed:@"InfoItem"] actionType:ActionTypeInfo]];
-            [self.actionsArray addObject:[[UIMenuItemAction alloc]initWithTitle:TwinmeLocalizedString(@"conversation_view_controller_menu_item_view_reply_title", nil) image:[UIImage imageNamed:@"ReplyItem"] actionType:ActionTypeReply]];
-            [self.actionsArray addObject:[[UIMenuItemAction alloc]initWithTitle:TwinmeLocalizedString(@"conversation_view_controller_menu_item_view_forward_title", nil) image:[UIImage imageNamed:@"ForwardItem"] actionType:ActionTypeForward]];
-            [self.actionsArray addObject:[[UIMenuItemAction alloc]initWithTitle:TwinmeLocalizedString(@"conversation_view_controller_menu_item_view_share_title", nil) image:[UIImage imageNamed:@"ShareItem"] actionType:ActionTypeShare]];
-            [self.actionsArray addObject:[[UIMenuItemAction alloc]initWithTitle:TwinmeLocalizedString(@"conversation_view_controller_menu_item_view_save_title", nil) image:[UIImage imageNamed:@"SaveItem"] actionType:ActionTypeSave]];
-            [self.actionsArray addObject:[[UIMenuItemAction alloc]initWithTitle:TwinmeLocalizedString(@"conversation_view_controller_menu_item_view_delete_title", nil) image:[UIImage imageNamed:@"ToolbarTrash"] actionType:ActionTypeDelete]];
+            [self.actionsArray addObject:[[UIMenuItemAction alloc]initWithTitle:TwinmeLocalizedString(@"conversation_view_menu_item_view_info_title", nil) image:[UIImage imageNamed:@"InfoItem"] actionType:ActionTypeInfo]];
+            [self.actionsArray addObject:[[UIMenuItemAction alloc]initWithTitle:TwinmeLocalizedString(@"conversation_view_menu_item_view_reply_title", nil) image:[UIImage imageNamed:@"ReplyItem"] actionType:ActionTypeReply]];
+            [self.actionsArray addObject:[[UIMenuItemAction alloc]initWithTitle:TwinmeLocalizedString(@"conversation_view_menu_item_view_forward_title", nil) image:[UIImage imageNamed:@"ForwardItem"] actionType:ActionTypeForward]];
+            [self.actionsArray addObject:[[UIMenuItemAction alloc]initWithTitle:TwinmeLocalizedString(@"conversation_view_menu_item_view_share_title", nil) image:[UIImage imageNamed:@"ShareItem"] actionType:ActionTypeShare]];
+            [self.actionsArray addObject:[[UIMenuItemAction alloc]initWithTitle:TwinmeLocalizedString(@"conversation_view_menu_item_view_save_title", nil) image:[UIImage imageNamed:@"SaveItem"] actionType:ActionTypeSave]];
+            [self.actionsArray addObject:[[UIMenuItemAction alloc]initWithTitle:TwinmeLocalizedString(@"conversation_view_menu_item_view_delete_title", nil) image:[UIImage imageNamed:@"ToolbarTrash"] actionType:ActionTypeDelete]];
+            [self.actionsArray addObject:[[UIMenuItemAction alloc]initWithTitle:TwinmeLocalizedString(@"application_select_more", nil) image:[UIImage imageNamed:@"SelectMoreItem"] actionType:ActionTypeSelectMore]];
+            break;
+            
+        case MenuTypePoll:
+            [self.actionsArray addObject:[[UIMenuItemAction alloc]initWithTitle:TwinmeLocalizedString(@"conversation_view_menu_item_view_info_title", nil) image:[UIImage imageNamed:@"InfoItem"] actionType:ActionTypeInfo]];
+            [self.actionsArray addObject:[[UIMenuItemAction alloc]initWithTitle:TwinmeLocalizedString(@"conversation_view_menu_item_view_delete_title", nil) image:[UIImage imageNamed:@"ToolbarTrash"] actionType:ActionTypeDelete]];
             [self.actionsArray addObject:[[UIMenuItemAction alloc]initWithTitle:TwinmeLocalizedString(@"application_select_more", nil) image:[UIImage imageNamed:@"SelectMoreItem"] actionType:ActionTypeSelectMore]];
             break;
             
         case MenuTypeInvitation:
         case MenuTypeCall:
         case MenuTypeClear:
-            [self.actionsArray addObject:[[UIMenuItemAction alloc]initWithTitle:TwinmeLocalizedString(@"conversation_view_controller_menu_item_view_info_title", nil) image:[UIImage imageNamed:@"InfoItem"] actionType:ActionTypeInfo]];
-            [self.actionsArray addObject:[[UIMenuItemAction alloc]initWithTitle:TwinmeLocalizedString(@"conversation_view_controller_menu_item_view_delete_title", nil) image:[UIImage imageNamed:@"ToolbarTrash"] actionType:ActionTypeDelete]];
+            [self.actionsArray addObject:[[UIMenuItemAction alloc]initWithTitle:TwinmeLocalizedString(@"conversation_view_menu_item_view_info_title", nil) image:[UIImage imageNamed:@"InfoItem"] actionType:ActionTypeInfo]];
+            [self.actionsArray addObject:[[UIMenuItemAction alloc]initWithTitle:TwinmeLocalizedString(@"conversation_view_menu_item_view_delete_title", nil) image:[UIImage imageNamed:@"ToolbarTrash"] actionType:ActionTypeDelete]];
             [self.actionsArray addObject:[[UIMenuItemAction alloc]initWithTitle:TwinmeLocalizedString(@"application_select_more", nil) image:[UIImage imageNamed:@"SelectMoreItem"] actionType:ActionTypeSelectMore]];
             break;
             

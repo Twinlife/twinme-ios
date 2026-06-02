@@ -81,7 +81,7 @@ static const int ddLogLevel = DDLogLevelWarning;
 
     switch (errorCode) {
         case TLBaseServiceErrorCodeFeatureNotSupportedByPeer:
-            self.errorMessage = TwinmeLocalizedString(@"conversation_view_controller_feature_not_supported_by_peer", nil);
+            self.errorMessage = TwinmeLocalizedString(@"conversation_view_feature_not_supported_by_peer", nil);
             break;
             
         case TLBaseServiceErrorCodeWrongLibraryConfiguration:
@@ -91,7 +91,7 @@ static const int ddLogLevel = DDLogLevelWarning;
         case TLBaseServiceErrorCodeDatabaseError:
             if (databaseError) {
                 self.customMessage = YES;
-                self.errorMessage = [NSString stringWithFormat:@"%@\n\n%@", [NSString stringWithFormat:TwinmeLocalizedString(@"fatal_error_view_controller_error_code_message", nil), errorCode], databaseError.description];
+                self.errorMessage = [NSString stringWithFormat:@"%@\n\n%@", [NSString stringWithFormat:TwinmeLocalizedString(@"fatal_error_view_error_code_message", nil), errorCode], databaseError.description];
             } else {
                 self.errorMessage = TwinmeLocalizedString(@"application_database_error", nil);
             }
@@ -123,7 +123,7 @@ static const int ddLogLevel = DDLogLevelWarning;
         case TLBaseServiceErrorCodeServerError:
         default:
             self.customMessage = YES;
-            self.errorMessage = [NSString stringWithFormat:TwinmeLocalizedString(@"fatal_error_view_controller_error_code_message", nil), errorCode];
+            self.errorMessage = [NSString stringWithFormat:TwinmeLocalizedString(@"fatal_error_view_error_code_message", nil), errorCode];
             break;
     }
 }
@@ -154,7 +154,7 @@ static const int ddLogLevel = DDLogLevelWarning;
     if (self.customMessage) {
         self.messageLabel.text = self.errorMessage;
     } else {
-        self.messageLabel.text = [NSString stringWithFormat:TwinmeLocalizedString(@"fatal_error_view_controller_error_message %@", nil), self.errorMessage];
+        self.messageLabel.text = [NSString stringWithFormat:TwinmeLocalizedString(@"fatal_error_view_error_message", nil), self.errorMessage];
     }
 }
 

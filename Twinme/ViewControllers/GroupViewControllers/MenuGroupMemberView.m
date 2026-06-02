@@ -13,6 +13,8 @@
 #import "MenuGroupMemberView.h"
 
 #import <TwinmeCommon/Design.h>
+#import <TwinmeCommon/UIViewController+Utils.h>
+
 #import "UIContact.h"
 
 #if 0
@@ -149,15 +151,20 @@ static const int ddLogLevel = DDLogLevelWarning;
     
     self.inviteLabel.textColor = Design.FONT_COLOR_DEFAULT;
     self.inviteLabel.font = Design.FONT_MEDIUM34;
-    self.inviteLabel.text = TwinmeLocalizedString(@"group_member_view_controller_invite_personnal_relation", nil);
+    self.inviteLabel.text = TwinmeLocalizedString(@"group_member_view_invite_personnal_relation", nil);
     
     self.separatorRemoveViewHeightConstraint.constant = Design.SEPARATOR_HEIGHT;
     self.separatorRemoveView.backgroundColor = Design.SEPARATOR_COLOR_GREY;
     
     self.removeViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     
-    UIWindow *window = UIApplication.sharedApplication.keyWindow;
-    CGFloat safeAreaInset = window.safeAreaInsets.bottom;
+    CGFloat safeAreaInset;
+    UIWindow *window = [UIViewController currentWindow];
+    if (window) {
+        safeAreaInset = window.safeAreaInsets.bottom;
+    } else {
+        safeAreaInset = self.safeAreaInsets.bottom;
+    }
     
     self.removeViewBottomConstraint.constant = safeAreaInset;
     

@@ -493,6 +493,7 @@
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="EditAvatar" translatesAutoresizingMaskIntoConstraints="NO" id="A25-LN-XQs">
                                 <rect key="frame" x="300" y="388" width="150" height="140"/>
                                 <constraints>
+                                    <constraint firstAttribute="width" secondItem="A25-LN-XQs" secondAttribute="height" multiplier="15:14" id="1Ma-oV-x0l"/>
                                     <constraint firstAttribute="height" constant="140" id="Hgw-HK-vDO"/>
                                 </constraints>
                             </imageView>
@@ -690,7 +691,6 @@
                         <viewLayoutGuide key="safeArea" id="94o-lz-2Lf"/>
                         <constraints>
                             <constraint firstItem="FZ4-26-b2S" firstAttribute="leading" secondItem="94o-lz-2Lf" secondAttribute="leading" constant="34" id="0ja-Ei-FFD"/>
-                            <constraint firstItem="A25-LN-XQs" firstAttribute="width" secondItem="A25-LN-XQs" secondAttribute="height" multiplier="15:14" id="1Ma-oV-x0l"/>
                             <constraint firstItem="A25-LN-XQs" firstAttribute="centerY" secondItem="0fR-Ye-gyG" secondAttribute="centerY" id="7VH-Bq-FaN"/>
                             <constraint firstItem="FZ4-26-b2S" firstAttribute="top" secondItem="94o-lz-2Lf" secondAttribute="top" constant="20" id="AKZ-NK-3zS"/>
                             <constraint firstItem="94o-lz-2Lf" firstAttribute="trailing" secondItem="EK2-c2-yR1" secondAttribute="trailing" id="Djg-nY-FDv"/>
@@ -1166,12 +1166,17 @@
                                                     <constraint firstAttribute="height" constant="280" id="e3N-Pg-f8T"/>
                                                 </constraints>
                                             </imageView>
+                                            <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="Tkc-eT-rwx">
+                                                <rect key="frame" x="140" y="140" width="20" height="20"/>
+                                            </activityIndicatorView>
                                         </subviews>
                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                         <constraints>
                                             <constraint firstItem="6fC-Tx-kbk" firstAttribute="centerX" secondItem="ZMb-9q-Jgg" secondAttribute="centerX" id="6F1-1H-4ox"/>
                                             <constraint firstAttribute="height" constant="300" id="6jJ-hU-L8U"/>
                                             <constraint firstItem="6fC-Tx-kbk" firstAttribute="centerY" secondItem="ZMb-9q-Jgg" secondAttribute="centerY" id="GQB-oG-G2H"/>
+                                            <constraint firstItem="Tkc-eT-rwx" firstAttribute="centerY" secondItem="6fC-Tx-kbk" secondAttribute="centerY" id="JZ6-iU-f6a"/>
+                                            <constraint firstItem="Tkc-eT-rwx" firstAttribute="centerX" secondItem="6fC-Tx-kbk" secondAttribute="centerX" id="TiU-ps-rBi"/>
                                             <constraint firstAttribute="width" secondItem="ZMb-9q-Jgg" secondAttribute="height" multiplier="1:1" id="x4L-QD-jvw"/>
                                         </constraints>
                                     </view>
@@ -1348,6 +1353,7 @@
                     <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
                     <size key="freeformSize" width="750" height="1334"/>
                     <connections>
+                        <outlet property="activityIndicatorView" destination="Tkc-eT-rwx" id="8QZ-Ab-6MA"/>
                         <outlet property="avatarView" destination="0hA-8m-kj0" id="Vh5-dT-7yU"/>
                         <outlet property="avatarViewHeightConstraint" destination="zFT-6i-WcS" id="BsK-gz-e41"/>
                         <outlet property="avatarViewTrailingConstraint" destination="O4F-yz-0vC" id="Yf1-br-1HE"/>
@@ -1513,12 +1519,17 @@
                                                     <constraint firstAttribute="height" constant="280" id="LXa-Iu-Frd"/>
                                                 </constraints>
                                             </imageView>
+                                            <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="Kmi-X8-FWn">
+                                                <rect key="frame" x="140" y="140" width="20" height="20"/>
+                                            </activityIndicatorView>
                                         </subviews>
                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="300" id="RFq-Ne-Fij"/>
                                             <constraint firstAttribute="width" secondItem="R6T-in-viU" secondAttribute="height" multiplier="1:1" id="Vg3-vb-3sH"/>
                                             <constraint firstItem="Yyu-iu-vZP" firstAttribute="centerY" secondItem="R6T-in-viU" secondAttribute="centerY" id="Z4k-rC-Nsf"/>
+                                            <constraint firstItem="Kmi-X8-FWn" firstAttribute="centerX" secondItem="Yyu-iu-vZP" secondAttribute="centerX" id="ZeX-bW-T4X"/>
+                                            <constraint firstItem="Kmi-X8-FWn" firstAttribute="centerY" secondItem="Yyu-iu-vZP" secondAttribute="centerY" id="csY-Ss-zdF"/>
                                             <constraint firstItem="Yyu-iu-vZP" firstAttribute="centerX" secondItem="R6T-in-viU" secondAttribute="centerX" id="kqe-NZ-FW4"/>
                                         </constraints>
                                     </view>
@@ -1755,6 +1766,7 @@
                     <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
                     <size key="freeformSize" width="750" height="1334"/>
                     <connections>
+                        <outlet property="activityIndicatorView" destination="Kmi-X8-FWn" id="Ewn-xz-hkw"/>
                         <outlet property="avatarView" destination="O1a-IF-Kyp" id="cwr-36-8bO"/>
                         <outlet property="avatarViewHeightConstraint" destination="B7C-tA-3xm" id="EBs-2M-vYa"/>
                         <outlet property="avatarViewTrailingConstraint" destination="Hu6-gQ-QY3" id="Gf1-xx-nfa"/>

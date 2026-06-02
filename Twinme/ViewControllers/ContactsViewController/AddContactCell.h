@@ -12,6 +12,6 @@
 
 @interface AddContactCell : UITableViewCell
 
-- (void)bindWithTitle:(NSString *)title subTitle:(NSString *)subTitle;
+- (void)bindWithTitle:(NSString *)title subTitle:(NSString *)subTitle  icon:(UIImage *)icon;
 
 @end

@@ -52,7 +52,7 @@ static const int ddLogLevel = DDLogLevelWarning;
     
     [super initViews];
     
-    self.confirmLabel.text = TwinmeLocalizedString(@"history_view_controller_call_again_title", nil);
+    self.confirmLabel.text = TwinmeLocalizedString(@"calls_view_call_again_title", nil);
     
     self.iconView.backgroundColor = ICON_BACKGROUND_COLOR;
     self.iconImageView.tintColor = [UIColor whiteColor];

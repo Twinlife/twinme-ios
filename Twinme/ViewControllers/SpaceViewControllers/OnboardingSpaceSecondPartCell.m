@@ -51,11 +51,11 @@
     self.onboardingTextView.textContainerInset = UIEdgeInsetsZero;
     self.onboardingTextView.textContainer.lineFragmentPadding = 0;
     
-    NSMutableString *message = [[NSMutableString alloc] initWithString:TwinmeLocalizedString(@"create_space_view_controller_onboarding_message_part_1", nil)];
+    NSMutableString *message = [[NSMutableString alloc] initWithString:TwinmeLocalizedString(@"create_space_view_onboarding_message_part_1", nil)];
     [message appendString:@"\n\n"];
-    [message appendString:TwinmeLocalizedString(@"create_space_view_controller_onboarding_message_part_2", nil)];
+    [message appendString:TwinmeLocalizedString(@"create_space_view_onboarding_message_part_2", nil)];
     [message appendString:@"\n\n"];
-    [message appendString:TwinmeLocalizedString(@"create_space_view_controller_onboarding_message_part_3", nil)];
+    [message appendString:TwinmeLocalizedString(@"create_space_view_onboarding_message_part_3", nil)];
     
     self.onboardingTextView.text = message;
 }

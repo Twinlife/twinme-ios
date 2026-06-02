@@ -245,7 +245,7 @@ static NSString *EXPORT_VOICE_SHORT_NAME = @"voice";
         settingsSectionHeaderCell = [[SettingsSectionHeaderCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:HEADER_SETTINGS_CELL_IDENTIFIER];
     }
     
-    [settingsSectionHeaderCell bindWithTitle:TwinmeLocalizedString(@"export_view_controller_content_title", nil) backgroundColor:Design.LIGHT_GREY_BACKGROUND_COLOR hideSeparator:YES uppercaseString:YES];
+    [settingsSectionHeaderCell bindWithTitle:TwinmeLocalizedString(@"export_view_content_title", nil) backgroundColor:Design.LIGHT_GREY_BACKGROUND_COLOR hideSeparator:YES uppercaseString:YES];
     
     return settingsSectionHeaderCell;
 }
@@ -267,7 +267,7 @@ static NSString *EXPORT_VOICE_SHORT_NAME = @"voice";
         
         NSString *text = @"";
         if (indexPath.section == CONTENT_VIEW_SECTION && indexPath.row == CONTENT_INFO_ROW) {
-            text = TwinmeLocalizedString(@"export_view_controller_select_content", nil);
+            text = TwinmeLocalizedString(@"export_view_select_content", nil);
         } else {
             text = [self getExportInformation];
         }
@@ -290,7 +290,7 @@ static NSString *EXPORT_VOICE_SHORT_NAME = @"voice";
             cell = [[ExportProgressCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:EXPORT_PROGRESS_CELL_IDENTIFIER];
         }
         
-        [cell bindWithProgress:0 message:TwinmeLocalizedString(@"export_view_controller_do_not_leave_screen", nil)];
+        [cell bindWithProgress:0 message:TwinmeLocalizedString(@"export_view_do_not_leave_screen", nil)];
         
         return cell;
     } else {
@@ -386,7 +386,7 @@ static NSString *EXPORT_VOICE_SHORT_NAME = @"voice";
     
     self.view.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
     
-    [self setNavigationTitle:TwinmeLocalizedString(@"export_view_controller_title", nil)];
+    [self setNavigationTitle:TwinmeLocalizedString(@"export_view_title", nil)];
     
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     [self.tableView registerNib:[UINib nibWithNibName:@"ExportActionCell" bundle:nil] forCellReuseIdentifier:EXPORT_ACTION_CELL_IDENTIFIER];
@@ -469,7 +469,7 @@ static NSString *EXPORT_VOICE_SHORT_NAME = @"voice";
     DDLogVerbose(@"%@ getExportInformation", LOG_TAG);
     
     if (!self.isContentToExport) {
-        return TwinmeLocalizedString(@"export_view_controller_no_content_to_export", nil);
+        return TwinmeLocalizedString(@"export_view_no_content_to_export", nil);
     }
     
     BOOL isOneContentToExportIsChecked = NO;
@@ -492,23 +492,23 @@ static NSString *EXPORT_VOICE_SHORT_NAME = @"voice";
     NSMutableString *exportInfo = [[NSMutableString alloc] init];
 
     if (self.exportAllConversations) {
-        [exportInfo appendString:TwinmeLocalizedString(@"export_view_controller_all_conversations_zip_file", nil)];
+        [exportInfo appendString:TwinmeLocalizedString(@"export_view_all_conversations_zip_file", nil)];
     } else {
-        [exportInfo appendString:TwinmeLocalizedString(@"export_view_controller_one_conversation_zip_file", nil)];
+        [exportInfo appendString:TwinmeLocalizedString(@"export_view_one_conversation_zip_file", nil)];
     }
     
     if (isOneContentToExportIsChecked) {
         [exportInfo appendString:@"\n"];
-        [exportInfo appendString:TwinmeLocalizedString(@"export_view_controller_content_to_export", nil)];
+        [exportInfo appendString:TwinmeLocalizedString(@"export_view_content_to_export", nil)];
         [exportInfo appendString:@" : "];
         if (totalCountMessage > 0) {
-            [exportInfo appendString:[NSString stringWithFormat:@"%lld %@%@", totalCountMessage, totalCountMessage > 1 ? TwinmeLocalizedString(@"settings_view_controller_chat_category_title", nil).lowercaseString : TwinmeLocalizedString(@"feedback_view_controller_message", nil).lowercaseString, totalCountFile > 0 ? @" - " : @""]];
+            [exportInfo appendString:[NSString stringWithFormat:@"%lld %@%@", totalCountMessage, totalCountMessage > 1 ? TwinmeLocalizedString(@"settings_view_chat_category_title", nil).lowercaseString : TwinmeLocalizedString(@"feedback_view_message", nil).lowercaseString, totalCountFile > 0 ? @" - " : @""]];
         }
         
         if (totalCountFile > 0) {
             NSByteCountFormatter *byteCountFormatter = [[NSByteCountFormatter alloc] init];
             byteCountFormatter.countStyle = NSByteCountFormatterCountStyleFile;
-            [exportInfo appendString:[NSString stringWithFormat:@"%lld %@ - %@", totalCountFile, totalCountFile > 1 ? TwinmeLocalizedString(@"export_view_controller_files", nil).lowercaseString : TwinmeLocalizedString(@"export_view_controller_file", nil).lowercaseString, [byteCountFormatter stringFromByteCount:totalSize]]];
+            [exportInfo appendString:[NSString stringWithFormat:@"%lld %@ - %@", totalCountFile, totalCountFile > 1 ? TwinmeLocalizedString(@"export_view_files", nil).lowercaseString : TwinmeLocalizedString(@"export_view_file", nil).lowercaseString, [byteCountFormatter stringFromByteCount:totalSize]]];
         }
     }
     

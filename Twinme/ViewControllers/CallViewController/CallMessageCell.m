@@ -17,6 +17,8 @@
 #import "UIView+Toast.h"
 #import "CallConversationView.h"
 
+#import <TwinmeCommon/UIViewController+Utils.h>
+
 #if 0
 static const int ddLogLevel = DDLogLevelVerbose;
 #else
@@ -152,7 +154,11 @@ static const int MAX_EMOJI = 5;
     
     if (longPressGesture.state == UIGestureRecognizerStateBegan) {
         [[UIPasteboard generalPasteboard] setString:self.contentLabel.text];
-        [[UIApplication sharedApplication].keyWindow makeToast:TwinmeLocalizedString(@"conversation_view_controller_menu_item_view_copy_message", nil)];
+        
+        UIWindow *window = [UIViewController currentWindow];
+        if (window) {
+            [window makeToast:TwinmeLocalizedString(@"conversation_view_menu_item_view_copy_message", nil)];
+        }
     }
 }
 

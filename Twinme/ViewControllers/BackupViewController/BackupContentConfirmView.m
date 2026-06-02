@@ -92,17 +92,17 @@ static const CGFloat DESIGN_INFO_HORIZONTAL_MARGIN = 34;
     DDLogVerbose(@"%@ initWithRestoreReport: %@", LOG_TAG, restoreReport);
     
     if (![restoreReport isRestoreUpToDate]) {
-        NSString *diffMessage = [NSString stringWithFormat:@"%@\n\n%@", TwinmeLocalizedStringFromTable(@"backup_view_controller_verify_not_up_to_date", @"LocalizableBackup", nil), TwinmeLocalizedStringFromTable(@"backup_view_controller_content_diff_message", @"LocalizableBackup", nil)];
+        NSString *diffMessage = [NSString stringWithFormat:@"%@\n\n%@", TwinmeLocalizedStringFromTable(@"backup_view_verify_not_up_to_date", @"LocalizableBackup", nil), TwinmeLocalizedStringFromTable(@"backup_view_content_diff_message", @"LocalizableBackup", nil)];
         if (isLastBackup) {
             self.messageLabel.text =  diffMessage ;
         } else {
-            self.messageLabel.text = [NSString stringWithFormat:@"%@\n%@", TwinmeLocalizedStringFromTable(@"restore_view_controller_more_recent_backup", @"LocalizableBackup", nil), diffMessage];
+            self.messageLabel.text = [NSString stringWithFormat:@"%@\n%@", TwinmeLocalizedStringFromTable(@"restore_view_more_recent_backup", @"LocalizableBackup", nil), diffMessage];
         }
     } else {
         if (isLastBackup) {
-            self.messageLabel.text = TwinmeLocalizedStringFromTable(@"restore_view_controller_confirm", @"LocalizableBackup", nil);
+            self.messageLabel.text = TwinmeLocalizedStringFromTable(@"restore_view_confirm", @"LocalizableBackup", nil);
         } else {
-            self.messageLabel.text = [NSString stringWithFormat:@"%@\n\n%@", TwinmeLocalizedStringFromTable(@"restore_view_controller_more_recent_backup", @"LocalizableBackup", nil), TwinmeLocalizedStringFromTable(@"restore_view_controller_confirm", @"LocalizableBackup", nil)];
+            self.messageLabel.text = [NSString stringWithFormat:@"%@\n\n%@", TwinmeLocalizedStringFromTable(@"restore_view_more_recent_backup", @"LocalizableBackup", nil), TwinmeLocalizedStringFromTable(@"restore_view_confirm", @"LocalizableBackup", nil)];
         }
     }
     
@@ -219,8 +219,8 @@ static const CGFloat DESIGN_INFO_HORIZONTAL_MARGIN = 34;
     self.contentTableView.scrollEnabled = YES;
     self.contentTableView.rowHeight = roundf(DESIGN_CONTENT_HEIGHT * Design.HEIGHT_RATIO);
     
-    self.titleLabel.text = TwinmeLocalizedStringFromTable(@"backup_view_controller_content", @"LocalizableBackup", nil);
-    self.messageLabel.text = TwinmeLocalizedStringFromTable(@"backup_view_controller_content_info", @"LocalizableBackup", nil);
+    self.titleLabel.text = TwinmeLocalizedStringFromTable(@"backup_view_content", @"LocalizableBackup", nil);
+    self.messageLabel.text = TwinmeLocalizedStringFromTable(@"backup_view_content_info", @"LocalizableBackup", nil);
     self.confirmLabel.text = TwinmeLocalizedString(@"application_confirm", nil);
     
     self.iconView.backgroundColor = Design.DELETE_COLOR_RED;
@@ -235,16 +235,18 @@ static const CGFloat DESIGN_INFO_HORIZONTAL_MARGIN = 34;
     [self.items removeAllObjects];
     
 #ifdef TWINME
-    NSArray<NSUUID *> *schemaIds = @[TLContact.SCHEMA_ID];
+    NSArray<NSUUID *> *schemaIds = @[TLContact.SCHEMA_ID, TLGroup.SCHEMA_ID];
     NSDictionary<NSUUID *, NSNumber *> *schemaIdToContentType = @{
         TLContact.SCHEMA_ID : @(BackupContentTypeContacts),
+        TLGroup.SCHEMA_ID : @(BackupContentTypeGroups)
     };
 #else
-    NSArray<NSUUID *> *schemaIds = @[TLSpace.SCHEMA_ID, TLContact.SCHEMA_ID, TLCallReceiver.SCHEMA_ID];
+    NSArray<NSUUID *> *schemaIds = @[TLSpace.SCHEMA_ID, TLContact.SCHEMA_ID, TLGroup.SCHEMA_ID, TLCallReceiver.SCHEMA_ID];
     NSDictionary<NSUUID *, NSNumber *> *schemaIdToContentType = @{
         
         TLSpace.SCHEMA_ID : @(BackupContentTypeSpaces),
         TLContact.SCHEMA_ID : @(BackupContentTypeContacts),
+        TLGroup.SCHEMA_ID : @(BackupContentTypeGroups),
         TLCallReceiver.SCHEMA_ID : @(BackupContentTypeClickToCall)
     };
 #endif
@@ -255,7 +257,9 @@ static const CGFloat DESIGN_INFO_HORIZONTAL_MARGIN = 34;
         NSNumber *count = stats[schemaId];
         
         if (type == BackupContentTypeContacts) {
-            [self.items addObject:[[UIRestoreItem alloc] initWithType:UIRestoreItemTypeContent text:TwinmeLocalizedString(@"contacts_view_controller_title", nil) icon:[UIImage imageNamed:@"ContactsIcon"] value:count.intValue color:nil]];
+            [self.items addObject:[[UIRestoreItem alloc] initWithType:UIRestoreItemTypeContent text:TwinmeLocalizedString(@"contacts_view_title", nil) icon:[UIImage imageNamed:@"ContactsIcon"] value:count.intValue color:nil]];
+        } else if (type == BackupContentTypeGroups) {
+            [self.items addObject:[[UIRestoreItem alloc] initWithType:UIRestoreItemTypeContent text:TwinmeLocalizedString(@"share_view_group_list", nil) icon:[UIImage imageNamed:@"GroupsIcon"] value:count.intValue color:nil]];
         }
     }
     
@@ -277,34 +281,57 @@ static const CGFloat DESIGN_INFO_HORIZONTAL_MARGIN = 34;
         if (![restoreReport.profiles isStatsUpToDate]) {
             [self.items addObject:[[UIRestoreItem alloc] initWithType:UIRestoreItemTypeSection text:TwinmeLocalizedString(@"application_profile", nil) icon:nil value:-1 color:nil]];
             estimateSize += contentCellHeight;
-            [self.items addObject:[[UIRestoreItem alloc] initWithType:UIRestoreItemTypeContent text:TwinmeLocalizedStringFromTable(@"restore_view_controller_content_profile_reset", @"LocalizableBackup", nil) icon:[UIImage imageNamed:@"GenerateCode"] value:-1 color:Design.SWITCH_BORDER_COLOR]];
+            [self.items addObject:[[UIRestoreItem alloc] initWithType:UIRestoreItemTypeContent text:TwinmeLocalizedStringFromTable(@"restore_view_content_profile_reset", @"LocalizableBackup", nil) icon:[UIImage imageNamed:@"GenerateCode"] value:-1 color:Design.SWITCH_BORDER_COLOR]];
             estimateSize += contentCellHeight;
-            [self.items addObject:[[UIRestoreItem alloc] initWithType:UIRestoreItemTypeInfo text:TwinmeLocalizedStringFromTable(@"restore_view_controller_content_profile_reset_message", @"LocalizableBackup", nil) icon:nil value:-1 color:nil]];
-            estimateSize += [self estimateInfoSize:TwinmeLocalizedStringFromTable(@"restore_view_controller_content_profile_reset_message", @"LocalizableBackup", nil)];
+            [self.items addObject:[[UIRestoreItem alloc] initWithType:UIRestoreItemTypeInfo text:TwinmeLocalizedStringFromTable(@"restore_view_content_profile_reset_message", @"LocalizableBackup", nil) icon:nil value:-1 color:nil]];
+            estimateSize += [self estimateInfoSize:TwinmeLocalizedStringFromTable(@"restore_view_content_profile_reset_message", @"LocalizableBackup", nil)];
         }
         
         if (![restoreReport.contacts isStatsUpToDate]) {
-            [self.items addObject:[[UIRestoreItem alloc] initWithType:UIRestoreItemTypeSection text:TwinmeLocalizedString(@"contacts_view_controller_title", nil) icon:nil value:-1 color:nil]];
+            [self.items addObject:[[UIRestoreItem alloc] initWithType:UIRestoreItemTypeSection text:TwinmeLocalizedString(@"contacts_view_title", nil) icon:nil value:-1 color:nil]];
             estimateSize += contentCellHeight;
             if (restoreReport.contacts.added != 0) {
-                [self.items addObject:[[UIRestoreItem alloc] initWithType:UIRestoreItemTypeContent text:TwinmeLocalizedStringFromTable(@"backup_view_controller_content_diff_added", @"LocalizableBackup", nil) icon:[UIImage imageNamed:@"ContactsIcon"] value:restoreReport.contacts.added color:Design.SWITCH_BORDER_COLOR]];
+                [self.items addObject:[[UIRestoreItem alloc] initWithType:UIRestoreItemTypeContent text:TwinmeLocalizedStringFromTable(@"backup_view_content_diff_added", @"LocalizableBackup", nil) icon:[UIImage imageNamed:@"ContactsIcon"] value:restoreReport.contacts.added color:Design.SWITCH_BORDER_COLOR]];
                 estimateSize += contentCellHeight;
             }
             
             if (restoreReport.contacts.modified != 0) {
-                [self.items addObject:[[UIRestoreItem alloc] initWithType:UIRestoreItemTypeContent text:TwinmeLocalizedStringFromTable(@"backup_view_controller_content_diff_updated", @"LocalizableBackup", nil) icon:[UIImage imageNamed:@"ActionEdit"] value:restoreReport.contacts.modified color:Design.SWITCH_BORDER_COLOR]];
+                [self.items addObject:[[UIRestoreItem alloc] initWithType:UIRestoreItemTypeContent text:TwinmeLocalizedStringFromTable(@"backup_view_content_diff_updated", @"LocalizableBackup", nil) icon:[UIImage imageNamed:@"ActionEdit"] value:restoreReport.contacts.modified color:Design.SWITCH_BORDER_COLOR]];
                 estimateSize += contentCellHeight;
             }
             
             if (restoreReport.contacts.deleted != 0) {
-                [self.items addObject:[[UIRestoreItem alloc] initWithType:UIRestoreItemTypeContent text:TwinmeLocalizedStringFromTable(@"backup_view_controller_content_diff_deleted", @"LocalizableBackup", nil) icon:[UIImage imageNamed:@"DeleteItem"] value:restoreReport.contacts.deleted color:nil]];
+                [self.items addObject:[[UIRestoreItem alloc] initWithType:UIRestoreItemTypeContent text:TwinmeLocalizedStringFromTable(@"backup_view_content_diff_deleted", @"LocalizableBackup", nil) icon:[UIImage imageNamed:@"DeleteItem"] value:restoreReport.contacts.deleted color:nil]];
                 estimateSize += contentCellHeight;
-                [self.items addObject:[[UIRestoreItem alloc] initWithType:UIRestoreItemTypeInfo text:TwinmeLocalizedStringFromTable(@"restore_view_controller_content_contact_deleted_message", @"LocalizableBackup", nil) icon:nil value:-1 color:nil]];
-                estimateSize += [self estimateInfoSize:TwinmeLocalizedStringFromTable(@"restore_view_controller_content_contact_deleted_message", @"LocalizableBackup", nil)];
+                [self.items addObject:[[UIRestoreItem alloc] initWithType:UIRestoreItemTypeInfo text:TwinmeLocalizedStringFromTable(@"restore_view_content_contact_deleted_message", @"LocalizableBackup", nil) icon:nil value:-1 color:nil]];
+                estimateSize += [self estimateInfoSize:TwinmeLocalizedStringFromTable(@"restore_view_content_contact_deleted_message", @"LocalizableBackup", nil)];
+            }
+        }
+        
+        if (![restoreReport.groups isStatsUpToDate]) {
+            [self.items addObject:[[UIRestoreItem alloc] initWithType:UIRestoreItemTypeSection text:TwinmeLocalizedString(@"share_view_group_list", nil) icon:nil value:-1 color:nil]];
+            estimateSize += contentCellHeight;
+            if (restoreReport.groups.added != 0) {
+                [self.items addObject:[[UIRestoreItem alloc] initWithType:UIRestoreItemTypeContent text:TwinmeLocalizedStringFromTable(@"backup_view_content_diff_added", @"LocalizableBackup", nil) icon:[UIImage imageNamed:@"GroupsIcon"] value:restoreReport.groups.added color:Design.SWITCH_BORDER_COLOR]];
+                estimateSize += contentCellHeight;
+            }
+            
+            if (restoreReport.groups.modified != 0) {
+                [self.items addObject:[[UIRestoreItem alloc] initWithType:UIRestoreItemTypeContent text:TwinmeLocalizedStringFromTable(@"backup_view_content_diff_updated", @"LocalizableBackup", nil) icon:[UIImage imageNamed:@"ActionEdit"] value:restoreReport.groups.modified color:Design.SWITCH_BORDER_COLOR]];
+                estimateSize += contentCellHeight;
+            }
+            
+            if (restoreReport.groups.deleted != 0) {
+                [self.items addObject:[[UIRestoreItem alloc] initWithType:UIRestoreItemTypeContent text:TwinmeLocalizedStringFromTable(@"backup_view_content_diff_deleted", @"LocalizableBackup", nil) icon:[UIImage imageNamed:@"DeleteItem"] value:restoreReport.groups.deleted color:nil]];
+                estimateSize += contentCellHeight;
+                [self.items addObject:[[UIRestoreItem alloc] initWithType:UIRestoreItemTypeInfo text:TwinmeLocalizedStringFromTable(@"restore_view_content_contact_deleted_message", @"LocalizableBackup", nil) icon:nil value:-1 color:nil]];
+                estimateSize += [self estimateInfoSize:TwinmeLocalizedStringFromTable(@"restore_view_content_contact_deleted_message", @"LocalizableBackup", nil)];
             }
         }
     } else {
-        [self.items addObject:[[UIRestoreItem alloc] initWithType:UIRestoreItemTypeContent text:TwinmeLocalizedString(@"contacts_view_controller_title", nil) icon:[UIImage imageNamed:@"ContactsIcon"] value:restoreReport.contacts.upToDate color:nil]];
+        [self.items addObject:[[UIRestoreItem alloc] initWithType:UIRestoreItemTypeContent text:TwinmeLocalizedString(@"contacts_view_title", nil) icon:[UIImage imageNamed:@"ContactsIcon"] value:restoreReport.contacts.upToDate color:nil]];
+        estimateSize += contentCellHeight;
+        [self.items addObject:[[UIRestoreItem alloc] initWithType:UIRestoreItemTypeContent text:TwinmeLocalizedString(@"share_view_group_list", nil) icon:[UIImage imageNamed:@"GroupsIcon"] value:restoreReport.groups.upToDate color:nil]];
         estimateSize += contentCellHeight;
     }
         

@@ -8,8 +8,8 @@
 
 #import <CocoaLumberjack.h>
 
-#import <MobileCoreServices/UTCoreTypes.h>
-#import <MobileCoreServices/UTType.h>
+#import <UniformTypeIdentifiers/UTCoreTypes.h>
+#import <UniformTypeIdentifiers/UTType.h>
 
 #import <Twinlife/TLAccountService.h>
 #import <Utils/NSString+Utils.h>
@@ -25,6 +25,7 @@
 
 #import "SettingsSectionHeaderCell.h"
 #import "SettingsIconCell.h"
+#import "SettingsInformationCell.h"
 
 #import "AlertMessageView.h"
 #import "DefaultConfirmView.h"
@@ -41,6 +42,9 @@ static const int ddLogLevel = DDLogLevelWarning;
 
 static NSString *HEADER_SETTINGS_CELL_IDENTIFIER = @"HeaderSettingsCellIdentifier";
 static NSString *SETTINGS_ICON_CELL_IDENTIFIER = @"SettingsIconCellIdentifier";
+static NSString *SETTINGS_INFORMATION_CELL_IDENTIFIER = @"SettingsInformationCellIdentifier";
+
+static int BACKUP_ALERT_TAG = 10;
 
 //
 // Interface: AccountViewController ()
@@ -96,7 +100,10 @@ typedef enum {
     
     [super viewWillAppear:animated];
     
-    if (self.startOnboardingOnViewAppear && [self.twinmeApplication startOnboarding:OnboardingTypeBackupBeta]) {
+    if ([self.twinmeApplication showBackupWarning]) {
+        [self.twinmeApplication setLastAlertBackup];
+        [self showBackupWarning];
+    } else if (self.startOnboardingOnViewAppear && [self.twinmeApplication startOnboarding:OnboardingTypeBackupBeta]) {
         self.startOnboardingOnViewAppear = NO;
         [self showBackupBetaInfo:YES];
     }
@@ -121,9 +128,7 @@ typedef enum {
     
     NSNumber *value = nil;
     NSURL *url = [urls firstObject];
-    [url getResourceValue:&value forKey:NSURLIsPackageKey error:nil];
-    
-    NSString *fileExtension = [url pathExtension];
+    [url getResourceValue:&value forKey:NSURLIsPackageKey error:nil];    
     [self unlockBackup:url];
 }
 
@@ -189,16 +194,16 @@ typedef enum {
     NSString *badgeTitle = nil;
     switch (section) {
         case SECTION_TRANSFER:
-            sectionName = TwinmeLocalizedString(@"account_view_controller_transfer_between_devices", nil);
+            sectionName = TwinmeLocalizedString(@"account_view_transfer_between_devices", nil);
             break;
             
         case SECTION_BACKUP:
-            sectionName = TwinmeLocalizedStringFromTable(@"account_view_controller_backup_restore", @"LocalizableBackup", nil);
+            sectionName = TwinmeLocalizedStringFromTable(@"account_view_backup_restore", @"LocalizableBackup", nil);
             badgeTitle = TwinmeLocalizedString(@"application_beta", nil);
             break;
             
         case SECTION_CONVERSATIONS:
-            sectionName = TwinmeLocalizedString(@"account_view_controller_conversations_content_title", nil);
+            sectionName = TwinmeLocalizedString(@"account_view_conversations_content_title", nil);
             hideSeparator = YES;
             break;
             
@@ -224,7 +229,11 @@ typedef enum {
             break;
             
         case SECTION_BACKUP:
-            numberOfRowsInSection = 4;
+            if ([self.twinmeApplication lastBackupDate] > 0) {
+                numberOfRowsInSection = 5;
+            } else {
+                numberOfRowsInSection = 4;
+            }
             break;
             
         case SECTION_DELETE:
@@ -241,56 +250,68 @@ typedef enum {
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     DDLogVerbose(@"%@ tableView: %@ cellForRowAtIndexPath: %@", LOG_TAG, tableView, indexPath);
     
-    SettingsIconCell *cell = [tableView dequeueReusableCellWithIdentifier:SETTINGS_ICON_CELL_IDENTIFIER];
-    if (!cell) {
-        cell = [[SettingsIconCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:SETTINGS_ICON_CELL_IDENTIFIER];
-    }
-            
-    NSString *title;
-    UIImage *icon;
-    UIColor *textColor = Design.FONT_COLOR_DEFAULT;
-    UIColor *iconTintColor = Design.UNSELECTED_TAB_COLOR;
-    
-    if (indexPath.section == SECTION_TRANSFER) {
-        if (indexPath.row == 0) {
-            title = TwinmeLocalizedString(@"account_view_controller_transfer_from_device", nil);
-            icon = [UIImage imageNamed:@"MigrationMyDeviceIcon"];
-        } else {
-            title = TwinmeLocalizedString(@"account_view_controller_transfer_from_another_device", nil);
-            icon = [UIImage imageNamed:@"MigrationAnotherDeviceIcon"];
+    if (indexPath.section == SECTION_BACKUP && indexPath.row == 4) {
+        SettingsInformationCell *cell = [tableView dequeueReusableCellWithIdentifier:SETTINGS_INFORMATION_CELL_IDENTIFIER];
+        if (!cell) {
+            cell = [[SettingsInformationCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:SETTINGS_INFORMATION_CELL_IDENTIFIER];
         }
-    } else if (indexPath.section == SECTION_BACKUP) {
-        if (indexPath.row == 0) {
-            title = TwinmeLocalizedStringFromTable(@"account_view_controller_backup", @"LocalizableBackup", nil);
-            icon = [UIImage imageNamed:@"BackupIcon"];
-        } else if (indexPath.row == 1) {
-            title = TwinmeLocalizedStringFromTable(@"account_view_controller_restore", @"LocalizableBackup", nil);
-            icon = [UIImage imageNamed:@"RestoreIcon"];
-        } else if (indexPath.row == 2) {
-            title = TwinmeLocalizedStringFromTable(@"account_view_controller_backup_verify", @"LocalizableBackup", nil);
-            icon = [UIImage imageNamed:@"BackupVerifyIcon"];
-        } else {
-            title = TwinmeLocalizedStringFromTable(@"account_view_controller_backup_list", @"LocalizableBackup", nil);
-            icon = [UIImage imageNamed:@"BackupListIcon"];
-        }
-    } else if (indexPath.section == SECTION_CONVERSATIONS) {
-        if (indexPath.row == 0) {
-            title = TwinmeLocalizedString(@"account_view_controller_export_content", nil);
-            icon = [UIImage imageNamed:@"ShareIcon"];
-        } else {
-            title = TwinmeLocalizedString(@"show_contact_view_controller_cleanup", nil);
-            icon = [UIImage imageNamed:@"CleanUpIcon"];
-        }
+        
+        NSString *text = [NSString stringWithFormat:TwinmeLocalizedStringFromTable(@"backup_view_last_backup", @"LocalizableBackup", nil), [NSString formatBackupTimeInterval:[self.twinmeApplication lastBackupDate] isLastBackup:YES]];
+        [cell bindWithText:text];
+        
+        return cell;
     } else {
-        title = TwinmeLocalizedString(@"delete_account_view_controller_delete", nil);
-        icon = [UIImage imageNamed:@"DeleteIcon"];
-        textColor = Design.DELETE_COLOR_RED;
-        iconTintColor = Design.DELETE_COLOR_RED;
+        SettingsIconCell *cell = [tableView dequeueReusableCellWithIdentifier:SETTINGS_ICON_CELL_IDENTIFIER];
+        if (!cell) {
+            cell = [[SettingsIconCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:SETTINGS_ICON_CELL_IDENTIFIER];
+        }
+                
+        NSString *title;
+        UIImage *icon;
+        UIColor *textColor = Design.FONT_COLOR_DEFAULT;
+        UIColor *iconTintColor = Design.UNSELECTED_TAB_COLOR;
+        
+        if (indexPath.section == SECTION_TRANSFER) {
+            if (indexPath.row == 0) {
+                title = TwinmeLocalizedString(@"account_view_transfer_from_device", nil);
+                icon = [UIImage imageNamed:@"MigrationMyDeviceIcon"];
+            } else {
+                title = TwinmeLocalizedString(@"account_view_transfer_from_another_device", nil);
+                icon = [UIImage imageNamed:@"MigrationAnotherDeviceIcon"];
+            }
+        } else if (indexPath.section == SECTION_BACKUP ) {
+            if (indexPath.row == 0) {
+                title = TwinmeLocalizedStringFromTable(@"account_view_backup", @"LocalizableBackup", nil);
+                icon = [UIImage imageNamed:@"BackupIcon"];
+            } else if (indexPath.row == 1) {
+                title = TwinmeLocalizedStringFromTable(@"account_view_restore", @"LocalizableBackup", nil);
+                icon = [UIImage imageNamed:@"RestoreIcon"];
+            } else if (indexPath.row == 2) {
+                title = TwinmeLocalizedStringFromTable(@"account_view_backup_verify", @"LocalizableBackup", nil);
+                icon = [UIImage imageNamed:@"BackupVerifyIcon"];
+            } else if (indexPath.row == 3) {
+                title = TwinmeLocalizedStringFromTable(@"account_view_backup_list", @"LocalizableBackup", nil);
+                icon = [UIImage imageNamed:@"BackupListIcon"];
+            }
+        } else if (indexPath.section == SECTION_CONVERSATIONS) {
+            if (indexPath.row == 0) {
+                title = TwinmeLocalizedString(@"account_view_export_content", nil);
+                icon = [UIImage imageNamed:@"ShareIcon"];
+            } else {
+                title = TwinmeLocalizedString(@"show_contact_view_cleanup", nil);
+                icon = [UIImage imageNamed:@"CleanUpIcon"];
+            }
+        } else {
+            title = TwinmeLocalizedString(@"deleted_account_view_delete", nil);
+            icon = [UIImage imageNamed:@"DeleteIcon"];
+            textColor = Design.DELETE_COLOR_RED;
+            iconTintColor = Design.DELETE_COLOR_RED;
+        }
+        
+        [cell bindWithTitle:title icon:icon textColor:textColor iconTintColor:iconTintColor hideSeparator:NO];
+        
+        return cell;
     }
-    
-    [cell bindWithTitle:title icon:icon textColor:textColor iconTintColor:iconTintColor hideSeparator:NO];
-    
-    return cell;
 }
 
 #pragma mark - UITableViewDelegate
@@ -306,7 +327,7 @@ typedef enum {
             [self.navigationController pushViewController:backupsViewController animated:YES];
         } else if (indexPath.row == 1) {
             [self showRestoreWarning];
-        } else {
+        } else if (indexPath.row != 4) {
             [self showOnboardingBackup:(int)indexPath.row];
         }
         
@@ -341,7 +362,9 @@ typedef enum {
     [abstractConfirmView closeConfirmView];
     
     if ([abstractConfirmView isKindOfClass:[OnboardingConfirmView class]]) {
-        if (abstractConfirmView.tag != -1) {
+        if (abstractConfirmView.tag == BACKUP_ALERT_TAG) {
+            [self startBackupViewController:0];
+        } else if (abstractConfirmView.tag != -1) {
             [self startBackupViewController:(int)abstractConfirmView.tag];
         }
     } else {
@@ -354,6 +377,10 @@ typedef enum {
     DDLogVerbose(@"%@ didTapCancel: %@", LOG_TAG, abstractConfirmView);
 
     [abstractConfirmView closeConfirmView];
+    
+    if (abstractConfirmView.tag == BACKUP_ALERT_TAG) {
+        return;
+    }
     
     if ([abstractConfirmView isKindOfClass:[OnboardingConfirmView class]]) {
         if (abstractConfirmView.tag != -1) {
@@ -387,13 +414,14 @@ typedef enum {
     
     self.view.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
     
-    [self setNavigationTitle:TwinmeLocalizedString(@"account_view_controller_title", nil)];
+    [self setNavigationTitle:TwinmeLocalizedString(@"account_view_title", nil)];
     
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     self.tableView.rowHeight = UITableViewAutomaticDimension;
     self.tableView.estimatedRowHeight = Design.SETTING_CELL_HEIGHT * Design.HEIGHT_RATIO;
     [self.tableView registerNib:[UINib nibWithNibName:@"SettingsSectionHeaderCell" bundle:nil] forCellReuseIdentifier:HEADER_SETTINGS_CELL_IDENTIFIER];
     [self.tableView registerNib:[UINib nibWithNibName:@"SettingsIconCell" bundle:nil] forCellReuseIdentifier:SETTINGS_ICON_CELL_IDENTIFIER];
+    [self.tableView registerNib:[UINib nibWithNibName:@"SettingsInformationCell" bundle:nil] forCellReuseIdentifier:SETTINGS_INFORMATION_CELL_IDENTIFIER];
     self.tableView.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
 }
 
@@ -414,17 +442,17 @@ typedef enum {
         NSString *action;
         
         if (index == 0) {
-            title = TwinmeLocalizedStringFromTable(@"account_view_controller_backup", @"LocalizableBackup", nil);
-            message = TwinmeLocalizedStringFromTable(@"backup_view_controller_onboarding", @"LocalizableBackup", nil);
-            action = TwinmeLocalizedStringFromTable(@"backup_view_controller_backup", @"LocalizableBackup", nil);
+            title = TwinmeLocalizedStringFromTable(@"account_view_backup", @"LocalizableBackup", nil);
+            message = TwinmeLocalizedStringFromTable(@"backup_view_onboarding", @"LocalizableBackup", nil);
+            action = TwinmeLocalizedStringFromTable(@"backup_view_backup", @"LocalizableBackup", nil);
         } else if (index == 1) {
-            title = TwinmeLocalizedStringFromTable(@"account_view_controller_restore", @"LocalizableBackup", nil);
-            message = [NSString stringWithFormat:@"%@\n\n%@", TwinmeLocalizedStringFromTable(@"restore_view_controller_onboarding",  @"LocalizableBackup", nil), TwinmeLocalizedStringFromTable(@"restore_view_controller_onboarding_words",  @"LocalizableBackup", nil)];
-            action = TwinmeLocalizedStringFromTable(@"restore_view_controller_restore",  @"LocalizableBackup", nil);
+            title = TwinmeLocalizedStringFromTable(@"account_view_restore", @"LocalizableBackup", nil);
+            message = [NSString stringWithFormat:@"%@\n\n%@", TwinmeLocalizedStringFromTable(@"restore_view_onboarding",  @"LocalizableBackup", nil), TwinmeLocalizedStringFromTable(@"restore_view_onboarding_words",  @"LocalizableBackup", nil)];
+            action = TwinmeLocalizedStringFromTable(@"restore_view_restore",  @"LocalizableBackup", nil);
         } else {
-            title = TwinmeLocalizedStringFromTable(@"account_view_controller_backup_verify",  @"LocalizableBackup", nil);
-            message = [NSString stringWithFormat:@"%@\n\n%@", TwinmeLocalizedStringFromTable(@"restore_view_controller_onboarding_verify",  @"LocalizableBackup", nil), TwinmeLocalizedStringFromTable(@"backup_view_controller_verify_words",  @"LocalizableBackup", nil)];
-            action = TwinmeLocalizedStringFromTable(@"restore_view_controller_select_backup",  @"LocalizableBackup", nil);
+            title = TwinmeLocalizedStringFromTable(@"account_view_backup_verify",  @"LocalizableBackup", nil);
+            message = [NSString stringWithFormat:@"%@\n\n%@", TwinmeLocalizedStringFromTable(@"restore_view_onboarding_verify",  @"LocalizableBackup", nil), TwinmeLocalizedStringFromTable(@"backup_view_verify_words",  @"LocalizableBackup", nil)];
+            action = TwinmeLocalizedStringFromTable(@"restore_view_select_backup",  @"LocalizableBackup", nil);
         }
         
         [onboardingConfirmView initWithTitle:title message:message image:image action:action actionColor:nil cancel:TwinmeLocalizedString(@"application_do_not_display", nil)];
@@ -445,14 +473,14 @@ typedef enum {
 
     UIImage *image = [UIImage imageNamed:@"OnboardingBackup"];
     
-    NSString *title = TwinmeLocalizedStringFromTable(@"account_view_controller_backup_restore", @"LocalizableBackup", nil);
+    NSString *title = TwinmeLocalizedStringFromTable(@"account_view_backup_restore", @"LocalizableBackup", nil);
     
     NSMutableString *message = [[NSMutableString alloc] initWithString:@""];
-    [message appendString:TwinmeLocalizedStringFromTable(@"account_view_controller_backup_beta_part_1", @"LocalizableBackup", nil)];
+    [message appendString:TwinmeLocalizedStringFromTable(@"backup_view_beta_message_part_1", @"LocalizableBackup", nil)];
     [message appendString:@"\n\n"];
-    [message appendString:TwinmeLocalizedStringFromTable(@"account_view_controller_backup_beta_part_2", @"LocalizableBackup", nil)];
+    [message appendString:TwinmeLocalizedStringFromTable(@"backup_view_beta_message_part_2", @"LocalizableBackup", nil)];
     [message appendString:@"\n\n"];
-    [message appendString:TwinmeLocalizedStringFromTable(@"account_view_controller_backup_beta_part_3", @"LocalizableBackup", nil)];
+    [message appendString:TwinmeLocalizedStringFromTable(@"backup_view_beta_message_part_3", @"LocalizableBackup", nil)];
     
     NSString *action = TwinmeLocalizedString(@"application_ok", nil);
     
@@ -466,12 +494,30 @@ typedef enum {
     [onboardingConfirmView showConfirmView];
 }
 
+- (void)showBackupWarning {
+    DDLogVerbose(@"%@ showBackupWarning", LOG_TAG);
+    
+    OnboardingConfirmView *onboardingConfirmView = [[OnboardingConfirmView alloc] init];
+    onboardingConfirmView.bottomSheetViewDelegate = self;
+    onboardingConfirmView.tag = BACKUP_ALERT_TAG;
+    
+    UIImage *image = [UIImage imageNamed:@"OnboardingBackup"];
+    
+    NSString *title = TwinmeLocalizedStringFromTable(@"backup_view_title", @"LocalizableBackup", nil);
+    NSString *action = TwinmeLocalizedStringFromTable(@"backup_view_new_backup", @"LocalizableBackup", nil);
+    
+    [onboardingConfirmView initWithTitle:title message: TwinmeLocalizedStringFromTable(@"backup_view_reminder", @"LocalizableBackup", nil) image:image action:action actionColor:nil cancel:TwinmeLocalizedString(@"application_later", nil)];
+    
+    [self.navigationController.view addSubview:onboardingConfirmView];
+    [onboardingConfirmView showConfirmView];
+}
+
 - (void)showRestoreWarning {
     DDLogVerbose(@"%@ showRestoreWarning", LOG_TAG);
     
     DefaultConfirmView *defaultConfirmView = [[DefaultConfirmView alloc] init];
     defaultConfirmView.bottomSheetViewDelegate = self;
-    [defaultConfirmView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:TwinmeLocalizedStringFromTable(@"restore_view_controller_backup_device_always_signed_in_part_three", @"LocalizableBackup", nil) image:nil avatar:nil action:TwinmeLocalizedString(@"account_view_controller_transfer_from_another_device", nil) actionColor:nil cancel:TwinmeLocalizedStringFromTable(@"account_view_controller_restore", @"LocalizableBackup", nil)];
+    [defaultConfirmView initWithTitle:TwinmeLocalizedString(@"deleted_account_view_warning", nil) message:TwinmeLocalizedStringFromTable(@"restore_view_backup_device_always_signed_in_part_three", @"LocalizableBackup", nil) image:nil avatar:nil action:TwinmeLocalizedString(@"account_view_transfer_from_another_device", nil) actionColor:nil cancel:TwinmeLocalizedStringFromTable(@"account_view_restore", @"LocalizableBackup", nil)];
     [self.navigationController.view addSubview:defaultConfirmView];
     [defaultConfirmView showConfirmView];
 }
@@ -484,7 +530,7 @@ typedef enum {
         [self.navigationController pushViewController:backupViewController animated:YES];
     } else {
         self.verifyBackupMode = index == 2;
-        UIDocumentPickerViewController *documentPicker = [[UIDocumentPickerViewController alloc] initWithDocumentTypes:@[(__bridge NSString*)(kUTTypeData),(__bridge NSString*)(kUTTypeContent)] inMode:UIDocumentPickerModeImport];
+        UIDocumentPickerViewController *documentPicker = [[UIDocumentPickerViewController alloc] initForOpeningContentTypes:@[UTTypeData, UTTypeContent] asCopy:YES];
         documentPicker.delegate = self;
         documentPicker.modalPresentationStyle = UIModalPresentationFormSheet;
         [self presentViewController:documentPicker animated:YES completion:nil];
@@ -503,7 +549,7 @@ typedef enum {
     DDLogVerbose(@"%@ unlockBackup", LOG_TAG);
     
     RestoreViewController *restoreViewController = [[UIStoryboard storyboardWithName:@"Backup" bundle:nil] instantiateViewControllerWithIdentifier:@"RestoreViewController"];
-    [restoreViewController initWithFilePath:filePath verifyMode:self.verifyBackupMode];
+    [restoreViewController initWithFileURL:filePath verifyMode:self.verifyBackupMode pickFileInApp:YES];
     TwinmeNavigationController *navigationController = [[TwinmeNavigationController alloc] initWithRootViewController:restoreViewController];
     [self presentViewController:navigationController animated:YES completion:nil];
 }

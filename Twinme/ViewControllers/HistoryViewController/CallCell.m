@@ -162,25 +162,40 @@ static const int ddLogLevel = DDLogLevelWarning;
         self.typeView.image = [UIImage imageNamed:@"HistoryAudioCall"];
     }
     
+    NSString *callDuration = @"";
+    if (self.callDescriptor.isTerminated && self.callDescriptor.duration > 0) {
+        NSDateComponentsFormatter *dateComponentsFormatter = [[NSDateComponentsFormatter alloc] init];
+        dateComponentsFormatter.zeroFormattingBehavior = NSDateComponentsFormatterZeroFormattingBehaviorDropAll;
+        dateComponentsFormatter.allowedUnits = NSCalendarUnitHour | NSCalendarUnitMinute | NSCalendarUnitSecond;
+        dateComponentsFormatter.unitsStyle = NSDateComponentsFormatterUnitsStyleAbbreviated;
+        callDuration = [dateComponentsFormatter stringFromTimeInterval:self.callDescriptor.duration / 1000];
+    }
+    
+    NSString *callType = @"";
     if (self.callDescriptor.isIncoming) {
         if([(NSObject *)uiCall.uiContact.contact class] != [TLCallReceiver class]){
-            self.typeLabel.text = TwinmeLocalizedString(@"history_view_controller_incoming_call", nil);
+            callType = TwinmeLocalizedString(@"calls_view_incoming_call", nil);
         } else {
-            self.typeLabel.text = TwinmeLocalizedString(@"premium_services_view_controller_click_to_call_title", nil);
+            callType = TwinmeLocalizedString(@"premium_services_view_click_to_call_title", nil);
         }
     } else {
-        self.typeLabel.text = TwinmeLocalizedString(@"history_view_controller_outgoing_call", nil);
+        callType = TwinmeLocalizedString(@"calls_view_outgoing_call", nil);
+    }
+    
+    if (callDuration.length > 0) {
+        self.typeLabel.text = [NSString stringWithFormat:@"%@ - %@", callType, callDuration];
+    } else {
+        self.typeLabel.text = callType;
     }
     
     if (!self.callDescriptor.isAccepted && self.callDescriptor.isIncoming) {
-        self.typeLabel.text = TwinmeLocalizedString(@"history_view_controller_missed_call", nil);
+        self.typeLabel.text = TwinmeLocalizedString(@"calls_view_missed_call", nil);
         self.nameLabel.textColor = Design.DELETE_COLOR_RED;
     } else {
         self.nameLabel.textColor = Design.FONT_COLOR_DEFAULT;
     }
     
     self.dateLabel.text = [NSString formatCallTimeInterval:self.callDescriptor.createdTimestamp / 1000];
-    
     self.separatorView.hidden = hideSeparator;
     
     [self updateFont];

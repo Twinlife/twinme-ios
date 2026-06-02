@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="22146" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="24765" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22122"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24743"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -54,6 +54,12 @@
                             <constraint firstItem="kuH-j7-WRn" firstAttribute="top" secondItem="sqd-qp-kz9" secondAttribute="top" constant="28" id="jPV-pr-3ae"/>
                         </constraints>
                     </view>
+                    <imageView hidden="YES" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="InfoItem" translatesAutoresizingMaskIntoConstraints="NO" id="Hyw-EE-HMR">
+                        <rect key="frame" x="140" y="591.5" width="38" height="38"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="38" id="bYI-ey-bVA"/>
+                        </constraints>
+                    </imageView>
                     <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="ffj-Mo-nQV">
                         <rect key="frame" x="198" y="318.5" width="500" height="583.5"/>
                         <constraints>
@@ -113,6 +119,7 @@
                             <constraint firstAttribute="height" constant="36" id="8Ih-rl-DnT"/>
                             <constraint firstItem="xoD-wh-Yst" firstAttribute="leading" secondItem="rzm-IN-fKk" secondAttribute="leading" id="NxA-3i-4RH"/>
                             <constraint firstAttribute="trailing" secondItem="xoD-wh-Yst" secondAttribute="trailing" id="Wsx-t3-MxI"/>
+                            <constraint firstAttribute="width" secondItem="rzm-IN-fKk" secondAttribute="height" multiplier="1:1" id="aRU-6L-SEn"/>
                             <constraint firstItem="xoD-wh-Yst" firstAttribute="top" secondItem="rzm-IN-fKk" secondAttribute="top" id="g96-XB-KUW"/>
                             <constraint firstAttribute="width" secondItem="rzm-IN-fKk" secondAttribute="height" multiplier="1:1" id="mJ4-NV-Kl1"/>
                             <constraint firstAttribute="bottom" secondItem="xoD-wh-Yst" secondAttribute="bottom" id="sLN-8k-QYh"/>
@@ -124,6 +131,7 @@
                     <constraint firstItem="09p-7I-nHU" firstAttribute="bottom" secondItem="ffj-Mo-nQV" secondAttribute="bottom" id="5hg-PV-qBU"/>
                     <constraint firstItem="09p-7I-nHU" firstAttribute="trailing" secondItem="H2p-sc-9uM" secondAttribute="trailing" constant="-18" id="5of-LM-ka4"/>
                     <constraint firstItem="ffj-Mo-nQV" firstAttribute="top" relation="greaterThanOrEqual" secondItem="H2p-sc-9uM" secondAttribute="top" priority="750" constant="18" id="6ij-QM-gDz"/>
+                    <constraint firstItem="Hyw-EE-HMR" firstAttribute="width" secondItem="Hyw-EE-HMR" secondAttribute="height" multiplier="1:1" id="6sl-ka-vVl"/>
                     <constraint firstItem="Cwu-t6-JDJ" firstAttribute="bottom" secondItem="ffj-Mo-nQV" secondAttribute="top" id="7CQ-vR-0jS"/>
                     <constraint firstItem="n5D-bV-jV7" firstAttribute="bottom" secondItem="ffj-Mo-nQV" secondAttribute="bottom" constant="-2" id="9ac-cu-zBT"/>
                     <constraint firstItem="fnT-y2-dIK" firstAttribute="width" secondItem="ffj-Mo-nQV" secondAttribute="width" id="9bl-2t-li7"/>
@@ -140,7 +148,7 @@
                     <constraint firstItem="rzm-IN-fKk" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="UzC-L8-n1f"/>
                     <constraint firstItem="Nf0-gu-Bfb" firstAttribute="top" secondItem="ffj-Mo-nQV" secondAttribute="bottom" id="WO1-3i-7sB"/>
                     <constraint firstItem="jVG-b2-qyK" firstAttribute="top" relation="greaterThanOrEqual" secondItem="H2p-sc-9uM" secondAttribute="top" priority="750" constant="18" id="ZLL-jj-2VR"/>
-                    <constraint firstItem="rzm-IN-fKk" firstAttribute="width" secondItem="rzm-IN-fKk" secondAttribute="height" multiplier="1:1" id="aRU-6L-SEn"/>
+                    <constraint firstItem="Hyw-EE-HMR" firstAttribute="centerY" secondItem="ffj-Mo-nQV" secondAttribute="centerY" id="art-gD-Ngg"/>
                     <constraint firstItem="hP7-9c-Cjz" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" id="ayC-Wg-uVv"/>
                     <constraint firstAttribute="trailing" secondItem="dCt-Du-9IN" secondAttribute="leading" constant="-40" id="cNK-92-fTs"/>
                     <constraint firstItem="fnT-y2-dIK" firstAttribute="height" secondItem="ffj-Mo-nQV" secondAttribute="height" id="diq-fc-cxe"/>
@@ -148,6 +156,7 @@
                     <constraint firstItem="sqd-qp-kz9" firstAttribute="trailing" secondItem="ffj-Mo-nQV" secondAttribute="trailing" id="gBG-4q-fl9"/>
                     <constraint firstItem="ffj-Mo-nQV" firstAttribute="top" secondItem="kuH-j7-WRn" secondAttribute="bottom" constant="-20" id="iks-gd-d1Z"/>
                     <constraint firstItem="jVG-b2-qyK" firstAttribute="trailing" secondItem="ffj-Mo-nQV" secondAttribute="trailing" id="m4D-Wt-qD1"/>
+                    <constraint firstItem="ffj-Mo-nQV" firstAttribute="leading" secondItem="Hyw-EE-HMR" secondAttribute="trailing" constant="20" id="nwv-7r-Tls"/>
                     <constraint firstItem="sqd-qp-kz9" firstAttribute="bottom" secondItem="ffj-Mo-nQV" secondAttribute="bottom" id="o0m-KK-AdA"/>
                     <constraint firstItem="n5D-bV-jV7" firstAttribute="trailing" secondItem="ffj-Mo-nQV" secondAttribute="trailing" constant="-2" id="r6K-WY-hau"/>
                     <constraint firstItem="ffj-Mo-nQV" firstAttribute="bottom" secondItem="H2p-sc-9uM" secondAttribute="bottom" constant="-18" id="vTf-bB-agg"/>
@@ -169,6 +178,9 @@
                 <outlet property="contentImageViewTopConstraint" destination="6ij-QM-gDz" id="OHC-Rd-fE9"/>
                 <outlet property="contentImageViewTrailingConstraint" destination="Bjq-0F-ZBt" id="CNl-1u-bbd"/>
                 <outlet property="contentImageViewWidthConstraint" destination="iBd-Me-0An" id="DoL-Cn-2VK"/>
+                <outlet property="infoImageView" destination="Hyw-EE-HMR" id="IcT-Kd-k2B"/>
+                <outlet property="infoImageViewHeightConstraint" destination="bYI-ey-bVA" id="Tf7-pE-N6J"/>
+                <outlet property="infoImageViewTrailinConstraint" destination="nwv-7r-Tls" id="5Ft-LA-C1g"/>
                 <outlet property="overlayView" destination="hP7-9c-Cjz" id="dJL-sF-oFV"/>
                 <outlet property="playImageView" destination="n5D-bV-jV7" id="Irh-pA-Jit"/>
                 <outlet property="playImageViewBottomConstraint" destination="9ac-cu-zBT" id="0Yk-gY-Syp"/>
@@ -202,11 +214,9 @@
             <point key="canvasLocation" x="139" y="108"/>
         </tableViewCell>
     </objects>
-    <designables>
-        <designable name="Cwu-t6-JDJ"/>
-    </designables>
     <resources>
         <image name="CheckMarkGrey" width="22" height="22"/>
+        <image name="InfoItem" width="18" height="18"/>
         <image name="PlayerPlay" width="70" height="70"/>
         <image name="ReplyItem" width="15" height="15"/>
     </resources>

@@ -138,7 +138,7 @@ static const int ddLogLevel = DDLogLevelWarning;
     self.callAgainLabelBottomConstraint.constant *= Design.HEIGHT_RATIO;
     self.callAgainLabel.font = Design.FONT_MEDIUM30;
     self.callAgainLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    self.callAgainLabel.text = TwinmeLocalizedString(@"history_view_controller_call_again_title", nil);
+    self.callAgainLabel.text = TwinmeLocalizedString(@"calls_view_call_again_title", nil);
     
     self.callAgainImageViewLeadingConstraint.constant *= Design.WIDTH_RATIO;
     self.callAgainImageViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
@@ -197,9 +197,9 @@ static const int ddLogLevel = DDLogLevelWarning;
     self.callDescriptor = peerCallItem.peerCallDescriptor;
     
     if (self.callDescriptor.isVideo) {
-        self.callTypeLabel.text = TwinmeLocalizedString(@"conversation_view_controller_video_call", nil);
+        self.callTypeLabel.text = TwinmeLocalizedString(@"conversation_view_video_call", nil);
     } else {
-        self.callTypeLabel.text = TwinmeLocalizedString(@"conversation_view_controller_audio_call", nil);
+        self.callTypeLabel.text = TwinmeLocalizedString(@"conversation_view_audio_call", nil);
     }
     
     self.callAvatarImageView.image = [conversationViewController getContactAvatarWithUUID:item.peerTwincodeOutboundId];
@@ -207,7 +207,7 @@ static const int ddLogLevel = DDLogLevelWarning;
     if (!self.callDescriptor.isAccepted && self.callDescriptor.isIncoming) {
         if (self.callDescriptor.isTerminated) {
             self.callInfoLabel.textColor = Design.DELETE_COLOR_RED;
-            self.callInfoLabel.text = TwinmeLocalizedString(@"conversation_view_controller_call_missed", nil);
+            self.callInfoLabel.text = TwinmeLocalizedString(@"conversation_view_call_missed", nil);
         } else {
             self.callInfoLabel.textColor = Design.FONT_COLOR_DEFAULT;
             self.callInfoLabel.text = @"";
@@ -237,12 +237,23 @@ static const int ddLogLevel = DDLogLevelWarning;
         self.bottomLeftRadius = [conversationViewController getRadiusWithMask:corners & ITEM_BOTTOM_LEFT];
     }
     
-    if (peerCallItem.visibleAvatar) {
+    if (peerCallItem.visibleAvatar && [conversationViewController displayPeerItemAvatar]) {
         self.avatarView.hidden = NO;
         self.avatarView.image = [conversationViewController getContactAvatarWithUUID:item.peerTwincodeOutboundId];
     } else {
         self.avatarView.hidden = YES;
         self.avatarView.image = nil;
+        
+        if (![conversationViewController displayPeerItemAvatar]) {
+            self.avatarViewLeadingConstraint.constant = 0;
+            self.avatarViewHeightConstraint.constant = 0;
+            
+            if ([conversationViewController isSelectItemMode]) {
+                self.contentCallViewLeadingConstraint.constant = self.checkMarkViewLeadingConstraint.constant + self.checkMarkViewLeadingConstraint.constant + Design.AVATAR_CONVERSATION_LEADING;
+            } else {
+                self.contentCallViewLeadingConstraint.constant = Design.AVATAR_CONVERSATION_LEADING;
+            }
+        }
     }
     
     if ([conversationViewController isMenuOpen]) {

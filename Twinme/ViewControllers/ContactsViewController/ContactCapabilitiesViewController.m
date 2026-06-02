@@ -88,7 +88,7 @@ static const int ddLogLevel = DDLogLevelWarning;
     
     [super initViews];
         
-    [self setNavigationTitle:TwinmeLocalizedString(@"contact_capabilities_view_controller_call_settings", nil)];
+    [self setNavigationTitle:TwinmeLocalizedString(@"contact_capabilities_view_call_settings", nil)];
 }
 
 - (void)handleBackTapGesture:(UITapGestureRecognizer *)sender {

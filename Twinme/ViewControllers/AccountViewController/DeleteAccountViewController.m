@@ -187,13 +187,13 @@ static const int ddLogLevel = DDLogLevelWarning;
     
     self.view.backgroundColor = Design.WHITE_COLOR;
     
-    [self setNavigationTitle:TwinmeLocalizedString(@"account_view_controller_title", nil)];
+    [self setNavigationTitle:TwinmeLocalizedString(@"account_view_title", nil)];
     
     self.accountLabelTopConstraint.constant *= Design.HEIGHT_RATIO;
     self.accountLabelBottomConstraint.constant *= Design.HEIGHT_RATIO;
     self.accountLabelWidthConstraint.constant *= Design.WIDTH_RATIO;
     
-    self.accountLabel.text =  [NSString stringWithFormat:@"%@\n\n%@\n\n%@", TwinmeLocalizedString(@"account_view_controller_message_first_part", nil), TwinmeLocalizedString(@"account_view_controller_message_second_part", nil), TwinmeLocalizedStringFromTable(@"account_view_controller_message_third_part", @"LocalizableBackup", nil)];
+    self.accountLabel.text =  [NSString stringWithFormat:@"%@\n\n%@\n\n%@", TwinmeLocalizedString(@"account_view_message_first_part", nil), TwinmeLocalizedString(@"account_view_message_second_part", nil), TwinmeLocalizedStringFromTable(@"account_view_message_third_part", @"LocalizableBackup", nil)];
     self.accountLabel.font = Design.FONT_MEDIUM34;
     self.accountLabel.textColor = Design.FONT_COLOR_DEFAULT;
     
@@ -215,16 +215,20 @@ static const int ddLogLevel = DDLogLevelWarning;
         
     self.deleteLabel.font = Design.FONT_BOLD36;
     self.deleteLabel.textColor = [UIColor whiteColor];
-    self.deleteLabel.text = TwinmeLocalizedString(@"delete_account_view_controller_delete", nil);
+    self.deleteLabel.text = TwinmeLocalizedString(@"deleted_account_view_delete", nil);
     
     self.cancelViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     
     UITapGestureRecognizer *cancelViewGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleCancelTapGesture:)];
     [self.cancelView addGestureRecognizer:cancelViewGestureRecognizer];
     
-    UIWindow *window = UIApplication.sharedApplication.keyWindow;
-    self.cancelViewBottomConstraint.constant = window.safeAreaInsets.bottom;
-
+    UIWindow *window = [self currentWindow];
+    if (window) {
+        self.cancelViewBottomConstraint.constant = window.safeAreaInsets.bottom;
+    } else {
+        self.cancelViewBottomConstraint.constant = self.view.safeAreaInsets.bottom;
+    }
+    
     self.cancelLabel.font = Design.FONT_BOLD36;
     self.cancelLabel.textColor = Design.FONT_COLOR_DEFAULT;
     self.cancelLabel.text = TwinmeLocalizedString(@"application_cancel", nil);
@@ -239,8 +243,8 @@ static const int ddLogLevel = DDLogLevelWarning;
         
         self.deleteConfirmView = [[DeleteAccountConfirmView alloc] init];
         self.deleteConfirmView.bottomSheetViewDelegate = self;
-        NSString *message = [NSString stringWithFormat:@"%@\n%@", TwinmeLocalizedString(@"application_operation_irreversible", nil), TwinmeLocalizedString(@"account_view_controller_delete_account", nil)];
-        [self.deleteConfirmView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:message avatar:nil icon:nil];
+        NSString *message = [NSString stringWithFormat:@"%@\n%@", TwinmeLocalizedString(@"application_operation_irreversible", nil), TwinmeLocalizedString(@"account_view_delete_account", nil)];
+        [self.deleteConfirmView initWithTitle:TwinmeLocalizedString(@"deleted_account_view_warning", nil) message:message avatar:nil icon:nil];
         [self.navigationController.view addSubview: self.deleteConfirmView];
         [self.deleteConfirmView showConfirmView];
     }

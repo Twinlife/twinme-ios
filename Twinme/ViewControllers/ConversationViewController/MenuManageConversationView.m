@@ -14,6 +14,7 @@
 #import "MenuIconCell.h"
 
 #import <TwinmeCommon/Design.h>
+#import <TwinmeCommon/UIViewController+Utils.h>
 
 #if 0
 static const int ddLogLevel = DDLogLevelVerbose;
@@ -98,10 +99,10 @@ static NSString *MENU_ICON_CELL_IDENTIFIER = @"MenuIconCellIdentifier";
     BOOL hideSeparator = NO;
     
     if (indexPath.row == 0) {
-        title = TwinmeLocalizedString(@"show_contact_view_controller_cleanup", nil);
+        title = TwinmeLocalizedString(@"show_contact_view_cleanup", nil);
         icon = @"CleanUpIcon";
     } else {
-        title = TwinmeLocalizedString(@"show_contact_view_controller_export_contents", nil);
+        title = TwinmeLocalizedString(@"show_contact_view_export_contents", nil);
         icon = @"ShareIcon";
         hideSeparator = YES;
     }
@@ -132,10 +133,15 @@ static NSString *MENU_ICON_CELL_IDENTIFIER = @"MenuIconCellIdentifier";
     
     [super initViews];
     
-    self.titleLabel.text = TwinmeLocalizedString(@"conversation_view_controller_manage_conversation", nil);
+    self.titleLabel.text = TwinmeLocalizedString(@"conversation_view_manage_conversation", nil);
     
-    UIWindow *window = UIApplication.sharedApplication.keyWindow;
-    CGFloat safeAreaInset = window.safeAreaInsets.bottom;
+    CGFloat safeAreaInset;
+    UIWindow *window = [UIViewController currentWindow];
+    if (window) {
+        safeAreaInset = window.safeAreaInsets.bottom;
+    } else {
+        safeAreaInset = self.safeAreaInsets.bottom;
+    }
     
     self.tableViewTopConstraint.constant *= Design.HEIGHT_RATIO;
     self.tableViewHeightConstraint.constant = Design.SETTING_CELL_HEIGHT * self.count;

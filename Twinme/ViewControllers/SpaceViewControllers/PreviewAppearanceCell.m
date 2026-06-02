@@ -124,7 +124,7 @@ static UIColor *DESIGN_SHADOW_COLOR;
     [self.contentLabel setDecorColor:Design.MAIN_COLOR];
     [self.contentLabel setBorderColor:[UIColor clearColor]];
     [self.contentLabel setCornerRadiusWithTopLeft:largeRadius topRight:largeRadius bottomRight:smallRadius bottomLeft:largeRadius];
-    self.contentLabel.text = TwinmeLocalizedString(@"space_appearance_view_controller_preview_message", nil);
+    self.contentLabel.text = TwinmeLocalizedString(@"space_appearance_view_preview_message", nil);
     
     self.peerContentLabelLeadingConstraint.constant *= Design.HEIGHT_RATIO;
     
@@ -138,7 +138,7 @@ static UIColor *DESIGN_SHADOW_COLOR;
     [self.peerContentLabel setDecorColor:Design.GREY_ITEM];
     [self.peerContentLabel setBorderColor:[UIColor clearColor]];
     [self.peerContentLabel setCornerRadiusWithTopLeft:largeRadius topRight:largeRadius bottomRight:largeRadius bottomLeft:largeRadius];
-    self.peerContentLabel.text = TwinmeLocalizedString(@"space_appearance_view_controller_preview_peer_message", nil);
+    self.peerContentLabel.text = TwinmeLocalizedString(@"space_appearance_view_preview_peer_message", nil);
     
     self.stateImageViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     self.stateImageViewTrailingConstraint.constant *= Design.WIDTH_RATIO;
@@ -161,11 +161,11 @@ static UIColor *DESIGN_SHADOW_COLOR;
     
     self.contentLabel.textColor = [UIColor whiteColor];
     [self.contentLabel setDecorColor:Design.MAIN_COLOR];
-    self.contentLabel.text = TwinmeLocalizedString(@"space_appearance_view_controller_preview_message", nil);
+    self.contentLabel.text = TwinmeLocalizedString(@"space_appearance_view_preview_message", nil);
     
     self.peerContentLabel.textColor = Design.FONT_COLOR_DEFAULT;
     [self.peerContentLabel setDecorColor:Design.GREY_ITEM];
-    self.peerContentLabel.text = TwinmeLocalizedString(@"space_appearance_view_controller_preview_peer_message", nil);
+    self.peerContentLabel.text = TwinmeLocalizedString(@"space_appearance_view_preview_peer_message", nil);
     
     [self.peerContentLabel setNeedsDisplay];
     [self.contentLabel setNeedsDisplay];

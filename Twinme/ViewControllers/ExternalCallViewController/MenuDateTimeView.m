@@ -14,6 +14,7 @@
 #import "SettingsItemCell.h"
 
 #import <TwinmeCommon/Design.h>
+#import <TwinmeCommon/UIViewController+Utils.h>
 
 #if 0
 static const int ddLogLevel = DDLogLevelVerbose;
@@ -74,11 +75,8 @@ static const int ddLogLevel = DDLogLevelWarning;
     
     if (!isPeriodic) {
         self.datePicker.minimumDate = [NSDate date];
-        
-        if (@available(iOS 14.0, *)) {
-            [self.datePicker setPreferredDatePickerStyle:UIDatePickerStyleInline];
-        }
-    } else if (@available(iOS 14.0, *)) {
+        [self.datePicker setPreferredDatePickerStyle:UIDatePickerStyleInline];
+    } else {
         [self.datePicker setPreferredDatePickerStyle:UIDatePickerStyleWheels];
     }
     
@@ -108,8 +106,13 @@ static const int ddLogLevel = DDLogLevelWarning;
     
     [super initViews];
    
-    UIWindow *window = UIApplication.sharedApplication.keyWindow;
-    CGFloat safeAreaInset = window.safeAreaInsets.bottom;
+    CGFloat safeAreaInset;
+    UIWindow *window = [UIViewController currentWindow];
+    if (window) {
+        safeAreaInset = window.safeAreaInsets.bottom;
+    } else {
+        safeAreaInset = self.safeAreaInsets.bottom;
+    }
     
     self.datePickerViewTopConstraint.constant *= Design.HEIGHT_RATIO;
     self.datePickerViewBottomConstraint.constant = safeAreaInset;
@@ -121,12 +124,12 @@ static const int ddLogLevel = DDLogLevelWarning;
     switch (self.menuDateTimeType) {
         case MenuDateTimeTypeStartDate:
         case MenuDateTimeTypeStartHour:
-            self.titleLabel.text = TwinmeLocalizedString(@"show_call_view_controller_setting_start", nil);
+            self.titleLabel.text = TwinmeLocalizedString(@"show_call_view_settings_start", nil);
             break;
             
         case MenuDateTimeTypeEndDate:
         case MenuDateTimeTypeEndHour:
-            self.titleLabel.text = TwinmeLocalizedString(@"show_call_view_controller_setting_end", nil);
+            self.titleLabel.text = TwinmeLocalizedString(@"show_call_view_settings_end", nil);
             break;
             
         default:

@@ -14,7 +14,7 @@
 
 @implementation UIAnnotation
 
-- (nonnull instancetype)initWithType:(TLDescriptorAnnotationType)annotationType reaction:(nullable UIReaction *)uiReaction name:(nonnull NSString *)name avatar:(nonnull UIImage *)avatar timestamp:(long)timestamp {
+- (nonnull instancetype)initWithType:(TLDescriptorAnnotationType)annotationType reaction:(nullable UIReaction *)uiReaction name:(nonnull NSString *)name avatar:(nonnull UIImage *)avatar value:(long)value {
     
     self = [super init];
     
@@ -23,7 +23,7 @@
         _uiReaction = uiReaction;
         _name = name;
         _avatar = avatar;
-        _timestamp = timestamp;
+        _value = value;
         
         [self initOrderPriority];
     }
@@ -32,14 +32,16 @@
 
 - (void)initOrderPriority {
     
-    if (self.annotationType == TLDescriptorAnnotationTypeLike) {
-        _orderPriority = 3;
+    if (self.annotationType == TLDescriptorAnnotationTypeError) {
+        _orderPriority = 0;
+    } else if (self.annotationType == TLDescriptorAnnotationTypeLike) {
+        _orderPriority = 1;
     } else if (self.annotationType == TLDescriptorAnnotationTypeRead) {
         _orderPriority = 2;
     } else if (self.annotationType == TLDescriptorAnnotationTypeReceived) {
-        _orderPriority = 1;
+        _orderPriority = 3;
     } else {
-        _orderPriority = 0;
+        _orderPriority = 4;
     }
 }
 

@@ -408,7 +408,7 @@ static const int CONTACTS_VIEW_SECTION_COUNT = 2;
         
     NSString *sectionName = @"";
     if (section == 1) {
-        sectionName = TwinmeLocalizedString(@"contacts_view_controller_title", nil);
+        sectionName = TwinmeLocalizedString(@"contacts_view_title", nil);
     }
     
     [sectionCallCell bindWithTitle:sectionName hideSeparator:NO uppercaseString:YES showRightAction:NO];
@@ -434,7 +434,7 @@ static const int CONTACTS_VIEW_SECTION_COUNT = 2;
             addContactCell = [[AddContactCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:ADD_CONTACT_CELL_IDENTIFIER];
         }
         
-        [addContactCell bindWithTitle:TwinmeLocalizedString(@"main_view_controller_add_contact", nil) subTitle:TwinmeLocalizedString(@"contacts_view_controller_add_contact_subtitle", nil)];
+        [addContactCell bindWithTitle:TwinmeLocalizedString(@"main_view_add_contact", nil) subTitle:TwinmeLocalizedString(@"contacts_view_add_contact_subtitle", nil) icon:[UIImage imageNamed:@"ActionBarAddContact"]];
         
         return addContactCell;
     } else {
@@ -509,10 +509,10 @@ static const int CONTACTS_VIEW_SECTION_COUNT = 2;
     self.definesPresentationContext = YES;
     self.view.backgroundColor = Design.WHITE_COLOR;
     
-    [self setNavigationTitle:TwinmeLocalizedString(@"contacts_view_controller_title", nil).capitalizedString];
+    [self setNavigationTitle:TwinmeLocalizedString(@"contacts_view_title", nil).capitalizedString];
     
     UIBarButtonItem *addContactBarButtonItem = [[UIBarButtonItem alloc]initWithImage:[UIImage imageNamed:@"ActionBarAddContact"] style:UIBarButtonItemStylePlain target:self action:@selector(handleAddContactTapGesture:)];
-    addContactBarButtonItem.accessibilityLabel = TwinmeLocalizedString(@"add_contact_view_controller_title", nil);
+    addContactBarButtonItem.accessibilityLabel = TwinmeLocalizedString(@"add_contact_view_title", nil);
     self.navigationItem.rightBarButtonItem = addContactBarButtonItem;
     
     self.searchController = [[UISearchController alloc]initWithSearchResultsController:nil];
@@ -530,15 +530,11 @@ static const int CONTACTS_VIEW_SECTION_COUNT = 2;
     contactSearchBar.backgroundColor = Design.NAVIGATION_BAR_BACKGROUND_COLOR;
     contactSearchBar.delegate = self;
     
-    if (@available(iOS 13.0, *)) {
-        self.searchController.searchBar.backgroundColor = [UIColor clearColor];
-        self.searchController.searchBar.barTintColor = Design.FONT_COLOR_DEFAULT;
-        self.searchController.searchBar.searchTextField.backgroundColor = Design.POPUP_BACKGROUND_COLOR;
-        self.searchController.searchBar.translucent = NO;
-        self.navigationItem.searchController = self.searchController;
-    } else {
-        self.contactTableView.tableHeaderView = self.searchController.searchBar;
-    }
+    self.searchController.searchBar.backgroundColor = [UIColor clearColor];
+    self.searchController.searchBar.barTintColor = Design.FONT_COLOR_DEFAULT;
+    self.searchController.searchBar.searchTextField.backgroundColor = Design.POPUP_BACKGROUND_COLOR;
+    self.searchController.searchBar.translucent = NO;
+    self.navigationItem.searchController = self.searchController;
     
     self.contactTableView.backgroundColor = Design.WHITE_COLOR;
     self.contactTableView.delegate = self;
@@ -567,7 +563,7 @@ static const int CONTACTS_VIEW_SECTION_COUNT = 2;
     self.noContactLabel.font = Design.FONT_MEDIUM34;
     self.noContactLabel.textColor = Design.FONT_COLOR_DEFAULT;
     [self.noContactLabel setAdjustsFontSizeToFitWidth:YES];
-    self.noContactLabel.text = TwinmeLocalizedString(@"add_contact_view_controller_onboarding_message", nil);
+    self.noContactLabel.text = TwinmeLocalizedString(@"add_contact_view_onboarding_message", nil);
     self.noContactLabel.hidden = YES;
     
     self.inviteContactViewBottomConstraint.constant *= Design.HEIGHT_RATIO;
@@ -581,7 +577,7 @@ static const int CONTACTS_VIEW_SECTION_COUNT = 2;
     self.inviteContactView.clipsToBounds = YES;
     self.inviteContactView.hidden = YES;
     self.inviteContactView.isAccessibilityElement = YES;
-    self.inviteContactView.accessibilityLabel = TwinmeLocalizedString(@"contacts_view_controller_invite_contact_title", nil);
+    self.inviteContactView.accessibilityLabel = TwinmeLocalizedString(@"contacts_view_invite_contact_title", nil);
     [self.inviteContactView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleAddContactTapGesture:)]];
     
     self.inviteContactLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
@@ -589,7 +585,7 @@ static const int CONTACTS_VIEW_SECTION_COUNT = 2;
     
     self.inviteContactLabel.font = Design.FONT_MEDIUM34;
     self.inviteContactLabel.textColor = [UIColor whiteColor];
-    self.inviteContactLabel.text = TwinmeLocalizedString(@"contacts_view_controller_invite_contact_title", nil);
+    self.inviteContactLabel.text = TwinmeLocalizedString(@"contacts_view_invite_contact_title", nil);
     
     self.transferLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
     self.transferLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
@@ -598,7 +594,7 @@ static const int CONTACTS_VIEW_SECTION_COUNT = 2;
     self.transferLabel.font = Design.FONT_REGULAR26;
     self.transferLabel.textColor = Design.FONT_COLOR_DEFAULT;
     
-    NSMutableAttributedString *transferAttributedString = [[NSMutableAttributedString alloc] initWithString:TwinmeLocalizedString(@"account_view_controller_transfer_from_another_device", nil)];
+    NSMutableAttributedString *transferAttributedString = [[NSMutableAttributedString alloc] initWithString:TwinmeLocalizedString(@"account_view_transfer_from_another_device", nil)];
     [transferAttributedString addAttribute:NSUnderlineStyleAttributeName value:@1 range:NSMakeRange(0,
                                                                                                     [transferAttributedString length])];
     [self.transferLabel setAttributedText:transferAttributedString];
@@ -620,7 +616,7 @@ static const int CONTACTS_VIEW_SECTION_COUNT = 2;
     
     self.noResultFoundTitleLabel.font = Design.FONT_MEDIUM34;
     self.noResultFoundTitleLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    self.noResultFoundTitleLabel.text = TwinmeLocalizedString(@"conversations_view_controller_no_result_found", nil);
+    self.noResultFoundTitleLabel.text = TwinmeLocalizedString(@"conversations_view_no_result_found", nil);
     self.noResultFoundTitleLabel.hidden = YES;
 }
 
@@ -679,10 +675,7 @@ static const int CONTACTS_VIEW_SECTION_COUNT = 2;
 
         [self.navigationController.navigationBar setPrefersLargeTitles:NO];
         self.navigationItem.largeTitleDisplayMode = UINavigationItemLargeTitleDisplayModeNever;
-        
-        if (@available(iOS 13.0, *)) {
-            self.navigationItem.searchController = nil;
-        }
+        self.navigationItem.searchController = nil;
     } else {
         self.noContactImageView.hidden = YES;
         self.noContactLabel.hidden = YES;
@@ -692,16 +685,13 @@ static const int CONTACTS_VIEW_SECTION_COUNT = 2;
         
         [self.navigationController.navigationBar setPrefersLargeTitles:YES];
         self.navigationItem.largeTitleDisplayMode = UINavigationItemLargeTitleDisplayModeAutomatic;
-        
-        if (@available(iOS 13.0, *)) {
-            self.navigationItem.searchController = self.searchController;
-        }
+        self.navigationItem.searchController = self.searchController;
         [self.contactTableView reloadData];
         
         if (self.uiContacts.count == 0 && self.searchController.active) {
             self.noResultFoundImageView.hidden = NO;
             self.noResultFoundTitleLabel.hidden = NO;
-            self.noResultFoundTitleLabel.text = [NSString stringWithFormat:TwinmeLocalizedString(@"conversations_view_controller_no_result_found", nil), self.searchController.searchBar.text];
+            self.noResultFoundTitleLabel.text = [NSString stringWithFormat:TwinmeLocalizedString(@"conversations_view_no_result_found", nil), self.searchController.searchBar.text];
         } else {
             self.noResultFoundImageView.hidden = YES;
             self.noResultFoundTitleLabel.hidden = YES;
@@ -737,19 +727,14 @@ static const int CONTACTS_VIEW_SECTION_COUNT = 2;
     DDLogVerbose(@"%@ updateColor", LOG_TAG);
     
     self.searchController.searchBar.barTintColor = Design.NAVIGATION_BAR_BACKGROUND_COLOR;
+    self.searchController.searchBar.backgroundColor = [UIColor clearColor];
+    self.searchController.searchBar.searchTextField.backgroundColor = Design.POPUP_BACKGROUND_COLOR;
+    self.searchController.searchBar.searchTextField.tintColor = Design.FONT_COLOR_DEFAULT;
+    self.searchController.searchBar.searchTextField.textColor = Design.FONT_COLOR_DEFAULT;
     
-    if (@available(iOS 13.0, *)) {
-        self.searchController.searchBar.backgroundColor = [UIColor clearColor];
-        self.searchController.searchBar.searchTextField.backgroundColor = Design.POPUP_BACKGROUND_COLOR;
-        self.searchController.searchBar.searchTextField.tintColor = Design.FONT_COLOR_DEFAULT;
-        self.searchController.searchBar.searchTextField.textColor = Design.FONT_COLOR_DEFAULT;
-        
-        UIImageView *glassIconImageView = (UIImageView *)self.searchController.searchBar.searchTextField.leftView;
-        glassIconImageView.image = [glassIconImageView.image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-        glassIconImageView.tintColor = Design.PLACEHOLDER_COLOR;
-    } else {
-        self.searchController.searchBar.backgroundColor = Design.NAVIGATION_BAR_BACKGROUND_COLOR;
-    }
+    UIImageView *glassIconImageView = (UIImageView *)self.searchController.searchBar.searchTextField.leftView;
+    glassIconImageView.image = [glassIconImageView.image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    glassIconImageView.tintColor = Design.PLACEHOLDER_COLOR;
     
     if ([self.twinmeApplication darkModeEnable:[self currentSpaceSettings]]) {
         self.searchController.searchBar.keyboardAppearance = UIKeyboardAppearanceDark;

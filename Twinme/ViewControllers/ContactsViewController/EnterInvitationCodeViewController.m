@@ -251,7 +251,7 @@ static const CGFloat DESIGN_TEXTFIELD_MARGIN = 20;
     
     AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
     alertMessageView.alertMessageViewDelegate = self;
-    [alertMessageView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:TwinmeLocalizedString(@"enter_invitation_code_view_controller_error_message", nil)];
+    [alertMessageView initWithTitle:TwinmeLocalizedString(@"deleted_account_view_warning", nil) message:TwinmeLocalizedString(@"enter_invitation_code_view_error_message", nil)];
     [self.tabBarController.view addSubview:alertMessageView];
     [alertMessageView showAlertView];
 }
@@ -266,7 +266,7 @@ static const CGFloat DESIGN_TEXTFIELD_MARGIN = 20;
     
     AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
     alertMessageView.alertMessageViewDelegate = self;
-    [alertMessageView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:TwinmeLocalizedString(@"accept_invitation_view_controller_local_twincode", nil)];
+    [alertMessageView initWithTitle:TwinmeLocalizedString(@"deleted_account_view_warning", nil) message:TwinmeLocalizedString(@"accept_invitation_view_local_twincode", nil)];
     [self.tabBarController.view addSubview:alertMessageView];
     [alertMessageView showAlertView];
 }
@@ -408,11 +408,11 @@ static const CGFloat DESIGN_TEXTFIELD_MARGIN = 20;
     tapGesture.cancelsTouchesInView = NO;
     [self.view addGestureRecognizer:tapGesture];
     
-    [self setNavigationTitle:TwinmeLocalizedString(@"add_contact_view_controller_invitation_code_title", nil)];
+    [self setNavigationTitle:TwinmeLocalizedString(@"add_contact_view_invitation_code_title", nil)];
     
     UIBarButtonItem *infoBarButtonItem =  [[UIBarButtonItem alloc]initWithImage:[UIImage imageNamed:@"OnboardingInfoIcon"] style:UIBarButtonItemStylePlain target:self action:@selector(handleInfoTapGesture:)];
     infoBarButtonItem.tintColor = [UIColor whiteColor];
-    infoBarButtonItem.accessibilityLabel = TwinmeLocalizedString(@"conversation_view_controller_menu_item_view_info_title", nil);
+    infoBarButtonItem.accessibilityLabel = TwinmeLocalizedString(@"conversation_view_menu_item_view_info_title", nil);
     self.navigationItem.rightBarButtonItem = infoBarButtonItem;
     
     self.confirmViewTopConstraint.constant *= Design.HEIGHT_RATIO;
@@ -438,7 +438,7 @@ static const CGFloat DESIGN_TEXTFIELD_MARGIN = 20;
     
     self.messageLabel.font = Design.FONT_REGULAR32;
     self.messageLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    self.messageLabel.text = TwinmeLocalizedString(@"enter_invitation_code_view_controller_message", nil);
+    self.messageLabel.text = TwinmeLocalizedString(@"enter_invitation_code_view_message", nil);
     
     self.enterCodeViewTopConstraint.constant *= Design.HEIGHT_RATIO;
     self.enterCodeViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
@@ -559,12 +559,8 @@ static const CGFloat DESIGN_TEXTFIELD_MARGIN = 20;
     self.overlayView.backgroundColor = Design.OVERLAY_COLOR;
     self.overlayView.hidden = YES;
     
-    if (@available(iOS 13.0, *)) {
-        self.activityIndicatorView = [[UIActivityIndicatorView alloc]initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleMedium];
-        self.activityIndicatorView.color = [UIColor whiteColor];
-    } else {
-        self.activityIndicatorView = [[UIActivityIndicatorView alloc]initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
-    }
+    self.activityIndicatorView = [[UIActivityIndicatorView alloc]initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleMedium];
+    self.activityIndicatorView.color = [UIColor whiteColor];
     self.activityIndicatorView.hidesWhenStopped = YES;
     
     [self.overlayView addSubview:self.activityIndicatorView];
@@ -620,11 +616,11 @@ static const CGFloat DESIGN_TEXTFIELD_MARGIN = 20;
     DefaultConfirmView *defaultConfirmView = [[DefaultConfirmView alloc] init];
     defaultConfirmView.bottomSheetViewDelegate = self;
     
-    NSMutableString *message = [[NSMutableString alloc] initWithString: TwinmeLocalizedString(@"enter_invitation_code_view_controller_onboarding_message", nil)];
+    NSMutableString *message = [[NSMutableString alloc] initWithString: TwinmeLocalizedString(@"enter_invitation_code_view_onboarding_message", nil)];
     [message appendString:@"\n\n"];
-    [message appendString:TwinmeLocalizedString(@"enter_invitation_code_view_controller_certified_message", nil)];
+    [message appendString:TwinmeLocalizedString(@"enter_invitation_code_view_certified_message", nil)];
     
-    [defaultConfirmView initWithTitle:nil message:message image:[UIImage imageNamed:@"OnboardingMiniCode"] avatar:nil action:TwinmeLocalizedString(@"enter_invitation_code_view_controller_enter_code", nil) actionColor:nil cancel:TwinmeLocalizedString(@"application_do_not_display", nil)];
+    [defaultConfirmView initWithTitle:nil message:message image:[UIImage imageNamed:@"OnboardingMiniCode"] avatar:nil action:TwinmeLocalizedString(@"enter_invitation_code_view_enter_code", nil) actionColor:nil cancel:TwinmeLocalizedString(@"application_do_not_display", nil)];
     [defaultConfirmView useLargeImage];
     
     if (fromInfo) {
@@ -641,9 +637,9 @@ static const CGFloat DESIGN_TEXTFIELD_MARGIN = 20;
     InvitationCodeConfirmView *invitationCodeConfirmView = [[InvitationCodeConfirmView alloc] init];
     invitationCodeConfirmView.bottomSheetViewDelegate = self;
     
-    NSMutableString *message = [[NSMutableString alloc] initWithString:[NSString stringWithFormat:TwinmeLocalizedString(@"accept_invitation_view_controller_message %@", nil), twincodeOutbound.name]];
+    NSMutableString *message = [[NSMutableString alloc] initWithString:[NSString stringWithFormat:TwinmeLocalizedString(@"accept_invitation_view_message", nil), twincodeOutbound.name]];
     [message appendString:@"\n\n"];
-    [message appendString:TwinmeLocalizedString(@"enter_invitation_code_view_controller_invitation_message", nil)];
+    [message appendString:TwinmeLocalizedString(@"enter_invitation_code_view_invitation_message", nil)];
     
     [invitationCodeConfirmView initWithTitle:twincodeOutbound.name message:message avatar:avatar icon:[UIImage imageNamed:@"ActionBarAddContact"]];
     [self.navigationController.view addSubview:invitationCodeConfirmView];

@@ -129,14 +129,9 @@ static NSString *NOTIFICATION_CELL_IDENTIFIER = @"NotificationCellIdentifier";
     
     [super viewDidLoad];
     
-    if (@available(iOS 13.0, *)) {
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(applicationDidBecomeActive:)
-                                                     name:UISceneDidActivateNotification object:nil];
-    }
-    else {
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidBecomeActive:) name:UIApplicationDidBecomeActiveNotification object:nil];
-    }
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(applicationDidBecomeActive:)
+                                                 name:UISceneDidActivateNotification object:nil];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidEnterBackground:) name:UIApplicationDidEnterBackgroundNotification object:nil];
     
@@ -289,7 +284,10 @@ static NSString *NOTIFICATION_CELL_IDENTIFIER = @"NotificationCellIdentifier";
         self.openGroupFromNotification = NO;
         
         dispatch_async(dispatch_get_main_queue(), ^{
-            [[UIApplication sharedApplication].keyWindow makeToast:TwinmeLocalizedString(@"application_group_not_found",nil)];
+            UIWindow *window = [self currentWindow];
+            if (window) {
+                [window makeToast:TwinmeLocalizedString(@"application_group_not_found",nil)];
+            }
         });
     }
 }
@@ -470,7 +468,7 @@ static NSString *NOTIFICATION_CELL_IDENTIFIER = @"NotificationCellIdentifier";
     [self setNavigationTitle:TwinmeLocalizedString(@"application_notifications", nil)];
     
     self.resetNotificationBarButtonItem = [[UIBarButtonItem alloc]initWithImage:[UIImage imageNamed:@"ActionBarDelete"] style:UIBarButtonItemStylePlain target:self action:@selector(handleResetTapGesture:)];
-    self.resetNotificationBarButtonItem.accessibilityLabel = TwinmeLocalizedString(@"notification_view_controller_reset_title", nil);
+    self.resetNotificationBarButtonItem.accessibilityLabel = TwinmeLocalizedString(@"notifications_view_reset_title", nil);
     self.resetNotificationBarButtonItem.enabled = NO;
     self.navigationItem.rightBarButtonItem = self.resetNotificationBarButtonItem;
     
@@ -488,7 +486,7 @@ static NSString *NOTIFICATION_CELL_IDENTIFIER = @"NotificationCellIdentifier";
     
     self.noNotificationTitleLabel.font = Design.FONT_MEDIUM34;
     self.noNotificationTitleLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    self.noNotificationTitleLabel.text = TwinmeLocalizedString(@"notification_view_controller_no_notification_title", nil);
+    self.noNotificationTitleLabel.text = TwinmeLocalizedString(@"notifications_view_no_notification_title", nil);
     self.noNotificationTitleLabel.hidden = YES;
     
     self.noNotificationLabelWidthConstraint.constant *= Design.WIDTH_RATIO;
@@ -496,7 +494,7 @@ static NSString *NOTIFICATION_CELL_IDENTIFIER = @"NotificationCellIdentifier";
     
     self.noNotificationLabel.font = Design.FONT_MEDIUM28;
     self.noNotificationLabel.textColor = Design.FONT_COLOR_DESCRIPTION;
-    self.noNotificationLabel.text = TwinmeLocalizedString(@"notification_view_controller_no_notification_message", nil);
+    self.noNotificationLabel.text = TwinmeLocalizedString(@"notifications_view_no_notification_message", nil);
     self.noNotificationLabel.hidden = YES;
 }
 
@@ -537,6 +535,7 @@ static NSString *NOTIFICATION_CELL_IDENTIFIER = @"NotificationCellIdentifier";
         case TLNotificationTypeNewAudioMessage:
         case TLNotificationTypeNewVideoMessage:
         case TLNotificationTypeNewFileMessage:
+        case TLNotificationTypeNewPollMessage:
         case TLNotificationTypeUpdatedAnnotation:
         case TLNotificationTypeResetConversation: {
             if ([subject isKindOfClass:[TLGroup class]]) {
@@ -627,9 +626,9 @@ static NSString *NOTIFICATION_CELL_IDENTIFIER = @"NotificationCellIdentifier";
             DeleteConfirmView *deleteConfirmView = [[DeleteConfirmView alloc] init];
             deleteConfirmView.bottomSheetViewDelegate = self;
             deleteConfirmView.deleteConfirmType = DeleteConfirmTypeHistory;
-            NSString *message = [NSString stringWithFormat:@"%@\n\n%@", TwinmeLocalizedString(@"application_operation_irreversible", nil), TwinmeLocalizedString(@"notification_view_controller_reset", nil)];
-            [deleteConfirmView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:message avatar:image icon:[UIImage imageNamed:@"ActionBarDelete"]];
-            [deleteConfirmView setConfirmTitle:TwinmeLocalizedString(@"notification_view_controller_reset_title", nil)];
+            NSString *message = [NSString stringWithFormat:@"%@\n\n%@", TwinmeLocalizedString(@"application_operation_irreversible", nil), TwinmeLocalizedString(@"notifications_view_reset", nil)];
+            [deleteConfirmView initWithTitle:TwinmeLocalizedString(@"deleted_account_view_warning", nil) message:message avatar:image icon:[UIImage imageNamed:@"ActionBarDelete"]];
+            [deleteConfirmView setConfirmTitle:TwinmeLocalizedString(@"notifications_view_reset_title", nil)];
             
             [self.tabBarController.view addSubview:deleteConfirmView];
             [deleteConfirmView showConfirmView];

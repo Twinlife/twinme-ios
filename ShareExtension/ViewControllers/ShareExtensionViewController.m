@@ -9,8 +9,8 @@
 
 #import <CocoaLumberjack.h>
 
-#import <MobileCoreServices/UTCoreTypes.h>
-#import <MobileCoreServices/UTType.h>
+#import <UniformTypeIdentifiers/UTCoreTypes.h>
+#import <UniformTypeIdentifiers/UTType.h>
 
 #import <WebRTC/RTCLogging.h>
 #import <WebRTC/RTCSSLAdapter.h>
@@ -476,13 +476,13 @@ static const int GROUPS_VIEW_SECTION = 1;
     switch (section) {
         case CONTACTS_VIEW_SECTION: {
             if (self.uiContacts.count > 0)
-                sectionName = TwinmeLocalizedString(@"share_view_controller_contact_list_title", nil);
+                sectionName = TwinmeLocalizedString(@"share_view_contact_list", nil);
         }
             break;
             
         case GROUPS_VIEW_SECTION:
             if (self.uiGroups.count > 0) {
-                sectionName = TwinmeLocalizedString(@"share_view_controller_group_list_title", nil);
+                sectionName = TwinmeLocalizedString(@"share_view_group_list", nil);
             }
             break;
             
@@ -502,13 +502,13 @@ static const int GROUPS_VIEW_SECTION = 1;
     switch (section) {
         case CONTACTS_VIEW_SECTION:
             if (self.uiContacts.count > 0) {
-                sectionName = TwinmeLocalizedString(@"share_view_controller_contact_list_title", nil);
+                sectionName = TwinmeLocalizedString(@"share_view_contact_list", nil);
             }
             break;
             
         case GROUPS_VIEW_SECTION:
             if (self.uiGroups.count > 0) {
-                sectionName = TwinmeLocalizedString(@"share_view_controller_group_list_title", nil);
+                sectionName = TwinmeLocalizedString(@"share_view_group_list", nil);
             }
             break;
             
@@ -562,24 +562,15 @@ static const int GROUPS_VIEW_SECTION = 1;
     
     UIColor *backgroundColor = DesignExtension.NAVIGATION_BACKGROUND_COLOR;
     
-    if (@available(iOS 13.0, *)) {
-        UINavigationBarAppearance *navBarAppearance = [self.navigationController.navigationBar standardAppearance];
-        [navBarAppearance configureWithOpaqueBackground];
-        navBarAppearance.titleTextAttributes = @{NSFontAttributeName: DesignExtension.FONT_BOLD34, NSForegroundColorAttributeName: [UIColor whiteColor]};
-        navBarAppearance.largeTitleTextAttributes = @{NSFontAttributeName: DesignExtension.FONT_BOLD68, NSForegroundColorAttributeName: [UIColor whiteColor]};
-        navBarAppearance.backgroundColor = backgroundColor;
-        self.navigationController.navigationBar.standardAppearance = navBarAppearance;
-        self.navigationController.navigationBar.scrollEdgeAppearance = navBarAppearance;
-        self.navigationController.navigationBar.compactAppearance = navBarAppearance;
-        self.navigationController.navigationBar.tintColor = [UIColor whiteColor];
-    } else {
-        self.navigationController.navigationBar.translucent = NO;
-        self.navigationController.navigationBar.barTintColor = backgroundColor;
-        self.navigationController.navigationBar.tintColor = [UIColor whiteColor];
-        self.navigationController.navigationBar.backgroundColor = backgroundColor;
-        [self.navigationController.navigationBar setTitleTextAttributes:@{NSFontAttributeName: DesignExtension.FONT_REGULAR34, NSForegroundColorAttributeName: [UIColor whiteColor]}];
-        [self.navigationController.navigationBar setTitleTextAttributes:@{NSFontAttributeName: DesignExtension.FONT_BOLD34, NSForegroundColorAttributeName: [UIColor whiteColor]}];
-    }
+    UINavigationBarAppearance *navBarAppearance = [self.navigationController.navigationBar standardAppearance];
+    [navBarAppearance configureWithOpaqueBackground];
+    navBarAppearance.titleTextAttributes = @{NSFontAttributeName: DesignExtension.FONT_BOLD34, NSForegroundColorAttributeName: [UIColor whiteColor]};
+    navBarAppearance.largeTitleTextAttributes = @{NSFontAttributeName: DesignExtension.FONT_BOLD68, NSForegroundColorAttributeName: [UIColor whiteColor]};
+    navBarAppearance.backgroundColor = backgroundColor;
+    self.navigationController.navigationBar.standardAppearance = navBarAppearance;
+    self.navigationController.navigationBar.scrollEdgeAppearance = navBarAppearance;
+    self.navigationController.navigationBar.compactAppearance = navBarAppearance;
+    self.navigationController.navigationBar.tintColor = [UIColor whiteColor];
     
     self.navigationItem.title = TwinmeLocalizedString(@"application_name", nil).capitalizedString;
     
@@ -605,17 +596,12 @@ static const int GROUPS_VIEW_SECTION = 1;
     contactSearchBar.backgroundColor = DesignExtension.NAVIGATION_BACKGROUND_COLOR;
     contactSearchBar.delegate = self;
     
-    if (@available(iOS 13.0, *)) {
-        self.searchController.searchBar.backgroundColor = [UIColor whiteColor];
-        self.searchController.searchBar.searchTextField.backgroundColor = DesignExtension.POPUP_BACKGROUND_COLOR;
-        self.searchController.searchBar.searchTextField.tintColor = DesignExtension.FONT_COLOR_DEFAULT;
-        self.searchController.searchBar.searchTextField.textColor = DesignExtension.FONT_COLOR_DEFAULT;
-        self.searchController.searchBar.translucent = NO;
-        self.navigationItem.searchController = self.searchController;
-    } else {
-        self.contactsTableView.tableHeaderView = self.searchController.searchBar;
-        self.searchController.searchBar.backgroundColor = DesignExtension.NAVIGATION_BACKGROUND_COLOR;
-    }
+    self.searchController.searchBar.backgroundColor = [UIColor whiteColor];
+    self.searchController.searchBar.searchTextField.backgroundColor = DesignExtension.POPUP_BACKGROUND_COLOR;
+    self.searchController.searchBar.searchTextField.tintColor = DesignExtension.FONT_COLOR_DEFAULT;
+    self.searchController.searchBar.searchTextField.textColor = DesignExtension.FONT_COLOR_DEFAULT;
+    self.searchController.searchBar.translucent = NO;
+    self.navigationItem.searchController = self.searchController;
     
     self.contactsTableView.backgroundColor = DesignExtension.LIGHT_GREY_BACKGROUND_COLOR;
     self.contactsTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
@@ -628,11 +614,7 @@ static const int GROUPS_VIEW_SECTION = 1;
     [self.contactsTableView registerNib:[UINib nibWithNibName:@"ShareExtensionContactCell" bundle:nil] forCellReuseIdentifier:SHARE_EXTENSION_CONTACT_CELL_IDENTIFIER];
     [self.contactsTableView registerNib:[UINib nibWithNibName:@"ShareExtensionHeaderCell" bundle:nil] forCellReuseIdentifier:SHARE_EXTENSION_HEADER_CELL_IDENTIFIER];
     
-    if (@available(iOS 13.0, *)) {
-        self.activityIndicatorView = [[UIActivityIndicatorView alloc]initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleMedium];
-    } else {
-        self.activityIndicatorView = [[UIActivityIndicatorView alloc]initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
-    }
+    self.activityIndicatorView = [[UIActivityIndicatorView alloc]initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleMedium];
     self.activityIndicatorView.center = self.view.center;
     [self.activityIndicatorView hidesWhenStopped];
     
@@ -657,11 +639,11 @@ static const int GROUPS_VIEW_SECTION = 1;
 - (void)loadItem {
     DDLogVerbose(@"%@ loadItem", LOG_TAG);
     
-    NSString *typeIdentifierFileURL = (NSString *)kUTTypeFileURL;
-    NSString *typeIdentifierURL = (NSString *)kUTTypeURL;
-    NSString *typeIdentifierImage = (NSString *)kUTTypeImage;
-    NSString *typeIdentifierVideo = (NSString *)kUTTypeMovie;
-    NSString *typeIdentifierPlainText = (NSString *)kUTTypeText;
+    NSString *typeIdentifierFileURL = UTTypeFileURL.identifier;
+    NSString *typeIdentifierURL = UTTypeURL.identifier;
+    NSString *typeIdentifierImage = UTTypeImage.identifier;
+    NSString *typeIdentifierVideo = UTTypeMovie.identifier;
+    NSString *typeIdentifierPlainText = UTTypeText.identifier;
     NSExtensionItem *item = self.extensionContext.inputItems.firstObject;
     
     if (self.currentItem < item.attachments.count) {
@@ -846,28 +828,22 @@ static const int GROUPS_VIEW_SECTION = 1;
 - (BOOL)isImageFile:(NSString *)file {
     DDLogVerbose(@"%@ isImageFile: %@", LOG_TAG, file);
     
-    CFStringRef fileType = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (__bridge CFStringRef) [file pathExtension], NULL);
-    BOOL result = UTTypeConformsTo(fileType, kUTTypeImage);
-    CFRelease(fileType);
-    return result;
+    UTType *fileType = [UTType typeWithFilenameExtension:[file pathExtension]];
+    return [fileType conformsToType:UTTypeImage];
 }
 
 - (BOOL)isVideoFile:(NSString *)file {
     DDLogVerbose(@"%@ isVideoFile: %@", LOG_TAG, file);
     
-    CFStringRef fileType = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (__bridge CFStringRef) [file pathExtension], NULL);
-    BOOL result = UTTypeConformsTo(fileType, kUTTypeMovie);
-    CFRelease(fileType);
-    return result;
+    UTType *fileType = [UTType typeWithFilenameExtension:[file pathExtension]];
+    return [fileType conformsToType:UTTypeMovie];
 }
 
 - (BOOL)isAudioFile:(NSString *)file {
     DDLogVerbose(@"%@ isAudioFile: %@", LOG_TAG, file);
     
-    CFStringRef fileType = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (__bridge CFStringRef) [file pathExtension], NULL);
-    BOOL result = UTTypeConformsTo(fileType, kUTTypeAudio);
-    CFRelease(fileType);
-    return result;
+    UTType *fileType = [UTType typeWithFilenameExtension:[file pathExtension]];
+    return [fileType conformsToType:UTTypeAudio];
 }
 
 @end

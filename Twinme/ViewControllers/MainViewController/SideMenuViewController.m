@@ -39,8 +39,10 @@
 #import "CoachMarkViewController.h"
 
 #import <TwinmeCommon/ApplicationDelegate.h>
+#import <TwinmeCommon/Design.h>
 #import <TwinmeCommon/MainViewController.h>
 #import <TwinmeCommon/TwinmeNavigationController.h>
+#import <TwinmeCommon/UIViewController+Utils.h>
 #import "TabBarViewController.h"
 #import "UIProfile.h"
 #import "UIPremiumFeature.h"
@@ -49,8 +51,6 @@
 #import "MenuAddContactView.h"
 
 #import "LastVersionManager.h"
-
-#import <TwinmeCommon/Design.h>
 
 #if 0
 static const int ddLogLevel = DDLogLevelVerbose;
@@ -255,15 +255,15 @@ static NSString *HEADER_SETTINGS_CELL_IDENTIFIER = @"HeaderSettingsCellIdentifie
             break;
             
         case SETTINGS_VIEW_SECTION:
-            sectionName = TwinmeLocalizedString(@"side_menu_view_controller_application_settings", nil);
+            sectionName = TwinmeLocalizedString(@"navigation_view_application_settings", nil);
             break;
             
         case SUPPORT_VIEW_SECTION:
-            sectionName = TwinmeLocalizedString(@"side_menu_view_controller_support", nil);
+            sectionName = TwinmeLocalizedString(@"navigation_view_support", nil);
             break;
             
         case LOGOUT_VIEW_SECTION:
-            sectionName = TwinmeLocalizedString(@"side_menu_view_controller_sign_out", nil);
+            sectionName = TwinmeLocalizedString(@"navigation_view_sign_out", nil);
             break;
             
         default:
@@ -326,7 +326,7 @@ static NSString *HEADER_SETTINGS_CELL_IDENTIFIER = @"HeaderSettingsCellIdentifie
         if (self.uiProfile) {
             [cell bindWithName:self.uiProfile.name avatar:self.uiProfile.avatar];
         } else {
-            [cell bindWithName:TwinmeLocalizedString(@"profiles_view_controller_add_profile", nil) avatar:[TLContact ANONYMOUS_AVATAR]];
+            [cell bindWithName:TwinmeLocalizedString(@"profile_view_add_profile", nil) avatar:[TLContact ANONYMOUS_AVATAR]];
         }
         
         return cell;
@@ -346,41 +346,41 @@ static NSString *HEADER_SETTINGS_CELL_IDENTIFIER = @"HeaderSettingsCellIdentifie
                     title = TwinmeLocalizedString(@"application_appearance", nil);
                 } else if (indexPath.row == 1) {
                     hiddenAccessory = NO;
-                    title = TwinmeLocalizedString(@"settings_view_controller_chat_category_title", nil);
+                    title = TwinmeLocalizedString(@"settings_view_chat_category_title", nil);
                 } else if (indexPath.row == 2) {
                     hiddenAccessory = NO;
                     title = TwinmeLocalizedString(@"application_notifications", nil);
                 } else if (indexPath.row == 3) {
                     hiddenAccessory = NO;
-                    title = TwinmeLocalizedString(@"privacy_view_controller_title", nil);
+                    title = TwinmeLocalizedString(@"privacy_view_title", nil);
                 } else if (indexPath.row == 4) {
                     hiddenAccessory = NO;
-                    title = TwinmeLocalizedString(@"premium_services_view_controller_transfert_title", nil);
+                    title = TwinmeLocalizedString(@"premium_services_view_transfert_title", nil);
                 } else if (indexPath.row == 5) {
                     hiddenAccessory = NO;
-                    title = TwinmeLocalizedString(@"settings_advanced_view_controller_title", nil);
+                    title = TwinmeLocalizedString(@"settings_advanced_view_title", nil);
                 }
                 break;
                 
             case SUPPORT_VIEW_SECTION:
                 if (indexPath.row == 0) {
                     hiddenAccessory = NO;
-                    title = TwinmeLocalizedString(@"side_menu_view_controller_help", nil);
+                    title = TwinmeLocalizedString(@"navigation_view_help", nil);
                 } else if (indexPath.row == 1) {
                     hiddenAccessory = NO;
-                    title = TwinmeLocalizedString(@"side_menu_view_controller_about", nil);
+                    title = TwinmeLocalizedString(@"navigation_view_about_twinme", nil);
                 } else if (indexPath.row == 2) {
                     hiddenAccessory = NO;
-                    title = TwinmeLocalizedString(@"account_view_controller_title", nil);
+                    title = TwinmeLocalizedString(@"account_view_title", nil);
                 } else if (indexPath.row == 3) {
                     hiddenAccessory = NO;
-                    title = TwinmeLocalizedString(@"migration_twinme_plus_view_controller_upgrade_title", nil);
+                    title = TwinmeLocalizedString(@"migration_twinme_plus_view_premium_title", nil);
                 }
                 break;
                 
             case LOGOUT_VIEW_SECTION:
                 hiddenAccessory = YES;
-                title = TwinmeLocalizedString(@"side_menu_view_controller_sign_out", nil);
+                title = TwinmeLocalizedString(@"navigation_view_sign_out", nil);
                 break;
                 
             default:
@@ -391,7 +391,7 @@ static NSString *HEADER_SETTINGS_CELL_IDENTIFIER = @"HeaderSettingsCellIdentifie
             [cell bindWithTitle:title hiddenAccessory:hiddenAccessory disableSetting:NO updateAvailable:[self.twinmeApplication.lastVersionManager isNewVersionAvailable] color:Design.FONT_COLOR_DEFAULT];
         } else if (indexPath.section == SUPPORT_VIEW_SECTION && indexPath.row == 2) {
             cell.delegate = self;
-            [cell bindWithTitle:title hiddenAccessory:hiddenAccessory disableSetting:NO color:Design.FONT_COLOR_DEFAULT badgeTitle:TwinmeLocalizedString(@"application_new", nil)];
+            [cell bindWithTitle:title hiddenAccessory:hiddenAccessory disableSetting:NO color:Design.FONT_COLOR_DEFAULT badgeTitle:TwinmeLocalizedString(@"application_new", nil) showNotification:[self.twinmeApplication showBackupWarning]];
         } else {
             [cell bindWithTitle:title hiddenAccessory:hiddenAccessory disableSetting:NO color:Design.FONT_COLOR_DEFAULT];
         }
@@ -538,11 +538,9 @@ static NSString *HEADER_SETTINGS_CELL_IDENTIFIER = @"HeaderSettingsCellIdentifie
     TwinmeNavigationController *twinmeNavigationController = [mainViewController selectedViewController];
     
     if (self.defaultProfile) {
-        if ([mainViewController getSelectedTab] != 0) {
-            ShowProfileViewController *showProfileViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"ShowProfileViewController"];
-            [showProfileViewController initWithProfile:self.defaultProfile isActive:YES];
-            [twinmeNavigationController pushViewController:showProfileViewController animated:YES];
-        }
+        ShowProfileViewController *showProfileViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"ShowProfileViewController"];
+        [showProfileViewController initWithProfile:self.defaultProfile isActive:YES];
+        [twinmeNavigationController pushViewController:showProfileViewController animated:YES];
     } else {
         AddProfileViewController *addProfileViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"AddProfileViewController"];
         addProfileViewController.firstProfile = YES;
@@ -622,9 +620,7 @@ static NSString *HEADER_SETTINGS_CELL_IDENTIFIER = @"HeaderSettingsCellIdentifie
     DDLogVerbose(@"%@ initViews", LOG_TAG);
     
     self.view.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
-    
-    [self setNavigationTitle:TwinmeLocalizedString(@"side_menu_view_controller_title", nil).capitalizedString];
-    
+        
     self.navigationItem.titleView.userInteractionEnabled = YES;
     UITapGestureRecognizer *titleLabelGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleHiddenModeTapGesture:)];
     titleLabelGesture.numberOfTapsRequired = NUMBER_TAP_HIDDEN_MODE;
@@ -675,10 +671,16 @@ static NSString *HEADER_SETTINGS_CELL_IDENTIFIER = @"HeaderSettingsCellIdentifie
             CGRect rectCell = [self.tableView rectForRowAtIndexPath:[NSIndexPath indexPathForRow:3 inSection:SETTINGS_VIEW_SECTION]];
             self.coachMarkViewController = (CoachMarkViewController *)[self.storyboard instantiateViewControllerWithIdentifier:@"CoachMarkViewController"];
             
-            UIWindow *window = UIApplication.sharedApplication.keyWindow;
-            CGFloat safeAreaInset = window.safeAreaInsets.top;
+            UIWindow *window = [self currentWindow];
+            CGFloat safeAreaInset;
+            if (window) {
+                safeAreaInset = window.safeAreaInsets.top;
+            } else {
+                safeAreaInset = self.view.safeAreaInsets.top;
+            }
+            
             CGRect clipRect = CGRectMake(self.tableView.frame.origin.x + rectCell.origin.x, self.tableView.frame.origin.y + rectCell.origin.y + safeAreaInset, rectCell.size.width, rectCell.size.height);
-            CoachMark *coachMark = [[CoachMark alloc]initWithMessage:TwinmeLocalizedString(@"side_menu_view_controller_privacy_coach_mark", nil) tag:TAG_COACH_MARK_PRIVACY alignLeft:YES onTop:NO featureRect:clipRect featureRadius:0];
+            CoachMark *coachMark = [[CoachMark alloc]initWithMessage:TwinmeLocalizedString(@"privacy_view_coach_mark", nil) tag:TAG_COACH_MARK_PRIVACY alignLeft:YES onTop:NO featureRect:clipRect featureRadius:0];
             [self.coachMarkViewController initWithCoachMark:coachMark];
             self.coachMarkViewController.delegate = self;
             [self.coachMarkViewController showInView:self];

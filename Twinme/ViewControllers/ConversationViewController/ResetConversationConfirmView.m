@@ -50,7 +50,7 @@ static const int ddLogLevel = DDLogLevelWarning;
     
     [super initViews];
     
-    self.confirmLabel.text = TwinmeLocalizedString(@"main_view_controller_reset_conversation_title", nil);
+    self.confirmLabel.text = TwinmeLocalizedString(@"main_view_reset_conversation_title", nil);
     
     self.iconView.backgroundColor = Design.DELETE_COLOR_RED;
     self.bulletView.backgroundColor = Design.DELETE_COLOR_RED;

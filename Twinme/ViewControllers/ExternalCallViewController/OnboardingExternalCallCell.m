@@ -96,7 +96,7 @@ static const CGFloat DESIGN_DO_NOT_SHOW_VIEW_HEIGHT = 140;
     self.createLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
     self.createLabel.font = Design.FONT_BOLD36;
     self.createLabel.textColor = [UIColor whiteColor];
-    self.createLabel.text = TwinmeLocalizedString(@"history_view_controller_create_link", nil);
+    self.createLabel.text = TwinmeLocalizedString(@"calls_view_create_link", nil);
     
     self.doNotShowLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
     self.doNotShowLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
@@ -132,7 +132,7 @@ static const CGFloat DESIGN_DO_NOT_SHOW_VIEW_HEIGHT = 140;
             self.doNotShowViewHeightConstraint.constant = 0;
             self.onboardingTextViewBottomConstraint.constant = self.createViewHeightConstraint.constant;
         } else {
-            self.createLabel.text = TwinmeLocalizedString(@"history_view_controller_create_link", nil);
+            self.createLabel.text = TwinmeLocalizedString(@"calls_view_create_link", nil);
             self.doNotShowViewHeightConstraint.constant = DESIGN_DO_NOT_SHOW_VIEW_HEIGHT * Design.HEIGHT_RATIO;
             self.createViewBottomConstraint.constant = DESIGN_DO_NOT_SHOW_VIEW_HEIGHT * Design.HEIGHT_RATIO;
             self.onboardingTextViewBottomConstraint.constant = DESIGN_TEXT_BOTTOM * Design.HEIGHT_RATIO;

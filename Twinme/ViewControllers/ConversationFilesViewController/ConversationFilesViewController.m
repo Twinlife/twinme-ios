@@ -43,6 +43,7 @@
 #import <TwinmeCommon/AsyncManager.h>
 #import <TwinmeCommon/ConversationFilesService.h>
 #import <TwinmeCommon/Design.h>
+#import <TwinmeCommon/UIViewController+Utils.h>
 
 #if 0
 static const int ddLogLevel = DDLogLevelVerbose;
@@ -122,8 +123,12 @@ typedef enum {
     }
     DESIGN_MEDIA_CELL_SIZE = Design.DISPLAY_WIDTH / mediaPerLine;
     
-    UIWindow *window = UIApplication.sharedApplication.keyWindow;
-    DESIGN_SAFE_AREA_HEIGHT_INSET = window.safeAreaInsets.bottom;
+    UIWindow *window = [UIViewController currentWindow];
+    if (window) {
+        DESIGN_SAFE_AREA_HEIGHT_INSET = window.safeAreaInsets.bottom;
+    } else {
+        DESIGN_SAFE_AREA_HEIGHT_INSET = 0;
+    }
 }
 
 - (instancetype)initWithCoder:(NSCoder *)coder {
@@ -208,10 +213,7 @@ typedef enum {
                 case ItemTypeLink:
                 case ItemTypePeerLink: {
                     LinkCell *linkCell = (LinkCell *)[self.filesCollectionView cellForItemAtIndexPath:indexPath];
-                    BOOL showPreview = NO;
-                    if (@available(iOS 13.0, *)) {
-                        showPreview = self.twinmeApplication.visualizationLink;
-                    }
+                    BOOL showPreview = self.twinmeApplication.visualizationLink;
                     [linkCell bindWithItem:item asyncManager:self.asyncLoaderManager isSelectable:self.isSelectMode showPreview:showPreview];
                     break;
                 }
@@ -434,10 +436,7 @@ typedef enum {
     } else {
         LinkCell *linkCell = [collectionView dequeueReusableCellWithReuseIdentifier:LINK_CELL_IDENTIFIER forIndexPath:indexPath];
         
-        BOOL showPreview = NO;
-        if (@available(iOS 13.0, *)) {
-            showPreview = self.twinmeApplication.visualizationLink;
-        }
+        BOOL showPreview = self.twinmeApplication.visualizationLink;
         
         [linkCell bindWithItem:item asyncManager:self.asyncLoaderManager isSelectable:self.isSelectMode showPreview:showPreview];
         return linkCell;
@@ -597,7 +596,7 @@ typedef enum {
         DeleteConfirmView *deleteConfirmView = [[DeleteConfirmView alloc] init];
         deleteConfirmView.bottomSheetViewDelegate = self;
         deleteConfirmView.deleteConfirmType = DeleteConfirmTypeFile;
-        [deleteConfirmView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:TwinmeLocalizedString(@"cleanup_view_controller_delete_confirmation_message", nil) avatar:image icon:[UIImage imageNamed:@"ActionBarDelete"]];
+        [deleteConfirmView initWithTitle:TwinmeLocalizedString(@"deleted_account_view_warning", nil) message:TwinmeLocalizedString(@"cleanup_view_delete_confirmation_message", nil) avatar:image icon:[UIImage imageNamed:@"ActionBarDelete"]];
        
         [self.navigationController.view addSubview:deleteConfirmView];
         [deleteConfirmView showConfirmView];
@@ -679,7 +678,7 @@ typedef enum {
     
     self.noFilesLabel.font = Design.FONT_MEDIUM28;
     self.noFilesLabel.textColor = Design.FONT_COLOR_DESCRIPTION;
-    self.noFilesLabel.text = [NSString stringWithFormat: TwinmeLocalizedString(@"conversation_files_view_controller_no_files", nil), self.originator.name];
+    self.noFilesLabel.text = [NSString stringWithFormat: TwinmeLocalizedString(@"conversation_files_view_no_files", nil), self.originator.name];
     self.noFilesLabel.hidden = YES;
     
     self.itemSelectedActionViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
@@ -694,10 +693,10 @@ typedef enum {
     DDLogVerbose(@"%@ initCustomTab", LOG_TAG);
     
     NSMutableArray *customTabs = [[NSMutableArray alloc]init];
-    [customTabs addObject:[[UICustomTab alloc]initWithTitle:TwinmeLocalizedString(@"export_view_controller_images", nil) tag:TLTypeFileImage isSelected:YES]];
-    [customTabs addObject:[[UICustomTab alloc]initWithTitle:TwinmeLocalizedString(@"export_view_controller_videos", nil) tag:TLTypeFileVideo isSelected:NO]];
-    [customTabs addObject:[[UICustomTab alloc]initWithTitle:TwinmeLocalizedString(@"conversation_files_view_controller_documents", nil) tag:TLTypeFileDocument isSelected:NO]];
-    [customTabs addObject:[[UICustomTab alloc]initWithTitle:TwinmeLocalizedString(@"conversation_files_view_controller_links", nil) tag:TLTypeFileLink isSelected:NO]];
+    [customTabs addObject:[[UICustomTab alloc]initWithTitle:TwinmeLocalizedString(@"export_view_images", nil) tag:TLTypeFileImage isSelected:YES]];
+    [customTabs addObject:[[UICustomTab alloc]initWithTitle:TwinmeLocalizedString(@"export_view_videos", nil) tag:TLTypeFileVideo isSelected:NO]];
+    [customTabs addObject:[[UICustomTab alloc]initWithTitle:TwinmeLocalizedString(@"conversation_files_view_documents", nil) tag:TLTypeFileDocument isSelected:NO]];
+    [customTabs addObject:[[UICustomTab alloc]initWithTitle:TwinmeLocalizedString(@"conversation_files_view_links", nil) tag:TLTypeFileLink isSelected:NO]];
     
     self.customTabView = [[CustomTabView alloc] initWithCustomTab:customTabs];
     self.customTabView.customTabViewDelegate = self;

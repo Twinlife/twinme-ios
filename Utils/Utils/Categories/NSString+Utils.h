@@ -28,13 +28,15 @@
 
 + (nonnull NSString *)formatCallTimeInterval:(NSTimeInterval)interval;
 
-+ (nonnull NSString *)formatBackupTimeInterval:(NSTimeInterval)interval;
++ (nonnull NSString *)formatBackupTimeInterval:(NSTimeInterval)interval isLastBackup:(BOOL)isLastBackup;
 
 + (nonnull NSString *)formatItemTimeInterval:(NSTimeInterval)interval;
 
 + (nonnull NSString *)localizedStringForKey:(nonnull NSString *)key replaceValue:(nullable NSString *)comment;
 
 + (nonnull NSString *)firstCharacter:(nonnull NSString *)string;
+
++ (nonnull NSString *)capitalizeFirstCharacter:(nonnull NSString *)string;
 
 + (nonnull NSString *)convertEmoji:(nonnull NSString *)string;
 

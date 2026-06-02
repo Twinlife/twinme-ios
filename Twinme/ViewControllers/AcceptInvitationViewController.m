@@ -237,19 +237,19 @@ static const CGFloat DESIGN_CANCEL_HEIGHT = 140;
     if (errorCode != TLBaseServiceErrorCodeSuccess) {
         [self incorrectQRCode:errorCode];
     } else if (uri.kind != TLTwincodeURIKindInvitation) {
-        NSString *message = TwinmeLocalizedString(@"capture_view_controller_incorrect_qrcode", nil);
+        NSString *message = TwinmeLocalizedString(@"capture_view_incorrect_qrcode", nil);
         
         switch (uri.kind) {
             case TLTwincodeURIKindCall:
-                message = TwinmeLocalizedString(@"add_contact_view_controller_scan_message_call_link", nil);
+                message = TwinmeLocalizedString(@"add_contact_view_scan_message_call_link", nil);
                 break;
                 
             case TLTwincodeURIKindAccountMigration:
-                message = TwinmeLocalizedString(@"add_contact_view_controller_scan_message_migration_link", nil);
+                message = TwinmeLocalizedString(@"add_contact_view_scan_message_migration_link", nil);
                 break;
                 
             case TLTwincodeURIKindTransfer:
-                message = TwinmeLocalizedString(@"add_contact_view_controller_scan_message_transfer_link", nil);
+                message = TwinmeLocalizedString(@"add_contact_view_scan_message_transfer_link", nil);
                 break;
                 
             default:
@@ -258,7 +258,7 @@ static const CGFloat DESIGN_CANCEL_HEIGHT = 140;
         
         AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
         alertMessageView.alertMessageViewDelegate = self;
-        [alertMessageView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:message];
+        [alertMessageView initWithTitle:TwinmeLocalizedString(@"deleted_account_view_warning", nil) message:message];
         [self.tabBarController.view addSubview:alertMessageView];
         [alertMessageView showAlertView];
     }
@@ -283,7 +283,7 @@ static const CGFloat DESIGN_CANCEL_HEIGHT = 140;
     
     AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
     alertMessageView.alertMessageViewDelegate = self;
-    [alertMessageView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:TwinmeLocalizedString(@"add_contact_view_controller_scan_error_revoked_link", nil)];
+    [alertMessageView initWithTitle:TwinmeLocalizedString(@"deleted_account_view_warning", nil) message:TwinmeLocalizedString(@"add_contact_view_scan_error_revoked_link", nil)];
     [self.view addSubview:alertMessageView];
     [alertMessageView showAlertView];
 }
@@ -295,7 +295,7 @@ static const CGFloat DESIGN_CANCEL_HEIGHT = 140;
     
     AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
     alertMessageView.alertMessageViewDelegate = self;
-    [alertMessageView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:TwinmeLocalizedString(@"add_contact_view_controller_scan_error_revoked_link", nil)];
+    [alertMessageView initWithTitle:TwinmeLocalizedString(@"deleted_account_view_warning", nil) message:TwinmeLocalizedString(@"add_contact_view_scan_error_revoked_link", nil)];
     [self.view addSubview:alertMessageView];
     [alertMessageView showAlertView];
 }
@@ -309,7 +309,7 @@ static const CGFloat DESIGN_CANCEL_HEIGHT = 140;
     
     AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
     alertMessageView.alertMessageViewDelegate = self;
-    [alertMessageView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:TwinmeLocalizedString(@"accept_invitation_view_controller_local_twincode", nil)];
+    [alertMessageView initWithTitle:TwinmeLocalizedString(@"deleted_account_view_warning", nil) message:TwinmeLocalizedString(@"accept_invitation_view_local_twincode", nil)];
     [self.view addSubview:alertMessageView];
     [alertMessageView showAlertView];
 }
@@ -327,10 +327,10 @@ static const CGFloat DESIGN_CANCEL_HEIGHT = 140;
     
     if (contacts.count > 0) {
         self.hasExistingContact = YES;
-        self.messageLabel.text = TwinmeLocalizedString(@"add_contact_view_controller_existing_contact_message", nil);
+        self.messageLabel.text = TwinmeLocalizedString(@"accept_invitation_view_existing_contact_message", nil);
     } else {
         self.hasExistingContact = NO;
-        self.messageLabel.text = [NSString stringWithFormat:TwinmeLocalizedString(@"accept_invitation_view_controller_message %@", nil), self.contactName];
+        self.messageLabel.text = [NSString stringWithFormat:TwinmeLocalizedString(@"accept_invitation_view_message", nil), self.contactName];
     }
 }
 
@@ -489,7 +489,7 @@ static const CGFloat DESIGN_CANCEL_HEIGHT = 140;
     
     if (self.contactName) {
         NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:self.contactName attributes:[NSDictionary dictionaryWithObjectsAndKeys: Design.FONT_BOLD44, NSFontAttributeName, Design.FONT_COLOR_DEFAULT, NSForegroundColorAttributeName, nil]];
-        if (![self.contactDescription isEqual:@""] && ![self.contactDescription isEqual:TwinmeLocalizedString(@"side_menu_view_controller_about", nil)]) {
+        if (![self.contactDescription isEqual:@""] && ![self.contactDescription isEqual:TwinmeLocalizedString(@"navigation_view_about_twinme", nil)]) {
             [attributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:@"\n"]];
             [attributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:self.contactDescription attributes:[NSDictionary dictionaryWithObjectsAndKeys: Design.FONT_MEDIUM30, NSFontAttributeName, Design.FONT_COLOR_GREY, NSForegroundColorAttributeName, nil]]];
         }
@@ -502,7 +502,7 @@ static const CGFloat DESIGN_CANCEL_HEIGHT = 140;
     
     self.messageLabel.font = Design.FONT_MEDIUM38;
     self.messageLabel.textColor = Design.FONT_COLOR_GREY;
-    self.messageLabel.text = [NSString stringWithFormat:TwinmeLocalizedString(@"accept_invitation_view_controller_message %@", nil), self.contactName];
+    self.messageLabel.text = [NSString stringWithFormat:TwinmeLocalizedString(@"accept_invitation_view_message", nil), self.contactName];
 
     self.iconViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
    
@@ -551,10 +551,14 @@ static const CGFloat DESIGN_CANCEL_HEIGHT = 140;
     
     UITapGestureRecognizer *cancelViewGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleCancelTapGesture:)];
     [self.cancelView addGestureRecognizer:cancelViewGestureRecognizer];
+        
+    UIWindow *window = [self currentWindow];
+    if (window) {
+        self.cancelViewBottomConstraint.constant = window.safeAreaInsets.bottom;
+    } else {
+        self.cancelViewBottomConstraint.constant = self.view.safeAreaInsets.bottom;
+    }
     
-    UIWindow *window = UIApplication.sharedApplication.keyWindow;
-    self.cancelViewBottomConstraint.constant = window.safeAreaInsets.bottom;
-
     self.cancelLabel.font = Design.FONT_MEDIUM38;
     self.cancelLabel.textColor = Design.FONT_COLOR_DEFAULT;
     self.cancelLabel.text = TwinmeLocalizedString(@"application_cancel", nil);
@@ -617,7 +621,7 @@ static const CGFloat DESIGN_CANCEL_HEIGHT = 140;
             defaultConfirmView.bottomSheetViewDelegate = self;
 
             UIImage *image = [self.twinmeApplication darkModeEnable:[self currentSpaceSettings]] ?  [UIImage imageNamed:@"OnboardingAddProfileDark"] : [UIImage imageNamed:@"OnboardingAddProfile"];
-            [defaultConfirmView initWithTitle:TwinmeLocalizedString(@"create_profile_view_controller_title", nil) message:TwinmeLocalizedString(@"application_add_contact_no_profile", nil) image:image avatar:nil action:TwinmeLocalizedString(@"show_profile_view_controller_create_profile", nil) actionColor:nil cancel:nil];
+            [defaultConfirmView initWithTitle:TwinmeLocalizedString(@"create_profile_view_title", nil) message:TwinmeLocalizedString(@"application_add_contact_no_profile", nil) image:image avatar:nil action:TwinmeLocalizedString(@"profile_view_create_profile", nil) actionColor:nil cancel:nil];
             [self.view addSubview:defaultConfirmView];
             [defaultConfirmView showConfirmView];
         } else if (self.hasTwincode) {
@@ -653,7 +657,7 @@ static const CGFloat DESIGN_CANCEL_HEIGHT = 140;
         
     AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
     alertMessageView.alertMessageViewDelegate = self;
-    [alertMessageView initWithTitle:TwinmeLocalizedString(@"application_error", nil) message:TwinmeLocalizedString(@"accept_invitation_view_controller_incorrect_contact_information", nil)];
+    [alertMessageView initWithTitle:TwinmeLocalizedString(@"application_error", nil) message:TwinmeLocalizedString(@"accept_invitation_view_incorrect_contact_information", nil)];
     [self.tabBarController.view addSubview:alertMessageView];
     [alertMessageView showAlertView];
 }
@@ -665,29 +669,29 @@ static const CGFloat DESIGN_CANCEL_HEIGHT = 140;
     
     switch (errorCode) {
         case TLBaseServiceErrorCodeBadRequest:
-            message = TwinmeLocalizedString(@"add_contact_view_controller_scan_error_incorect_link", nil);
+            message = TwinmeLocalizedString(@"add_contact_view_scan_error_incorrect_link", nil);
             break;
             
         case TLBaseServiceErrorCodeFeatureNotImplemented:
-            message = TwinmeLocalizedString(@"add_contact_view_controller_scan_error_not_managed_link", nil);
+            message = TwinmeLocalizedString(@"add_contact_view_scan_error_not_managed_link", nil);
             break;
             
         case TLBaseServiceErrorCodeItemNotFound:
-            message = TwinmeLocalizedString(@"add_contact_view_controller_scan_error_corrupt_link", nil);
+            message = TwinmeLocalizedString(@"add_contact_view_scan_error_corrupt_link", nil);
             break;
             
         case TLBaseServiceErrorCodeExpired:
-            message = TwinmeLocalizedString(@"add_contact_view_controller_scan_error_expired_link", nil);
+            message = TwinmeLocalizedString(@"add_contact_view_scan_error_expired_link", nil);
             break;
             
         default:
-            message = TwinmeLocalizedString(@"capture_view_controller_incorrect_qrcode", nil);
+            message = TwinmeLocalizedString(@"capture_view_incorrect_qrcode", nil);
             break;
     }
     
     AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
     alertMessageView.alertMessageViewDelegate = self;
-    [alertMessageView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:message];
+    [alertMessageView initWithTitle:TwinmeLocalizedString(@"deleted_account_view_warning", nil) message:message];
     [self.tabBarController.view addSubview:alertMessageView];
     [alertMessageView showAlertView];
 }
@@ -707,7 +711,7 @@ static const CGFloat DESIGN_CANCEL_HEIGHT = 140;
         self.confirmView.hidden = NO;
         self.cancelView.hidden = NO;
         NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:self.contactName attributes:[NSDictionary dictionaryWithObjectsAndKeys: Design.FONT_BOLD44, NSFontAttributeName, Design.FONT_COLOR_DEFAULT, NSForegroundColorAttributeName, nil]];
-        if (self.contactDescription && ![self.contactDescription isEqual:@""] && ![self.contactDescription isEqual:TwinmeLocalizedString(@"side_menu_view_controller_about", nil)]) {
+        if (self.contactDescription && ![self.contactDescription isEqual:@""] && ![self.contactDescription isEqual:TwinmeLocalizedString(@"navigation_view_about_twinme", nil)]) {
             [attributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:@"\n"]];
             [attributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:self.contactDescription attributes:[NSDictionary dictionaryWithObjectsAndKeys: Design.FONT_MEDIUM30, NSFontAttributeName, Design.FONT_COLOR_GREY, NSForegroundColorAttributeName, nil]]];
         }
@@ -717,9 +721,9 @@ static const CGFloat DESIGN_CANCEL_HEIGHT = 140;
         self.avatarView.image = self.contactAvatar;
             
         if (self.hasExistingContact ) {
-            self.messageLabel.text = TwinmeLocalizedString(@"add_contact_view_controller_existing_contact_message", nil);
+            self.messageLabel.text = TwinmeLocalizedString(@"accept_invitation_view_existing_contact_message", nil);
         } else {
-            self.messageLabel.text = [NSString stringWithFormat:TwinmeLocalizedString(@"accept_invitation_view_controller_message %@", nil), self.contactName];
+            self.messageLabel.text = [NSString stringWithFormat:TwinmeLocalizedString(@"accept_invitation_view_message", nil), self.contactName];
         }
     } else {
         self.avatarContainerViewHeightConstraint.constant = 0;
@@ -732,7 +736,7 @@ static const CGFloat DESIGN_CANCEL_HEIGHT = 140;
         self.nameLabel.hidden = YES;
         self.confirmView.hidden = YES;
         self.cancelView.hidden = YES;
-        self.messageLabel.text = [NSString stringWithFormat:@"%@\n%@", TwinmeLocalizedString(@"accept_invitation_view_controller_being_transferred", nil), TwinmeLocalizedString(@"accept_invitation_view_controller_check_connection", nil)];
+        self.messageLabel.text = [NSString stringWithFormat:@"%@\n%@", TwinmeLocalizedString(@"accept_invitation_view_being_transferred", nil), TwinmeLocalizedString(@"accept_invitation_view_check_connection", nil)];
     }
 }
 

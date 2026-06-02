@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2017-2023 twinlife SA.
+ *  Copyright (c) 2017-2026 twinlife SA.
  *  SPDX-License-Identifier: AGPL-3.0-only
  *
  *  Contributors:
@@ -7,12 +7,28 @@
  *   Chedi Baccari (Chedi.Baccari@twinlife-systems.com)
  *   Fabrice Trescartes (Fabrice.Trescartes@twin.life)
  *   Stephane Carrez (Stephane.Carrez@twin.life)
+ *   Romain Kolb (romain.kolb@skyrock.com)
  */
 
 #import <Twinlife/TLConversationService.h>
 
 #import "Item.h"
 #import "ConversationViewController.h"
+
+@implementation AnnotationWithCount
+
+- (nonnull instancetype)initWithAnnotation:(nonnull TLDescriptorAnnotation *)annotation count:(int)count {
+    self = [super init];
+    
+    if (self) {
+        _annotation = annotation;
+        _count = count;
+    }
+    
+    return self;
+}
+
+@end
 
 //
 // Interface: Item ()
@@ -22,6 +38,8 @@
 
 @property CGFloat deleteProgressValue;
 @property NSTimer *timer;
+
++ (nonnull NSArray<AnnotationWithCount *> *)getLikesWithCount:(nonnull TLDescriptor *)descriptor;
 
 @end
 
@@ -71,7 +89,8 @@
         _copyAllowed = NO;
         _selected = NO;
         _forwarded = [descriptor getDescriptorAnnotationWithType:TLDescriptorAnnotationTypeForwarded] != nil;
-        _likeDescriptorAnnotations = [descriptor getDescriptorAnnotationsWithType:TLDescriptorAnnotationTypeLike];
+        _errorAnnotation = [descriptor getDescriptorAnnotationWithType:TLDescriptorAnnotationTypeError];
+        _likeDescriptorAnnotations = [Item getLikesWithCount:descriptor];
         _mode = ItemModeNormal;
         _replyAllowed = YES;
 
@@ -86,6 +105,7 @@
     
     if (self) {
         _replyToDescriptor = replyToDescriptor;
+        _likeDescriptorAnnotations = [Item getLikesWithCount:descriptor];
     }
     
     return self;
@@ -117,6 +137,7 @@
         _replyAllowed = YES;
         
         _deleteProgressValue = 0;
+        _likeDescriptorAnnotations = [NSArray array];
     }
     return self;
 }
@@ -221,7 +242,8 @@
 - (void)updateAnnotationsWithDescriptor:(TLDescriptor *)descriptor {
     
     self.forwarded = [descriptor getDescriptorAnnotationWithType:TLDescriptorAnnotationTypeForwarded] != nil;
-    self.likeDescriptorAnnotations = [descriptor getDescriptorAnnotationsWithType:TLDescriptorAnnotationTypeLike];
+    self.errorAnnotation = [descriptor getDescriptorAnnotationWithType:TLDescriptorAnnotationTypeError];
+    self.likeDescriptorAnnotations = [Item getLikesWithCount:descriptor];
 }
 
 - (void)updateTimestampsWithDescriptor:(TLDescriptor *)descriptor {
@@ -369,6 +391,29 @@
     });
 
     return descriptor;
+}
+
++ (nonnull NSArray<AnnotationWithCount *> *)getLikesWithCount:(nonnull TLDescriptor *)descriptor {
+    
+    NSArray<TLDescriptorAnnotation *> *annotations = [descriptor getDescriptorAnnotationsWithType:TLDescriptorAnnotationTypeLike];
+    
+    NSMutableDictionary<TLDescriptorAnnotation *, NSNumber *> *counts = [NSMutableDictionary dictionary];
+    
+    for (TLDescriptorAnnotation *annotation in annotations) {
+        NSNumber *count = counts[annotation];
+        
+        if (!count) {
+            count = @0;
+        }
+        
+        counts[annotation] = [NSNumber numberWithInt:(count.intValue + 1)];
+    }
+    
+    NSMutableArray<AnnotationWithCount *> *result = [NSMutableArray array];
+    for (TLDescriptorAnnotation *annotation in counts){
+        [result addObject:[[AnnotationWithCount alloc] initWithAnnotation:annotation count:counts[annotation].intValue]];
+    }
+    return result;
 }
 
 @end

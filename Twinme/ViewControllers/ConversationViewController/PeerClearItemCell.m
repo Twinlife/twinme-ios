@@ -124,7 +124,7 @@ static const CGFloat DESIGN_AVATAR_LEADING = 36;
     [super bindWithItem:item conversationViewController:conversationViewController];
     
     PeerClearItem *peerClearItem = (PeerClearItem *)item;
-    self.clearLabel.text = [NSString stringWithFormat:TwinmeLocalizedString(@"conversation_view_controller_cleanup_conversation_by_peer", nil), peerClearItem.name];
+    self.clearLabel.text = [NSString stringWithFormat:TwinmeLocalizedString(@"conversation_view_cleanup_conversation_by_peer", nil), peerClearItem.name];
     self.avatarView.image = [conversationViewController getContactAvatarWithUUID:item.peerTwincodeOutboundId];
     
     if ([conversationViewController isMenuOpen]) {

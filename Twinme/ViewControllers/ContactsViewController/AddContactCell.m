@@ -87,7 +87,7 @@
     [super prepareForReuse];
 }
 
-- (void)bindWithTitle:(NSString *)title subTitle:(NSString *)subTitle {
+- (void)bindWithTitle:(NSString *)title subTitle:(NSString *)subTitle icon:(UIImage *)icon {
     
     NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:@""];
     [attributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:title attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_MEDIUM32, NSFontAttributeName, Design.FONT_COLOR_DEFAULT, NSForegroundColorAttributeName, nil]]];
@@ -95,6 +95,9 @@
     [attributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:subTitle attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_MEDIUM28, NSFontAttributeName, Design.FONT_COLOR_GREY, NSForegroundColorAttributeName, nil]]];
     
     self.nameLabel.attributedText = attributedString;
+    
+    self.addImageView.image = [icon imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    [self.addImageView setTintColor:[UIColor whiteColor]];
     
     [self updateColor];
 }

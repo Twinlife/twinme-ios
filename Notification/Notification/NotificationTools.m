@@ -70,7 +70,7 @@ static const BOOL SYSTEM_NOTIFICATION_ON_CONTACT_UPDATE = YES;
 #pragma mark - TLNotificationCenter protocol
 
 - (nullable NotificationInfo *)createNotificationDescriptorWithContact:(nonnull id<TLOriginator>)contact conversationId:(nonnull NSUUID *)conversationId descriptor:(nonnull TLDescriptor *)descriptor notificationId:(nullable NSUUID *)notificationId {
-    DDLogVerbose(@"%@ createNotificationDescriptorWithContact: %@ conversationId: %@ descriptor: %@", LOG_TAG, contact, conversationId, descriptor);
+    DDLogVerbose(@"%@ createNotificationDescriptorWithContact: %@ conversationId: %@ descriptor: %@ notificationId: %@", LOG_TAG, contact, conversationId, descriptor, notificationId.UUIDString);
     
     TLNotificationType type;
     NSString *notificationMessage = nil;
@@ -162,20 +162,37 @@ static const BOOL SYSTEM_NOTIFICATION_ON_CONTACT_UPDATE = YES;
             type = TLNotificationTypeNewFileMessage;
             break;
             
-        case TLDescriptorTypeInvitationDescriptor:
-            type = TLNotificationTypeNewGroupInvitation;
+            
+        case TLDescriptorTypePollDescriptor:
             
             if (displayNotificationSender && displayNotificationContent) {
-                notificationBackgroundMessage = TwinmeLocalizedString(@"notification_center_group_invitation", nil);
+                notificationBackgroundMessage = TwinmeLocalizedString(@"notification_center_poll_message", nil);
             } else if (displayNotificationSender && !displayNotificationContent) {
                 notificationBackgroundMessage = TwinmeLocalizedString(@"notification_center_message_received", nil);
             } else if (!displayNotificationSender && displayNotificationContent) {
-                notificationBackgroundMessage = TwinmeLocalizedString(@"notification_center_group_invitation_received", nil);
+                notificationBackgroundMessage = TwinmeLocalizedString(@"notification_center_poll_message_received", nil);
             } else {
                 notificationBackgroundMessage = TwinmeLocalizedString(@"notification_center_message_received", nil);
             }
             
-            notificationMessage = TwinmeLocalizedString(@"notification_center_group_invitation", nil);
+            notificationMessage = TwinmeLocalizedString(@"notification_center_poll_message", nil);
+            type = TLNotificationTypeNewPollMessage;
+            break;
+            
+        case TLDescriptorTypeInvitationDescriptor:
+            type = TLNotificationTypeNewGroupInvitation;
+            
+            if (displayNotificationSender && displayNotificationContent) {
+                notificationBackgroundMessage = TwinmeLocalizedString(@"notification_center_invitation_group", nil);
+            } else if (displayNotificationSender && !displayNotificationContent) {
+                notificationBackgroundMessage = TwinmeLocalizedString(@"notification_center_message_received", nil);
+            } else if (!displayNotificationSender && displayNotificationContent) {
+                notificationBackgroundMessage = TwinmeLocalizedString(@"notification_center_invitation_group_received", nil);
+            } else {
+                notificationBackgroundMessage = TwinmeLocalizedString(@"notification_center_message_received", nil);
+            }
+            
+            notificationMessage = TwinmeLocalizedString(@"notification_center_invitation_group", nil);
             
             break;
             
@@ -200,16 +217,16 @@ static const BOOL SYSTEM_NOTIFICATION_ON_CONTACT_UPDATE = YES;
             type = TLNotificationTypeResetConversation;
 
             if (displayNotificationSender && displayNotificationContent) {
-                notificationBackgroundMessage = TwinmeLocalizedString(@"notification_view_controller_item_cleanup_conversation", nil);
+                notificationBackgroundMessage = TwinmeLocalizedString(@"notifications_view_item_cleanup_message", nil);
             } else if (displayNotificationSender && !displayNotificationContent) {
                 notificationBackgroundMessage = TwinmeLocalizedString(@"notification_center_message_received", nil);
             } else if (!displayNotificationSender && displayNotificationContent) {
-                notificationBackgroundMessage = TwinmeLocalizedString(@"notification_center_message_cleanup_conversation", nil);
+                notificationBackgroundMessage = TwinmeLocalizedString(@"notification_center_cleanup_conversation", nil);
             } else {
                 notificationBackgroundMessage = TwinmeLocalizedString(@"notification_center_message_received", nil);
             }
             
-            notificationMessage = TwinmeLocalizedString(@"notification_view_controller_item_cleanup_conversation", nil);
+            notificationMessage = TwinmeLocalizedString(@"notifications_view_item_cleanup_message", nil);
 
             break;
 
@@ -217,16 +234,16 @@ static const BOOL SYSTEM_NOTIFICATION_ON_CONTACT_UPDATE = YES;
             return nil;
     }
     
-    return [self messageNotificationWithContact:contact notificationMessage:notificationMessage notificationBackgroundMessage:notificationBackgroundMessage type:type canRing:true descriptor:descriptor annotatingUser:nil notificationId:notificationId];
+    return [self messageNotificationWithContact:contact notificationMessage:notificationMessage notificationBackgroundMessage:notificationBackgroundMessage type:type canRing:true descriptor:descriptor annotatingUser:nil notificationId:notificationId annotation:nil];
 }
 
-- (nullable NotificationInfo *)createNotificationAnnotationWithContact:(nonnull id<TLOriginator>)contact conversationId:(nonnull NSUUID *)conversationId descriptor:(nonnull TLDescriptor *)descriptor annotatingUser:(nullable TLTwincodeOutbound *)annotatingUser notificationId:(nullable NSUUID *)notificationId {
-    DDLogVerbose(@"%@ createNotificationDescriptorWithContact: %@ conversationId: %@ descriptor: %@ annotatingUser: %@", LOG_TAG, contact, conversationId, descriptor, annotatingUser);
+- (nullable NotificationInfo *)createNotificationAnnotationWithContact:(nonnull id<TLOriginator>)contact conversationId:(nonnull NSUUID *)conversationId descriptor:(nonnull TLDescriptor *)descriptor annotatingUser:(nullable TLTwincodeOutbound *)annotatingUser notificationId:(nullable NSUUID *)notificationId annotation:(nonnull TLDescriptorAnnotation *)annotation {
+    DDLogVerbose(@"%@ createNotificationDescriptorWithContact: %@ conversationId: %@ descriptor: %@ annotatingUser: %@ annotation: %@", LOG_TAG, contact, conversationId, descriptor, annotatingUser, annotation);
     
     NSString *notificationMessage = TwinmeLocalizedString(@"notification_center_reaction_message", nil);
     NSString *notificationBackgroundMessage = TwinmeLocalizedString(@"notification_center_reaction_message_received", nil);
 
-    return [self messageNotificationWithContact:contact notificationMessage:notificationMessage notificationBackgroundMessage:notificationBackgroundMessage type:TLNotificationTypeUpdatedAnnotation canRing:true descriptor:descriptor annotatingUser:annotatingUser notificationId:notificationId];
+    return [self messageNotificationWithContact:contact notificationMessage:notificationMessage notificationBackgroundMessage:notificationBackgroundMessage type:TLNotificationTypeUpdatedAnnotation canRing:true descriptor:descriptor annotatingUser:annotatingUser notificationId:notificationId annotation:annotation];
 }
 
 - (nullable NotificationInfo *)createNotificationConference:(nonnull id<TLOriginator>)conference {
@@ -261,7 +278,7 @@ static const BOOL SYSTEM_NOTIFICATION_ON_CONTACT_UPDATE = YES;
     return localNotification.alertTitle ? localNotification : nil;
 }
 
-- (nullable NotificationInfo *)messageNotificationWithContact:(nonnull id<TLOriginator>)contact notificationMessage:(nonnull NSString *)notificationMessage notificationBackgroundMessage:(nonnull NSString *)notificationBackgroundMessage type:(TLNotificationType)type canRing:(BOOL)canRing descriptor:(nullable TLDescriptor *)descriptor annotatingUser:(nullable TLTwincodeOutbound *)annotatingUser notificationId:(nullable NSUUID *)notificationId {
+- (nullable NotificationInfo *)messageNotificationWithContact:(nonnull id<TLOriginator>)contact notificationMessage:(nonnull NSString *)notificationMessage notificationBackgroundMessage:(nonnull NSString *)notificationBackgroundMessage type:(TLNotificationType)type canRing:(BOOL)canRing descriptor:(nullable TLDescriptor *)descriptor annotatingUser:(nullable TLTwincodeOutbound *)annotatingUser notificationId:(nullable NSUUID *)notificationId annotation:annotation {
     DDLogVerbose(@"%@ messageNotificationWithContact: %@ notificationMessage: %@ notificationBackgroundMessage: %@ type: %d canRing: %d descriptor: %@ notificationId: %@ annotatingUser: %@", LOG_TAG, contact, notificationMessage, notificationBackgroundMessage, type, canRing, descriptor, notificationId, annotatingUser);
     
     NotificationSoundSetting* notificationSound = nil;
@@ -284,17 +301,22 @@ static const BOOL SYSTEM_NOTIFICATION_ON_CONTACT_UPDATE = YES;
     }
     
     TLDescriptorId *descriptorId = (descriptor ? descriptor.descriptorId : nil);
-    TLNotification *notification = [self.twinmeContext createNotificationWithType:type notificationId:notificationId subject:contact descriptorId:descriptorId annotatingUser:annotatingUser];
+    TLNotification *notification = [self.twinmeContext createNotificationWithType:type notificationId:notificationId subject:contact descriptorId:descriptorId annotatingUser:annotatingUser annotation:annotation];
     if (!notification || (type == TLNotificationTypeUpdatedAnnotation && ![self.settings hasDisplayNotificationLike])) {
         return nil;
     }
     
     if (type == TLNotificationTypeUpdatedAnnotation) {
-        BOOL displayNotificationContent = [self.settings hasDisplayNotificationSender] && [self.settings hasDisplayNotificationContent] && !contact.identityCapabilities.hasDiscreet;
-        int value = notification.annotationValue;
-        NSString *emoji = [self emojiFromAnnotationValue:value];
-        if (emoji.length > 0 && displayNotificationContent) {
-            notificationBackgroundMessage = [NSString stringWithFormat:TwinmeLocalizedString(@"notification_center_reaction", nil), emoji];
+        if (notification.annotationType == TLDescriptorAnnotationTypeLike) {
+            BOOL displayNotificationContent = [self.settings hasDisplayNotificationSender] && [self.settings hasDisplayNotificationContent] && !contact.identityCapabilities.hasDiscreet;
+            int value = notification.annotationValue;
+            NSString *emoji = [self emojiFromAnnotationValue:value];
+            if (emoji.length > 0 && displayNotificationContent) {
+                notificationBackgroundMessage = [NSString stringWithFormat:TwinmeLocalizedString(@"notification_center_reaction", nil), emoji];
+            }
+        } else if (notification.annotationType == TLDescriptorAnnotationTypePoll) {
+            notificationMessage = TwinmeLocalizedString(@"notification_center_poll_vote", nil);
+            notificationBackgroundMessage = TwinmeLocalizedString(@"notification_center_poll_vote", nil);
         }
     }
     
@@ -365,7 +387,7 @@ static const BOOL SYSTEM_NOTIFICATION_ON_CONTACT_UPDATE = YES;
     DDLogVerbose(@"%@ createNotificationJoinGroupWithGroup: %@ conversationId: %@", LOG_TAG, group, conversationId);
     
     NSString *notificationMessage = TwinmeLocalizedString(@"notification_center_join_group", nil);
-    return [self messageNotificationWithContact:group notificationMessage:notificationMessage notificationBackgroundMessage:notificationMessage type:TLNotificationTypeNewGroupJoined  canRing:false descriptor:nil annotatingUser:nil notificationId:notificationId];
+    return [self messageNotificationWithContact:group notificationMessage:notificationMessage notificationBackgroundMessage:notificationMessage type:TLNotificationTypeNewGroupJoined  canRing:false descriptor:nil annotatingUser:nil notificationId:notificationId annotation:nil];
 }
 
 - (nullable NotificationInfo *)createNotificationNewContactWithContact:(nonnull id<TLOriginator>)contact notificationId:(nullable NSUUID *)notificationId {
@@ -411,14 +433,14 @@ static const BOOL SYSTEM_NOTIFICATION_ON_CONTACT_UPDATE = YES;
         } else {
             type = TLNotificationTypeMissedAudioCall;
         }
-        message = TwinmeLocalizedString(@"history_view_controller_missed_call", nil);
+        message = TwinmeLocalizedString(@"calls_view_missed_call", nil);
     } else {
         if (video) {
             type = TLNotificationTypeMissedVideoCall;
-            message = [NSString stringWithFormat:TwinmeLocalizedString(@"notification_center_missed_video_call_to %@", nil), calleeName];
+            message = [NSString stringWithFormat:TwinmeLocalizedString(@"notification_center_missed_video_call_to", nil), calleeName];
         } else {
             type = TLNotificationTypeMissedAudioCall;
-            message = [NSString stringWithFormat:TwinmeLocalizedString(@"notification_center_missed_audio_call_to %@", nil), calleeName];
+            message = [NSString stringWithFormat:TwinmeLocalizedString(@"notification_center_missed_audio_call_to", nil), calleeName];
         }
     }
     
@@ -439,18 +461,18 @@ static const BOOL SYSTEM_NOTIFICATION_ON_CONTACT_UPDATE = YES;
     if (!calleeName) {
         if (video) {
             type = TLNotificationTypeMissedVideoCall;
-            message = TwinmeLocalizedString(@"conversation_view_controller_video_call", nil);
+            message = TwinmeLocalizedString(@"conversation_view_video_call", nil);
         } else {
             type = TLNotificationTypeMissedAudioCall;
-            message = TwinmeLocalizedString(@"conversation_view_controller_audio_call", nil);
+            message = TwinmeLocalizedString(@"conversation_view_audio_call", nil);
         }
     } else {
         if (video) {
             type = TLNotificationTypeMissedVideoCall;
-            message = [NSString stringWithFormat:TwinmeLocalizedString(@"notification_center_video_call_to %@", nil), calleeName];
+            message = [NSString stringWithFormat:TwinmeLocalizedString(@"notification_center_video_call_to", nil), calleeName];
         } else {
             type = TLNotificationTypeMissedAudioCall;
-            message = [NSString stringWithFormat:TwinmeLocalizedString(@"notification_center_audio_call_to %@", nil), calleeName];
+            message = [NSString stringWithFormat:TwinmeLocalizedString(@"notification_center_audio_call_to", nil), calleeName];
         }
     }
         
@@ -494,7 +516,7 @@ static const BOOL SYSTEM_NOTIFICATION_ON_CONTACT_UPDATE = YES;
         }
     }
     
-    localNotification.notification = [self.twinmeContext createNotificationWithType:type notificationId:notificationId subject:contact descriptorId:nil annotatingUser:nil];
+    localNotification.notification = [self.twinmeContext createNotificationWithType:type notificationId:notificationId subject:contact descriptorId:nil annotatingUser:nil annotation:nil];
     if (!localNotification.notification) {
         return nil;
     }

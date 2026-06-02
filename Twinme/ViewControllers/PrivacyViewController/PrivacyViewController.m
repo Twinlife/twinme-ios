@@ -118,11 +118,11 @@ static NSString *SETTINGS_INFORMATION_CELL_IDENTIFIER = @"SettingsInformationCel
         
         NSString *text = @"";
         if (indexPath.section == 0) {
-            text = TwinmeLocalizedString(@"privacy_view_controller_lock_screen_message", nil);
+            text = TwinmeLocalizedString(@"privacy_view_lock_screen_message", nil);
         } else if (indexPath.section == 1) {
-            text = TwinmeLocalizedString(@"privacy_view_controller_hide_last_screen_message", nil);
+            text = TwinmeLocalizedString(@"privacy_view_hide_last_screen_message", nil);
         } else {
-            text = TwinmeLocalizedString(@"privacy_view_controller_display_recent_call_message", nil);
+            text = TwinmeLocalizedString(@"privacy_view_display_recent_call_message", nil);
         }
         
         [cell bindWithText:text];
@@ -138,11 +138,11 @@ static NSString *SETTINGS_INFORMATION_CELL_IDENTIFIER = @"SettingsInformationCel
         
         NSString *title = @"";
         if (indexPath.section == 0) {
-            title = TwinmeLocalizedString(@"privacy_view_controller_lock_screen_title", nil);
+            title = TwinmeLocalizedString(@"privacy_view_lock_screen_title", nil);
         } else if (indexPath.section == 1) {
-            title = TwinmeLocalizedString(@"privacy_view_controller_hide_last_screen_title", nil);
+            title = TwinmeLocalizedString(@"privacy_view_hide_last_screen_title", nil);
         } else {
-            title = TwinmeLocalizedString(@"privacy_view_controller_display_recent_call", nil);
+            title = TwinmeLocalizedString(@"privacy_view_display_recent_call", nil);
         }
         
         [cell bindWithTitle:title subTitle:nil icon:nil stateSwitch:NO tagSwitch:0 hiddenSwitch:NO disableSwitch:YES backgroundColor:Design.WHITE_COLOR hiddenSeparator:NO];
@@ -193,7 +193,7 @@ static NSString *SETTINGS_INFORMATION_CELL_IDENTIFIER = @"SettingsInformationCel
     
     self.view.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
     
-    [self setNavigationTitle:TwinmeLocalizedString(@"privacy_view_controller_title", nil)];
+    [self setNavigationTitle:TwinmeLocalizedString(@"privacy_view_title", nil)];
     
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     self.tableView.rowHeight = UITableViewAutomaticDimension;

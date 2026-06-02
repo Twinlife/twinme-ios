@@ -14,8 +14,8 @@
 #import <Photos/Photos.h>
 #import <PhotosUI/PhotosUI.h>
 #import <MediaPlayer/MediaPlayer.h>
-#import <MobileCoreServices/UTCoreTypes.h>
-#import <MobileCoreServices/UTType.h>
+#import <UniformTypeIdentifiers/UTCoreTypes.h>
+#import <UniformTypeIdentifiers/UTType.h>
 
 #import <Twinlife/TLConversationService.h>
 #import <Twinlife/TLConnectivityService.h>
@@ -53,6 +53,8 @@
 #import "PeerVideoItem.h"
 #import "FileItem.h"
 #import "PeerFileItem.h"
+#import "PollItem.h"
+#import "PeerPollItem.h"
 #import "InvitationItem.h"
 #import "PeerInvitationItem.h"
 #import "NameItem.h"
@@ -78,6 +80,8 @@
 #import "PeerFileItemCell.h"
 #import "InvitationItemCell.h"
 #import "PeerInvitationItemCell.h"
+#import "PollItemCell.h"
+#import "PeerPollItemCell.h"
 #import "NameItemCell.h"
 #import "CallItemCell.h"
 #import "PeerCallItemCell.h"
@@ -114,6 +118,7 @@
 #import "ConversationFilesViewController.h"
 #import "ExportViewController.h"
 #import "TypeCleanUpViewController.h"
+#import "CreatePollViewController.h"
 
 #import "AcceptInvitationViewController.h"
 #import "PreviewFilesViewController.h"
@@ -132,6 +137,9 @@
 #import "UIPreviewMedia.h"
 #import "EditMessageView.h"
 #import "DefaultConfirmView.h"
+#import "PollResultView.h"
+#import "UIPollResult.h"
+#import "UIPollResultVoter.h"
 
 #import <TwinmeCommon/AbstractTwinmeService+Protected.h>
 #import <TwinmeCommon/ApplicationDelegate.h>
@@ -155,13 +163,13 @@ static const int ddLogLevel = DDLogLevelWarning;
 
 #define DELAY_COACH_MARK 0.5
 
+static NSString *TIME_ITEM_CELL_IDENTIFIER = @"TimeItemCellIdentifier";
 static NSString *MESSAGE_ITEM_CELL_IDENTIFIER = @"MessageItemCellIdentifier";
 static NSString *PEER_MESSAGE_ITEM_CELL_IDENTIFIER = @"PeerMessageItemCellIdentifier";
 static NSString *LINK_ITEM_CELL_IDENTIFIER = @"LinkItemCellIdentifier";
 static NSString *PEER_LINK_ITEM_CELL_IDENTIFIER = @"PeerLinkItemCellIdentifier";
 static NSString *IMAGE_ITEM_CELL_IDENTIFIER = @"ImageItemCellIdentifier";
 static NSString *PEER_IMAGE_ITEM_CELL_IDENTIFIER = @"PeerImageItemCellIdentifier";
-static NSString *TIME_CELL_IDENTIFIER = @"TimeCellIdentifier";
 static NSString *AUDIO_ITEM_CELL_IDENTIFIER = @"AudioItemCellIdentifier";
 static NSString *PEER_AUDIO_ITEM_CELL_IDENTIFIER = @"PeerAudioItemCellIdentifier";
 static NSString *VIDEO_ITEM_CELL_IDENTIFIER = @"VideoItemCellIdentifier";
@@ -170,6 +178,8 @@ static NSString *FILE_ITEM_CELL_IDENTIFIER = @"FileItemCellIdentifier";
 static NSString *PEER_FILE_ITEM_CELL_IDENTIFIER = @"PeerFileItemCellIdentifier";
 static NSString *INVITATION_ITEM_CELL_IDENTIFIER = @"InvitationItemCellIdentifier";
 static NSString *PEER_INVITATION_ITEM_CELL_IDENTIFIER = @"PeerInvitationItemCellIdentifier";
+static NSString *POLL_ITEM_CELL_IDENTIFIER = @"PollItemCellIdentifier";
+static NSString *PEER_POLL_ITEM_CELL_IDENTIFIER = @"PeerPollItemCellIdentifier";
 static NSString *NAME_ITEM_CELL_IDENTIFIER = @"NameItemCellIdentifier";
 static NSString *TYPING_ITEM_VIEW_IDENTIFIER = @"TypingViewIdentifier";
 static NSString *CALL_ITEM_CELL_IDENTIFIER = @"CallItemCellIdentifier";
@@ -193,9 +203,10 @@ static const CGFloat DESIGN_BOTTOM_MARGIN2 = 18;
 static const CGFloat DESIGN_BOTTOM_MARGIN3 = 50;
 static const CGFloat DESIGN_WIDTH_INSET = 32;
 static const CGFloat DESIGN_HEIGHT_INSET = 24;
-// static const CGFloat DESIGN_LEFT_INSET = 8;
 static const CGFloat DESIGN_SCROLL_INDICATOR_WIDTH = 146;
 static const CGFloat DESIGN_SCROLL_INDICATOR_BOTTOM = 46;
+static const CGFloat DESIGN_MEDIA_LABEL_VERTICAL_MARGIN = 40;
+static const CGFloat DESIGN_MEDIA_LABEL_HORIZONTAL_MARGIN = 34;
 
 static const CGFloat DESIGN_MIN_FONT = 10.0;
 static const CGFloat DESIGN_MAX_FONT = 80.0;
@@ -221,6 +232,8 @@ static CGFloat ORIGINATOR_VIEW_WIDTH;
 static CGFloat ORIGINATOR_MARGIN;
 static CGFloat AVATAR_VIEW_HEIGHT;
 
+#define PROPERTY_MESSAGE_DRAFT @"MessageDraft"
+
 //
 // Interface: ConversationViewController ()
 //
@@ -231,7 +244,7 @@ typedef enum {
     ModeAudioRecorder
 } Mode;
 
-@interface ConversationViewController () <ConversationServiceDelegate, UITextViewDelegate, AlertMessageViewDelegate, AVAudioRecorderDelegate, AudioActionDelegate, ImageActionDelegate, VideoActionDelegate, FileActionDelegate, DeleteActionDelegate, MenuActionDelegate, GroupActionDelegate, CallActionDelegate, TwincodeActionDelegate, LinkActionDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIDocumentPickerDelegate, UIDocumentInteractionControllerDelegate, GroupInvitationServiceDelegate, GroupServiceDelegate, SwitchViewDelegate, ReplyViewDelegate, SelectItemDelegate, MenuItemDelegate, ReplyItemDelegate, AsyncLoaderDelegate, PreviewViewDelegate, CoachMarkDelegate, MenuReactionDelegate, ItemSelectedActionViewDelegate, ReactionViewDelegate, AnnotationsViewDelegate, BottomSheetViewDelegate, MenuActionConversationDelegate, MenuSendOptionsDelegate, MenuManageConversationViewDelegate, UITableViewDataSourcePrefetching, PHPickerViewControllerDelegate>
+@interface ConversationViewController () <ConversationServiceDelegate, UITextViewDelegate, AlertMessageViewDelegate, AVAudioRecorderDelegate, AudioActionDelegate, ImageActionDelegate, VideoActionDelegate, FileActionDelegate, DeleteActionDelegate, MenuActionDelegate, GroupActionDelegate, CallActionDelegate, TwincodeActionDelegate, LinkActionDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIDocumentPickerDelegate, UIDocumentInteractionControllerDelegate, GroupInvitationServiceDelegate, GroupServiceDelegate, SwitchViewDelegate, ReplyViewDelegate, SelectItemDelegate, MenuItemDelegate, ReplyItemDelegate, AsyncLoaderDelegate, PreviewViewDelegate, CoachMarkDelegate, MenuReactionDelegate, ItemSelectedActionViewDelegate, ReactionViewDelegate, AnnotationsViewDelegate, BottomSheetViewDelegate, MenuActionConversationDelegate, MenuSendOptionsDelegate, MenuManageConversationViewDelegate, UITableViewDataSourcePrefetching, PHPickerViewControllerDelegate, CreatePollViewControllerDelegate, PollActionDelegate, PollResultViewDelegate, InfoItemDelegate>
 
 @property (weak, nonatomic) IBOutlet UIView *safeAreaView;
 @property (weak, nonatomic) IBOutlet UIView *headerView;
@@ -263,6 +276,7 @@ typedef enum {
 @property (nonatomic) UIView *footerOverlayView;
 @property (nonatomic) UIView *overlayView;
 @property (nonatomic) UIActivityIndicatorView *activityIndicatorView;
+@property (nonatomic) UILabel *retrievingMediaLabel;
 @property (nonatomic) UIBarButtonItem *audioCallBarButtonItem;
 @property (nonatomic) UIBarButtonItem *videoCallBarButtonItem;
 @property (nonatomic) UIBarButtonItem *cancelBarButtonItem;
@@ -347,6 +361,7 @@ typedef enum {
 @property (nonatomic) int scrollIndicatorCount;
 
 @property (nonatomic) BOOL selectItemMode;
+@property (nonatomic) BOOL isContactConversation;
 
 @property (nonatomic) BOOL loadingDescriptors;
 @property (nonatomic) BOOL allDescriptorsLoaded;
@@ -359,6 +374,7 @@ typedef enum {
 @property (nonatomic) BOOL endMediaPicking;
 @property (nonatomic) NSMutableArray *previewMediaPicking;
 @property (nonatomic) BOOL errorMediaPicking;
+@property (nonatomic) BOOL pickerImportFile;
 
 @property (nonatomic) BOOL editingMessage;
 @property (nonatomic) BOOL sendAllowed;
@@ -408,11 +424,13 @@ typedef enum {
         _selectItemMode = NO;
         _menuSendOptionsOpen = NO;
         _editingMessage = NO;
+        _isContactConversation = NO;
         _sendAllowed = YES;
         _messageFont = Design.FONT_REGULAR32;
         _scaleFont = 1.0;
         _scrollIndicatorCount = 0;
         _endMediaPicking = NO;
+        _pickerImportFile = NO;
         _countMediaPicking = 0;
         _textInputBarHeight = 0;
         _previewMediaPicking = [[NSMutableArray alloc]init];
@@ -493,6 +511,7 @@ typedef enum {
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillChangeFrame:) name:UIKeyboardWillChangeFrameNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadData) name:UIApplicationDidBecomeActiveNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didSelectLinkWithInvitationURL:) name:SelectInvitationLink object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidEnterBackground:) name:UIApplicationDidEnterBackgroundNotification object:nil];
     
     [self setupTitleView];
     [self setupTextRightView];
@@ -572,6 +591,8 @@ typedef enum {
         [self.typingTimer invalidate];
         self.typingTimer = nil;
     }
+    
+    [self saveDraft:self.textView.text];
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
@@ -708,11 +729,16 @@ typedef enum {
             self.identityAvatar = image;
         }];
     } else {
-        [self.conversationService getImageWithContact:(TLContact *)contact withBlock:^(UIImage *image) {
+        TLContact *lContact = (TLContact *)contact;
+        if (!lContact.isTwinroom) {
+            self.isContactConversation = YES;
+        }
+        
+        [self.conversationService getImageWithContact:lContact withBlock:^(UIImage *image) {
             self.contactAvatar = image;
             [self updateNavigationBarAvatar];
         }];
-        [self.conversationService getIdentityImageWithContact:(TLContact *)contact withBlock:^(UIImage *image) {
+        [self.conversationService getIdentityImageWithContact:lContact withBlock:^(UIImage *image) {
             self.identityAvatar = image;
         }];
     }
@@ -769,11 +795,45 @@ typedef enum {
     return self.selectItemMode;
 }
 
+- (BOOL)displayPeerItemAvatar {
+    DDLogVerbose(@"%@ displayPeerItemAvatar", LOG_TAG);
+    
+    return !self.isContactConversation;
+}
+
 - (UIImage *)getContactAvatarWithUUID:(NSUUID *)peerTwincodeOutboundId {
     DDLogVerbose(@"%@ getContactAvatarWithUUID: %@", LOG_TAG, peerTwincodeOutboundId);
     
     if (!peerTwincodeOutboundId || !self.groupMembers) {
         return self.contactAvatar;
+    } else {
+        TLGroupMember *member = self.groupMembers[peerTwincodeOutboundId];
+        if (!member) {
+            return self.contactAvatar;
+        } else {
+            return [self.conversationService getImageWithGroupMember:member];
+        }
+    }
+}
+
+- (BOOL)isUserVote:(NSUUID *)peerTwincodeOutboundId {
+    DDLogVerbose(@"%@ isUserVote: %@", LOG_TAG, peerTwincodeOutboundId);
+    
+    NSUUID *twincodeOutboundId;
+    if (self.contact && self.contact.twincodeOutbound) {
+        twincodeOutboundId = self.contact.twincodeOutboundId;
+    } else if (self.group) {
+        twincodeOutboundId = self.group.twincodeOutboundId;
+    }
+    
+    return twincodeOutboundId && [twincodeOutboundId isEqual:peerTwincodeOutboundId];
+}
+
+- (UIImage *)getPollAvatarWithUUID:(NSUUID *)peerTwincodeOutboundId {
+    DDLogVerbose(@"%@ getPollAvatarWithUUID: %@", LOG_TAG, peerTwincodeOutboundId);
+    
+    if ([self isUserVote:peerTwincodeOutboundId]) {
+        return self.identityAvatar;
     } else {
         TLGroupMember *member = self.groupMembers[peerTwincodeOutboundId];
         if (!member) {
@@ -892,10 +952,10 @@ typedef enum {
     
     if (self.groupMembers.count > 0) {
         self.titleLabel.text = self.group.name;
-        self.subTitleLabel.text = [NSString stringWithFormat:TwinmeLocalizedString(@"conversation_view_controller_group_member_information %@", nil), [NSString convertWithLocale:[NSString stringWithFormat:@"%lu",(unsigned long)self.groupMembers.count + 1]]];
+        self.subTitleLabel.text = [NSString stringWithFormat:TwinmeLocalizedString(@"conversation_view_group_member_information", nil), [NSString convertWithLocale:[NSString stringWithFormat:@"%lu",(unsigned long)self.groupMembers.count + 1]]];
     } else {
         self.titleLabel.text = self.group.name;
-        self.subTitleLabel.text = TwinmeLocalizedString(@"conversation_view_controller_group_one_member", nil);
+        self.subTitleLabel.text = TwinmeLocalizedString(@"conversation_view_group_one_member", nil);
     }
     
     if (self.titleLabel) {
@@ -989,6 +1049,12 @@ typedef enum {
             case TLDescriptorTypeTwincodeDescriptor: {
                 TLTwincodeDescriptor *twincodeDescriptor = (TLTwincodeDescriptor *)descriptor;
                 [self addTwincodeDescriptor:twincodeDescriptor];
+                break;
+            }
+                
+            case TLDescriptorTypePollDescriptor: {
+                TLPollDescriptor *pollDescriptor = (TLPollDescriptor *)descriptor;
+                [self addPollDescriptor:pollDescriptor];
                 break;
             }
                 
@@ -1092,6 +1158,12 @@ typedef enum {
             break;
         }
             
+        case TLDescriptorTypePollDescriptor: {
+            TLPollDescriptor *pollDescriptor = (TLPollDescriptor *)descriptor;
+            [self addPollDescriptor:pollDescriptor];
+            break;
+        }
+            
         case TLDescriptorTypeClearDescriptor: {
             TLClearDescriptor *clearDescriptor = (TLClearDescriptor *)descriptor;
             [self addClearDescriptor:clearDescriptor];
@@ -1167,6 +1239,12 @@ typedef enum {
         case TLDescriptorTypeTwincodeDescriptor: {
             TLTwincodeDescriptor *twincodeDescriptor = (TLTwincodeDescriptor *)descriptor;
             [self addTwincodeDescriptor:twincodeDescriptor];
+            break;
+        }
+            
+        case TLDescriptorTypePollDescriptor: {
+            TLPollDescriptor *pollDescriptor = (TLPollDescriptor *)descriptor;
+            [self addPollDescriptor:pollDescriptor];
             break;
         }
             
@@ -1308,6 +1386,12 @@ typedef enum {
                 case TLDescriptorTypeTwincodeDescriptor: {
                     TLTwincodeDescriptor *twincodeDescriptor = (TLTwincodeDescriptor *)descriptor;
                     [self addTwincodeDescriptor:twincodeDescriptor];
+                    break;
+                }
+                    
+                case TLDescriptorTypePollDescriptor: {
+                    TLPollDescriptor *pollDescriptor = (TLPollDescriptor *)descriptor;
+                    [self addPollDescriptor:pollDescriptor];
                     break;
                 }
                     
@@ -1534,6 +1618,17 @@ typedef enum {
             
             Item *updatedItem = [self.items objectAtIndex:updatedItemIndex];
             [updatedItem updateAnnotationsWithDescriptor:descriptor];
+            
+            if (updatedItem.type == ItemTypePoll) {
+                PollItem *pollItem = (PollItem *)updatedItem;
+                TLPollDescriptor *pollDescriptor = (TLPollDescriptor *)descriptor;
+                [pollItem updateVotesWithDescriptor:pollDescriptor];
+            } else if (updatedItem.type == ItemTypePeerPoll) {
+                PeerPollItem *peerPollItem = (PeerPollItem *)updatedItem;
+                TLPollDescriptor *pollDescriptor = (TLPollDescriptor *)descriptor;
+                [peerPollItem updateVotesWithDescriptor:pollDescriptor];
+            }
+            
             ItemCell *itemCell = (ItemCell *)[self.tableView cellForRowAtIndexPath:[self itemIndexToIndexPath:updatedItemIndex]];
             if (itemCell && itemCell.item == updatedItem) {
                 switch (updatedItem.type) {
@@ -1710,11 +1805,6 @@ typedef enum {
 - (void)onErrorFeatureNotSupportedByPeer {
     DDLogVerbose(@"%@ onErrorFeatureNotSupportedByPeer", LOG_TAG);
     
-    AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
-    alertMessageView.alertMessageViewDelegate = self;
-    [alertMessageView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:TwinmeLocalizedString(@"conversation_view_controller_feature_not_supported_by_peer", nil)];
-    [self.tabBarController.view addSubview:alertMessageView];
-    [alertMessageView showAlertView];
 }
 
 #pragma mark - GroupInvitationServiceDelegate
@@ -1759,10 +1849,10 @@ typedef enum {
         
         if ([conversation groupMembersWithFilter:TLGroupMemberFilterTypeJoinedMembers].count > 0) {
             self.titleLabel.text = self.group.name;
-            self.subTitleLabel.text = [NSString stringWithFormat:TwinmeLocalizedString(@"conversation_view_controller_group_member_information %@", nil), [NSString convertWithLocale:[NSString stringWithFormat:@"%lu",(unsigned long)[conversation groupMembersWithFilter:TLGroupMemberFilterTypeJoinedMembers].count + 1]]];
+            self.subTitleLabel.text = [NSString stringWithFormat:TwinmeLocalizedString(@"conversation_view_group_member_information", nil), [NSString convertWithLocale:[NSString stringWithFormat:@"%lu",(unsigned long)[conversation groupMembersWithFilter:TLGroupMemberFilterTypeJoinedMembers].count + 1]]];
         } else {
             self.titleLabel.text = self.group.name;
-            self.subTitleLabel.text = TwinmeLocalizedString(@"conversation_view_controller_group_one_member", nil);
+            self.subTitleLabel.text = TwinmeLocalizedString(@"conversation_view_group_one_member", nil);
         }
         
         if (self.titleLabel) {
@@ -1868,11 +1958,11 @@ typedef enum {
     switch (item.type) {
         case ItemTypeTime: {
             TimeItem *timeItem = (TimeItem *)item;
-            TimeItemCell *timeCell = [[TimeItemCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:TIME_CELL_IDENTIFIER topMargin:0 bottomMargin:0];
-            [timeCell bindWithItem:timeItem conversationViewController:self];
-            timeCell.transform = self.tableView.transform;
-            timeCell.menuActionDelegate = self;
-            return timeCell;
+            TimeItemCell *timeItemCell = (TimeItemCell *)[self.tableView dequeueReusableCellWithIdentifier:TIME_ITEM_CELL_IDENTIFIER forIndexPath:indexPath];
+            [timeItemCell bindWithItem:timeItem conversationViewController:self];
+            timeItemCell.transform = self.tableView.transform;
+            timeItemCell.menuActionDelegate = self;
+            return timeItemCell;
         }
             
         case ItemTypeMessage: {
@@ -1885,6 +1975,7 @@ typedef enum {
             messageItemCell.replyItemDelegate = self;
             messageItemCell.selectItemDelegate = self;
             messageItemCell.reactionViewDelegate = self;
+            messageItemCell.infoItemDelegate = self;
             return messageItemCell;
         }
             
@@ -1912,6 +2003,7 @@ typedef enum {
             linkItemCell.linkActionDelegate = self;
             linkItemCell.selectItemDelegate = self;
             linkItemCell.reactionViewDelegate = self;
+            linkItemCell.infoItemDelegate = self;
             return linkItemCell;
         }
             
@@ -1940,6 +2032,7 @@ typedef enum {
             imageItemCell.replyItemDelegate = self;
             imageItemCell.selectItemDelegate = self;
             imageItemCell.reactionViewDelegate = self;
+            imageItemCell.infoItemDelegate = self;
             return imageItemCell;
         }
             
@@ -1967,6 +2060,7 @@ typedef enum {
             audioItemCell.replyItemDelegate = self;
             audioItemCell.selectItemDelegate = self;
             audioItemCell.reactionViewDelegate = self;
+            audioItemCell.infoItemDelegate = self;
             return audioItemCell;
         }
             
@@ -1995,6 +2089,7 @@ typedef enum {
             videoItemCell.replyItemDelegate = self;
             videoItemCell.selectItemDelegate = self;
             videoItemCell.reactionViewDelegate = self;
+            videoItemCell.infoItemDelegate = self;
             return videoItemCell;
         }
             
@@ -2023,6 +2118,7 @@ typedef enum {
             fileItemCell.replyItemDelegate = self;
             fileItemCell.selectItemDelegate = self;
             fileItemCell.reactionViewDelegate = self;
+            fileItemCell.infoItemDelegate = self;
             return fileItemCell;
         }
             
@@ -2049,6 +2145,7 @@ typedef enum {
             invitationItemCell.groupActionDelegate = self;
             invitationItemCell.menuActionDelegate = self;
             invitationItemCell.selectItemDelegate = self;
+            invitationItemCell.infoItemDelegate = self;
             return invitationItemCell;
         }
             
@@ -2062,6 +2159,33 @@ typedef enum {
             peerInvitationItemCell.menuActionDelegate = self;
             peerInvitationItemCell.selectItemDelegate = self;
             return peerInvitationItemCell;
+        }
+            
+        case ItemTypePoll: {
+            PollItem *pollItem = (PollItem *)item;
+            PollItemCell *pollItemCell = (PollItemCell *)[self.tableView dequeueReusableCellWithIdentifier:POLL_ITEM_CELL_IDENTIFIER forIndexPath:indexPath];
+            [pollItemCell bindWithItem:pollItem conversationViewController:self];
+            pollItemCell.transform = self.tableView.transform;
+            pollItemCell.pollActionDelegate = self;
+            pollItemCell.deleteActionDelegate = self;
+            pollItemCell.menuActionDelegate = self;
+            pollItemCell.selectItemDelegate = self;
+            pollItemCell.reactionViewDelegate = self;
+            pollItemCell.infoItemDelegate = self;
+            return pollItemCell;
+        }
+            
+        case ItemTypePeerPoll: {
+            PeerPollItem *peerPollItem = (PeerPollItem *)item;
+            PeerPollItemCell *peerPollItemCell = (PeerPollItemCell *)[self.tableView dequeueReusableCellWithIdentifier:PEER_POLL_ITEM_CELL_IDENTIFIER forIndexPath:indexPath];
+            [peerPollItemCell bindWithItem:peerPollItem conversationViewController:self];
+            peerPollItemCell.transform = self.tableView.transform;
+            peerPollItemCell.pollActionDelegate = self;
+            peerPollItemCell.deleteActionDelegate = self;
+            peerPollItemCell.menuActionDelegate = self;
+            peerPollItemCell.selectItemDelegate = self;
+            peerPollItemCell.reactionViewDelegate = self;
+            return peerPollItemCell;
         }
             
         case ItemTypeCall: {
@@ -2118,6 +2242,7 @@ typedef enum {
             invitationContactItemCell.deleteActionDelegate = self;
             invitationContactItemCell.menuActionDelegate = self;
             invitationContactItemCell.selectItemDelegate = self;
+            invitationContactItemCell.infoItemDelegate = self;
             return invitationContactItemCell;
         }
             
@@ -2141,6 +2266,9 @@ typedef enum {
             nameCell.menuActionDelegate = self;
             return nameCell;
         }
+            
+        default:
+            break;
     }
     return [[UITableViewCell alloc]init];
 }
@@ -2157,6 +2285,7 @@ typedef enum {
             case ItemTypePeerMessage:
             case ItemTypePeerLink:
             case ItemTypePeerImage:
+            case ItemTypePeerPoll:
             case ItemTypePeerInvitation:
             case ItemTypePeerInvitationContact:
             case ItemTypePeerClear:
@@ -2270,7 +2399,10 @@ typedef enum {
         
         if (!self.sendAllowed) {
             dispatch_async(dispatch_get_main_queue(), ^{
-                [[UIApplication sharedApplication].keyWindow makeToast:TwinmeLocalizedString(@"conversation_view_controller_group_not_allowed_post_message", nil)];
+                UIWindow *window = [self currentWindow];
+                if (window) {
+                    [window makeToast:TwinmeLocalizedString(@"conversation_view_group_not_allowed_post_message", nil)];
+                }
             });
             return;
         }
@@ -2328,9 +2460,8 @@ typedef enum {
                 [self typingFire:self.typingTimer];
             }
         }
-        // Clears cache
-        [self clearCachedText];
         
+        [self saveDraft:@""];
         [self updateSendButton:NO];
     }
 }
@@ -2342,7 +2473,10 @@ typedef enum {
     
     if (!self.sendAllowed) {
         dispatch_async(dispatch_get_main_queue(), ^{
-            [[UIApplication sharedApplication].keyWindow makeToast:TwinmeLocalizedString(@"conversation_view_controller_group_not_allowed_post_message", nil)];
+            UIWindow *window = [self currentWindow];
+            if (window) {
+                [window makeToast:TwinmeLocalizedString(@"conversation_view_group_not_allowed_post_message", nil)];
+            }
         });
         return;
     }
@@ -2380,11 +2514,16 @@ typedef enum {
         } else {
             message = TwinmeLocalizedString(@"application_network_status_no_internet", nil);
         }
-        [[UIApplication sharedApplication].keyWindow makeToast:message];
+        
+        UIWindow *window = [self currentWindow];
+        if (window) {
+            [window makeToast:message];
+        }
+        
         
         // SCz 2018-06-22: we should display as title the message "Cannot send messages immediately:"
         // but the current toast is looks weird with several lines.  For now, use a single line (which is also truncated).
-        // [self.view makeToast:message duration:5 position:[CSToastManager defaultPosition] title:TwinmeLocalizedString(@"conversation_view_controller_cannot_send", nil) image:nil style:nil completion:nil];
+        // [self.view makeToast:message duration:5 position:[CSToastManager defaultPosition] title:TwinmeLocalizedString(@"conversation_view_cannot_send", nil) image:nil style:nil completion:nil];
     }
     
     if (self.shouldClearTextAtRightButtonPress) {
@@ -2396,9 +2535,8 @@ typedef enum {
             [self typingFire:self.typingTimer];
         }
     }
-    // Clears cache
-    [self clearCachedText];
     
+    [self saveDraft:@""];
     [self.selectedMedias removeAllObjects];
     
     [self.selectedFiles removeAllObjects];
@@ -2487,6 +2625,12 @@ typedef enum {
         self.keyboardHeight = keyboardSize.height;
         [self.twinmeApplication setDefaultKeyboardHeight:self.keyboardHeight];
     }
+}
+
+- (void)applicationDidEnterBackground:(NSNotification *)notification {
+    DDLogVerbose(@"%@ applicationDidEnterBackground", LOG_TAG);
+    
+    [self saveDraft:self.textView.text];
 }
 
 - (void)didPasteStringContent:(NSString *)text {
@@ -2753,13 +2897,14 @@ typedef enum {
     if ([value boolValue]) {
         AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
         alertMessageView.alertMessageViewDelegate = self;
-        [alertMessageView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:TwinmeLocalizedString(@"conversation_view_controller_file_type_not_supported", nil)];
+        [alertMessageView initWithTitle:TwinmeLocalizedString(@"deleted_account_view_warning", nil) message:TwinmeLocalizedString(@"conversation_view_file_type_not_supported", nil)];
         [self.tabBarController.view addSubview:alertMessageView];
         [alertMessageView showAlertView];
         return;
     }
     
-    if (controller.documentPickerMode == UIDocumentPickerModeImport) {
+    if (self.pickerImportFile) {
+        self.pickerImportFile = NO;
         PreviewFilesViewController *previewFileViewController = (PreviewFilesViewController *)[self.storyboard instantiateViewControllerWithIdentifier:@"PreviewFilesViewController"];
         previewFileViewController.previewViewDelegate = self;
         [previewFileViewController initWithPreviewFiles:urls];
@@ -2775,9 +2920,12 @@ typedef enum {
         [previewFileViewController initWithName:self.contactName avatar:self.contactAvatar certified:certified message:self.textView.text];
         
         [self presentViewController:previewFileViewController animated:YES completion:nil];
-    } else if (controller.documentPickerMode == UIDocumentPickerModeExportToService) {
+    } else {
         dispatch_async(dispatch_get_main_queue(), ^{
-            [[UIApplication sharedApplication].keyWindow makeToast:TwinmeLocalizedString(@"conversation_view_controller_menu_item_view_save_message", nil)];
+            UIWindow *window = [self currentWindow];
+            if (window) {
+                [window makeToast:TwinmeLocalizedString(@"conversation_view_menu_item_view_save_message", nil)];
+            }
             [self closeMenu];
         });
     }
@@ -2856,7 +3004,7 @@ typedef enum {
 - (void)swipeToReplyToItem:(Item *)item {
     DDLogVerbose(@"%@ swipeToReplyToItem: %@", LOG_TAG, item);
     
-    [Utils hapticFeedback:UIImpactFeedbackStyleHeavy hapticFeedbackMode:self.twinmeApplication.hapticFeedbackMode];
+    [Utils hapticFeedback:UIImpactFeedbackStyleHeavy];
     
     self.selectedItem = item;
     [self.textView becomeFirstResponder];
@@ -2924,8 +3072,14 @@ typedef enum {
         UITapGestureRecognizer *tapHeaderOverlayGesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(closeMenu)];
         [self.headerOverlayView addGestureRecognizer:tapHeaderOverlayGesture];
         
-        UIWindow *window = UIApplication.sharedApplication.keyWindow;
-        CGFloat safeAreaInset = Design.DISPLAY_HEIGHT - self.view.safeAreaLayoutGuide.layoutFrame.size.height - window.safeAreaInsets.bottom;
+        
+        UIWindow *window = [self currentWindow];
+        CGFloat safeAreaInset;
+        if (window) {
+            safeAreaInset = Design.DISPLAY_HEIGHT - self.view.safeAreaLayoutGuide.layoutFrame.size.height - window.safeAreaInsets.bottom;
+        } else {
+            safeAreaInset = Design.DISPLAY_HEIGHT - self.view.safeAreaLayoutGuide.layoutFrame.size.height - self.view.safeAreaInsets.bottom;
+        }
                 
         self.navigationBarOverlayView = [UIView new];
         self.navigationBarOverlayView.frame = CGRectMake(0, 0, Design.DISPLAY_WIDTH, safeAreaInset);
@@ -2964,7 +3118,7 @@ typedef enum {
         
         UITapGestureRecognizer *microTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didPressRecordButton:)];
         [self.textViewRightView.microView addGestureRecognizer:microTapGestureRecognizer];
-        self.textViewRightView.microView.accessibilityLabel = TwinmeLocalizedString(@"conversation_view_controller_record_title", nil);
+        self.textViewRightView.microView.accessibilityLabel = TwinmeLocalizedString(@"conversation_view_record_title", nil);
         
         [self updateSendButton:NO];
     }
@@ -3042,7 +3196,7 @@ typedef enum {
         
         if (self.group) {
             self.titleLabel.text = self.group.name;
-            self.subTitleLabel.text = TwinmeLocalizedString(@"conversation_view_controller_group_one_member", nil);
+            self.subTitleLabel.text = TwinmeLocalizedString(@"conversation_view_group_one_member", nil);
             self.navigationItem.rightBarButtonItems = nil;
         }
         
@@ -3051,9 +3205,9 @@ typedef enum {
         [self.cancelBarButtonItem setTitleTextAttributes: @{NSFontAttributeName: Design.FONT_BOLD36, NSForegroundColorAttributeName: [UIColor colorWithWhite:1.0 alpha:0.5]} forState:UIControlStateDisabled];
         
         self.audioCallBarButtonItem = [[UIBarButtonItem alloc]initWithImage:[UIImage imageNamed:@"AudioCallIcon"] style:UIBarButtonItemStylePlain target:self action:@selector(handleAudioTapGesture:)];
-        self.audioCallBarButtonItem.accessibilityLabel = TwinmeLocalizedString(@"conversation_view_controller_audio_call", nil);
+        self.audioCallBarButtonItem.accessibilityLabel = TwinmeLocalizedString(@"conversation_view_audio_call", nil);
         self.videoCallBarButtonItem = [[UIBarButtonItem alloc]initWithImage:[UIImage imageNamed:@"VideoCallIcon"] style:UIBarButtonItemStylePlain target:self action:@selector(handleVideoTapGesture:)];
-        self.videoCallBarButtonItem.accessibilityLabel = TwinmeLocalizedString(@"conversation_view_controller_video_call", nil);
+        self.videoCallBarButtonItem.accessibilityLabel = TwinmeLocalizedString(@"conversation_view_video_call", nil);
         self.navigationItem.rightBarButtonItems = [NSArray arrayWithObjects:self.videoCallBarButtonItem, self.audioCallBarButtonItem, nil];
         
         UITapGestureRecognizer *titleGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTitleTapGesture:)];
@@ -3106,7 +3260,10 @@ typedef enum {
         
         if (!item.isEphemeralItem) {
             dispatch_async(dispatch_get_main_queue(), ^{
-                [[UIApplication sharedApplication].keyWindow makeToast:TwinmeLocalizedString(@"conversation_view_controller_delete_message",nil)];
+                UIWindow *window = [self currentWindow];
+                if (window) {
+                    [window makeToast:TwinmeLocalizedString(@"conversation_view_delete_message",nil)];
+                }
             });
         }
         
@@ -3174,7 +3331,10 @@ typedef enum {
     DDLogVerbose(@"%@ openFileWithNamedFileDescriptorNotFound", LOG_TAG);
     
     dispatch_async(dispatch_get_main_queue(), ^{
-        [[UIApplication sharedApplication].keyWindow makeToast:TwinmeLocalizedString(@"conversation_view_controller_file_not_found", nil)];
+        UIWindow *window = [self currentWindow];
+        if (window) {
+            [window makeToast:TwinmeLocalizedString(@"conversation_view_file_not_found", nil)];
+        }
     });
 }
 
@@ -3206,7 +3366,10 @@ typedef enum {
     if (!self.twinmeApplication.inCall) {
         if ((callDescriptor.isVideo && !self.contact.capabilities.hasVideo) || (!callDescriptor.isVideo && !self.contact.capabilities.hasAudio)) {
             dispatch_async(dispatch_get_main_queue(), ^{
-                [[UIApplication sharedApplication].keyWindow makeToast:TwinmeLocalizedString(@"application_not_authorized_operation_by_your_contact",nil)];
+                UIWindow *window = [self currentWindow];
+                if (window) {
+                    [window makeToast:TwinmeLocalizedString(@"application_not_authorized_operation_by_your_contact",nil)];
+                }
             });
         } else {
             self.callAgainDescriptor = callDescriptor;
@@ -3214,10 +3377,10 @@ typedef enum {
             CallAgainConfirmView *callAgainConfirmView = [[CallAgainConfirmView alloc] init];
             callAgainConfirmView.bottomSheetViewDelegate = self;
             
-            NSString *message = TwinmeLocalizedString(@"conversation_view_controller_audio_call", nil);
+            NSString *message = TwinmeLocalizedString(@"conversation_view_audio_call", nil);
             UIImage *icon = [UIImage imageNamed:@"AudioCall"];
             if (self.callAgainDescriptor.isVideo) {
-                message = TwinmeLocalizedString(@"conversation_view_controller_video_call", nil);
+                message = TwinmeLocalizedString(@"conversation_view_video_call", nil);
                 icon = [UIImage imageNamed:@"VideoCall"];
             }
             
@@ -3251,6 +3414,106 @@ typedef enum {
     [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:nil];
 }
 
+#pragma mark - PollActionDelegate
+
+- (void)resultsPoll:(TLPollDescriptor *)pollDescriptor {
+    DDLogVerbose(@"%@ resultsPoll: %@", LOG_TAG, pollDescriptor);
+    
+    if (self.selectItemMode) {
+        return;
+    }
+    
+    [Utils hapticFeedback:UIImpactFeedbackStyleHeavy];
+    
+    [self.conversationService listAnnotationsWithDescriptorId:pollDescriptor.descriptorId withBlock:^(NSDictionary<NSUUID *, NSArray<TLDescriptorAnnotationPair *> *>* annotations) {
+        NSMutableArray<UIPollResult *> *results = [[NSMutableArray alloc]init];
+        
+        for (TLChoice *choice in pollDescriptor.choices) {
+            [results addObject:[[UIPollResult alloc]initWithChoice:choice]];
+        }
+        
+        for (NSUUID *uuid in annotations.allKeys) {
+            NSArray<TLDescriptorAnnotationPair *> *descriptorAnnotations = [annotations objectForKey:uuid];
+            
+            for (TLDescriptorAnnotationPair *descriptorAnnotation in descriptorAnnotations) {
+                
+                if (descriptorAnnotation.annotation.type == TLDescriptorAnnotationTypePoll) {
+                    NSString *name = descriptorAnnotation.twincodeOutbound.name;
+                    UIImage *avatar = [self.conversationService getImageWithTwincode:descriptorAnnotation.twincodeOutbound];
+                    
+                    NSArray<TLChoice *> *userChoices = [TLChoice fromAnnotationValueWithValue:descriptorAnnotation.annotation.value choices:pollDescriptor.choices];
+                    
+                    if (name && avatar) {
+                        for (UIPollResult *result in results) {
+                            if ([userChoices containsObject:result.choice]) {
+                                UIPollResultVoter *voter = [[UIPollResultVoter alloc]initWithName:name avatar:avatar];
+                                result.count += 1;
+                                [result.voters addObject:voter];
+                            }
+                        }
+                    }
+                    
+                    break;
+                }
+            }
+        }
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self openPollResultsView:pollDescriptor.question results:results];
+        });
+    }];
+}
+
+- (void)openPollResultsView:(NSString *)title results:(NSMutableArray *)results {
+    DDLogVerbose(@"%@ openPollResultsView", LOG_TAG);
+        
+    PollResultView *pollResultView = [[PollResultView alloc] init];
+    pollResultView.pollResultViewDelegate = self;
+    [self.navigationController.view addSubview:pollResultView];
+    [pollResultView openMenu:title results:results];
+}
+
+#pragma mark - PollResultViewDelegate
+
+- (void)cancelPollResultView:(PollResultView *)pollResultView {
+    DDLogVerbose(@"%@ cancelPollResultView", LOG_TAG);
+    
+    [pollResultView removeFromSuperview];
+}
+
+- (void)selectChoice:(TLChoice *)choice pollDescriptor:(TLPollDescriptor *)pollDescriptor votes:(NSDictionary<NSUUID *, NSArray<TLChoice *> *> *) votes {
+    DDLogVerbose(@"%@ selectChoice: %@ pollDescriptor: %@ votes: %@", LOG_TAG, choice, pollDescriptor, votes);
+    
+    [Utils hapticFeedback:UIImpactFeedbackStyleHeavy];
+    
+    NSMutableArray<TLChoice *> *choices = [[NSMutableArray alloc]init];
+
+    NSUUID *twincodeOutboundId;
+    if (self.contact && self.contact.twincodeOutbound) {
+        twincodeOutboundId = self.contact.twincodeOutboundId;
+    } else if (self.group) {
+        twincodeOutboundId = self.group.twincodeOutboundId;
+    }
+    
+    if (!twincodeOutboundId) {
+        return;
+    }
+    
+    NSArray<TLChoice *> *previousVotes = votes[twincodeOutboundId];
+    if (previousVotes != nil && pollDescriptor.multipleChoicesAllowed) {
+        NSMutableArray<TLChoice *> *votes = [NSMutableArray arrayWithArray:previousVotes];
+        if ([votes containsObject:choice]) {
+            [votes removeObject:choice];
+        } else {
+            [votes addObject:choice];
+        }
+        [choices addObjectsFromArray:votes];
+    } else {
+        [choices addObject:choice];
+    }
+
+    [self.conversationService submitPollVotes:pollDescriptor.descriptorId choices:choices];
+}
+
 #pragma mark - MenuActionDelegate
 
 - (void)openMenu:(Item *)item {
@@ -3260,7 +3523,7 @@ typedef enum {
         return;
     }
         
-    [Utils hapticFeedback:UIImpactFeedbackStyleHeavy hapticFeedbackMode:self.twinmeApplication.hapticFeedbackMode];
+    [Utils hapticFeedback:UIImpactFeedbackStyleHeavy];
     
     NSInteger itemIndex = -1;
     for (NSInteger index = self.items.count - 1; index >= 0; index--) {
@@ -3312,6 +3575,11 @@ typedef enum {
                 menuType = MenuTypeFile;
                 addReaction = YES;
                 break;
+            case ItemTypePoll:
+            case ItemTypePeerPoll:
+                menuType = MenuTypePoll;
+                addReaction = YES;
+                break;
             case ItemTypeInvitation:
             case ItemTypePeerInvitation:
             case ItemTypeInvitationContact:
@@ -3335,12 +3603,12 @@ typedef enum {
             addReaction = NO;
         }
         
-        [self.menuItemView openMenu:self.selectedItem menuType:menuType];
+        [self.menuItemView openMenu:self.selectedItem menuType:menuType displayAvatar:[self displayPeerItemAvatar]];
         self.menuItemView.hidden = NO;
         [self.view bringSubviewToFront:self.menuItemView];
         
         if (addReaction) {
-            [self.menuReactionView openMenu:self.selectedItem.isPeerItem];
+            [self.menuReactionView openMenu:self.selectedItem.isPeerItem displayAvatar:[self displayPeerItemAvatar]];
             self.menuReactionView.hidden = NO;
             [self.view bringSubviewToFront:self.menuReactionView];
         }
@@ -3539,6 +3807,8 @@ typedef enum {
         return;
     }
     
+    [Utils hapticFeedback:UIImpactFeedbackStyleHeavy];
+    
     [self.conversationService listAnnotationsWithDescriptorId:descriptorId withBlock:^(NSDictionary<NSUUID *, NSArray<TLDescriptorAnnotationPair *> *>* annotations) {
         NSMutableArray<UIAnnotation *> *uiAnnotationList = [[NSMutableArray alloc] initWithCapacity:annotations.count];
         
@@ -3552,7 +3822,7 @@ typedef enum {
                     NSString *name = descriptorAnnotation.twincodeOutbound.name;
                     UIImage *avatar = [self.conversationService getImageWithTwincode:descriptorAnnotation.twincodeOutbound];
                     
-                    UIAnnotation *uiAnnotation = [[UIAnnotation alloc]initWithType:TLDescriptorAnnotationTypeLike reaction:uiReaction name:name avatar:avatar timestamp:0];
+                    UIAnnotation *uiAnnotation = [[UIAnnotation alloc]initWithType:TLDescriptorAnnotationTypeLike reaction:uiReaction name:name avatar:avatar value:0];
                     [uiAnnotationList addObject:uiAnnotation];
                     break;
                 }
@@ -3588,10 +3858,16 @@ typedef enum {
     
     if (self.selectedItem) {
         if ([self.selectedItem isClearLocalItem]) {
-            [[UIApplication sharedApplication].keyWindow makeToast:TwinmeLocalizedString(@"conversation_view_controller_local_cleanup", nil)];
+            UIWindow *window = [self currentWindow];
+            if (window) {
+                [window makeToast:TwinmeLocalizedString(@"conversation_view_local_cleanup", nil)];
+            }
             return;
         } else if (self.selectedItem.state == ItemStateDeleted || (self.selectedItem.isPeerItem && (!self.selectedItem.copyAllowed || self.selectedItem.isEphemeralItem))) {
-            [[UIApplication sharedApplication].keyWindow makeToast:TwinmeLocalizedString(@"conversation_view_controller_menu_item_view_operation_not_allowed", nil)];
+            UIWindow *window = [self currentWindow];
+            if (window) {
+                [window makeToast:TwinmeLocalizedString(@"conversation_view_menu_item_view_operation_not_allowed", nil)];
+            }
             return;
         } else if (!self.selectedItem.isAvailableItem) {
             return;
@@ -3614,7 +3890,10 @@ typedef enum {
         
         [[UIPasteboard generalPasteboard] setString:content];
         [self closeMenu];
-        [[UIApplication sharedApplication].keyWindow makeToast:TwinmeLocalizedString(@"conversation_view_controller_menu_item_view_copy_message", nil)];
+        UIWindow *window = [self currentWindow];
+        if (window) {
+            [window makeToast:TwinmeLocalizedString(@"conversation_view_menu_item_view_copy_message", nil)];
+        }
     }
 }
 
@@ -3681,16 +3960,23 @@ typedef enum {
     DDLogVerbose(@"%@ forwardItemClick", LOG_TAG);
     
     if (self.selectedItem) {
+        UIWindow *window = [self currentWindow];
         if ([self.selectedItem isClearLocalItem]) {
-            [[UIApplication sharedApplication].keyWindow makeToast:TwinmeLocalizedString(@"conversation_view_controller_local_cleanup", nil)];
+            if (window) {
+                [window makeToast:TwinmeLocalizedString(@"conversation_view_local_cleanup", nil)];
+            }
             return;
         } else if (self.selectedItem.state == ItemStateDeleted || (self.selectedItem.isPeerItem && (!self.selectedItem.copyAllowed || self.selectedItem.isEphemeralItem))) {
-            [[UIApplication sharedApplication].keyWindow makeToast:TwinmeLocalizedString(@"conversation_view_controller_menu_item_view_operation_not_allowed", nil)];
+            if (window) {
+                [window makeToast:TwinmeLocalizedString(@"conversation_view_menu_item_view_operation_not_allowed", nil)];
+            }
             return;
         } else if (!self.selectedItem.isAvailableItem) {
             return;
         } else if (![self.selectedItem isFileItemExist]) {
-            [[UIApplication sharedApplication].keyWindow makeToast:TwinmeLocalizedString(@"conversation_view_controller_file_not_found", nil)];
+            if (window) {
+                [window makeToast:TwinmeLocalizedString(@"conversation_view_file_not_found", nil)];
+            }
             return;
         }
         
@@ -3788,16 +4074,23 @@ typedef enum {
     DDLogVerbose(@"%@ saveItemClick", LOG_TAG);
     
     if (self.selectedItem) {
+        UIWindow *window = [self currentWindow];
         if ([self.selectedItem isClearLocalItem]) {
-            [[UIApplication sharedApplication].keyWindow makeToast:TwinmeLocalizedString(@"conversation_view_controller_local_cleanup", nil)];
+            if (window) {
+                [window makeToast:TwinmeLocalizedString(@"conversation_view_local_cleanup", nil)];
+            }
             return;
         } else if (self.selectedItem.state == ItemStateDeleted || (self.selectedItem.isPeerItem && (!self.selectedItem.copyAllowed || self.selectedItem.isEphemeralItem))) {
-            [[UIApplication sharedApplication].keyWindow makeToast:TwinmeLocalizedString(@"conversation_view_controller_menu_item_view_operation_not_allowed", nil)];
+            if (window) {
+                [window makeToast:TwinmeLocalizedString(@"conversation_view_menu_item_view_operation_not_allowed", nil)];
+            }
             return;
         } else if (!self.selectedItem.isAvailableItem) {
             return;
         } else if (![self.selectedItem isFileItemExist]) {
-            [[UIApplication sharedApplication].keyWindow makeToast:TwinmeLocalizedString(@"conversation_view_controller_file_not_found", nil)];
+            if (window) {
+                [window makeToast:TwinmeLocalizedString(@"conversation_view_file_not_found", nil)];
+            }
             return;
         }
         
@@ -3830,16 +4123,24 @@ typedef enum {
     
     if (self.selectedItem) {
         NSMutableArray *activityItems;
+        
+        UIWindow *window = [self currentWindow];
         if ([self.selectedItem isClearLocalItem]) {
-            [[UIApplication sharedApplication].keyWindow makeToast:TwinmeLocalizedString(@"conversation_view_controller_local_cleanup", nil)];
+            if (window) {
+                [window makeToast:TwinmeLocalizedString(@"conversation_view_local_cleanup", nil)];
+            }
             return;
         } else if (self.selectedItem.state == ItemStateDeleted || (self.selectedItem.isPeerItem && (!self.selectedItem.copyAllowed || self.selectedItem.isEphemeralItem))) {
-            [[UIApplication sharedApplication].keyWindow makeToast:TwinmeLocalizedString(@"conversation_view_controller_menu_item_view_operation_not_allowed", nil)];
+            if (window) {
+                [window makeToast:TwinmeLocalizedString(@"conversation_view_menu_item_view_operation_not_allowed", nil)];
+            }
             return;
         } else if (!self.selectedItem.isAvailableItem) {
             return;
         } else if (![self.selectedItem isFileItemExist]) {
-            [[UIApplication sharedApplication].keyWindow makeToast:TwinmeLocalizedString(@"conversation_view_controller_file_not_found", nil)];
+            if (window) {
+                [window makeToast:TwinmeLocalizedString(@"conversation_view_file_not_found", nil)];
+            }
             return;
         }
         
@@ -4002,8 +4303,7 @@ typedef enum {
     DDLogVerbose(@"%@ sendMediaCaption:%@ allowCopyText: %@", LOG_TAG, text, allowCopyText ? @"YES":@"NO");
     
     if (text && ![text isEqualToString:@""]) {
-        [self.textView slk_clearText:YES];
-        [self clearCachedText];
+        [self saveDraft:@""];
         [self.conversationService pushMessage:text copyAllowed:allowCopyText expiredTimeout:0 sendTo:nil replyTo:nil];
     }
 }
@@ -4020,7 +4320,11 @@ typedef enum {
         } else {
             message = TwinmeLocalizedString(@"application_network_status_no_internet", nil);
         }
-        [[UIApplication sharedApplication].keyWindow makeToast:message];
+        
+        UIWindow *window = [self currentWindow];
+        if (window) {
+            [window makeToast:message];
+        }
     }
 }
 
@@ -4036,7 +4340,10 @@ typedef enum {
         } else {
             message = TwinmeLocalizedString(@"application_network_status_no_internet", nil);
         }
-        [[UIApplication sharedApplication].keyWindow makeToast:message];
+        UIWindow *window = [self currentWindow];
+        if (window) {
+            [window makeToast:message];
+        }
     }
 }
 
@@ -4052,7 +4359,10 @@ typedef enum {
         } else {
             message = TwinmeLocalizedString(@"application_network_status_no_internet", nil);
         }
-        [[UIApplication sharedApplication].keyWindow makeToast:message];
+        UIWindow *window = [self currentWindow];
+        if (window) {
+            [window makeToast:message];
+        }
     }
 }
 
@@ -4166,7 +4476,7 @@ typedef enum {
     DeleteConfirmView *deleteConfirmView = [[DeleteConfirmView alloc] init];
     deleteConfirmView.bottomSheetViewDelegate = self;
     deleteConfirmView.deleteConfirmType = DeleteConfirmTypeFile;
-    [deleteConfirmView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:TwinmeLocalizedString(@"cleanup_view_controller_delete_confirmation_message", nil) avatar:self.contactAvatar icon:[UIImage imageNamed:@"ActionBarDelete"]];
+    [deleteConfirmView initWithTitle:TwinmeLocalizedString(@"deleted_account_view_warning", nil) message:TwinmeLocalizedString(@"cleanup_view_delete_confirmation_message", nil) avatar:self.contactAvatar icon:[UIImage imageNamed:@"ActionBarDelete"]];
     
     [self.navigationController.view addSubview:deleteConfirmView];
     [deleteConfirmView showConfirmView];
@@ -4188,6 +4498,33 @@ typedef enum {
         
         [self.itemSelectedActionView updateSelectedItems:(int)self.selectedItems.count];
         [self reloadData];
+    }
+}
+
+#pragma mark - InfoItemDelegate
+
+- (void)didTapInfoItem:(Item *)item {
+    DDLogVerbose(@"%@ didTapInfoItem: %@", LOG_TAG, item);
+    
+    if (item.errorAnnotation) {
+        [Utils hapticFeedback:UIImpactFeedbackStyleHeavy];
+        
+        AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
+        alertMessageView.alertMessageViewDelegate = self;
+        
+        NSString *message = @"";
+        TLBaseServiceErrorCode errorCode = [TLConversationService toErrorCode:(int)item.errorAnnotation.value];
+        if (errorCode == TLBaseServiceErrorCodeFeatureNotSupportedByPeer) {
+            message = TwinmeLocalizedString(@"conversation_view_feature_not_supported_by_peer", nil);
+        } else if (errorCode == TLBaseServiceErrorCodeExpired) {
+            message = TwinmeLocalizedString(@"info_item_view_not_delivered_expiration", nil);
+        } else if (errorCode == TLBaseServiceErrorCodeNoStorageSpace) {
+            message = TwinmeLocalizedString(@"info_item_view_not_delivered_storage", nil);
+        }
+        
+        [alertMessageView initWithTitle:TwinmeLocalizedString(@"info_item_view_not_delivered", nil) message:message];
+        [self.tabBarController.view addSubview:alertMessageView];
+        [alertMessageView showAlertView];
     }
 }
 
@@ -4229,6 +4566,10 @@ typedef enum {
             
         case ConversationActionTypeFile:
             [self openFile];
+            break;
+            
+        case ConversationActionTypePoll:
+            [self createPoll];
             break;
             
         case ConversationActionTypeMediasAndFiles:
@@ -4285,8 +4626,9 @@ typedef enum {
         self.errorMediaPicking = NO;
         [self.previewMediaPicking removeAllObjects];
         
-        CFStringRef mediaType = (__bridge CFStringRef)([info objectForKey:@"UIImagePickerControllerMediaType"]);
-        if (UTTypeConformsTo(mediaType, kUTTypeMovie)) {
+        NSString *mediaTypeIdentifier = [info objectForKey:@"UIImagePickerControllerMediaType"];
+        UTType *mediaType = [UTType typeWithIdentifier:mediaTypeIdentifier];
+        if ([mediaType conformsToType:UTTypeMovie]) {
             self.countMediaPicking++;
             NSURL *url = [info objectForKey:@"UIImagePickerControllerMediaURL"];
             AVURLAsset *avAsset = [AVURLAsset URLAssetWithURL:url options:nil];
@@ -4317,7 +4659,7 @@ typedef enum {
             } else {
                 [self openPreviewVideo:url];
             }
-        } else if (UTTypeConformsTo(mediaType, kUTTypeImage)) {
+        } else if ([mediaType conformsToType:UTTypeImage]) {
             UIImage *originalImage = [info objectForKey:@"UIImagePickerControllerOriginalImage"];
             NSURL *urlImage = [info objectForKey:@"UIImagePickerControllerImageURL"];
             
@@ -4327,7 +4669,12 @@ typedef enum {
                 PHImageRequestOptions *imageRequestOptions = [[PHImageRequestOptions alloc] init];
                 imageRequestOptions.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
                 imageRequestOptions.networkAccessAllowed = YES;
-                [[PHImageManager defaultManager] requestImageDataForAsset:asset options:imageRequestOptions resultHandler:^(NSData * _Nullable imageData, NSString * _Nullable dataUTI, UIImageOrientation orientation, NSDictionary * _Nullable info) {
+                [[PHImageManager defaultManager] requestImageDataAndOrientationForAsset:asset
+                                                                                options:imageRequestOptions
+                                                                          resultHandler:^(NSData * _Nullable imageData,
+                                                                                          NSString * _Nullable dataUTI,
+                                                                                          CGImagePropertyOrientation orientation,
+                                                                                          NSDictionary * _Nullable info) {
                     
                     if (imageData) {
                         NSString *imgExtension = @".jpg";
@@ -4383,10 +4730,10 @@ typedef enum {
         [self.previewMediaPicking removeAllObjects];
         
         for (PHPickerResult *result in results) {
-            if ([result.itemProvider hasItemConformingToTypeIdentifier:(NSString *)kUTTypeImage]) {
+            if ([result.itemProvider hasItemConformingToTypeIdentifier:UTTypeImage.identifier]) {
                 
                 self.countMediaPicking++;
-                [result.itemProvider loadDataRepresentationForTypeIdentifier:(NSString *)kUTTypeImage
+                [result.itemProvider loadDataRepresentationForTypeIdentifier:UTTypeImage.identifier
                                                            completionHandler:^(NSData * _Nullable data,
                                                                                NSError * _Nullable error) {
                     if (!error) {
@@ -4411,10 +4758,10 @@ typedef enum {
                         [self openPreviewImage:nil imageData:nil imageExtension:nil];
                     }
                 }];
-            } else if ([result.itemProvider hasItemConformingToTypeIdentifier:(NSString *)kUTTypeMovie]) {
+            } else if ([result.itemProvider hasItemConformingToTypeIdentifier:UTTypeMovie.identifier]) {
                 
                 self.countMediaPicking++;
-                [result.itemProvider loadFileRepresentationForTypeIdentifier:(NSString *)kUTTypeMovie
+                [result.itemProvider loadFileRepresentationForTypeIdentifier:UTTypeMovie.identifier
                                                            completionHandler:^(NSURL * _Nullable url,
                                                                                NSError * _Nullable error) {
                     
@@ -4507,6 +4854,14 @@ typedef enum {
     [self.navigationController pushViewController:exportViewController animated:YES];
 }
 
+#pragma mark - CreatePollViewControllerDelegate
+
+- (void)createPollWithMultipleAnswersAllowed:(BOOL)multipleAnswersAllowed question:(NSString *)question choices:(NSArray<TLChoice *> *)choices {
+    DDLogVerbose(@"%@ createPollWithMultipleAnswersAllowed:%@ question:%@ choices:%@", LOG_TAG, multipleAnswersAllowed?@"YES":@"NO", question, choices);
+    
+    [self.conversationService pushPollWithMultipleAnswersAllowed:multipleAnswersAllowed question:question choices:choices copyAllowed:NO expiration:0];
+}
+
 #pragma mark - Private methods
 
 - (void)initViews {
@@ -4528,7 +4883,7 @@ typedef enum {
     
     self.emptyConversationLabel.font = Design.FONT_REGULAR36;
     self.emptyConversationLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    self.emptyConversationLabel.text = TwinmeLocalizedString(@"conversation_view_controller_empty_message", nil);
+    self.emptyConversationLabel.text = TwinmeLocalizedString(@"conversation_view_empty_message", nil);
     [self.view bringSubviewToFront:self.emptyConversationLabel];
     
     self.scrollIndicatorViewWidthConstraint.constant = self.scrollIndicatorImageViewHeightConstraint.constant + 2 * self.scrollIndicatorImageViewTrailingConstraint.constant;
@@ -4567,8 +4922,13 @@ typedef enum {
     
     self.itemSelectedActionViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
 
-    UIWindow *window = UIApplication.sharedApplication.keyWindow;
-    self.itemSelectedActionViewHeightConstraint.constant += window.safeAreaInsets.bottom;
+    UIWindow *window = [self currentWindow];
+    if (window) {
+        self.itemSelectedActionViewHeightConstraint.constant += window.safeAreaInsets.bottom;
+    } else {
+        self.itemSelectedActionViewHeightConstraint.constant += self.view.safeAreaInsets.bottom;
+    }
+    
     
     self.itemSelectedActionContainerView.backgroundColor = Design.NAVIGATION_BAR_BACKGROUND_COLOR;
     self.itemSelectedActionContainerView.hidden = YES;
@@ -4582,16 +4942,17 @@ typedef enum {
     }
     
     self.textView.font = Design.FONT_REGULAR32;
-    self.textView.placeholder = TwinmeLocalizedString(@"conversation_view_controller_message", nil);
+    self.textView.placeholder = TwinmeLocalizedString(@"conversation_view_message", nil);
+    [self.textView setText:[self getDraft]];
     self.textView.backgroundColor = Design.TEXTFIELD_CONVERSATION_BACKGROUND_COLOR;
     self.textView.textContainerInset = UIEdgeInsetsMake(DESIGN_HEIGHT_INSET * Design.HEIGHT_RATIO, DESIGN_WIDTH_INSET * Design.WIDTH_RATIO, DESIGN_HEIGHT_INSET * Design.HEIGHT_RATIO, DESIGN_WIDTH_INSET * Design.WIDTH_RATIO);
     
     self.textView.layer.borderColor = [UIColor clearColor].CGColor;
     self.textView.keyboardType = UIKeyboardTypeDefault;
     self.textView.pastableMediaTypes = SLKPastableMediaTypeAll;
-    [self.textView registerMarkdownFormattingSymbol:@"*" withTitle:TwinmeLocalizedString(@"conversation_view_controller_format_menu_bold", nil)];
-    [self.textView registerMarkdownFormattingSymbol:@"_" withTitle:TwinmeLocalizedString(@"conversation_view_controller_format_menu_italic", nil)];
-    [self.textView registerMarkdownFormattingSymbol:@"~" withTitle:TwinmeLocalizedString(@"conversation_view_controller_format_menu_strikethrough", nil)];
+    [self.textView registerMarkdownFormattingSymbol:@"*" withTitle:TwinmeLocalizedString(@"conversation_view_format_menu_bold", nil)];
+    [self.textView registerMarkdownFormattingSymbol:@"_" withTitle:TwinmeLocalizedString(@"conversation_view_format_menu_italic", nil)];
+    [self.textView registerMarkdownFormattingSymbol:@"~" withTitle:TwinmeLocalizedString(@"conversation_view_format_menu_strikethrough", nil)];
     
     self.textView.layer.cornerRadius = (Design.FONT_REGULAR32.lineHeight + (DESIGN_HEIGHT_INSET * Design.HEIGHT_RATIO * 2)) * 0.5;
     self.textView.clipsToBounds = YES;
@@ -4620,11 +4981,13 @@ typedef enum {
     [self.tableView registerNib:[UINib nibWithNibName:@"PeerImageItemCell" bundle:nil] forCellReuseIdentifier:PEER_IMAGE_ITEM_CELL_IDENTIFIER];
     [self.tableView registerNib:[UINib nibWithNibName:@"AudioItemCell" bundle:nil] forCellReuseIdentifier:AUDIO_ITEM_CELL_IDENTIFIER];
     [self.tableView registerNib:[UINib nibWithNibName:@"PeerAudioItemCell" bundle:nil] forCellReuseIdentifier:PEER_AUDIO_ITEM_CELL_IDENTIFIER];
-    [self.tableView registerClass:[TimeItemCell class] forCellReuseIdentifier:TIME_CELL_IDENTIFIER];
+    [self.tableView registerNib:[UINib nibWithNibName:@"TimeItemCell" bundle:nil] forCellReuseIdentifier:TIME_ITEM_CELL_IDENTIFIER];
     [self.tableView registerNib:[UINib nibWithNibName:@"VideoItemCell" bundle:nil] forCellReuseIdentifier:VIDEO_ITEM_CELL_IDENTIFIER];
     [self.tableView registerNib:[UINib nibWithNibName:@"PeerVideoItemCell" bundle:nil] forCellReuseIdentifier:PEER_VIDEO_ITEM_CELL_IDENTIFIER];
     [self.tableView registerNib:[UINib nibWithNibName:@"FileItemCell" bundle:nil] forCellReuseIdentifier:FILE_ITEM_CELL_IDENTIFIER];
     [self.tableView registerNib:[UINib nibWithNibName:@"PeerFileItemCell" bundle:nil] forCellReuseIdentifier:PEER_FILE_ITEM_CELL_IDENTIFIER];
+    [self.tableView registerNib:[UINib nibWithNibName:@"PollItemCell" bundle:nil] forCellReuseIdentifier:POLL_ITEM_CELL_IDENTIFIER];
+    [self.tableView registerNib:[UINib nibWithNibName:@"PeerPollItemCell" bundle:nil] forCellReuseIdentifier:PEER_POLL_ITEM_CELL_IDENTIFIER];
     [self.tableView registerNib:[UINib nibWithNibName:@"InvitationItemCell" bundle:nil] forCellReuseIdentifier:INVITATION_ITEM_CELL_IDENTIFIER];
     [self.tableView registerNib:[UINib nibWithNibName:@"PeerInvitationItemCell" bundle:nil] forCellReuseIdentifier:PEER_INVITATION_ITEM_CELL_IDENTIFIER];
     [self.tableView registerNib:[UINib nibWithNibName:@"NameItemCell" bundle:nil] forCellReuseIdentifier:NAME_ITEM_CELL_IDENTIFIER];
@@ -4649,7 +5012,7 @@ typedef enum {
     [self.sendButtonView.editView addGestureRecognizer:editMessageTapGestureRecognizer];
     
     self.sendButtonView.backgroundColor = [UIColor clearColor];
-    self.sendButtonView.sendView.accessibilityLabel = TwinmeLocalizedString(@"feedback_view_controller_send", nil);
+    self.sendButtonView.sendView.accessibilityLabel = TwinmeLocalizedString(@"feedback_view_send", nil);
     
     UILongPressGestureRecognizer *longPressSendButtonViewGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleSendButtonViewLongPress:)];
     [self.sendButtonView.sendView addGestureRecognizer:longPressSendButtonViewGestureRecognizer];
@@ -4695,22 +5058,36 @@ typedef enum {
     
     [self.textInputbar setBackgroundColor:Design.WHITE_COLOR];
     [self.textInputbar setContentInset:UIEdgeInsetsMake(5, 8, 5, 0)];
-    
+        
     self.overlayView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, Design.DISPLAY_WIDTH, Design.DISPLAY_HEIGHT)];
     self.overlayView.backgroundColor = Design.OVERLAY_COLOR;
     self.overlayView.hidden = YES;
     
-    if (@available(iOS 13.0, *)) {
-        self.activityIndicatorView = [[UIActivityIndicatorView alloc]initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleMedium];
-        self.activityIndicatorView.color = [UIColor whiteColor];
-    } else {
-        self.activityIndicatorView = [[UIActivityIndicatorView alloc]initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
-    }
+    self.activityIndicatorView = [[UIActivityIndicatorView alloc]initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleMedium];
+    self.activityIndicatorView.color = [UIColor whiteColor];
     self.activityIndicatorView.hidesWhenStopped = YES;
+    self.activityIndicatorView.translatesAutoresizingMaskIntoConstraints = NO;
     
     [self.overlayView addSubview:self.activityIndicatorView];
     
-    [self.activityIndicatorView setCenter:CGPointMake(Design.DISPLAY_WIDTH * 0.5, Design.DISPLAY_HEIGHT * 0.5)];
+    self.retrievingMediaLabel = [[UILabel alloc]init];
+    self.retrievingMediaLabel.textColor = [UIColor whiteColor];
+    self.retrievingMediaLabel.text = TwinmeLocalizedString(@"preview_files_view_retrieving_media_message", nil);
+    self.retrievingMediaLabel.font = Design.FONT_REGULAR32;
+    self.retrievingMediaLabel.textAlignment = NSTextAlignmentCenter;
+    self.retrievingMediaLabel.numberOfLines = 0;
+    self.retrievingMediaLabel.translatesAutoresizingMaskIntoConstraints = NO;
+    
+    [self.overlayView addSubview:self.retrievingMediaLabel];
+    [NSLayoutConstraint activateConstraints:@[
+        [self.activityIndicatorView.centerXAnchor constraintEqualToAnchor:self.overlayView.centerXAnchor],
+        [self.activityIndicatorView.centerYAnchor constraintEqualToAnchor:self.overlayView.centerYAnchor],
+        [self.retrievingMediaLabel.topAnchor constraintEqualToAnchor:self.activityIndicatorView.bottomAnchor constant:DESIGN_MEDIA_LABEL_VERTICAL_MARGIN * Design.HEIGHT_RATIO],
+        [self.retrievingMediaLabel.leadingAnchor constraintGreaterThanOrEqualToAnchor:self.overlayView.leadingAnchor constant:DESIGN_MEDIA_LABEL_HORIZONTAL_MARGIN * Design.WIDTH_RATIO],
+        [self.retrievingMediaLabel.trailingAnchor constraintLessThanOrEqualToAnchor:self.overlayView.trailingAnchor constant:DESIGN_MEDIA_LABEL_HORIZONTAL_MARGIN * Design.WIDTH_RATIO],
+        [self.retrievingMediaLabel.centerXAnchor constraintEqualToAnchor:self.overlayView.centerXAnchor]
+    ]];
+    
     [self.tabBarController.view addSubview:self.overlayView];
     
     self.zoomLevelViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
@@ -5005,18 +5382,18 @@ typedef enum {
 - (void)resetConversation {
     DDLogVerbose(@"%@ resetConversation", LOG_TAG);
     
-    NSString *alertMessage = TwinmeLocalizedString(@"main_view_controller_reset_conversation_message", nil);
+    NSString *alertMessage = TwinmeLocalizedString(@"main_view_reset_conversation_message", nil);
     if (self.group) {
         if (self.group.isOwner) {
-            alertMessage = TwinmeLocalizedString(@"main_view_controller_reset_group_conversation_admin_message", nil);
+            alertMessage = TwinmeLocalizedString(@"main_view_reset_group_conversation_admin_message", nil);
         } else {
-            alertMessage = TwinmeLocalizedString(@"main_view_controller_reset_group_conversation_message", nil);
+            alertMessage = TwinmeLocalizedString(@"main_view_reset_group_conversation_message", nil);
         }
     }
     
     ResetConversationConfirmView *resetConversationConfirmView = [[ResetConversationConfirmView alloc] init];
     resetConversationConfirmView.bottomSheetViewDelegate = self;
-    [resetConversationConfirmView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:alertMessage avatar:self.contactAvatar icon:[UIImage imageNamed:@"ActionBarDelete"]];
+    [resetConversationConfirmView initWithTitle:TwinmeLocalizedString(@"deleted_account_view_warning", nil) message:alertMessage avatar:self.contactAvatar icon:[UIImage imageNamed:@"ActionBarDelete"]];
     [self.navigationController.view addSubview:resetConversationConfirmView];
     [resetConversationConfirmView showConfirmView];
 }
@@ -5032,17 +5409,15 @@ typedef enum {
     
     if ([self.conversationService isLocalDescriptor:objectDescriptor]) {
         if (self.twinmeApplication.visualizationLink) {
-            if (@available(iOS 13, *)) {
-                NSError *error = nil;
-                NSDataDetector *dataDetector = [NSDataDetector dataDetectorWithTypes:NSTextCheckingTypeLink error:&error];
-                NSString *content = objectDescriptor.message;
-                
-                NSTextCheckingResult *firstMatch = [dataDetector firstMatchInString:content options:0 range:NSMakeRange(0, [content length])];
-                if (firstMatch) {
-                    LinkItem *linkItem = [[LinkItem alloc] initWithObjectDescriptor:objectDescriptor replyToDescriptor:objectDescriptor.replyToDescriptor url:[firstMatch URL]];
-                    [self addItem:linkItem];
-                    return;
-                }
+            NSError *error = nil;
+            NSDataDetector *dataDetector = [NSDataDetector dataDetectorWithTypes:NSTextCheckingTypeLink error:&error];
+            NSString *content = objectDescriptor.message;
+            
+            NSTextCheckingResult *firstMatch = [dataDetector firstMatchInString:content options:0 range:NSMakeRange(0, [content length])];
+            if (firstMatch) {
+                LinkItem *linkItem = [[LinkItem alloc] initWithObjectDescriptor:objectDescriptor replyToDescriptor:objectDescriptor.replyToDescriptor url:[firstMatch URL]];
+                [self addItem:linkItem];
+                return;
             }
         }
         
@@ -5050,17 +5425,15 @@ typedef enum {
         [self addItem:messageItem];
     } else if ([self.conversationService isPeerDescriptor:objectDescriptor]) {
         if (self.twinmeApplication.visualizationLink) {
-            if (@available(iOS 13, *)) {
-                NSError *error = nil;
-                NSDataDetector *dataDetector = [NSDataDetector dataDetectorWithTypes:NSTextCheckingTypeLink error:&error];
-                NSString *content = objectDescriptor.message;
-                
-                NSTextCheckingResult *firstMatch = [dataDetector firstMatchInString:content options:0 range:NSMakeRange(0, [content length])];
-                if (firstMatch) {
-                    PeerLinkItem *peerLinkItem = [[PeerLinkItem alloc] initWithObjectDescriptor:objectDescriptor replyToDescriptor:objectDescriptor.replyToDescriptor url:[firstMatch URL]];
-                    [self addItem:peerLinkItem];
-                    return;
-                }
+            NSError *error = nil;
+            NSDataDetector *dataDetector = [NSDataDetector dataDetectorWithTypes:NSTextCheckingTypeLink error:&error];
+            NSString *content = objectDescriptor.message;
+            
+            NSTextCheckingResult *firstMatch = [dataDetector firstMatchInString:content options:0 range:NSMakeRange(0, [content length])];
+            if (firstMatch) {
+                PeerLinkItem *peerLinkItem = [[PeerLinkItem alloc] initWithObjectDescriptor:objectDescriptor replyToDescriptor:objectDescriptor.replyToDescriptor url:[firstMatch URL]];
+                [self addItem:peerLinkItem];
+                return;
             }
         }
         
@@ -5144,6 +5517,10 @@ typedef enum {
 - (void)addCallDescriptor:(TLCallDescriptor *)callDescriptor {
     DDLogVerbose(@"%@ addCallDescriptor: %@", LOG_TAG, callDescriptor);
     
+    if (![callDescriptor isTerminated]) {
+        return;
+    }
+    
     Item *item = callDescriptor.isIncoming ? [[PeerCallItem alloc] initWithCallDescriptor:callDescriptor] : [[CallItem alloc] initWithCallDescriptor:callDescriptor];
     [self addItem:item];
 }
@@ -5159,6 +5536,20 @@ typedef enum {
         [self addItem:peerInvitationItem];
     } else {
         [self.twinmeContext assertionWithAssertPoint:[ApplicationAssertPoint INVALID_DESCRIPTOR], [TLAssertValue initWithSubject:self.contact], [TLAssertValue initWithTwincodeId:twincodeDescriptor.descriptorId.twincodeOutboundId], [TLAssertValue initWithNumber:[twincodeDescriptor getType]], [TLAssertValue initWithTwincodeId:[self.conversationService debugGetTwincodeOutboundId]], [TLAssertValue initWithTwincodeId:[self.conversationService debugGetPeerTwincodeOutboundId]], nil];
+    }
+}
+
+- (void)addPollDescriptor:(nonnull TLPollDescriptor *)pollDescriptor {
+    DDLogVerbose(@"%@ addPollDescriptor: %@", LOG_TAG, pollDescriptor);
+    
+    if ([self.conversationService isLocalDescriptor:pollDescriptor]) {
+        PollItem *pollItem = [[PollItem alloc] initWithPollDescriptor:pollDescriptor];
+        [self addItem:pollItem];
+    } else if ([self.conversationService isPeerDescriptor:pollDescriptor]) {
+        PeerPollItem *peerPollItem = [[PeerPollItem alloc] initWithPollDescriptor:pollDescriptor];
+        [self addItem:peerPollItem];
+    } else {
+        [self.twinmeContext assertionWithAssertPoint:[ApplicationAssertPoint INVALID_DESCRIPTOR], [TLAssertValue initWithSubject:self.contact], [TLAssertValue initWithTwincodeId:pollDescriptor.descriptorId.twincodeOutboundId], [TLAssertValue initWithNumber:[pollDescriptor getType]], [TLAssertValue initWithTwincodeId:[self.conversationService debugGetTwincodeOutboundId]], [TLAssertValue initWithTwincodeId:[self.conversationService debugGetPeerTwincodeOutboundId]], nil];
     }
 }
 
@@ -5359,6 +5750,7 @@ typedef enum {
         case ItemTypeAudio:
         case ItemTypeVideo:
         case ItemTypeFile:
+        case ItemTypePoll:
         case ItemTypeInvitation:
         case ItemTypeCall:
         case ItemTypeInvitationContact: {
@@ -5370,6 +5762,7 @@ typedef enum {
                     case ItemTypeAudio:
                     case ItemTypeVideo:
                     case ItemTypeFile:
+                    case ItemTypePoll:
                     case ItemTypeInvitation:
                     case ItemTypeCall:
                     case ItemTypeInvitationContact: {
@@ -5388,6 +5781,7 @@ typedef enum {
                     case ItemTypePeerAudio:
                     case ItemTypePeerVideo:
                     case ItemTypePeerFile:
+                    case ItemTypePeerPoll:
                     case ItemTypePeerInvitation:
                     case ItemTypePeerCall:
                     case ItemTypePeerInvitationContact: {
@@ -5410,6 +5804,7 @@ typedef enum {
                     case ItemTypeAudio:
                     case ItemTypeVideo:
                     case ItemTypeFile:
+                    case ItemTypePoll:
                     case ItemTypeInvitation:
                     case ItemTypeCall:
                     case ItemTypeInvitationContact:
@@ -5427,6 +5822,7 @@ typedef enum {
                     case ItemTypePeerAudio:
                     case ItemTypePeerVideo:
                     case ItemTypePeerFile:
+                    case ItemTypePeerPoll:
                     case ItemTypePeerInvitation:
                     case ItemTypePeerCall:
                     case ItemTypePeerInvitationContact: {
@@ -5448,6 +5844,7 @@ typedef enum {
         case ItemTypePeerAudio:
         case ItemTypePeerVideo:
         case ItemTypePeerFile:
+        case ItemTypePeerPoll:
         case ItemTypePeerInvitation:
         case ItemTypePeerCall:
         case ItemTypePeerInvitationContact: {
@@ -5460,6 +5857,7 @@ typedef enum {
                     case ItemTypeAudio:
                     case ItemTypeVideo:
                     case ItemTypeFile:
+                    case ItemTypePoll:
                     case ItemTypeInvitation:
                     case ItemTypeCall:
                     case ItemTypeInvitationContact: {
@@ -5474,6 +5872,7 @@ typedef enum {
                     case ItemTypePeerAudio:
                     case ItemTypePeerVideo:
                     case ItemTypePeerFile:
+                    case ItemTypePeerPoll:
                     case ItemTypePeerInvitation:
                     case ItemTypePeerCall:
                     case ItemTypePeerInvitationContact:
@@ -5499,6 +5898,7 @@ typedef enum {
                     case ItemTypeAudio:
                     case ItemTypeVideo:
                     case ItemTypeFile:
+                    case ItemTypePoll:
                     case ItemTypeInvitation:
                     case ItemTypeCall:
                     case ItemTypeInvitationContact: {
@@ -5513,6 +5913,7 @@ typedef enum {
                     case ItemTypePeerAudio:
                     case ItemTypePeerVideo:
                     case ItemTypePeerFile:
+                    case ItemTypePeerPoll:
                     case ItemTypePeerInvitation:
                     case ItemTypePeerCall:
                     case ItemTypePeerInvitationContact:
@@ -5703,6 +6104,7 @@ typedef enum {
             case ItemTypeAudio:
             case ItemTypeVideo:
             case ItemTypeFile:
+            case ItemTypePoll:
             case ItemTypeInvitation:
             case ItemTypeCall:
             case ItemTypeInvitationContact: {
@@ -5727,6 +6129,7 @@ typedef enum {
             case ItemTypePeerAudio:
             case ItemTypePeerVideo:
             case ItemTypePeerFile:
+            case ItemTypePeerPoll:
             case ItemTypePeerInvitation:
             case ItemTypePeerCall:
             case ItemTypePeerInvitationContact: {
@@ -5762,6 +6165,7 @@ typedef enum {
             case ItemTypeAudio:
             case ItemTypeVideo:
             case ItemTypeFile:
+            case ItemTypePoll:
             case ItemTypeInvitation:
             case ItemTypeCall:
             case ItemTypeInvitationContact:
@@ -5784,6 +6188,7 @@ typedef enum {
             case ItemTypePeerAudio:
             case ItemTypePeerVideo:
             case ItemTypePeerFile:
+            case ItemTypePeerPoll:
             case ItemTypePeerInvitation:
             case ItemTypePeerCall:
             case ItemTypePeerInvitationContact: {
@@ -5919,19 +6324,15 @@ typedef enum {
 - (BOOL)isImageFile:(NSString *)file {
     DDLogVerbose(@"%@ isImageFile: %@", LOG_TAG, file);
     
-    CFStringRef fileType = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (__bridge CFStringRef) [file pathExtension], NULL);
-    BOOL result = UTTypeConformsTo(fileType, kUTTypeImage);
-    CFRelease(fileType);
-    return result;
+    UTType *fileType = [UTType typeWithFilenameExtension:[file pathExtension]];
+    return [fileType conformsToType:UTTypeImage];
 }
 
 - (BOOL)isVideoFile:(NSString *)file {
     DDLogVerbose(@"%@ isVideoFile: %@", LOG_TAG, file);
     
-    CFStringRef fileType = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (__bridge CFStringRef) [file pathExtension], NULL);
-    BOOL result = UTTypeConformsTo(fileType, kUTTypeMovie);
-    CFRelease(fileType);
-    return result;
+    UTType *fileType = [UTType typeWithFilenameExtension:[file pathExtension]];
+    return [fileType conformsToType:UTTypeMovie];
 }
 
 - (void)typingFire:(NSTimer *)timer {
@@ -5963,19 +6364,11 @@ typedef enum {
     PHAuthorizationStatus photoAuthorizationStatus = [DeviceAuthorization devicePhotoAuthorizationStatus];
     switch (photoAuthorizationStatus) {
         case PHAuthorizationStatusNotDetermined: {
-            if (@available(iOS 14, *)) {
-                [PHPhotoLibrary requestAuthorizationForAccessLevel:PHAccessLevelAddOnly handler:^(PHAuthorizationStatus authorizationStatus) {
-                    if ([DeviceAuthorization devicePhotoAuthorizationAccessGranted:authorizationStatus]) {
-                        [self saveMediaInGallery];
-                    }
-                }];
-            } else {
-                [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus authorizationStatus) {
-                    if ([DeviceAuthorization devicePhotoAuthorizationAccessGranted:authorizationStatus]) {
-                        [self saveMediaInGallery];
-                    }
-                }];
-            }
+            [PHPhotoLibrary requestAuthorizationForAccessLevel:PHAccessLevelAddOnly handler:^(PHAuthorizationStatus authorizationStatus) {
+                if ([DeviceAuthorization devicePhotoAuthorizationAccessGranted:authorizationStatus]) {
+                    [self saveMediaInGallery];
+                }
+            }];
             break;
         }
             
@@ -6020,7 +6413,10 @@ typedef enum {
         } completionHandler:^(BOOL success, NSError *error) {
             if (success) {
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    [[UIApplication sharedApplication].keyWindow makeToast:TwinmeLocalizedString(@"conversation_view_controller_menu_item_view_save_message", nil)];
+                    UIWindow *window = [self currentWindow];
+                    if (window) {
+                        [window makeToast:TwinmeLocalizedString(@"conversation_view_menu_item_view_save_message", nil)];
+                    }
                     [self closeMenu];
                 });
             }
@@ -6034,14 +6430,8 @@ typedef enum {
     NSURL *urlToSave = [self.selectedItem getURL];
     
     if (urlToSave) {
-        UIDocumentPickerViewController *documentPickerViewController;
-        
-        if (@available(iOS 14.0, *)) {
-            documentPickerViewController = [[UIDocumentPickerViewController alloc]initForExportingURLs:@[urlToSave] asCopy:YES];
-        } else {
-            documentPickerViewController = [[UIDocumentPickerViewController alloc]initWithURL:urlToSave inMode:UIDocumentPickerModeExportToService];
-        }
-        
+        self.pickerImportFile = NO;
+        UIDocumentPickerViewController *documentPickerViewController = [[UIDocumentPickerViewController alloc]initForExportingURLs:@[urlToSave] asCopy:YES];
         documentPickerViewController.delegate = self;
         documentPickerViewController.modalPresentationStyle = UIModalPresentationFormSheet;
         [self presentViewController:documentPickerViewController animated:YES completion:nil];
@@ -6053,7 +6443,10 @@ typedef enum {
     
     if (!self.sendAllowed) {
         dispatch_async(dispatch_get_main_queue(), ^{
-            [[UIApplication sharedApplication].keyWindow makeToast:TwinmeLocalizedString(@"conversation_view_controller_group_not_allowed_post_message", nil)];
+            UIWindow *window = [self currentWindow];
+            if (window) {
+                [window makeToast:TwinmeLocalizedString(@"conversation_view_group_not_allowed_post_message", nil)];
+            }
         });
         return;
     }
@@ -6069,7 +6462,7 @@ typedef enum {
                         mediaPicker.allowsEditing = NO;
                         mediaPicker.sourceType = UIImagePickerControllerSourceTypeCamera;
                         mediaPicker.cameraDevice = UIImagePickerControllerCameraDeviceRear;
-                        mediaPicker.mediaTypes = [[NSArray alloc]initWithObjects:(NSString *)kUTTypeMovie, (NSString *)kUTTypeImage, nil];
+                        mediaPicker.mediaTypes = @[UTTypeMovie.identifier, UTTypeImage.identifier];
                         [self presentViewController:mediaPicker animated:YES completion:nil];
                     });
                 }
@@ -6089,7 +6482,7 @@ typedef enum {
             mediaPicker.allowsEditing = NO;
             mediaPicker.sourceType = UIImagePickerControllerSourceTypeCamera;
             mediaPicker.cameraDevice = UIImagePickerControllerCameraDeviceRear;
-            mediaPicker.mediaTypes = [[NSArray alloc]initWithObjects:(NSString *)kUTTypeMovie, (NSString *)kUTTypeImage, nil];
+            mediaPicker.mediaTypes = @[UTTypeMovie.identifier, UTTypeImage.identifier];
             [self presentViewController:mediaPicker animated:YES completion:nil];
             break;
         }
@@ -6101,27 +6494,20 @@ typedef enum {
     
     if (!self.sendAllowed) {
         dispatch_async(dispatch_get_main_queue(), ^{
-            [[UIApplication sharedApplication].keyWindow makeToast:TwinmeLocalizedString(@"conversation_view_controller_group_not_allowed_post_message", nil)];
+            UIWindow *window = [self currentWindow];
+            if (window) {
+                [window makeToast:TwinmeLocalizedString(@"conversation_view_group_not_allowed_post_message", nil)];
+            }
         });
         return;
     }
     
-    if (@available(iOS 14, *)) {
-        PHPickerConfiguration *config = [[PHPickerConfiguration alloc] init];
-        config.selectionLimit = 10;
-        
-        PHPickerViewController *pickerViewController = [[PHPickerViewController alloc] initWithConfiguration:config];
-        pickerViewController.delegate = self;
-        [self presentViewController:pickerViewController animated:YES completion:nil];
-    } else {
-        UIImagePickerController *mediaPicker = [[UIImagePickerController alloc] init];
-        mediaPicker.delegate = self;
-        mediaPicker.modalPresentationStyle = UIModalPresentationFormSheet;
-        mediaPicker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
-        mediaPicker.mediaTypes = [[NSArray alloc]initWithObjects:(NSString *)kUTTypeMovie, (NSString *)kUTTypeImage, nil];
-        mediaPicker.videoQuality = UIImagePickerControllerQualityTypeHigh;
-        [self presentViewController:mediaPicker animated:YES completion:nil];
-    }
+    PHPickerConfiguration *config = [[PHPickerConfiguration alloc] init];
+    config.selectionLimit = 10;
+    
+    PHPickerViewController *pickerViewController = [[PHPickerViewController alloc] initWithConfiguration:config];
+    pickerViewController.delegate = self;
+    [self presentViewController:pickerViewController animated:YES completion:nil];
 }
 
 - (void)openFile {
@@ -6129,12 +6515,16 @@ typedef enum {
     
     if (!self.sendAllowed) {
         dispatch_async(dispatch_get_main_queue(), ^{
-            [[UIApplication sharedApplication].keyWindow makeToast:TwinmeLocalizedString(@"conversation_view_controller_group_not_allowed_post_message", nil)];
+            UIWindow *window = [self currentWindow];
+            if (window) {
+                [window makeToast:TwinmeLocalizedString(@"conversation_view_group_not_allowed_post_message", nil)];
+            }
         });
         return;
     }
     
-    UIDocumentPickerViewController *documentPicker = [[UIDocumentPickerViewController alloc] initWithDocumentTypes:@[(__bridge NSString*)(kUTTypeData),(__bridge NSString*)(kUTTypeContent)] inMode:UIDocumentPickerModeImport];
+    self.pickerImportFile = YES;
+    UIDocumentPickerViewController *documentPicker = [[UIDocumentPickerViewController alloc] initForOpeningContentTypes:@[UTTypeData, UTTypeContent] asCopy:YES];
     documentPicker.delegate = self;
     documentPicker.allowsMultipleSelection = YES;
     documentPicker.modalPresentationStyle = UIModalPresentationFormSheet;
@@ -6156,6 +6546,15 @@ typedef enum {
     menuManageConversationView.menuManageConversationViewDelegate = self;
     [self.navigationController.view addSubview:menuManageConversationView];
     [menuManageConversationView openMenu];
+}
+
+- (void)createPoll {
+    DDLogVerbose(@"%@ createPoll", LOG_TAG);
+    
+    CreatePollViewController *createPollViewController = (CreatePollViewController *)[[UIStoryboard storyboardWithName:@"iPhone" bundle:nil] instantiateViewControllerWithIdentifier:@"CreatePollViewController"];
+    createPollViewController.delegate = self;
+    TwinmeNavigationController *navigationController = [[TwinmeNavigationController alloc]initWithRootViewController:createPollViewController];
+    [self presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (void)openPreviewImage:(UIImage *)image imageData:(NSData *)imageData imageExtension:(NSString *)imageExtension  {
@@ -6198,6 +6597,7 @@ typedef enum {
     dispatch_async(dispatch_get_main_queue(), ^{
         if (self.endMediaPicking && self.countMediaPicking == 0) {
             self.overlayView.hidden = YES;
+            self.retrievingMediaLabel.hidden = YES;
             if ([self.activityIndicatorView isAnimating]) {
                 [self.activityIndicatorView stopAnimating];
             }
@@ -6221,6 +6621,7 @@ typedef enum {
             }];
         } else {
             self.overlayView.hidden = NO;
+            self.retrievingMediaLabel.hidden = NO;
             if (![self.activityIndicatorView isAnimating]) {
                 [self.activityIndicatorView startAnimating];
             }
@@ -6304,7 +6705,7 @@ typedef enum {
 - (void)hapticFeedback {
     DDLogVerbose(@"%@ hapticFeedback", LOG_TAG);
     
-    [Utils hapticFeedback:UIImpactFeedbackStyleMedium hapticFeedbackMode:self.twinmeApplication.hapticFeedbackMode];
+    [Utils hapticFeedback:UIImpactFeedbackStyleMedium];
 }
 
 - (void)showCoachMark {
@@ -6315,7 +6716,7 @@ typedef enum {
         dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
             CoachMarkViewController *coachMarkViewController = (CoachMarkViewController *)[self.storyboard instantiateViewControllerWithIdentifier:@"CoachMarkViewController"];
             CGRect clipRect = CGRectMake(self.sendButtonView.frame.origin.x, self.textInputbar.frame.origin.y + self.sendButtonView.frame.origin.y, self.sendButtonView.frame.size.height, self.sendButtonView.frame.size.height);
-            CoachMark *coachMark = [[CoachMark alloc]initWithMessage:TwinmeLocalizedString(@"conversation_view_controller_ephemeral_coach_mark", nil) tag:TAG_COACH_MARK_CONVERSATION_EPHEMERAL alignLeft:NO onTop:YES featureRect:clipRect featureRadius:self.sendButtonView.frame.size.height * 0.5f];
+            CoachMark *coachMark = [[CoachMark alloc]initWithMessage:TwinmeLocalizedString(@"conversation_view_ephemeral_coach_mark", nil) tag:TAG_COACH_MARK_CONVERSATION_EPHEMERAL alignLeft:NO onTop:YES featureRect:clipRect featureRadius:self.sendButtonView.frame.size.height * 0.5f];
             [coachMarkViewController initWithCoachMark:coachMark];
             coachMarkViewController.delegate = self;
             [coachMarkViewController showInView:self.navigationController];
@@ -6382,7 +6783,7 @@ typedef enum {
     if (!self.sendAllowed) {
         self.sendButtonView.alpha = 0.5f;
         self.textView.editable = NO;
-        self.textView.placeholder = TwinmeLocalizedString(@"conversation_view_controller_group_not_allowed_post_message", nil);
+        self.textView.placeholder = TwinmeLocalizedString(@"conversation_view_group_not_allowed_post_message", nil);
         
         if (self.textViewRightView) {
             self.textViewRightView.cameraView.alpha = 0.5f;
@@ -6391,7 +6792,7 @@ typedef enum {
     } else {
         self.textView.editable = YES;
         self.sendButtonView.alpha = 1.0f;
-        self.textView.placeholder = TwinmeLocalizedString(@"conversation_view_controller_message", nil);
+        self.textView.placeholder = TwinmeLocalizedString(@"conversation_view_message", nil);
         
         if (self.textViewRightView) {
             self.textViewRightView.cameraView.alpha = 1.0f;
@@ -6427,6 +6828,30 @@ typedef enum {
     [self reloadData];
 }
 
+- (void)saveDraft:(NSString *)draft {
+    DDLogVerbose(@"%@ saveDraft", LOG_TAG);
+    
+    if (self.contact) {
+        TLContact *contact = (TLContact *)self.contact;
+        [contact setStringWithName:PROPERTY_MESSAGE_DRAFT value:draft twinmeContext:self.twinmeContext];
+    } else if (self.group) {
+        [self.group setStringWithName:PROPERTY_MESSAGE_DRAFT value:draft twinmeContext:self.twinmeContext];
+    }
+}
+
+- (NSString *)getDraft {
+    DDLogVerbose(@"%@ getDraft", LOG_TAG);
+    
+    if (self.contact) {
+        TLContact *contact = (TLContact *)self.contact;
+        return [contact getStringWithName:PROPERTY_MESSAGE_DRAFT defaultValue:@""];
+    } else if (self.group) {
+        return [self.group getStringWithName:PROPERTY_MESSAGE_DRAFT defaultValue:@""];
+    }
+    
+    return @"";
+}
+
 - (void)removeSubViews {
     DDLogVerbose(@"%@ removeSubViews", LOG_TAG);
     
@@ -6443,6 +6868,28 @@ typedef enum {
     DDLogVerbose(@"%@ subviewClassToRemove", LOG_TAG);
     
     return @[[AnnotationsView class], [DefaultConfirmView class], [ResetConversationConfirmView class], [DeleteConfirmView class], [PremiumFeatureConfirmView class], [MenuSendOptionsView class], [MenuManageConversationView class], [MenuActionConversationView class], [AlertMessageView class]];
+}
+
+- (UIWindow *)currentWindow {
+   DDLogVerbose(@"%@ currentWindow", LOG_TAG);
+   
+   UIWindow *window = self.view.window;
+   
+   if (window == nil) {
+       for (UIScene *scene in UIApplication.sharedApplication.connectedScenes) {
+           if (scene.activationState == UISceneActivationStateForegroundActive && [scene isKindOfClass:[UIWindowScene class]]) {
+               UIWindowScene *windowScene = (UIWindowScene *)scene;
+               for (UIWindow *w in windowScene.windows) {
+                   if (w.isKeyWindow) {
+                       window = w;
+                       break;
+                   }
+               }
+           }
+       }
+   }
+   
+   return window;
 }
 
 - (void)updateNavigationBarAvatar {

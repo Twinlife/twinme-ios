@@ -121,7 +121,7 @@ static NSString *TWINME_SETTINGS_CELL_IDENTIFIER = @"TwinmeSettingsCellIdentifie
     
     NSString *sectionName = @"";
     if (section == _EMOJI_SECTION) {
-        sectionName = TwinmeLocalizedString(@"conversation_settings_view_controller_emoji_size", nil);
+        sectionName = TwinmeLocalizedString(@"conversation_settings_view_emoji_size", nil);
     }
     
     [settingsSectionHeaderCell bindWithTitle:sectionName backgroundColor:Design.LIGHT_GREY_BACKGROUND_COLOR hideSeparator:NO uppercaseString:YES];
@@ -158,15 +158,15 @@ static NSString *TWINME_SETTINGS_CELL_IDENTIFIER = @"TwinmeSettingsCellIdentifie
         if (indexPath.row == 0) {
             checked = self.twinmeApplication.emojiSize == EmojiSizeSmall;
             emojiSize = EmojiSizeSmall;
-            title = TwinmeLocalizedString(@"personalization_view_controller_font_small", nil);
+            title = TwinmeLocalizedString(@"personalization_view_font_small", nil);
         } else if (indexPath.row == 1) {
             checked = self.twinmeApplication.emojiSize == EmojiSizeStandard;
             emojiSize = EmojiSizeStandard;
-            title = TwinmeLocalizedString(@"conversation_view_controller_reduce_menu_lower", nil);
+            title = TwinmeLocalizedString(@"conversation_view_reduce_menu_lower", nil);
         } else if (indexPath.row == 2) {
             checked = self.twinmeApplication.emojiSize == EmojiSizeLarge;
             emojiSize = EmojiSizeLarge;
-            title = TwinmeLocalizedString(@"personalization_view_controller_font_large", nil);
+            title = TwinmeLocalizedString(@"personalization_view_font_large", nil);
         }
         
         [cell bindWithTitle:title emojiSize:emojiSize checked:checked];
@@ -178,7 +178,7 @@ static NSString *TWINME_SETTINGS_CELL_IDENTIFIER = @"TwinmeSettingsCellIdentifie
             cell = [[TwinmeSettingsItemCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:TWINME_SETTINGS_CELL_IDENTIFIER];
         }
         
-        [cell bindWithTitle:TwinmeLocalizedString(@"conversation_settings_view_controller_background_colors", nil) hiddenAccessory:NO disableSetting:NO color:Design.FONT_COLOR_DEFAULT];
+        [cell bindWithTitle:TwinmeLocalizedString(@"conversation_settings_view_background_colors", nil) hiddenAccessory:NO disableSetting:NO color:Design.FONT_COLOR_DEFAULT];
         
         return cell;
     }

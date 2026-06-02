@@ -93,7 +93,7 @@ static const int ddLogLevel = DDLogLevelWarning;
     self.premiumFeatureLinkLabel.textColor = Design.MAIN_COLOR;
     self.premiumFeatureLinkLabel.userInteractionEnabled = YES;
     
-    NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:TwinmeLocalizedString(@"about_view_controller_premium_services", nil)];
+    NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:TwinmeLocalizedString(@"about_view_premium_services", nil)];
     [attributedString addAttribute:NSUnderlineStyleAttributeName value:@1 range:NSMakeRange(0,[attributedString length])];
     [self.premiumFeatureLinkLabel setAttributedText:attributedString];
     
@@ -104,8 +104,8 @@ static const int ddLogLevel = DDLogLevelWarning;
     self.iconView.hidden = YES;
     self.avatarContainerView.hidden = YES;
     
-    self.messageLabel.text = TwinmeLocalizedString(@"migration_twinme_plus_view_controller_premium_feature", nil);
-    self.confirmLabel.text = TwinmeLocalizedString(@"migration_twinme_plus_view_controller_upgrade_title", nil);
+    self.messageLabel.text = TwinmeLocalizedString(@"migration_twinme_plus_view_premium_feature", nil);
+    self.confirmLabel.text = TwinmeLocalizedString(@"migration_twinme_plus_view_premium_title", nil);
         
     self.confirmView.backgroundColor = Design.MAIN_COLOR;
     self.cancelLabel.textColor = Design.FONT_COLOR_DEFAULT;
@@ -115,9 +115,7 @@ static const int ddLogLevel = DDLogLevelWarning;
     DDLogVerbose(@"%@ UITapGestureRecognizer: %@", LOG_TAG, sender);
     
     if (sender.state == UIGestureRecognizerStateEnded) {
-        ApplicationDelegate *delegate = (ApplicationDelegate *)[[UIApplication sharedApplication] delegate];
-        TwinmeApplication *twinmeApplication = [delegate twinmeApplication];
-        [Utils hapticFeedback:UIImpactFeedbackStyleMedium hapticFeedbackMode:twinmeApplication.hapticFeedbackMode];
+        [Utils hapticFeedback:UIImpactFeedbackStyleMedium];
         
         PremiumServicesViewController *premiumServicesViewController = [[UIStoryboard storyboardWithName:@"iPhone" bundle:nil] instantiateViewControllerWithIdentifier:@"PremiumServicesViewController"];
         premiumServicesViewController.hideDoNotShow = YES;

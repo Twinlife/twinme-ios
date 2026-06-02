@@ -45,7 +45,7 @@
 
 - (nonnull NSString *)getDate {
  
-    return [NSString formatBackupTimeInterval:self.backupDate / 1000];
+    return [NSString formatBackupTimeInterval:self.backupDate / 1000 isLastBackup:NO];
 }
 
 @end

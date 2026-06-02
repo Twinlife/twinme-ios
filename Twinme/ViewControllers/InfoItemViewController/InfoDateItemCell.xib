@@ -17,14 +17,15 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="pKd-ce-nMu">
-                        <rect key="frame" x="32" y="18" width="84" height="84"/>
+                        <rect key="frame" x="26" y="18" width="84" height="84"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="84" id="e36-Dt-sXl"/>
                             <constraint firstAttribute="width" secondItem="pKd-ce-nMu" secondAttribute="height" multiplier="1:1" id="s4O-5D-s8q"/>
+                            <constraint firstAttribute="width" secondItem="pKd-ce-nMu" secondAttribute="height" multiplier="1:1" id="yfT-Jv-Uk4"/>
                         </constraints>
                     </imageView>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text=".label" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bq1-gI-xbF">
-                        <rect key="frame" x="148" y="0.0" width="402" height="120"/>
+                        <rect key="frame" x="136" y="0.0" width="414" height="120"/>
                         <fontDescription key="fontDescription" type="system" pointSize="44"/>
                         <nil key="textColor"/>
                         <nil key="highlightedColor"/>
@@ -55,13 +56,12 @@
                     <constraint firstItem="bq1-gI-xbF" firstAttribute="trailing" secondItem="E95-Ux-lnW" secondAttribute="leading" constant="32" id="Mt2-uQ-F5u"/>
                     <constraint firstItem="E95-Ux-lnW" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="UOT-qg-yBN"/>
                     <constraint firstItem="bq1-gI-xbF" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="eZs-IL-sGE"/>
-                    <constraint firstItem="pKd-ce-nMu" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="32" id="iz3-wj-ghT"/>
+                    <constraint firstItem="pKd-ce-nMu" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="26" id="iz3-wj-ghT"/>
                     <constraint firstAttribute="bottom" secondItem="GP4-t8-cyB" secondAttribute="bottom" id="owd-WA-D6X"/>
                     <constraint firstItem="pKd-ce-nMu" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="riV-1z-Pua"/>
                     <constraint firstAttribute="trailing" secondItem="E95-Ux-lnW" secondAttribute="trailing" constant="32" id="uqO-ss-hsJ"/>
-                    <constraint firstItem="bq1-gI-xbF" firstAttribute="leading" secondItem="pKd-ce-nMu" secondAttribute="trailing" constant="32" id="vXd-TX-V8i"/>
+                    <constraint firstItem="bq1-gI-xbF" firstAttribute="leading" secondItem="pKd-ce-nMu" secondAttribute="trailing" constant="26" id="vXd-TX-V8i"/>
                     <constraint firstAttribute="bottom" secondItem="E95-Ux-lnW" secondAttribute="bottom" id="x9A-6n-tCh"/>
-                    <constraint firstItem="pKd-ce-nMu" firstAttribute="width" secondItem="pKd-ce-nMu" secondAttribute="height" multiplier="1:1" id="yfT-Jv-Uk4"/>
                 </constraints>
             </tableViewCellContentView>
             <connections>

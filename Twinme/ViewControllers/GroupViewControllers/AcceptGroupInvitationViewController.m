@@ -161,7 +161,7 @@ static const CGFloat DESIGN_CANCEL_HEIGHT = 140;
 
     self.contact = contact;
     self.contactAvatar = avatar;
-    self.messageLabel.text = [NSString stringWithFormat:TwinmeLocalizedString(@"accept_group_invitation_view_controller_message %@", nil), self.contact.name];
+    self.messageLabel.text = [NSString stringWithFormat:TwinmeLocalizedString(@"accept_group_invitation_view_message", nil), self.contact.name];
     self.contactImageView.image = self.contactAvatar;
     
     [self updateInvitationDescriptor];
@@ -355,9 +355,13 @@ static const CGFloat DESIGN_CANCEL_HEIGHT = 140;
     UITapGestureRecognizer *cancelViewGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleDeclineTapGesture:)];
     [self.cancelView addGestureRecognizer:cancelViewGestureRecognizer];
     
-    UIWindow *window = UIApplication.sharedApplication.keyWindow;
-    self.cancelViewBottomConstraint.constant = window.safeAreaInsets.bottom;
-
+    UIWindow *window = [self currentWindow];
+    if (window) {
+        self.cancelViewBottomConstraint.constant = window.safeAreaInsets.bottom;
+    } else {
+        self.cancelViewBottomConstraint.constant = self.view.safeAreaInsets.bottom;
+    }
+    
     self.cancelLabel.font = Design.FONT_MEDIUM38;
     self.cancelLabel.textColor = Design.FONT_COLOR_DEFAULT;
     self.cancelLabel.text = TwinmeLocalizedString(@"application_decline", nil);
@@ -485,7 +489,7 @@ static const CGFloat DESIGN_CANCEL_HEIGHT = 140;
             case TLInvitationDescriptorStatusTypePending:
                 self.confirmView.hidden = NO;
                 self.cancelView.hidden = NO;
-                self.messageLabel.text = [NSString stringWithFormat:TwinmeLocalizedString(@"accept_group_invitation_view_controller_message %@", nil), self.contact.name];
+                self.messageLabel.text = [NSString stringWithFormat:TwinmeLocalizedString(@"accept_group_invitation_view_message", nil), self.contact.name];
                 self.contactImageView.hidden = NO;
                 self.statusInvitationImageView.hidden = YES;
                 break;
@@ -494,7 +498,7 @@ static const CGFloat DESIGN_CANCEL_HEIGHT = 140;
                 self.confirmView.hidden = NO;
                 self.cancelView.hidden = YES;
                 self.cancelViewBottomConstraint.constant = 0;
-                self.messageLabel.text = TwinmeLocalizedString(@"conversation_view_controller_invitation_accepted", nil);
+                self.messageLabel.text = TwinmeLocalizedString(@"conversation_view_invitation_accepted", nil);
                 self.contactImageView.hidden = YES;
                 self.statusInvitationImageView.hidden = NO;
                 self.statusInvitationImageView.image = [UIImage imageNamed:@"InvitationStateAccepted"];
@@ -505,7 +509,7 @@ static const CGFloat DESIGN_CANCEL_HEIGHT = 140;
                 self.confirmView.hidden = NO;
                 self.cancelView.hidden = YES;
                 self.cancelViewBottomConstraint.constant = 0;
-                self.messageLabel.text = TwinmeLocalizedString(@"conversation_view_controller_invitation_joined", nil);
+                self.messageLabel.text = TwinmeLocalizedString(@"conversation_view_invitation_joined", nil);
                 self.contactImageView.hidden = YES;
                 self.statusInvitationImageView.hidden = NO;
                 self.statusInvitationImageView.image = [UIImage imageNamed:@"InvitationStateJoined"];
@@ -516,7 +520,7 @@ static const CGFloat DESIGN_CANCEL_HEIGHT = 140;
                 self.confirmView.hidden = NO;
                 self.cancelView.hidden = YES;
                 self.cancelViewBottomConstraint.constant = 0;
-                self.messageLabel.text = TwinmeLocalizedString(@"conversation_view_controller_invitation_refused", nil);
+                self.messageLabel.text = TwinmeLocalizedString(@"conversation_view_invitation_refused", nil);
                 self.contactImageView.hidden = YES;
                 self.statusInvitationImageView.hidden = NO;
                 self.statusInvitationImageView.image = [UIImage imageNamed:@"InvitationStateRefused"];
@@ -532,7 +536,7 @@ static const CGFloat DESIGN_CANCEL_HEIGHT = 140;
                 self.statusInvitationImageView.image = [UIImage imageNamed:@"ToolbarTrash"];
                 self.statusInvitationImageView.tintColor = [UIColor whiteColor];
                 self.confirmLabel.text = TwinmeLocalizedString(@"application_ok", nil);
-                self.messageLabel.text = TwinmeLocalizedString(@"accept_group_invitation_view_controller_deleted", nil);
+                self.messageLabel.text = TwinmeLocalizedString(@"accept_group_invitation_view_deleted", nil);
                 break;
                 
             default:
@@ -555,10 +559,10 @@ static const CGFloat DESIGN_CANCEL_HEIGHT = 140;
         self.nameLabel.hidden = YES;
         if (self.isGetInvitationDone) {
             self.avatarContainerView.hidden = NO;
-            self.messageLabel.text = TwinmeLocalizedString(@"accept_group_invitation_view_controller_deleted", nil);
+            self.messageLabel.text = TwinmeLocalizedString(@"accept_group_invitation_view_deleted", nil);
         } else {
             self.avatarContainerView.hidden = YES;
-            self.messageLabel.text = [NSString stringWithFormat:@"%@\n%@", TwinmeLocalizedString(@"accept_invitation_view_controller_being_transferred", nil), TwinmeLocalizedString(@"accept_invitation_view_controller_check_connection", nil)];
+            self.messageLabel.text = [NSString stringWithFormat:@"%@\n%@", TwinmeLocalizedString(@"accept_invitation_view_being_transferred", nil), TwinmeLocalizedString(@"accept_invitation_view_check_connection", nil)];
         }
     }
     

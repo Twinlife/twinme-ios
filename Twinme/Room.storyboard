@@ -1338,6 +1338,9 @@
                                             <constraint firstAttribute="height" constant="316" id="vT2-XZ-66Q"/>
                                         </constraints>
                                     </imageView>
+                                    <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="FJa-5y-CUo">
+                                        <rect key="frame" x="310" y="208" width="20" height="20"/>
+                                    </activityIndicatorView>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="mKm-nu-BFR">
                                         <rect key="frame" x="478" y="25" width="70" height="70"/>
                                         <subviews>
@@ -1449,6 +1452,8 @@
                                     <constraint firstAttribute="height" constant="720" id="3Tb-wZ-vMJ"/>
                                     <constraint firstItem="mKm-nu-BFR" firstAttribute="leading" secondItem="142-Ct-CDX" secondAttribute="trailing" id="4il-2J-u0O"/>
                                     <constraint firstAttribute="trailing" secondItem="5WH-Ju-jkB" secondAttribute="trailing" id="7xF-Ab-7Yv"/>
+                                    <constraint firstItem="FJa-5y-CUo" firstAttribute="centerX" secondItem="142-Ct-CDX" secondAttribute="centerX" id="BOC-wd-dE5"/>
+                                    <constraint firstItem="FJa-5y-CUo" firstAttribute="centerY" secondItem="142-Ct-CDX" secondAttribute="centerY" id="Cdd-ks-WI2"/>
                                     <constraint firstItem="8Oe-lY-dP0" firstAttribute="top" secondItem="zMr-sd-eKB" secondAttribute="bottom" constant="24" id="ENv-7h-jyY"/>
                                     <constraint firstAttribute="trailing" secondItem="zMr-sd-eKB" secondAttribute="trailing" constant="30" id="G49-Uw-kxh"/>
                                     <constraint firstItem="5WH-Ju-jkB" firstAttribute="top" secondItem="zMr-sd-eKB" secondAttribute="bottom" constant="24" id="WtW-LA-YED"/>
@@ -1528,6 +1533,7 @@
                     <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
                     <size key="freeformSize" width="750" height="1334"/>
                     <connections>
+                        <outlet property="activityIndicatorView" destination="FJa-5y-CUo" id="pSc-TY-Cgc"/>
                         <outlet property="avatarView" destination="m3m-dw-pyT" id="hDx-RP-h2M"/>
                         <outlet property="containerView" destination="bu8-7m-ZBt" id="UxW-X3-WKj"/>
                         <outlet property="containerViewHeightConstraint" destination="3Tb-wZ-vMJ" id="Ws1-5T-90h"/>
@@ -1623,7 +1629,7 @@
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
         <systemColor name="systemTealColor">
-            <color red="0.18823529410000001" green="0.69019607839999997" blue="0.78039215689999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.18823529411764706" green="0.69019607843137254" blue="0.7803921568627451" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

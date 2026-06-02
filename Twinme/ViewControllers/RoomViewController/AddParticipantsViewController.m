@@ -287,7 +287,7 @@ static const int CONTACTS_VIEW_SECTION = 1;
     self.definesPresentationContext = YES;
     self.view.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
     
-    [self setNavigationTitle:TwinmeLocalizedString(@"contacts_view_controller_invite_contact_title", nil)];
+    [self setNavigationTitle:TwinmeLocalizedString(@"contacts_view_invite_contact_title", nil)];
     
     self.addBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:TwinmeLocalizedString(@"application_ok", nil) style:UIBarButtonItemStylePlain target:self action:@selector(handleSaveTapGesture:)];
     [self.addBarButtonItem setTitleTextAttributes: @{NSFontAttributeName: Design.FONT_BOLD36, NSForegroundColorAttributeName: [UIColor whiteColor]} forState:UIControlStateNormal];
@@ -311,15 +311,11 @@ static const int CONTACTS_VIEW_SECTION = 1;
     contactSearchBar.backgroundColor = Design.NAVIGATION_BAR_BACKGROUND_COLOR;
     contactSearchBar.delegate = self;
     
-    if (@available(iOS 13.0, *)) {
-        self.searchController.searchBar.backgroundColor = [UIColor clearColor];
-        self.searchController.searchBar.searchTextField.backgroundColor = Design.POPUP_BACKGROUND_COLOR;
-        self.searchController.searchBar.searchTextField.tintColor = [UIColor darkGrayColor];
-        self.searchController.searchBar.translucent = NO;
-        self.navigationItem.searchController = self.searchController;
-    } else {
-        self.contactsTableView.tableHeaderView = self.searchController.searchBar;
-    }
+    self.searchController.searchBar.backgroundColor = [UIColor clearColor];
+    self.searchController.searchBar.searchTextField.backgroundColor = Design.POPUP_BACKGROUND_COLOR;
+    self.searchController.searchBar.searchTextField.tintColor = [UIColor darkGrayColor];
+    self.searchController.searchBar.translucent = NO;
+    self.navigationItem.searchController = self.searchController;
     
     self.contactsTableView.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
     self.contactsTableView.delegate = self;
@@ -408,18 +404,14 @@ static const int CONTACTS_VIEW_SECTION = 1;
     self.view.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
     self.contactsTableView.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
     
-    if (@available(iOS 13.0, *)) {
-        self.searchController.searchBar.backgroundColor = [UIColor clearColor];
-        self.searchController.searchBar.searchTextField.backgroundColor = Design.POPUP_BACKGROUND_COLOR;
-        self.searchController.searchBar.searchTextField.tintColor = Design.FONT_COLOR_DEFAULT;
-        self.searchController.searchBar.searchTextField.textColor = Design.FONT_COLOR_DEFAULT;
-        
-        UIImageView *glassIconImageView = (UIImageView *)self.searchController.searchBar.searchTextField.leftView;
-        glassIconImageView.image = [glassIconImageView.image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-        glassIconImageView.tintColor = Design.PLACEHOLDER_COLOR;
-    } else {
-        self.searchController.searchBar.backgroundColor = Design.NAVIGATION_BAR_BACKGROUND_COLOR;
-    }
+    self.searchController.searchBar.backgroundColor = [UIColor clearColor];
+    self.searchController.searchBar.searchTextField.backgroundColor = Design.POPUP_BACKGROUND_COLOR;
+    self.searchController.searchBar.searchTextField.tintColor = Design.FONT_COLOR_DEFAULT;
+    self.searchController.searchBar.searchTextField.textColor = Design.FONT_COLOR_DEFAULT;
+    
+    UIImageView *glassIconImageView = (UIImageView *)self.searchController.searchBar.searchTextField.leftView;
+    glassIconImageView.image = [glassIconImageView.image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    glassIconImageView.tintColor = Design.PLACEHOLDER_COLOR;
     
     if ([self.twinmeApplication darkModeEnable:[self currentSpaceSettings]]) {
         self.searchController.searchBar.keyboardAppearance = UIKeyboardAppearanceDark;

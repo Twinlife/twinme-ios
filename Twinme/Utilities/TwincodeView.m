@@ -177,7 +177,7 @@ static CGFloat DESIGN_AVATAR_BORDER_WIDTH = 6;
     self.messageLabel.textColor = [UIColor blackColor];
     
     self.twincodeLabel.text = [NSString stringWithFormat:@"%@",self.twincodeId];
-    self.messageLabel.text = [NSString stringWithFormat:TwinmeLocalizedString(@"add_contact_view_controller_share_image_message", nil), self.name];
+    self.messageLabel.text = [NSString stringWithFormat:TwinmeLocalizedString(@"add_contact_view_share_image_message", nil), self.name];
 }
 
 @end

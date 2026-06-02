@@ -17,6 +17,6 @@
 
 @property (weak, nonatomic) id<AnnotationActionDelegate> annotationActionDelegate;
 
-- (void)bindWithAnnotation:(TLDescriptorAnnotation *)descriptorAnnotation descriptorId:(TLDescriptorId *)descriptorId isPeerItem:(BOOL)isPeerItem;
+- (void)bindWithAnnotation:(TLDescriptorAnnotation *)descriptorAnnotation count:(int)count descriptorId:(TLDescriptorId *)descriptorId isPeerItem:(BOOL)isPeerItem;
 
 @end

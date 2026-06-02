@@ -69,7 +69,7 @@ static const int ddLogLevel = DDLogLevelWarning;
     
     self.confirmLabel.font = Design.FONT_REGULAR32;
     self.confirmLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    self.confirmLabel.text = TwinmeLocalizedStringFromTable(@"backup_view_controller_confirm_message", @"LocalizableBackup", nil);
+    self.confirmLabel.text = TwinmeLocalizedStringFromTable(@"backup_view_confirm_message", @"LocalizableBackup", nil);
     
     self.checkMarkViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     self.checkMarkViewLeadingConstraint.constant *= Design.WIDTH_RATIO;

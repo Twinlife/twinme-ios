@@ -33,6 +33,9 @@ static const int ddLogLevel = DDLogLevelWarning;
 @property (weak, nonatomic) IBOutlet UIImageView *externalCallImageView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *externalCallLabelLeadingConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *externalCallLabelTrailingConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *externalCallLabelTopConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *externalCallLabelBottomConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *externalCallLabelHeightConstraint;
 @property (weak, nonatomic) IBOutlet UILabel *externalCallLabel;
 @property (weak, nonatomic) IBOutlet UILabel *externalCallAvatarLabel;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *externalCallIconViewHeightConstraint;
@@ -69,6 +72,9 @@ static const int ddLogLevel = DDLogLevelWarning;
     
     self.externalCallLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
     self.externalCallLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
+    self.externalCallLabelTopConstraint.constant *= Design.HEIGHT_RATIO;
+    self.externalCallLabelBottomConstraint.constant *= Design.HEIGHT_RATIO;
+    self.externalCallLabelHeightConstraint.constant *= Design.HEIGHT_RATIO;
     
     self.externalCallLabel.font = Design.FONT_REGULAR34;
     self.externalCallLabel.textColor = Design.FONT_COLOR_DEFAULT;

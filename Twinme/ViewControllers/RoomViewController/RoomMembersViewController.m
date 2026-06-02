@@ -262,9 +262,9 @@ static NSInteger REMOVE_ADMIN_ALERT_VIEW_TAG = 4;
     }
     
     if (section == ADMINISTRATOR_VIEW_SECTION) {
-        groupMemberSectionHeader.titleLabel.text = TwinmeLocalizedString(@"group_member_view_controller_section_administrator", nil);
+        groupMemberSectionHeader.titleLabel.text = TwinmeLocalizedString(@"group_member_view_section_administrator", nil);
     } else {
-        groupMemberSectionHeader.titleLabel.text = TwinmeLocalizedString(@"room_members_view_controller_participants_title", nil);
+        groupMemberSectionHeader.titleLabel.text = TwinmeLocalizedString(@"room_members_view_participants_title", nil);
     }
     
     return groupMemberSectionHeader;
@@ -319,7 +319,7 @@ static NSInteger REMOVE_ADMIN_ALERT_VIEW_TAG = 4;
     DefaultConfirmView *defaultConfirmView = [[DefaultConfirmView alloc] init];
     defaultConfirmView.bottomSheetViewDelegate = self;
     defaultConfirmView.tag = ADMIN_ALERT_VIEW_TAG;
-    [defaultConfirmView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:TwinmeLocalizedString(@"room_members_view_controller_change_admin_title", nil) image:nil avatar:nil action:TwinmeLocalizedString(@"application_confirm", nil) actionColor:nil cancel:TwinmeLocalizedString(@"application_cancel", nil)];
+    [defaultConfirmView initWithTitle:TwinmeLocalizedString(@"deleted_account_view_warning", nil) message:TwinmeLocalizedString(@"room_members_view_change_admin_title", nil) image:nil avatar:nil action:TwinmeLocalizedString(@"application_confirm", nil) actionColor:nil cancel:TwinmeLocalizedString(@"application_cancel", nil)];
     [self.navigationController.view addSubview:defaultConfirmView];
     [defaultConfirmView showConfirmView];
     
@@ -332,7 +332,7 @@ static NSInteger REMOVE_ADMIN_ALERT_VIEW_TAG = 4;
     if (self.uiRoomAdmins.count == 1) {
         AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
         alertMessageView.alertMessageViewDelegate = self;
-        [alertMessageView initWithTitle:TwinmeLocalizedString(@"room_members_view_controller_remove_admin_title", nil) message:TwinmeLocalizedString(@"room_members_view_controller_only_admin_message", nil)];
+        [alertMessageView initWithTitle:TwinmeLocalizedString(@"room_members_view_remove_admin_title", nil) message:TwinmeLocalizedString(@"room_members_view_only_admin_message", nil)];
         [self.tabBarController.view addSubview:alertMessageView];
         [alertMessageView showAlertView];
         
@@ -340,7 +340,7 @@ static NSInteger REMOVE_ADMIN_ALERT_VIEW_TAG = 4;
         DefaultConfirmView *defaultConfirmView = [[DefaultConfirmView alloc] init];
         defaultConfirmView.bottomSheetViewDelegate = self;
         defaultConfirmView.tag = REMOVE_ADMIN_ALERT_VIEW_TAG;
-        [defaultConfirmView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:TwinmeLocalizedString(@"room_members_view_controller_remove_admin_title", nil) image:nil avatar:nil action:TwinmeLocalizedString(@"application_confirm", nil) actionColor:nil cancel:TwinmeLocalizedString(@"application_cancel", nil)];
+        [defaultConfirmView initWithTitle:TwinmeLocalizedString(@"deleted_account_view_warning", nil) message:TwinmeLocalizedString(@"room_members_view_remove_admin_title", nil) image:nil avatar:nil action:TwinmeLocalizedString(@"application_confirm", nil) actionColor:nil cancel:TwinmeLocalizedString(@"application_cancel", nil)];
         [self.navigationController.view addSubview:defaultConfirmView];
         [defaultConfirmView showConfirmView];
     }
@@ -354,7 +354,7 @@ static NSInteger REMOVE_ADMIN_ALERT_VIEW_TAG = 4;
     DefaultConfirmView *defaultConfirmView = [[DefaultConfirmView alloc] init];
     defaultConfirmView.bottomSheetViewDelegate = self;
     defaultConfirmView.tag = INVITATION_ALERT_VIEW_TAG;
-    [defaultConfirmView initWithTitle:TwinmeLocalizedString(@"group_member_view_controller_invitation_title", nil) message:[NSString stringWithFormat:TwinmeLocalizedString(@"group_member_view_controller_invitation_message %@", nil), uiMember.name] image:nil avatar:nil action:TwinmeLocalizedString(@"application_confirm", nil) actionColor:nil cancel:TwinmeLocalizedString(@"application_cancel", nil)];
+    [defaultConfirmView initWithTitle:TwinmeLocalizedString(@"group_member_view_invitation_title", nil) message:[NSString stringWithFormat:TwinmeLocalizedString(@"group_member_view_invitation_message", nil), uiMember.name] image:nil avatar:nil action:TwinmeLocalizedString(@"application_confirm", nil) actionColor:nil cancel:TwinmeLocalizedString(@"application_cancel", nil)];
     [self.navigationController.view addSubview:defaultConfirmView];
     [defaultConfirmView showConfirmView];
     
@@ -375,14 +375,14 @@ static NSInteger REMOVE_ADMIN_ALERT_VIEW_TAG = 4;
     if (self.uiRoomAdmins.count == 1 && isAdmin) {
         AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
         alertMessageView.alertMessageViewDelegate = self;
-        [alertMessageView initWithTitle:TwinmeLocalizedString(@"room_members_view_controller_remove_admin_title", nil) message:TwinmeLocalizedString(@"room_members_view_controller_only_admin_message", nil)];
+        [alertMessageView initWithTitle:TwinmeLocalizedString(@"room_members_view_remove_admin_title", nil) message:TwinmeLocalizedString(@"room_members_view_only_admin_message", nil)];
         [self.navigationController.view addSubview:alertMessageView];
         [alertMessageView showAlertView];
     } else {
         DefaultConfirmView *defaultConfirmView = [[DefaultConfirmView alloc] init];
         defaultConfirmView.bottomSheetViewDelegate = self;
         defaultConfirmView.tag = DELETE_ALERT_VIEW_TAG;
-        [defaultConfirmView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:TwinmeLocalizedString(@"room_members_view_controller_delete_message", nil) image:nil avatar:nil action:TwinmeLocalizedString(@"application_confirm", nil) actionColor:nil cancel:TwinmeLocalizedString(@"application_cancel", nil)];
+        [defaultConfirmView initWithTitle:TwinmeLocalizedString(@"deleted_account_view_warning", nil) message:TwinmeLocalizedString(@"room_members_view_delete_message", nil) image:nil avatar:nil action:TwinmeLocalizedString(@"application_confirm", nil) actionColor:nil cancel:TwinmeLocalizedString(@"application_cancel", nil)];
         [self.navigationController.view addSubview:defaultConfirmView];
         [defaultConfirmView showConfirmView];
     }
@@ -453,7 +453,7 @@ static NSInteger REMOVE_ADMIN_ALERT_VIEW_TAG = 4;
     
     self.view.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
     
-    [self setNavigationTitle:TwinmeLocalizedString(@"room_members_view_controller_participants_title", nil)];
+    [self setNavigationTitle:TwinmeLocalizedString(@"room_members_view_participants_title", nil)];
     
     self.membersTableView.delegate = self;
     self.membersTableView.dataSource = self;

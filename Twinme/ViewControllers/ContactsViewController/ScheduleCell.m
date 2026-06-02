@@ -130,9 +130,9 @@ static const int ddLogLevel = DDLogLevelWarning;
     self.scheduleType = scheduleType;
     
     if (self.scheduleType == ScheduleTypeStart) {
-        self.titleLabel.text = TwinmeLocalizedString(@"show_call_view_controller_setting_start", nil);
+        self.titleLabel.text = TwinmeLocalizedString(@"show_call_view_settings_start", nil);
     } else {
-        self.titleLabel.text  = TwinmeLocalizedString(@"show_call_view_controller_setting_end", nil);
+        self.titleLabel.text  = TwinmeLocalizedString(@"show_call_view_settings_end", nil);
     }
     
     if (isRecurrent) {

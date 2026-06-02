@@ -73,13 +73,17 @@ static NSString *REACTION_CELL_IDENTIFIER = @"ReactionCellIdentifier";
     return self;
 }
 
-- (void)openMenu:(BOOL)isPeerItem {
+- (void)openMenu:(BOOL)isPeerItem displayAvatar:(BOOL)displayAvatar {
     DDLogVerbose(@"%@ openMenu", LOG_TAG);
     
     self.reactionContainerViewWidthConstraint.constant = self.reactionCollectionViewLeadingConstraint.constant + self.reactionCollectionViewTrailingConstraint.constant + (self.reactions.count * (DESIGN_COLLECTION_CELL_WIDTH * Design.WIDTH_RATIO));
     
     if (isPeerItem) {
-        self.reactionContainerViewLeadingConstraint.constant = DESIGN_LEADING_MENU * Design.WIDTH_RATIO;
+        if (displayAvatar) {
+            self.reactionContainerViewLeadingConstraint.constant = DESIGN_LEADING_MENU * Design.WIDTH_RATIO;
+        } else {
+            self.reactionContainerViewLeadingConstraint.constant = Design.AVATAR_CONVERSATION_LEADING;
+        }
     } else {
         self.reactionContainerViewLeadingConstraint.constant = Design.DISPLAY_WIDTH - (self.reactionContainerViewWidthConstraint.constant + DESIGN_TRAILING_MENU * Design.WIDTH_RATIO);
     }

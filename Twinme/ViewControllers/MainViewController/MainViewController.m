@@ -67,6 +67,7 @@
 #import "DefaultConfirmView.h"
 #import <TwinmeCommon/UIViewController+Utils.h>
 #import "ConversationsViewController.h"
+#import "MenuBackupView.h"
 
 #if 0
 static const int ddLogLevel = DDLogLevelVerbose;
@@ -95,7 +96,7 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
 // Interface: MainViewController ()
 //
 
-@interface MainViewController () <MainServiceDelegate, SplashScreenDelegate, AlertMessageViewDelegate, BottomSheetViewDelegate>
+@interface MainViewController () <MainServiceDelegate, SplashScreenDelegate, AlertMessageViewDelegate, BottomSheetViewDelegate, MenuBackupViewDelegate>
 
 @property (weak, nonatomic) IBOutlet UIView *sideMenuContainerView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *sideMenuContainerViewLeadingConstraint;
@@ -196,15 +197,10 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
     
     [super viewDidLoad];
     
-    if (@available(iOS 13.0, *)) {
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(applicationDidBecomeActive:)
-                                                     name:UISceneDidActivateNotification object:nil];
-    }
-    else {
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidBecomeActive:) name:UIApplicationDidBecomeActiveNotification object:nil];
-    }
-    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(applicationDidBecomeActive:)
+                                                 name:UISceneDidActivateNotification object:nil];
+
     [self initViewsController];
     
     if (!self.showSplashScreen) {
@@ -263,11 +259,7 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
     }
     
     if (self.isStatusBarDark || topViewControllerStatusBarDark) {
-        if (@available(iOS 13.0, *)) {
-            return UIStatusBarStyleDarkContent;
-        } else {
-            return UIStatusBarStyleDefault;
-        }
+        return UIStatusBarStyleDarkContent;
     }
     return UIStatusBarStyleLightContent;
 }
@@ -542,6 +534,28 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
     DDLogVerbose(@"%@ didFinishCloseAlertMessageAnimation: %@", LOG_TAG, alertMessageView);
         
     [alertMessageView removeFromSuperview];
+}
+
+#pragma mark - MenuBackupViewDelegate
+
+- (void)menuBackupDidClose:(MenuBackupView *)menuBackupView {
+    DDLogVerbose(@"%@ menuBackupDidClose: %@", LOG_TAG, menuBackupView);
+    
+    [menuBackupView removeFromSuperview];
+}
+
+- (void)menuBackupDidSelectVerify:(MenuBackupView *)menuBackupView backupURL:(NSURL *)backupURL {
+    DDLogVerbose(@"%@ menuBackupDidSelectVerify: %@ backupURL: %@", LOG_TAG, menuBackupView, backupURL);
+    
+    [menuBackupView removeFromSuperview];
+    [self startRestoreViewController:backupURL verifyMode:YES];
+}
+
+- (void)menuBackupDidSelectRestore:(MenuBackupView *)menuBackupView backupURL:(NSURL *)backupURL {
+    DDLogVerbose(@"%@ menuBackupDidSelectRestore: %@ backupURL: %@", LOG_TAG, menuBackupView, backupURL);
+    
+    [menuBackupView removeFromSuperview];
+    [self startRestoreViewController:backupURL verifyMode:NO];
 }
 
 #pragma mark - MainServiceDelegate
@@ -987,6 +1001,17 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
     dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
         id<TLOriginator> subject = [self.twinmeContext findSubjectWithHandle:self.inPersonToCall.personHandle.value];
         if (subject) {
+            // If there is an active call and it corresponds to the INStartVideoCallIntent, this means
+            // the user selected the Video button on CallKit UI.  Enable the camera now.
+            ApplicationDelegate *delegate = (ApplicationDelegate *)[[UIApplication sharedApplication] delegate];
+            CallState *call = [delegate.callService currentCall];
+            if (call && CALL_IS_ACTIVE([call status]) && [call.originatorId isEqual:subject.uuid]) {
+                if (self.startVideoCall) {
+                    [delegate.callService setCameraMute:NO];
+                }
+                return;
+            }
+
             if ([self hasSchedule:subject]) {
                 [self showSchedule:subject];
             } else if (!self.twinmeApplication.inCall) {
@@ -1008,10 +1033,10 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
         self.shareContentURL = nil;
         
         if ([shareContentURL.pathExtension isEqualToString:[TLTwinlife BACKUP_EXTENSION]]) {
-            RestoreViewController *restoreViewController = [[UIStoryboard storyboardWithName:@"Backup" bundle:nil] instantiateViewControllerWithIdentifier:@"RestoreViewController"];
-            [restoreViewController initWithFilePath:shareContentURL verifyMode:NO];
-            TwinmeNavigationController *navigationController = [[TwinmeNavigationController alloc] initWithRootViewController:restoreViewController];
-            [self presentViewController:navigationController animated:YES completion:nil];
+            MenuBackupView *menuBackupView = [[MenuBackupView alloc] init];
+            menuBackupView.menuBackupViewDelegate = self;
+            [menuBackupView openMenu:shareContentURL];
+            [self.view addSubview:menuBackupView];
         } else if (shareContentURL && [CONVERSATION_ACTION isEqualToString:shareContentURL.host]) {
             [self handleExtensionShareContentURL:shareContentURL];
         } else {
@@ -1089,29 +1114,29 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
     
     switch (errorCode) {
         case TLBaseServiceErrorCodeBadRequest:
-            message = TwinmeLocalizedString(@"add_contact_view_controller_scan_error_incorect_link", nil);
+            message = TwinmeLocalizedString(@"add_contact_view_scan_error_incorrect_link", nil);
             break;
             
         case TLBaseServiceErrorCodeFeatureNotImplemented:
-            message = TwinmeLocalizedString(@"add_contact_view_controller_scan_error_not_managed_link", nil);
+            message = TwinmeLocalizedString(@"add_contact_view_scan_error_not_managed_link", nil);
             break;
             
         case TLBaseServiceErrorCodeItemNotFound:
-            message = TwinmeLocalizedString(@"add_contact_view_controller_scan_error_corrupt_link", nil);
+            message = TwinmeLocalizedString(@"add_contact_view_scan_error_corrupt_link", nil);
             break;
             
         case TLBaseServiceErrorCodeExpired:
-            message = TwinmeLocalizedString(@"add_contact_view_controller_scan_error_expired_link", nil);
+            message = TwinmeLocalizedString(@"add_contact_view_scan_error_expired_link", nil);
             break;
             
         default:
-            message = TwinmeLocalizedString(@"capture_view_controller_incorrect_qrcode", nil);
+            message = TwinmeLocalizedString(@"capture_view_incorrect_qrcode", nil);
             break;
     }
     
     AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
     alertMessageView.alertMessageViewDelegate = self;
-    [alertMessageView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:message];
+    [alertMessageView initWithTitle:TwinmeLocalizedString(@"deleted_account_view_warning", nil) message:message];
     [self.view addSubview:alertMessageView];
     [alertMessageView showAlertView];
 }
@@ -1131,7 +1156,7 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
                 [self.mainService getImageWithContact:contact withBlock:^(UIImage *image) {
                     SuccessAuthentifiedRelationView *successAuthentifiedRelationView = [[SuccessAuthentifiedRelationView alloc] init];
                     successAuthentifiedRelationView.bottomSheetViewDelegate = self;
-                    [successAuthentifiedRelationView initWithTitle:contact.name message:[NSString stringWithFormat:TwinmeLocalizedString(@"authentified_relation_view_controller_certified_message", nil), contact.name] avatar:image icon:nil];
+                    [successAuthentifiedRelationView initWithTitle:contact.name message:[NSString stringWithFormat:TwinmeLocalizedString(@"authentified_relation_view_certified_message", nil), contact.name] avatar:image icon:nil];
                     [self.view addSubview:successAuthentifiedRelationView];
                     [successAuthentifiedRelationView showConfirmView];
                 }];
@@ -1142,19 +1167,19 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
     } else if (twincodeUri.kind == TLTwincodeURIKindProxy) {
         [self showProxy:twincodeUri.twincodeOptions];
     } else {
-        NSString *message = TwinmeLocalizedString(@"capture_view_controller_incorrect_qrcode", nil);
+        NSString *message = TwinmeLocalizedString(@"capture_view_incorrect_qrcode", nil);
         
         switch (twincodeUri.kind) {
             case TLTwincodeURIKindCall:
-                message = TwinmeLocalizedString(@"add_contact_view_controller_scan_message_call_link", nil);
+                message = TwinmeLocalizedString(@"add_contact_view_scan_message_call_link", nil);
                 break;
                 
             case TLTwincodeURIKindAccountMigration:
-                message = TwinmeLocalizedString(@"add_contact_view_controller_scan_message_migration_link", nil);
+                message = TwinmeLocalizedString(@"add_contact_view_scan_message_migration_link", nil);
                 break;
                 
             case TLTwincodeURIKindTransfer:
-                message = TwinmeLocalizedString(@"add_contact_view_controller_scan_message_transfer_link", nil);
+                message = TwinmeLocalizedString(@"add_contact_view_scan_message_transfer_link", nil);
                 break;
                 
             default:
@@ -1163,7 +1188,7 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
         
         AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
         alertMessageView.alertMessageViewDelegate = self;
-        [alertMessageView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:message];
+        [alertMessageView initWithTitle:TwinmeLocalizedString(@"deleted_account_view_warning", nil) message:message];
         [self.view addSubview:alertMessageView];
         [alertMessageView showAlertView];
     }
@@ -1267,7 +1292,7 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
                     DefaultConfirmView *defaultConfirmView = [[DefaultConfirmView alloc] init];
                     defaultConfirmView.bottomSheetViewDelegate = self;
                     UIImage *image = [self.twinmeApplication darkModeEnable:[self.twinmeContext defaultSpaceSettings]] ? [UIImage imageNamed:@"EnableNotificationDark"] : [UIImage imageNamed:@"EnableNotification"];
-                    [defaultConfirmView initWithTitle:TwinmeLocalizedString(@"quality_of_services_view_controller_settings", nil) message:TwinmeLocalizedString(@"quality_of_services_view_controller_enable_notifications_warning", nil) image:image avatar:nil action:TwinmeLocalizedString(@"quality_of_services_view_controller_enable_notifications", nil) actionColor:nil cancel:nil];
+                    [defaultConfirmView initWithTitle:TwinmeLocalizedString(@"quality_of_service_view_settings", nil) message:TwinmeLocalizedString(@"quality_of_service_view_enable_notifications_warning", nil) image:image avatar:nil action:TwinmeLocalizedString(@"quality_of_service_view_enable_notifications", nil) actionColor:nil cancel:nil];
                     [self.view addSubview:defaultConfirmView];
                     
                     [defaultConfirmView showConfirmView];
@@ -1320,11 +1345,11 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
             
             NSDateFormatter *dateFormatter = [[NSDateFormatter alloc]init];
             NSMutableString *validityMessage = [[NSMutableString alloc] initWithString:@""];
-            [validityMessage appendString:TwinmeLocalizedString(@"show_call_view_controller_setting_start", nil)];
+            [validityMessage appendString:TwinmeLocalizedString(@"show_call_view_settings_start", nil)];
             [validityMessage appendString:@" : "];
             [validityMessage appendString:[scheduleStartTime formatTime]];
             [validityMessage appendString:@"\n"];
-            [validityMessage appendString:TwinmeLocalizedString(@"show_call_view_controller_setting_end", nil)];
+            [validityMessage appendString:TwinmeLocalizedString(@"show_call_view_settings_end", nil)];
             [validityMessage appendString:@" : "];
             [validityMessage appendString:[scheduleEndTime formatTime]];
             [validityMessage appendString:@"\n\n"];
@@ -1370,18 +1395,18 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
             TLDateTime *start = dateTimeRange.start;
             TLDateTime *end = dateTimeRange.end;
             if ([start.date isEqual:end.date]) {
-                message = [NSString stringWithFormat:TwinmeLocalizedString(@"show_call_view_controller_schedule_from_to", nil), [start.date formatDate], [start.time formatTime], [end.time formatTime]];
+                message = [NSString stringWithFormat:TwinmeLocalizedString(@"show_call_view_schedule_from_to", nil), [start.date formatDate], [start.time formatTime], [end.time formatTime]];
             } else {
                 message = [NSString stringWithFormat:@"%@ %@", [start formatDateTime], [end formatDateTime]];
             }
         }
     } else {
-        message = TwinmeLocalizedString(@"show_call_view_controller_schedule_message", nil);
+        message = TwinmeLocalizedString(@"show_call_view_schedule_message", nil);
     }
                 
     AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
     alertMessageView.alertMessageViewDelegate = self;
-    [alertMessageView initWithTitle:TwinmeLocalizedString(@"show_call_view_controller_schedule_call", nil) message:message];
+    [alertMessageView initWithTitle:TwinmeLocalizedString(@"show_call_view_schedule_call", nil) message:message];
     [self.view addSubview:alertMessageView];
     [alertMessageView showAlertView];
 }
@@ -1394,7 +1419,7 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
     if (proxies.count  >= [TLConnectivityService MAX_PROXIES]) {
         AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
         alertMessageView.alertMessageViewDelegate = self;
-        [alertMessageView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:[NSString stringWithFormat:TwinmeLocalizedString(@"proxy_view_controller_limit", nil), [TLConnectivityService MAX_PROXIES]]];
+        [alertMessageView initWithTitle:TwinmeLocalizedString(@"deleted_account_view_warning", nil) message:[NSString stringWithFormat:TwinmeLocalizedString(@"proxy_view_limit", nil), [TLConnectivityService MAX_PROXIES]]];
         [self.view addSubview:alertMessageView];
         [alertMessageView showAlertView];
         return;
@@ -1404,7 +1429,7 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
         if ([proxyDescriptor.description caseInsensitiveCompare:proxy] == NSOrderedSame) {
             AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
             alertMessageView.alertMessageViewDelegate = self;
-            [alertMessageView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:[NSString stringWithFormat:TwinmeLocalizedString(@"proxy_view_controller_already_use", nil), [TLConnectivityService MAX_PROXIES]]];
+            [alertMessageView initWithTitle:TwinmeLocalizedString(@"deleted_account_view_warning", nil) message:[NSString stringWithFormat:TwinmeLocalizedString(@"proxy_view_already_use", nil), [TLConnectivityService MAX_PROXIES]]];
             [self.view addSubview:alertMessageView];
             [alertMessageView showAlertView];
             return;
@@ -1416,9 +1441,9 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
     DefaultConfirmView *defaultConfirmView = [[DefaultConfirmView alloc] init];
     defaultConfirmView.bottomSheetViewDelegate = self;
 
-    [defaultConfirmView initWithTitle:TwinmeLocalizedString(@"proxy_view_controller_title", nil) message:TwinmeLocalizedString(@"proxy_view_controller_url", nil) image:[UIImage imageNamed:@"OnboardingProxy"] avatar:nil action: TwinmeLocalizedString(@"proxy_view_controller_enable", nil) actionColor:nil cancel:TwinmeLocalizedString(@"application_cancel", nil)];
+    [defaultConfirmView initWithTitle:TwinmeLocalizedString(@"proxy_view_title", nil) message:TwinmeLocalizedString(@"proxy_view_url", nil) image:[UIImage imageNamed:@"OnboardingProxy"] avatar:nil action: TwinmeLocalizedString(@"proxy_view_enable", nil) actionColor:nil cancel:TwinmeLocalizedString(@"application_cancel", nil)];
 
-    NSMutableAttributedString *attributedTitle = [[NSMutableAttributedString alloc] initWithString:TwinmeLocalizedString(@"proxy_view_controller_title", nil) attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_BOLD36, NSFontAttributeName, Design.FONT_COLOR_DEFAULT, NSForegroundColorAttributeName, nil]];
+    NSMutableAttributedString *attributedTitle = [[NSMutableAttributedString alloc] initWithString:TwinmeLocalizedString(@"proxy_view_title", nil) attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_BOLD36, NSFontAttributeName, Design.FONT_COLOR_DEFAULT, NSForegroundColorAttributeName, nil]];
     [attributedTitle appendAttributedString:[[NSMutableAttributedString alloc] initWithString:@"\n\n"]];
     [attributedTitle appendAttributedString:[[NSMutableAttributedString alloc] initWithString:self.proxyToAdd attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_MEDIUM34, NSFontAttributeName, Design.FONT_COLOR_GREY, NSForegroundColorAttributeName, nil]]];
     
@@ -1442,6 +1467,15 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
     
     SettingsAdvancedViewController *settingsAdvancedViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"SettingsAdvancedViewController"];
     [self.navigationController pushViewController:settingsAdvancedViewController animated:YES];
+}
+
+- (void)startRestoreViewController:(NSURL *)url verifyMode:(BOOL)verifyMode {
+    DDLogVerbose(@"%@ startRestoreViewController", LOG_TAG);
+    
+    RestoreViewController *restoreViewController = [[UIStoryboard storyboardWithName:@"Backup" bundle:nil] instantiateViewControllerWithIdentifier:@"RestoreViewController"];
+    [restoreViewController initWithFileURL:url verifyMode:verifyMode pickFileInApp:NO];
+    TwinmeNavigationController *navigationController = [[TwinmeNavigationController alloc] initWithRootViewController:restoreViewController];
+    [self presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (void)askNotification {

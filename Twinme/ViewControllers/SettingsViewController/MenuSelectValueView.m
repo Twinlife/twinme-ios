@@ -17,6 +17,7 @@
 #import "ColorCell.h"
 
 #import <TwinmeCommon/Design.h>
+#import <TwinmeCommon/UIViewController+Utils.h>
 
 #if 0
 static const int ddLogLevel = DDLogLevelVerbose;
@@ -142,46 +143,46 @@ static const CGFloat MIN_HEIGHT = 132;
     
     if (self.menuSelectValueType == MenuSelectValueTypeQualityMedia) {
         if (indexPath.row == QualityMediaStandard) {
-            title = TwinmeLocalizedString(@"conversation_view_controller_media_quality_standard", nil);
-            subtitle = TwinmeLocalizedString(@"conversation_view_controller_media_quality_standard_subtitle", nil);
+            title = TwinmeLocalizedString(@"conversation_view_media_quality_standard", nil);
+            subtitle = TwinmeLocalizedString(@"conversation_view_media_quality_standard_subtitle", nil);
         } else {
-            title = TwinmeLocalizedString(@"conversation_view_controller_media_quality_original", nil);
-            subtitle = TwinmeLocalizedString(@"conversation_view_controller_media_quality_original_subtitle", nil);
+            title = TwinmeLocalizedString(@"conversation_view_media_quality_original", nil);
+            subtitle = TwinmeLocalizedString(@"conversation_view_media_quality_original_subtitle", nil);
         }
     } else if (self.menuSelectValueType == MenuSelectValueTypeDisplayCallsMode) {
         if (indexPath.row == TLDisplayCallsModeNone) {
-            title = TwinmeLocalizedString(@"settings_view_controller_display_call_menu_none", nil);
+            title = TwinmeLocalizedString(@"settings_view_display_call_menu_none", nil);
         } else if (indexPath.row == TLDisplayCallsModeMissed) {
-            title = TwinmeLocalizedString(@"settings_view_controller_display_call_menu_missed", nil);
+            title = TwinmeLocalizedString(@"settings_view_display_call_menu_missed", nil);
         } else {
-            title = TwinmeLocalizedString(@"settings_view_controller_call_item_menu_all", nil);
+            title = TwinmeLocalizedString(@"settings_view_call_item_menu_all", nil);
         }
     } else if (self.menuSelectValueType == MenuSelectValueTypeProfileUpdateMode) {
         if (indexPath.row == TLProfileUpdateModeAll) {
-            title = TwinmeLocalizedString(@"edit_profile_view_controller_propagating_all_contacts", nil);
+            title = TwinmeLocalizedString(@"edit_profile_view_propagating_all_contacts", nil);
         } else if (indexPath.row == TLProfileUpdateModeDefault) {
-            title = TwinmeLocalizedString(@"edit_profile_view_controller_propagating_except_contacts", nil);
+            title = TwinmeLocalizedString(@"edit_profile_view_propagating_except_contacts", nil);
         } else {
-            title = TwinmeLocalizedString(@"edit_profile_view_controller_propagating_no_contact", nil);
+            title = TwinmeLocalizedString(@"edit_profile_view_propagating_no_contact", nil);
         }
     } else if (self.menuSelectValueType == MenuSelectValueTypeExternalCallType) {
         if (indexPath.row == ConfigExternalCallTypeCallDirect) {
-            title = TwinmeLocalizedString(@"create_external_call_view_controller_direct_call_title", nil);
-            subtitle = TwinmeLocalizedString(@"create_external_call_view_controller_direct_call_description", nil);
+            title = TwinmeLocalizedString(@"create_external_call_view_direct_call_title", nil);
+            subtitle = TwinmeLocalizedString(@"create_external_call_view_direct_call_description", nil);
         } else {
-            title = TwinmeLocalizedString(@"create_external_call_view_controller_conference_call_title", nil);
-            subtitle = TwinmeLocalizedString(@"create_external_call_view_controller_conference_call_description", nil);
+            title = TwinmeLocalizedString(@"create_external_call_view_conference_call_title", nil);
+            subtitle = TwinmeLocalizedString(@"create_external_call_view_conference_call_description", nil);
         }
     } else if (self.menuSelectValueType == MenuSelectValueTypeExternalCallExpiration) {
         if (indexPath.row == TLLinkValidityPermanent) {
-            title = TwinmeLocalizedString(@"create_external_call_view_controller_continuous_link_title", nil);
-            subtitle = TwinmeLocalizedString(@"create_external_call_view_controller_continuous_link_description", nil);
+            title = TwinmeLocalizedString(@"create_external_call_view_continuous_link_title", nil);
+            subtitle = TwinmeLocalizedString(@"create_external_call_view_continuous_link_description", nil);
         } else if (indexPath.row == TLLinkValiditySingleUse) {
-            title = TwinmeLocalizedString(@"create_external_call_view_controller_unique_link_title", nil);
-            subtitle = TwinmeLocalizedString(@"create_external_call_view_controller_unique_link_description", nil);
+            title = TwinmeLocalizedString(@"create_external_call_view_unique_link_title", nil);
+            subtitle = TwinmeLocalizedString(@"create_external_call_view_unique_link_description", nil);
         } else {
-            title = TwinmeLocalizedString(@"create_external_call_view_controller_recurrent_link_title", nil);
-            subtitle = TwinmeLocalizedString(@"create_external_call_view_controller_recurrent_link_description", nil);
+            title = TwinmeLocalizedString(@"create_external_call_view_recurrent_link_title", nil);
+            subtitle = TwinmeLocalizedString(@"create_external_call_view_recurrent_link_description", nil);
         }
     }
         
@@ -207,8 +208,13 @@ static const CGFloat MIN_HEIGHT = 132;
     
     [super initViews];
     
-    UIWindow *window = UIApplication.sharedApplication.keyWindow;
-    CGFloat safeAreaInset = window.safeAreaInsets.bottom;
+    CGFloat safeAreaInset;
+    UIWindow *window = [UIViewController currentWindow];
+    if (window) {
+        safeAreaInset = window.safeAreaInsets.bottom;
+    } else {
+        safeAreaInset = self.safeAreaInsets.bottom;
+    }
     
     self.tableViewTopConstraint.constant *= Design.HEIGHT_RATIO;
     self.tableViewBottomConstraint.constant = safeAreaInset;
@@ -226,24 +232,24 @@ static const CGFloat MIN_HEIGHT = 132;
         
     switch (self.menuSelectValueType) {
         case MenuSelectValueTypeDisplayCallsMode:
-            self.titleLabel.text = TwinmeLocalizedString(@"settings_view_controller_display_call_title", nil);
+            self.titleLabel.text = TwinmeLocalizedString(@"settings_view_display_call_title", nil);
             break;
             
         case MenuSelectValueTypeQualityMedia: {
-            self.titleLabel.text = TwinmeLocalizedString(@"conversation_view_controller_media_quality_title", nil);
+            self.titleLabel.text = TwinmeLocalizedString(@"conversation_view_media_quality_title", nil);
             break;
         }
             
         case MenuSelectValueTypeProfileUpdateMode:
-            self.titleLabel.text = TwinmeLocalizedString(@"edit_profile_view_controller_propagating_profile", nil);
+            self.titleLabel.text = TwinmeLocalizedString(@"edit_profile_view_propagating_profile", nil);
             break;
             
         case MenuSelectValueTypeExternalCallType:
-            self.titleLabel.text = TwinmeLocalizedString(@"create_external_call_view_controller_call_type", nil);
+            self.titleLabel.text = TwinmeLocalizedString(@"create_external_call_view_call_type", nil);
             break;
             
         case MenuSelectValueTypeExternalCallExpiration:
-            self.titleLabel.text = TwinmeLocalizedString(@"create_external_call_view_controller_link_validity", nil);
+            self.titleLabel.text = TwinmeLocalizedString(@"create_external_call_view_link_validity", nil);
             break;
                                                          
         default:

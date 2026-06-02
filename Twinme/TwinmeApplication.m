@@ -47,6 +47,7 @@ static const int ddLogLevel = DDLogLevelWarning;
 #define VISUALIZATION_LINK @"VisualizationLink"
 #define DISPLAY_MODE @"DefaultDisplayMode"
 #define HAPTIC_FEEDBACK_MODE @"DefaultHapticFeedbackMode"
+#define HAPTIC_FEEDBACK_ENABLE @"DefaultHapticFeedbackEnable"
 #define FIRST_SHOW_UPGRADE_SCREEN @"FirstShowUpgradeScreen_2023"
 #define LAST_SHOW_UPGRADE_SCREEN @"LastShowUpgradeScreen_2023"
 #define CAN_SHOW_UPGRADE_SCREEN @"CanShowUpgradeScreen"
@@ -79,6 +80,7 @@ static const int ddLogLevel = DDLogLevelWarning;
 #define AUDIO_ITEM_RATE @"AudioItemRate"
 #define LAST_BACKUP @"LastBackup"
 #define FIRST_INSTALLATION_WITH_BACKUP @"FirstInstallationWithBackup"
+#define LAST_ALERT_BACKUP @"LastAlertBackup"
 
 #define DEFAULT_COLOR @"#00AEFF"
 
@@ -96,6 +98,7 @@ static TLBooleanConfigIdentifier *showWelcomeConfig;
 // Display settings.
 static TLBooleanConfigIdentifier *visualizationLinkConfig;
 static TLIntegerConfigIdentifier *hapticFeedbackModeConfig;
+static TLBooleanConfigIdentifier *hapticFeedbackEnableConfig;
 static TLIntegerConfigIdentifier *defaultTabConfig;
 static TLIntegerConfigIdentifier *displayModeConfig;
 static TLIntegerConfigIdentifier *displayCallsModeConfig;
@@ -146,6 +149,7 @@ static TLFloatConfigIdentifier *audioItemRateConfig;
 // Backup
 static TLIntegerConfigIdentifier *lastBackupConfig;
 static TLIntegerConfigIdentifier *firstInstallationWithBackupConfig;
+static TLIntegerConfigIdentifier *lastBackupAlertConfig;
 
 //
 // Interface: TwinmeApplication ()
@@ -195,7 +199,10 @@ static TLIntegerConfigIdentifier *firstInstallationWithBackupConfig;
         emojiSizeConfig = [TLIntegerConfigIdentifier defineWithName:EMOJI_SIZE uuid:@"5CDAfAE4-FFE8-4754-A178-4f8C5DC834E0" defaultValue:EmojiSizeStandard];
         
         visualizationLinkConfig = [TLBooleanConfigIdentifier defineWithName:VISUALIZATION_LINK uuid:@"4B143BC6-1590-4889-B46A-2B54BCf5DBA8" defaultValue:YES];
+        
         hapticFeedbackModeConfig = [TLIntegerConfigIdentifier defineWithName:HAPTIC_FEEDBACK_MODE uuid:@"E9819421-CD71-4C3D-AB6A-0783F0FF4532" defaultValue:HapticFeedbackModeSystem];
+        
+        hapticFeedbackEnableConfig = [TLBooleanConfigIdentifier defineWithName:HAPTIC_FEEDBACK_ENABLE uuid:@"A33B5A34-1C22-4FFA-B1DB-DFB8E2338DD6" defaultValue:[self hapticFeedbackMode] != HapticFeedbackModeOff];
         
         defaultTabConfig = [TLIntegerConfigIdentifier defineWithName:DEFAULT_TAB uuid:@"AD11179C-1510-4F1A-A4C2-0F29DC989997" defaultValue:DefaultTabConversations];
 
@@ -210,6 +217,7 @@ static TLIntegerConfigIdentifier *firstInstallationWithBackupConfig;
         callQualityLastDateConfig = [TLIntegerConfigIdentifier defineWithName:CALL_QUALITY_LAST_DATE uuid:@"B57863E8-3336-11ED-A261-0242AC120002" defaultValue:0];
         
         lastBackupConfig = [TLIntegerConfigIdentifier defineWithName:LAST_BACKUP uuid:@"E55ECCE5-A709-4C5d-9D7D-09CDDEA8f8C5" defaultValue:0];
+        lastBackupAlertConfig = [TLIntegerConfigIdentifier defineWithName:LAST_ALERT_BACKUP uuid:@"58D0333B-3972-4037-80AF-71775A12116F" defaultValue:0];
         firstInstallationWithBackupConfig = [TLIntegerConfigIdentifier defineWithName:FIRST_INSTALLATION_WITH_BACKUP defaultValue:0];
         [self setFirstInstallationWithBackup];
         
@@ -244,8 +252,6 @@ static TLIntegerConfigIdentifier *firstInstallationWithBackupConfig;
         showOnboardingVerifyBackup = [TLBooleanConfigIdentifier defineWithName:SHOW_ONBOARDING_VERIFY_BACKUP defaultValue:YES];
         showOnboardingBackupBeta = [TLBooleanConfigIdentifier defineWithName:SHOW_ONBOARDING_BACKUP_BETA defaultValue:YES];
         showWarningEditMessage = [TLBooleanConfigIdentifier defineWithName:SHOW_WARNING_EDIT_MESSAGE defaultValue:YES];
-        
-        
     }
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(contentSizeCategoryDidChangeNotification:) name:UIContentSizeCategoryDidChangeNotification object:nil];
@@ -394,7 +400,7 @@ static TLIntegerConfigIdentifier *firstInstallationWithBackupConfig;
 
 - (TLSpaceSettings *)defaultSpaceSettings {
     
-    TLSpaceSettings *settings = [[TLSpaceSettings alloc] initWithName:TwinmeLocalizedString(@"space_appearance_view_controller_general_title", nil) settings:nil];
+    TLSpaceSettings *settings = [[TLSpaceSettings alloc] initWithName:TwinmeLocalizedString(@"space_appearance_view_general_title", nil) settings:nil];
     settings.messageCopyAllowed = allowCopyTextConfig.boolValue;
     settings.fileCopyAllowed = allowCopyFileConfig.boolValue;
     return settings;
@@ -452,10 +458,8 @@ static TLIntegerConfigIdentifier *firstInstallationWithBackupConfig;
     
     switch ([self displayMode]) {
         case DisplayModeSystem:
-            if (@available(iOS 13.0, *)) {
-                if ([UIScreen mainScreen].traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark){
-                    darkMode = YES;
-                }
+            if ([UIScreen mainScreen].traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark){
+                darkMode = YES;
             }
             break;
             
@@ -507,6 +511,16 @@ static TLIntegerConfigIdentifier *firstInstallationWithBackupConfig;
 - (void)setHapticFeedbackModeWithMode:(HapticFeedbackMode)hapticFeedbackMode {
     
     hapticFeedbackModeConfig.intValue = hapticFeedbackMode;
+}
+
+- (BOOL)allowHapticFeedback {
+    
+    return hapticFeedbackEnableConfig.boolValue;
+}
+
+- (void)setHapticFeedbackEnableWithState:(BOOL)state {
+    
+    hapticFeedbackEnableConfig.boolValue = state;
 }
 
 - (DefaultTab)defaultTab {
@@ -623,12 +637,28 @@ static TLIntegerConfigIdentifier *firstInstallationWithBackupConfig;
     
     NSTimeInterval timeInterval = [[NSDate date] timeIntervalSince1970];
     int64_t diffTimeSinceLastBackup = timeInterval - lastBackupConfig.int64Value;
+    int64_t diffTimeFirstInstallationBackup = timeInterval - firstInstallationWithBackupConfig.int64Value;
     
-    if (diffTimeSinceLastBackup < oneMonth) {
-        return NO;
+    if ((diffTimeSinceLastBackup > oneMonth && lastBackupConfig.int64Value != 0) || (diffTimeFirstInstallationBackup > oneMonth)) {
+                     
+        if (lastBackupAlertConfig.int64Value == 0) {
+            return YES;
+        }
+        
+        int64_t diffTimeSinceLastBackupBackupAlert = timeInterval - lastBackupAlertConfig.int64Value;
+        if (diffTimeSinceLastBackupBackupAlert > oneMonth) {
+            return YES;
+        }
     }
         
-    return YES;
+    return NO;
+}
+
+- (void)setLastAlertBackup {
+    DDLogVerbose(@"%@ setLastAlertBackup", LOG_TAG);
+    
+    NSTimeInterval timeInterval = [[NSDate date] timeIntervalSince1970];
+    lastBackupAlertConfig.int64Value = timeInterval;
 }
 
 - (void)setLastBackupDate {
@@ -645,6 +675,18 @@ static TLIntegerConfigIdentifier *firstInstallationWithBackupConfig;
         NSTimeInterval timeInterval = [[NSDate date] timeIntervalSince1970];
         firstInstallationWithBackupConfig.int64Value = timeInterval;
     }
+}
+
+- (void)clearLastBackupDate {
+    DDLogVerbose(@"%@ clearLastBackupDate", LOG_TAG);
+    
+    lastBackupConfig.int64Value = 0;
+}
+
+- (int64_t)lastBackupDate {
+    DDLogVerbose(@"%@ lastBackupDate", LOG_TAG);
+    
+    return lastBackupConfig.int64Value;
 }
 
 //

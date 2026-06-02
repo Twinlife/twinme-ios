@@ -58,7 +58,7 @@
     self.messageTextViewBottomConstraint.constant *= Design.HEIGHT_RATIO;
     self.messageTextViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     
-    self.messageTextView.text = TwinmeLocalizedString(@"quality_of_services_view_controller_step1_message", nil);
+    self.messageTextView.text = TwinmeLocalizedString(@"quality_of_service_view_step1_message", nil);
     self.messageTextView.textColor = Design.FONT_COLOR_DEFAULT;
     self.messageTextView.font = Design.FONT_MEDIUM32;
     self.messageTextView.editable = NO;
@@ -82,7 +82,7 @@
     
     self.settingsLabel.font = Design.FONT_MEDIUM34;
     self.settingsLabel.textColor = [UIColor whiteColor];
-    self.settingsLabel.text = TwinmeLocalizedString(@"quality_of_services_view_controller_settings", nil);
+    self.settingsLabel.text = TwinmeLocalizedString(@"quality_of_service_view_settings", nil);
     [self.settingsLabel setAdjustsFontSizeToFitWidth:YES];
     
     self.settingsViewHeightConstraint.constant =  Design.FONT_MEDIUM34.lineHeight * 2 + self.settingsLabelBottomConstraint.constant * 2;

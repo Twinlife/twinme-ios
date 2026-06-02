@@ -1825,13 +1825,13 @@ CGFloat const SLKAutoCompletionViewDefaultHeight = 140.0;
     NSString *cachedText = [[NSUserDefaults standardUserDefaults] objectForKey:key];
     
     if (self.textView.text.length == 0 || cachedText.length > 0) {
-        self.textView.text = cachedText;
+        //self.textView.text = cachedText;
     }
 }
 
 - (void)slk_cacheTextView
 {
-    [self slk_cacheTextToDisk:self.textView.text];
+    //[self slk_cacheTextToDisk:self.textView.text];
 }
 
 - (void)clearCachedText
@@ -2208,15 +2208,15 @@ CGFloat const SLKAutoCompletionViewDefaultHeight = 140.0;
 
 - (nullable UIMenu *)editMenuInteraction:(UIEditMenuInteraction *)interaction menuForConfiguration:(UIEditMenuConfiguration *)configuration suggestedActions:(NSArray<UIMenuElement *> *)suggestedActions {
     
-    UIAction *boldAction = [UIAction actionWithTitle:NSLocalizedString(@"conversation_view_controller_format_menu_bold", nil) image:nil identifier:nil handler:^(__kindof UIAction* _Nonnull action) {
+    UIAction *boldAction = [UIAction actionWithTitle:NSLocalizedString(@"conversation_view_format_menu_bold", nil) image:nil identifier:nil handler:^(__kindof UIAction* _Nonnull action) {
         [self.textView formatTextWithSymbol:@"*"];
     }];
     
-    UIAction *italicAction = [UIAction actionWithTitle:NSLocalizedString(@"conversation_view_controller_format_menu_italic", nil) image:nil identifier:nil handler:^(__kindof UIAction* _Nonnull action) {
+    UIAction *italicAction = [UIAction actionWithTitle:NSLocalizedString(@"conversation_view_format_menu_italic", nil) image:nil identifier:nil handler:^(__kindof UIAction* _Nonnull action) {
         [self.textView formatTextWithSymbol:@"_"];
     }];
     
-    UIAction *strikeThroughAction = [UIAction actionWithTitle:NSLocalizedString(@"conversation_view_controller_format_menu_strikethrough", nil) image:nil identifier:nil handler:^(__kindof UIAction* _Nonnull action) {
+    UIAction *strikeThroughAction = [UIAction actionWithTitle:NSLocalizedString(@"conversation_view_format_menu_strikethrough", nil) image:nil identifier:nil handler:^(__kindof UIAction* _Nonnull action) {
         [self.textView formatTextWithSymbol:@"~"];
     }];
     

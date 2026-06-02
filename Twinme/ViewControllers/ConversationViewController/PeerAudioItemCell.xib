@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="24765" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24743"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -204,7 +204,7 @@
                     <constraint firstItem="1zR-Am-hda" firstAttribute="bottom" secondItem="H2p-sc-9uM" secondAttribute="bottom" constant="-18" id="MzY-fL-HJ5"/>
                     <constraint firstItem="kXS-HL-8MP" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" id="OLd-cN-rQk"/>
                     <constraint firstItem="5eO-fk-5cI" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="26" id="UKd-Em-VfT"/>
-                    <constraint firstItem="5eO-fk-5cI" firstAttribute="trailing" secondItem="1zR-Am-hda" secondAttribute="leading" constant="-18" id="VgO-yb-nck"/>
+                    <constraint firstItem="1zR-Am-hda" firstAttribute="leading" secondItem="5eO-fk-5cI" secondAttribute="trailing" constant="18" id="VgO-yb-nck"/>
                     <constraint firstItem="1zR-Am-hda" firstAttribute="top" relation="greaterThanOrEqual" secondItem="H2p-sc-9uM" secondAttribute="top" priority="750" constant="18" id="Xxh-Jt-QW3"/>
                     <constraint firstItem="fCF-7B-u5b" firstAttribute="top" secondItem="1zR-Am-hda" secondAttribute="bottom" id="bbv-fe-mK9"/>
                     <constraint firstItem="rjw-sr-klv" firstAttribute="top" relation="greaterThanOrEqual" secondItem="H2p-sc-9uM" secondAttribute="top" priority="750" constant="18" id="fO0-4Q-8WH"/>

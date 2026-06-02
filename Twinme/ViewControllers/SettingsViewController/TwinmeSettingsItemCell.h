@@ -25,10 +25,12 @@
 
 @property (nonatomic, weak) id<TwinmeSettingsItemDeleagte>delegate;
 
-- (void)bindWithTitle:(NSString *)title hiddenAccessory:(BOOL)hiddenAccessory disableSetting:(BOOL)disableSetting color:(UIColor *)color;
+- (void)bindWithTitle:(nonnull NSString *)title hiddenAccessory:(BOOL)hiddenAccessory disableSetting:(BOOL)disableSetting color:(nonnull UIColor *)color;
 
-- (void)bindWithTitle:(NSString *)title hiddenAccessory:(BOOL)hiddenAccessory disableSetting:(BOOL)disableSetting updateAvailable:(BOOL)updateAvailable color:(UIColor *)color;
+- (void)bindWithTitle:(nonnull NSString *)title subTitle:(nullable NSString *)subTitle hiddenAccessory:(BOOL)hiddenAccessory disableSetting:(BOOL)disableSetting color:(nonnull UIColor *)color;
 
-- (void)bindWithTitle:(NSString *)title hiddenAccessory:(BOOL)hiddenAccessory disableSetting:(BOOL)disableSetting color:(UIColor *)color badgeTitle:(NSString *)badgeTitle;
+- (void)bindWithTitle:(nonnull NSString *)title hiddenAccessory:(BOOL)hiddenAccessory disableSetting:(BOOL)disableSetting updateAvailable:(BOOL)updateAvailable color:(nonnull UIColor *)color;
+
+- (void)bindWithTitle:(nonnull NSString *)title hiddenAccessory:(BOOL)hiddenAccessory disableSetting:(BOOL)disableSetting color:(nonnull UIColor *)color badgeTitle:(nullable NSString *)badgeTitle showNotification:(BOOL)showNotification;
 
 @end

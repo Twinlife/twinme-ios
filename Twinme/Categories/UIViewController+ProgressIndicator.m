@@ -38,12 +38,7 @@ static const char IndicatorKey;
         ApplicationDelegate *delegate = (ApplicationDelegate *)[[UIApplication sharedApplication] delegate];
         TwinmeApplication *twinmeApplication = [delegate twinmeApplication];
         
-        if (@available(iOS 13.0, *)) {
-            indicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleMedium];
-        } else {
-            indicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
-        }
-        
+        indicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleMedium];
         if ([twinmeApplication darkModeEnable:[[delegate twinmeContext] defaultSpaceSettings]]) {
             indicatorView.color = [UIColor whiteColor];
         }

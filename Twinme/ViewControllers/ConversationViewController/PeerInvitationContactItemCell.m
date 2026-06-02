@@ -194,7 +194,7 @@ static const int ddLogLevel = DDLogLevelWarning;
     [style setLineSpacing:Design.INVITATION_LINE_SPACING];
     NSMutableAttributedString *invitationAttributedString = [[NSMutableAttributedString alloc] initWithString:self.name attributes:[NSDictionary dictionaryWithObject:Design.FONT_MEDIUM26 forKey:NSFontAttributeName]];
     [invitationAttributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:@"\n"]];
-    [invitationAttributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:TwinmeLocalizedString(@"accept_invitation_view_controller_message %@", nil), self.name] attributes:[NSDictionary dictionaryWithObject:Design.FONT_REGULAR26 forKey:NSFontAttributeName]]];
+    [invitationAttributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:TwinmeLocalizedString(@"accept_invitation_view_message", nil), self.name] attributes:[NSDictionary dictionaryWithObject:Design.FONT_REGULAR26 forKey:NSFontAttributeName]]];
     [invitationAttributedString addAttribute:NSParagraphStyleAttributeName value:style range:NSMakeRange(0, invitationAttributedString.length - 1)];
     self.invitationLabel.attributedText = invitationAttributedString;
     
@@ -243,12 +243,23 @@ static const int ddLogLevel = DDLogLevelWarning;
         self.bottomLeftRadius = [conversationViewController getRadiusWithMask:corners & ITEM_BOTTOM_LEFT];
     }
     
-    if (peerInvitationContactItem.visibleAvatar) {
+    if (peerInvitationContactItem.visibleAvatar && [conversationViewController displayPeerItemAvatar]) {
         self.avatarView.hidden = NO;
         self.avatarView.image = [conversationViewController getContactAvatarWithUUID:item.peerTwincodeOutboundId];
     } else {
         self.avatarView.hidden = YES;
         self.avatarView.image = nil;
+        
+        if (![conversationViewController displayPeerItemAvatar]) {
+            self.avatarViewLeadingConstraint.constant = 0;
+            self.avatarViewHeightConstraint.constant = 0;
+            
+            if ([conversationViewController isSelectItemMode]) {
+                self.contentInvitationViewLeadingConstraint.constant = self.checkMarkViewLeadingConstraint.constant + self.checkMarkViewLeadingConstraint.constant + Design.AVATAR_CONVERSATION_LEADING;
+            } else {
+                self.contentInvitationViewLeadingConstraint.constant = Design.AVATAR_CONVERSATION_LEADING;
+            }
+        }
     }
     
     if ([conversationViewController isMenuOpen]) {
@@ -363,7 +374,7 @@ static const int ddLogLevel = DDLogLevelWarning;
         [style setLineSpacing:Design.INVITATION_LINE_SPACING];
         NSMutableAttributedString *invitationAttributedString = [[NSMutableAttributedString alloc] initWithString:self.name attributes:[NSDictionary dictionaryWithObject:Design.FONT_MEDIUM26 forKey:NSFontAttributeName]];
         [invitationAttributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:@"\n"]];
-        [invitationAttributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:TwinmeLocalizedString(@"accept_invitation_view_controller_message %@", nil), self.name] attributes:[NSDictionary dictionaryWithObject:Design.FONT_REGULAR26 forKey:NSFontAttributeName]]];
+        [invitationAttributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:TwinmeLocalizedString(@"accept_invitation_view_message", nil), self.name] attributes:[NSDictionary dictionaryWithObject:Design.FONT_REGULAR26 forKey:NSFontAttributeName]]];
         [invitationAttributedString addAttribute:NSParagraphStyleAttributeName value:style range:NSMakeRange(0, invitationAttributedString.length - 1)];
         self.invitationLabel.attributedText = invitationAttributedString;
     }

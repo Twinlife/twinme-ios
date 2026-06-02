@@ -19,6 +19,7 @@
 #import "ColorCell.h"
 
 #import <TwinmeCommon/Design.h>
+#import <TwinmeCommon/UIViewController+Utils.h>
 
 #if 0
 static const int ddLogLevel = DDLogLevelVerbose;
@@ -27,8 +28,6 @@ static const int ddLogLevel = DDLogLevelWarning;
 #endif
 
 static NSString *SELECT_VALUE_CELL_IDENTIFIER = @"SelectValueCellIdentifier";
-
-static const CGFloat MIN_HEIGHT = 132;
 
 //
 // Interface: MenuPropagatingProfileView ()
@@ -130,11 +129,11 @@ static const CGFloat MIN_HEIGHT = 132;
     BOOL checked = self.profileUpdateMode == indexPath.row;
 
     if (indexPath.row == TLProfileUpdateModeAll) {
-        title = TwinmeLocalizedString(@"edit_profile_view_controller_propagating_all_contacts", nil);
+        title = TwinmeLocalizedString(@"edit_profile_view_propagating_all_contacts", nil);
     } else if (indexPath.row == TLProfileUpdateModeDefault) {
-        title = TwinmeLocalizedString(@"edit_profile_view_controller_propagating_except_contacts", nil);
+        title = TwinmeLocalizedString(@"edit_profile_view_propagating_except_contacts", nil);
     } else {
-        title = TwinmeLocalizedString(@"edit_profile_view_controller_propagating_no_contact", nil);
+        title = TwinmeLocalizedString(@"edit_profile_view_propagating_no_contact", nil);
     }
         
     [cell bindWithTitle:title subTitle:subtitle checked:checked hideBorder:NO hideSeparator:YES];
@@ -163,9 +162,9 @@ static const CGFloat MIN_HEIGHT = 132;
     
     [super initViews];
     
-    NSMutableAttributedString *attributedTitle = [[NSMutableAttributedString alloc] initWithString:TwinmeLocalizedString(@"edit_profile_view_controller_propagating_message", nil) attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_BOLD36, NSFontAttributeName, Design.FONT_COLOR_DEFAULT, NSForegroundColorAttributeName, nil]];
+    NSMutableAttributedString *attributedTitle = [[NSMutableAttributedString alloc] initWithString:TwinmeLocalizedString(@"edit_profile_view_propagating_message", nil) attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_BOLD36, NSFontAttributeName, Design.FONT_COLOR_DEFAULT, NSForegroundColorAttributeName, nil]];
     [attributedTitle appendAttributedString:[[NSMutableAttributedString alloc] initWithString:@"\n\n"]];
-    [attributedTitle appendAttributedString:[[NSMutableAttributedString alloc] initWithString:TwinmeLocalizedString(@"edit_profile_view_controller_propagating_ask_message", nil) attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_MEDIUM34, NSFontAttributeName, Design.FONT_COLOR_GREY, NSForegroundColorAttributeName, nil]]];
+    [attributedTitle appendAttributedString:[[NSMutableAttributedString alloc] initWithString:TwinmeLocalizedString(@"edit_profile_view_propagating_ask_message", nil) attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_MEDIUM34, NSFontAttributeName, Design.FONT_COLOR_GREY, NSForegroundColorAttributeName, nil]]];
     
     self.titleLabel.attributedText = attributedTitle;
     
@@ -193,16 +192,19 @@ static const CGFloat MIN_HEIGHT = 132;
     
     self.confirmLabel.font = Design.FONT_BOLD36;
     self.confirmLabel.textColor = [UIColor whiteColor];
-    self.confirmLabel.text = TwinmeLocalizedString(@"edit_profile_view_controller_propagating_profile", nil);
+    self.confirmLabel.text = TwinmeLocalizedString(@"edit_profile_view_propagating_profile", nil);
     
     self.cancelViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     
     UITapGestureRecognizer *cancelViewGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleCancelTapGesture:)];
     [self.cancelView addGestureRecognizer:cancelViewGestureRecognizer];
     
-    UIWindow *window = UIApplication.sharedApplication.keyWindow;
-    CGFloat safeAreaInset = window.safeAreaInsets.bottom;
-    self.cancelViewBottomConstraint.constant = window.safeAreaInsets.bottom;
+    UIWindow *window = [UIViewController currentWindow];
+    if (window) {
+        self.cancelViewBottomConstraint.constant = window.safeAreaInsets.bottom;
+    } else {
+        self.cancelViewBottomConstraint.constant = self.safeAreaInsets.bottom;
+    }
     
     self.cancelLabel.font = Design.FONT_BOLD34;
     self.cancelLabel.textColor = Design.FONT_COLOR_DEFAULT;
@@ -265,9 +267,9 @@ static const CGFloat MIN_HEIGHT = 132;
     self.cancelLabel.textColor = Design.FONT_COLOR_DEFAULT;
     self.confirmView.backgroundColor = Design.MAIN_COLOR;
     
-    NSMutableAttributedString *attributedTitle = [[NSMutableAttributedString alloc] initWithString:TwinmeLocalizedString(@"edit_profile_view_controller_propagating_message", nil) attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_BOLD36, NSFontAttributeName, Design.FONT_COLOR_DEFAULT, NSForegroundColorAttributeName, nil]];
+    NSMutableAttributedString *attributedTitle = [[NSMutableAttributedString alloc] initWithString:TwinmeLocalizedString(@"edit_profile_view_propagating_message", nil) attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_BOLD36, NSFontAttributeName, Design.FONT_COLOR_DEFAULT, NSForegroundColorAttributeName, nil]];
     [attributedTitle appendAttributedString:[[NSMutableAttributedString alloc] initWithString:@"\n\n"]];
-    [attributedTitle appendAttributedString:[[NSMutableAttributedString alloc] initWithString:TwinmeLocalizedString(@"edit_profile_view_controller_propagating_ask_message", nil) attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_MEDIUM34, NSFontAttributeName, Design.FONT_COLOR_GREY, NSForegroundColorAttributeName, nil]]];
+    [attributedTitle appendAttributedString:[[NSMutableAttributedString alloc] initWithString:TwinmeLocalizedString(@"edit_profile_view_propagating_ask_message", nil) attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_MEDIUM34, NSFontAttributeName, Design.FONT_COLOR_GREY, NSForegroundColorAttributeName, nil]]];
     
     self.titleLabel.attributedText = attributedTitle;
 }

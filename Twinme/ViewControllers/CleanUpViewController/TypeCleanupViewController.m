@@ -151,11 +151,11 @@ static NSString *TWINME_SETTINGS_CELL_IDENTIFIER = @"TwinmeSettingsCellIdentifie
         
         NSString *text = @"";
         if (indexPath.row == 1) {
-            text = TwinmeLocalizedString(@"cleanup_view_controller_info", nil);
+            text = TwinmeLocalizedString(@"cleanup_view_info", nil);
         } else if (indexPath.row == 3) {
-            text = TwinmeLocalizedString(@"cleanup_view_controller_info_both", nil);
+            text = TwinmeLocalizedString(@"cleanup_view_info_both", nil);
         } else if (indexPath.row == 5) {
-            text = TwinmeLocalizedString(@"cleanup_view_controller_reset_conversation_message", nil);
+            text = TwinmeLocalizedString(@"cleanup_view_reset_conversation_message", nil);
         }
         
         [cell bindWithText:text];
@@ -171,11 +171,11 @@ static NSString *TWINME_SETTINGS_CELL_IDENTIFIER = @"TwinmeSettingsCellIdentifie
         UIColor *color = Design.FONT_COLOR_DEFAULT;
         BOOL hiddenAccessory = NO;
         if (indexPath.row == 0) {
-            title = TwinmeLocalizedString(@"cleanup_view_controller_local_cleanup", nil);
+            title = TwinmeLocalizedString(@"cleanup_view_local_cleanup", nil);
         } else if (indexPath.row == 2) {
-            title = TwinmeLocalizedString(@"cleanup_view_controller_both_clean", nil);
+            title = TwinmeLocalizedString(@"cleanup_view_both_clean", nil);
         }  else if (indexPath.row == 4) {
-            title = TwinmeLocalizedString(@"main_view_controller_reset_conversation_title", nil);
+            title = TwinmeLocalizedString(@"main_view_reset_conversation_title", nil);
             color = Design.DELETE_COLOR_RED;
             hiddenAccessory = YES;
         }
@@ -272,7 +272,7 @@ static NSString *TWINME_SETTINGS_CELL_IDENTIFIER = @"TwinmeSettingsCellIdentifie
     
     self.view.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
     
-    [self setNavigationTitle:TwinmeLocalizedString(@"show_contact_view_controller_cleanup", nil)];
+    [self setNavigationTitle:TwinmeLocalizedString(@"show_contact_view_cleanup", nil)];
     
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     [self.tableView registerNib:[UINib nibWithNibName:@"SettingsInformationCell" bundle:nil] forCellReuseIdentifier:SETTINGS_INFORMATION_CELL_IDENTIFIER];
@@ -297,17 +297,17 @@ static NSString *TWINME_SETTINGS_CELL_IDENTIFIER = @"TwinmeSettingsCellIdentifie
 - (void)openResetConversationConfirmView:(UIImage *)avatar {
     DDLogVerbose(@"%@ openResetConversationConfirmView", LOG_TAG);
     
-    NSString *alertMessage = TwinmeLocalizedString(@"main_view_controller_reset_conversation_message", nil);
+    NSString *alertMessage = TwinmeLocalizedString(@"main_view_reset_conversation_message", nil);
     if (self.group) {
         if (self.group.isOwner) {
-            alertMessage = TwinmeLocalizedString(@"main_view_controller_reset_group_conversation_admin_message", nil);
+            alertMessage = TwinmeLocalizedString(@"main_view_reset_group_conversation_admin_message", nil);
         } else {
-            alertMessage = TwinmeLocalizedString(@"main_view_controller_reset_group_conversation_message", nil);
+            alertMessage = TwinmeLocalizedString(@"main_view_reset_group_conversation_message", nil);
         }
     }
     self.resetConversationConfirmView = [[ResetConversationConfirmView alloc] init];
     self.resetConversationConfirmView.bottomSheetViewDelegate = self;
-    [self.resetConversationConfirmView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:alertMessage avatar:avatar icon:[UIImage imageNamed:@"ActionBarDelete"]];
+    [self.resetConversationConfirmView initWithTitle:TwinmeLocalizedString(@"deleted_account_view_warning", nil) message:alertMessage avatar:avatar icon:[UIImage imageNamed:@"ActionBarDelete"]];
     [self.tabBarController.view addSubview:self.resetConversationConfirmView];
     [self.resetConversationConfirmView showConfirmView];
 }

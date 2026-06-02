@@ -171,16 +171,16 @@ typedef enum {
     BOOL hideSeparator = YES;
     switch (section) {
         case SECTION_CONNEXION_STATUS:
-            sectionName = TwinmeLocalizedString(@"settings_advanced_view_controller_status_connection_title", nil);
+            sectionName = TwinmeLocalizedString(@"settings_advanced_view_status_connection_title", nil);
             break;
             
         case SECTION_PROXIES:
-            sectionName = TwinmeLocalizedString(@"proxy_view_controller_title", nil);
+            sectionName = TwinmeLocalizedString(@"proxy_view_title", nil);
             hideSeparator = YES;
             break;
             
         case SECTION_DEBUG:
-            sectionName = TwinmeLocalizedString(@"settings_advanced_view_controller_debug", nil);
+            sectionName = TwinmeLocalizedString(@"settings_advanced_view_debug", nil);
             break;
             
         default:
@@ -229,12 +229,12 @@ typedef enum {
         
         NSString *text = @"";
         if (indexPath.section == SECTION_CONNEXION_STATUS) {
-            text = TwinmeLocalizedString(@"settings_advanced_view_controller_status_connection_message", nil);
+            text = TwinmeLocalizedString(@"settings_advanced_view_status_connection_message", nil);
         } else if (indexPath.section == SECTION_PROXIES) {
             if (self.proxies.count > 0) {
-                text = TwinmeLocalizedString(@"proxy_view_controller_list_information", nil);
+                text = TwinmeLocalizedString(@"proxy_view_list_information", nil);
             } else {
-                text = TwinmeLocalizedString(@"proxy_view_controller_information", nil);
+                text = TwinmeLocalizedString(@"proxy_view_information", nil);
             }
         }
         
@@ -258,6 +258,7 @@ typedef enum {
                 break;
                 
             case TLConnectionStatusNoService:
+            case TLConnectionStatusDisconnecting:
                 uiAppInfo = [[UIAppInfo alloc]initWithInfoType:InfoFloatingViewTypeNoServices];
                 break;
                 
@@ -282,7 +283,7 @@ typedef enum {
             
             cell.settingsActionDelegate = self;
                         
-            [cell bindWithTitle:TwinmeLocalizedString(@"proxy_view_controller_enable", nil) subTitle:nil icon:nil stateSwitch:[[self.twinmeContext getConnectivityService] isProxyEnabled] tagSwitch:0 hiddenSwitch:NO disableSwitch:self.proxies.count == 0 backgroundColor:Design.WHITE_COLOR hiddenSeparator:NO];
+            [cell bindWithTitle:TwinmeLocalizedString(@"proxy_view_enable", nil) subTitle:nil icon:nil stateSwitch:[[self.twinmeContext getConnectivityService] isProxyEnabled] tagSwitch:0 hiddenSwitch:NO disableSwitch:self.proxies.count == 0 backgroundColor:Design.WHITE_COLOR hiddenSeparator:NO];
             
             return cell;
         } else if (indexPath.row == self.proxies.count + 2) {
@@ -291,7 +292,7 @@ typedef enum {
                 cell = [[TwinmeSettingsItemCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:TWINME_SETTINGS_CELL_IDENTIFIER];
             }
             
-            [cell bindWithTitle:TwinmeLocalizedString(@"proxy_view_controller_add", nil) hiddenAccessory:NO disableSetting:NO color:Design.FONT_COLOR_DEFAULT];
+            [cell bindWithTitle:TwinmeLocalizedString(@"proxy_view_add", nil) hiddenAccessory:NO disableSetting:NO color:Design.FONT_COLOR_DEFAULT];
             
             return cell;
         } else {
@@ -311,7 +312,7 @@ typedef enum {
             cell = [[TwinmeSettingsItemCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:TWINME_SETTINGS_CELL_IDENTIFIER];
         }
         
-        [cell bindWithTitle:TwinmeLocalizedString(@"settings_advanced_view_controller_developers_settings", nil) hiddenAccessory:NO disableSetting:NO color:Design.FONT_COLOR_DEFAULT];
+        [cell bindWithTitle:TwinmeLocalizedString(@"settings_advanced_view_developer_settings", nil) hiddenAccessory:NO disableSetting:NO color:Design.FONT_COLOR_DEFAULT];
         
         return cell;
     }
@@ -327,7 +328,7 @@ typedef enum {
         if (indexPath.row == self.proxies.count + 2 && self.proxies.count >= [TLConnectivityService MAX_PROXIES]) {
             AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
             alertMessageView.alertMessageViewDelegate = self;
-            [alertMessageView initWithTitle:TwinmeLocalizedString(@"delete_account_view_controller_warning", nil) message:[NSString stringWithFormat:TwinmeLocalizedString(@"proxy_view_controller_limit", nil), [TLConnectivityService MAX_PROXIES]]];
+            [alertMessageView initWithTitle:TwinmeLocalizedString(@"deleted_account_view_warning", nil) message:[NSString stringWithFormat:TwinmeLocalizedString(@"proxy_view_limit", nil), [TLConnectivityService MAX_PROXIES]]];
             [self.navigationController.view addSubview:alertMessageView];
             [alertMessageView showAlertView];
             return;
@@ -368,7 +369,7 @@ typedef enum {
     
     self.view.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
     
-    [self setNavigationTitle:TwinmeLocalizedString(@"settings_advanced_view_controller_title", nil)];
+    [self setNavigationTitle:TwinmeLocalizedString(@"settings_advanced_view_title", nil)];
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     self.tableView.rowHeight = UITableViewAutomaticDimension;
     self.tableView.estimatedRowHeight = Design.SETTING_CELL_HEIGHT * Design.HEIGHT_RATIO;

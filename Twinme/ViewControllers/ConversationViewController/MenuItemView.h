@@ -19,6 +19,7 @@ typedef enum {
     MenuTypeAudio,
     MenuTypeVideo,
     MenuTypeFile,
+    MenuTypePoll,
     MenuTypeInvitation,
     MenuTypeCall,
     MenuTypeClear
@@ -42,7 +43,7 @@ typedef enum {
 
 @property (weak, nonatomic) id<MenuItemDelegate> menuItemDelegate;
 
-- (void)openMenu:(Item *)item menuType:(MenuType)menuType;
+- (void)openMenu:(Item *)item menuType:(MenuType)menuType displayAvatar:(BOOL)displayAvatar;
 
 - (void)setEditMessage:(BOOL)edit;
 
