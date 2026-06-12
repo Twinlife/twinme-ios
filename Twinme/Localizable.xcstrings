@@ -277,7 +277,7 @@
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "@2024 SKRED"
+            "value" : "@2026 SKRED"
           }
         },
         "fr" : {
@@ -62086,7 +62086,7 @@
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Перезвонить"
+            "value" : "Позвонить"
           }
         },
         "sk" : {
@@ -153570,7 +153570,7 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "أرسل لك استطلاعًا"
+            "value" : "أرسل لك استطلاع رأي"
           }
         },
         "bg" : {
@@ -153588,7 +153588,7 @@
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sendte dig en undersøgelse"
+            "value" : "Sendte dig en afstemning"
           }
         },
         "de" : {
@@ -153600,13 +153600,13 @@
         "el" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ο σας έστειλε μια έρευνα"
+            "value" : "σας έστειλε μια δημοσκόπηση"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sent you a survey"
+            "value" : "Sent you a poll"
           }
         },
         "es" : {
@@ -153636,13 +153636,13 @@
         "he" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "שלח/ה לך סקר"
+            "value" : "שלח/ה לכם סקר"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ने आपको एक सर्वे भेजा"
+            "value" : "ने आपको एक पोल भेजा"
           }
         },
         "hr" : {
@@ -153654,13 +153654,13 @@
         "hu" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Küldött neked egy felmérést"
+            "value" : "Küldött neked egy szavazást"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mengirimkan survei kepada Anda"
+            "value" : "Mengirimkan jajak pendapat kepada Anda"
           }
         },
         "it" : {
@@ -153672,7 +153672,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "さんからアンケートが送信されました"
+            "value" : "さんがアンケートを送信しました"
           }
         },
         "ko" : {
@@ -153684,13 +153684,13 @@
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sendte deg en undersøkelse"
+            "value" : "Sendte deg en avstemning"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Heeft u een enquête gestuurd"
+            "value" : "Heeft je een poll gestuurd"
           }
         },
         "pl" : {
@@ -153702,13 +153702,13 @@
         "pt-PT" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Enviou-lhe um inquérito"
+            "value" : "Enviou-lhe uma sondagem"
           }
         },
         "ro" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ți-a trimis un sondaj"
+            "value" : "v-a trimis un sondaj"
           }
         },
         "ru" : {
@@ -153720,7 +153720,7 @@
         "sk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Vám poslal(a) prieskum"
+            "value" : "Vám poslal anketu"
           }
         },
         "sl" : {
@@ -153732,7 +153732,7 @@
         "sq" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ju dërgoi një anketë"
+            "value" : "Ju dërgoi një sondazh"
           }
         },
         "sr-Latn" : {
@@ -153744,7 +153744,7 @@
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Skickade dig en undersökning"
+            "value" : "Skickade dig en omröstning"
           }
         },
         "tr" : {
@@ -153762,7 +153762,7 @@
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "đã gửi cho bạn một khảo sát"
+            "value" : "đã gửi cho bạn một cuộc thăm dò"
           }
         },
         "zh-Hans" : {
@@ -153785,7 +153785,7 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "استطلاع جديد"
+            "value" : "استطلاع رأي جديد"
           }
         },
         "bg" : {
@@ -153803,7 +153803,7 @@
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ny undersøgelse"
+            "value" : "Ny afstemning"
           }
         },
         "de" : {
@@ -153815,13 +153815,13 @@
         "el" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Νέα έρευνα"
+            "value" : "Νέα δημοσκόπηση"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "New survey"
+            "value" : "New poll"
           }
         },
         "es" : {
@@ -153857,7 +153857,7 @@
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "नया सर्वे"
+            "value" : "नया पोल"
           }
         },
         "hr" : {
@@ -153869,13 +153869,13 @@
         "hu" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Új felmérés"
+            "value" : "Új szavazás"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Survei baru"
+            "value" : "Jajak pendapat baru"
           }
         },
         "it" : {
@@ -153899,13 +153899,13 @@
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ny undersøkelse"
+            "value" : "Ny avstemning"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nieuwe enquête"
+            "value" : "Nieuwe poll"
           }
         },
         "pl" : {
@@ -153917,7 +153917,7 @@
         "pt-PT" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nova pesquisa"
+            "value" : "Nova sondagem"
           }
         },
         "ro" : {
@@ -153935,7 +153935,7 @@
         "sk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nový prieskum"
+            "value" : "Nová anketa"
           }
         },
         "sl" : {
@@ -153947,7 +153947,7 @@
         "sq" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Anketë e re"
+            "value" : "Sondazh i ri"
           }
         },
         "sr-Latn" : {
@@ -153959,7 +153959,7 @@
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ny undersökning"
+            "value" : "Ny omröstning"
           }
         },
         "tr" : {
@@ -153977,7 +153977,7 @@
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Khảo sát mới"
+            "value" : "Cuộc thăm dò mới"
           }
         },
         "zh-Hans" : {
@@ -154000,7 +154000,7 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "أجاب على استطلاع"
+            "value" : "ردّ على استطلاع رأي"
           }
         },
         "bg" : {
@@ -154018,7 +154018,7 @@
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Svarede på en undersøgelse"
+            "value" : "Svarede på en afstemning"
           }
         },
         "de" : {
@@ -154030,13 +154030,13 @@
         "el" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ο απάντησε σε μια έρευνα"
+            "value" : "απάντησε σε μια δημοσκόπηση"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Responded to a survey"
+            "value" : "Responded to a poll"
           }
         },
         "es" : {
@@ -154066,13 +154066,13 @@
         "he" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "הגיב/ה לסקר"
+            "value" : "הגיב/ה לסקר."
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ने एक सर्वे का जवाब दिया"
+            "value" : "ने एक पोल का जवाब दिया"
           }
         },
         "hr" : {
@@ -154084,13 +154084,13 @@
         "hu" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Válaszolt egy felmérésre"
+            "value" : "Válaszolt egy szavazásra"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Menanggapi survei"
+            "value" : "Menanggapi jajak pendapat"
           }
         },
         "it" : {
@@ -154114,13 +154114,13 @@
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Svarte på en undersøkelse"
+            "value" : "Svarte på en avstemning"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Heeft een enquête beantwoord"
+            "value" : "Heeft op een poll gereageerd"
           }
         },
         "pl" : {
@@ -154132,13 +154132,13 @@
         "pt-PT" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Respondeu a um inquérito"
+            "value" : "Respondeu a uma sondagem"
           }
         },
         "ro" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "A răspuns la un sondaj"
+            "value" : "a răspuns la un sondaj"
           }
         },
         "ru" : {
@@ -154150,7 +154150,7 @@
         "sk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Odpovedal(a) na prieskum"
+            "value" : "Odpovedal na anketu"
           }
         },
         "sl" : {
@@ -154162,7 +154162,7 @@
         "sq" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Iu përgjigj një ankete"
+            "value" : "Iu përgjigj një sondazhi"
           }
         },
         "sr-Latn" : {
@@ -154174,7 +154174,7 @@
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Svarade på en undersökning"
+            "value" : "Svarade på en omröstning"
           }
         },
         "tr" : {
@@ -154192,7 +154192,7 @@
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "đã trả lời một khảo sát"
+            "value" : "đã trả lời một cuộc thăm dò"
           }
         },
         "zh-Hans" : {
@@ -158516,7 +158516,7 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "أرسل لك استطلاعًا"
+            "value" : "أرسل لك استطلاع رأي"
           }
         },
         "bg" : {
@@ -158534,7 +158534,7 @@
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sendte dig en undersøgelse"
+            "value" : "Sendte dig en afstemning"
           }
         },
         "de" : {
@@ -158546,13 +158546,13 @@
         "el" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ο σας έστειλε μια έρευνα"
+            "value" : "σας έστειλε μια δημοσκόπηση"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sent you a survey"
+            "value" : "Sent you a poll"
           }
         },
         "es" : {
@@ -158582,13 +158582,13 @@
         "he" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "שלח/ה לך סקר"
+            "value" : "שלח/ה לכם סקר"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ने आपको एक सर्वे भेजा"
+            "value" : "ने आपको एक पोल भेजा"
           }
         },
         "hr" : {
@@ -158600,13 +158600,13 @@
         "hu" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Küldött neked egy felmérést"
+            "value" : "Küldött neked egy szavazást"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mengirimkan survei kepada Anda"
+            "value" : "Mengirimkan jajak pendapat kepada Anda"
           }
         },
         "it" : {
@@ -158618,7 +158618,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "さんからアンケートが送信されました"
+            "value" : "さんがアンケートを送信しました"
           }
         },
         "ko" : {
@@ -158630,13 +158630,13 @@
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sendte deg en undersøkelse"
+            "value" : "Sendte deg en avstemning"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Heeft u een enquête gestuurd"
+            "value" : "Heeft je een poll gestuurd"
           }
         },
         "pl" : {
@@ -158648,13 +158648,13 @@
         "pt-PT" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Enviou-lhe um inquérito"
+            "value" : "Enviou-lhe uma sondagem"
           }
         },
         "ro" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ți-a trimis un sondaj"
+            "value" : "v-a trimis un sondaj"
           }
         },
         "ru" : {
@@ -158666,7 +158666,7 @@
         "sk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Vám poslal(a) prieskum"
+            "value" : "Vám poslal anketu"
           }
         },
         "sl" : {
@@ -158678,7 +158678,7 @@
         "sq" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ju dërgoi një anketë"
+            "value" : "Ju dërgoi një sondazh"
           }
         },
         "sr-Latn" : {
@@ -158690,7 +158690,7 @@
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Skickade dig en undersökning"
+            "value" : "Skickade dig en omröstning"
           }
         },
         "tr" : {
@@ -158708,7 +158708,7 @@
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "đã gửi cho bạn một khảo sát"
+            "value" : "đã gửi cho bạn một cuộc thăm dò"
           }
         },
         "zh-Hans" : {

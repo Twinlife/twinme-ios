@@ -353,6 +353,11 @@
 		5781FBDD2EB3C0450057324F /* OnboardingDetailView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5781FBD82EB3C0450057324F /* OnboardingDetailView.m */; };
 		5781FCEB2EB4D38F0057324F /* TwinmeSearchController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5781FCEA2EB4D38F0057324F /* TwinmeSearchController.m */; };
 		57835E4F2CB98D25005BA8FA /* certification_animation_success.json in Resources */ = {isa = PBXBuildFile; fileRef = 57835E472CB98D25005BA8FA /* certification_animation_success.json */; };
+		5786E8B62FD6A5A80035515C /* delete_message.caf in Resources */ = {isa = PBXBuildFile; fileRef = 5786E8B12FD6A5A80035515C /* delete_message.caf */; };
+		5786E8B72FD6A5A80035515C /* new_message.caf in Resources */ = {isa = PBXBuildFile; fileRef = 5786E8B42FD6A5A80035515C /* new_message.caf */; };
+		5786E8B82FD6A5A80035515C /* emoji.caf in Resources */ = {isa = PBXBuildFile; fileRef = 5786E8B22FD6A5A80035515C /* emoji.caf */; };
+		5786E8B92FD6A5A80035515C /* send_message.caf in Resources */ = {isa = PBXBuildFile; fileRef = 5786E8B52FD6A5A80035515C /* send_message.caf */; };
+		5786E8BA2FD6A5A80035515C /* join_call.caf in Resources */ = {isa = PBXBuildFile; fileRef = 5786E8B32FD6A5A80035515C /* join_call.caf */; };
 		578816E12F7ACE9D00CC1F40 /* FAQCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 578816DE2F7ACE9D00CC1F40 /* FAQCell.xib */; };
 		578816E22F7ACE9D00CC1F40 /* FAQCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 578816DD2F7ACE9D00CC1F40 /* FAQCell.m */; };
 		578816E32F7ACE9D00CC1F40 /* FAQViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 578816E02F7ACE9D00CC1F40 /* FAQViewController.m */; };
@@ -1595,6 +1600,11 @@
 		5781FCE92EB4D38F0057324F /* TwinmeSearchController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = TwinmeSearchController.h; path = Utilities/TwinmeSearchController.h; sourceTree = "<group>"; };
 		5781FCEA2EB4D38F0057324F /* TwinmeSearchController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = TwinmeSearchController.m; path = Utilities/TwinmeSearchController.m; sourceTree = "<group>"; };
 		57835E472CB98D25005BA8FA /* certification_animation_success.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = certification_animation_success.json; sourceTree = "<group>"; };
+		5786E8B12FD6A5A80035515C /* delete_message.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = delete_message.caf; sourceTree = "<group>"; };
+		5786E8B22FD6A5A80035515C /* emoji.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = emoji.caf; sourceTree = "<group>"; };
+		5786E8B32FD6A5A80035515C /* join_call.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = join_call.caf; sourceTree = "<group>"; };
+		5786E8B42FD6A5A80035515C /* new_message.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = new_message.caf; sourceTree = "<group>"; };
+		5786E8B52FD6A5A80035515C /* send_message.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = send_message.caf; sourceTree = "<group>"; };
 		578816DC2F7ACE9D00CC1F40 /* FAQCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = FAQCell.h; path = ViewControllers/SettingsViewController/FAQCell.h; sourceTree = "<group>"; };
 		578816DD2F7ACE9D00CC1F40 /* FAQCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = FAQCell.m; path = ViewControllers/SettingsViewController/FAQCell.m; sourceTree = "<group>"; };
 		578816DE2F7ACE9D00CC1F40 /* FAQCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = FAQCell.xib; path = ViewControllers/SettingsViewController/FAQCell.xib; sourceTree = "<group>"; };
@@ -3071,34 +3081,39 @@
 		47DCF2E02EB3DB55001AC393 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				57960E352FB2370900F6D54A /* faq.json */,
-				57B246FF2F5ECF720066B4E8 /* nature_audio.caf */,
-				57B247002F5ECF720066B4E8 /* nature_video.caf */,
-				57B247012F5ECF720066B4E8 /* skype.caf */,
 				575680FC2F4F5AE4001A8077 /* audio_call_4_ringtone.caf */,
 				575680FD2F4F5AE4001A8077 /* audio_call_5_ringtone.caf */,
 				575680FE2F4F5AE4001A8077 /* audio_call_6_ringtone.caf */,
 				575680FF2F4F5AE4001A8077 /* audio_call_7_ringtone.caf */,
+				5756462B2C9D979600BD77BE /* bip39_wordlist_en.txt */,
+				83FEE0FC2617458A0007C1F1 /* call_kit_icon.png */,
+				57835E472CB98D25005BA8FA /* certification_animation_success.json */,
+				5786E8B12FD6A5A80035515C /* delete_message.caf */,
+				5786E8B22FD6A5A80035515C /* emoji.caf */,
+				57960E352FB2370900F6D54A /* faq.json */,
+				576393FE2F323E2F00BAA531 /* hiphop_audio.caf */,
+				576393FF2F323E2F00BAA531 /* hiphop_video.caf */,
+				83FEE39E26174A990007C1F1 /* Images.xcassets */,
+				5786E8B32FD6A5A80035515C /* join_call.caf */,
+				83FEE0FE2617458A0007C1F1 /* licenses.html */,
 				575681002F4F5AE4001A8077 /* mario_audio_call_ringtone.caf */,
 				575681012F4F5AE4001A8077 /* mario_notif.caf */,
 				575681022F4F5AE4001A8077 /* mario_video_call_ringtone.caf */,
+				57B246FF2F5ECF720066B4E8 /* nature_audio.caf */,
+				57B247002F5ECF720066B4E8 /* nature_video.caf */,
+				5786E8B42FD6A5A80035515C /* new_message.caf */,
 				575681032F4F5AE4001A8077 /* notification_4.caf */,
 				575681042F4F5AE4001A8077 /* notification_5.caf */,
 				575681052F4F5AE4001A8077 /* notification_6.caf */,
 				575681062F4F5AE4001A8077 /* notification_7.caf */,
-				5756462B2C9D979600BD77BE /* bip39_wordlist_en.txt */,
-				83FEE0FC2617458A0007C1F1 /* call_kit_icon.png */,
-				57835E472CB98D25005BA8FA /* certification_animation_success.json */,
-				576393FE2F323E2F00BAA531 /* hiphop_audio.caf */,
-				576393FF2F323E2F00BAA531 /* hiphop_video.caf */,
-				83FEE39E26174A990007C1F1 /* Images.xcassets */,
-				83FEE0FE2617458A0007C1F1 /* licenses.html */,
 				574F95862E990879008A2DFF /* opensource.html */,
 				83FEE0F9261745890007C1F1 /* photo_counter.png */,
 				01995B3D28C24198001B7BC5 /* privacy_policy */,
+				5786E8B52FD6A5A80035515C /* send_message.caf */,
 				5777AA012C11A735003130CD /* shield_animation.json */,
 				83FEE1012617458A0007C1F1 /* silence.mp3 */,
 				47DCF2E12EB3DBFE001AC393 /* skred */,
+				57B247012F5ECF720066B4E8 /* skype.caf */,
 				01995B4228C241AB001B7BC5 /* terms_of_service */,
 				83FEE1052617458A0007C1F1 /* twinme_audio_call.caf */,
 				83FEE0FA261745890007C1F1 /* twinme_call_end.caf */,
@@ -4730,6 +4745,11 @@
 				576A51CB2B2AED3E0000F90D /* MenuCallCapabilitiesView.xib in Resources */,
 				83FEE2EE261748900007C1F1 /* SelectedGroupMemberCell.xib in Resources */,
 				83FEE395261749BE0007C1F1 /* TwinmeSettingsItemCell.xib in Resources */,
+				5786E8B62FD6A5A80035515C /* delete_message.caf in Resources */,
+				5786E8B72FD6A5A80035515C /* new_message.caf in Resources */,
+				5786E8B82FD6A5A80035515C /* emoji.caf in Resources */,
+				5786E8B92FD6A5A80035515C /* send_message.caf in Resources */,
+				5786E8BA2FD6A5A80035515C /* join_call.caf in Resources */,
 				83FEE2B9261748300007C1F1 /* LocationAnnotationView.xib in Resources */,
 				5703BA362BC6E6DF001E3C65 /* QualityOfServicesCell.xib in Resources */,
 				57ABEDA02B454EED00D0F1C8 /* MenuIconCell.xib in Resources */,

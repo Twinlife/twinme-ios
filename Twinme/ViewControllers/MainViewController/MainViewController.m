@@ -52,6 +52,7 @@
 #import "PremiumServicesViewController.h"
 #import "SecretSpaceViewController.h"
 #import "AccountMigrationViewController.h"
+#import "AccountMigrationScannerViewController.h"
 #import "SuccessAuthentifiedRelationView.h"
 #import "SettingsAdvancedViewController.h"
 
@@ -1342,8 +1343,11 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
             return;
         }
         [self handleExtensionShareContentURL:url];
+    } else if (url && [MIGRATION_ACTION isEqualToString:url.host]) {
+        AccountMigrationScannerViewController *accountMigrationScannerViewController = (AccountMigrationScannerViewController *)[[UIStoryboard storyboardWithName:@"iPhone" bundle:nil] instantiateViewControllerWithIdentifier:@"AccountMigrationScannerViewController"];
+        accountMigrationScannerViewController.fromCurrentDevice = YES;
+        [self.selectedViewController pushViewController:accountMigrationScannerViewController animated:YES];
     } else if (url) {
-        
         id<TLOriginator> subject = [self.twinmeContext findSubjectWithHandle:[url absoluteString]];
         if (subject) {
             UIViewController *topViewController = self.navigationController.topViewController;

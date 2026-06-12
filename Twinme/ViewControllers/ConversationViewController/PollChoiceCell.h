@@ -14,6 +14,10 @@
 
 @interface PollChoiceCell : UITableViewCell
 
-- (void)bindWithPollResult:(UIPollResult *)pollResult textColor:(UIColor *)textColor;
+- (void)bindWithPollResult:(UIPollResult *)pollResult textColor:(UIColor *)textColor maxResult:(int)maxResult;
+
++ (CGFloat)maxChoiceWidth:(CGFloat)contentWidth;
+
++ (CGFloat)cellHeightForChoice:(CGFloat)choiceHeight;
 
 @end

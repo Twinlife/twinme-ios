@@ -297,7 +297,7 @@ static const int ddLogLevel = DDLogLevelWarning;
 - (void)pushRegistry:(PKPushRegistry *)registry didUpdatePushCredentials:(PKPushCredentials *)credentials forType:(NSString *)type {
     DDLogVerbose(@"%@ pushRegistry: %@ didUpdatePushCredentials: %@ forType: %@", LOG_TAG, registry, credentials, type);
 
-    if (self.pushKitInitCount > 0) {
+    if (self.pushKitInitCount > 1) {
         TL_ASSERTION(self.twinmeContext, [ApplicationAssertPoint PUSHKIT_LATE_REGISTER], [TLAssertValue initWithNumber:self.pushKitInitCount]);
     }
     self.pushKitReady = YES;

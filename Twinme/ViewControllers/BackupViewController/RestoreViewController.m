@@ -147,7 +147,7 @@ static NSInteger HEADER_INFO_VIEW_TAG = 1001;
     
     if (self.backupURL && !self.checkFileSignature) {
         self.checkFileSignature = YES;
-        [self.backupService checkFileSignatureWithBackupPath:self.backupURL.path];
+        [self.backupService checkFileCompatibilityWithBackupPath:self.backupURL.path];
     }
     
     [self updateContent];
@@ -305,10 +305,11 @@ static NSInteger HEADER_INFO_VIEW_TAG = 1001;
     [self updateRestoreState];
 }
 
-- (void)onCheckFileSignatureWithResult:(BOOL)result {
-    DDLogVerbose(@"%@ onCheckFileSignatureWithResult:%@", LOG_TAG, result ? @"YES":@"NO");
+- (void)onCheckFileCompatibilityWithResult:(TLBackupServiceErrorCode)result {
+    DDLogVerbose(@"%@ onCheckFileCompatibilityWithResult:%d", LOG_TAG, result);
     
-    if (!result) {
+    if (result != TLBackupServiceErrorCodeSuccess) {
+        // TODO BKP handle TLBackupServiceErrorCodeWrongVersion and TLBackupServiceErrorCodeWrongApp.
         [self showErrorMessage:TLBackupServiceErrorCodeInvalidFile];
     }
 }
@@ -919,11 +920,11 @@ static NSInteger HEADER_INFO_VIEW_TAG = 1001;
                 [self.restoreItems addObject:[[UIRestoreItem alloc] initWithType:UIRestoreItemTypeSection text:TwinmeLocalizedString(@"share_view_group_list", nil) icon:nil value:-1 color:nil]];
                 
                 if (self.restoreReport.groups.added != 0) {
-                    [self.restoreItems addObject:[[UIRestoreItem alloc] initWithType:UIRestoreItemTypeContent text:TwinmeLocalizedStringFromTable(@"backup_view_content_diff_added", @"LocalizableBackup", nil) icon:[UIImage imageNamed:@"GroupsIcon"] value:self.restoreReport.groups.added color:Design.SWITCH_BORDER_COLOR]];
+                    [self.restoreItems addObject:[[UIRestoreItem alloc] initWithType:UIRestoreItemTypeContent text:TwinmeLocalizedStringFromTable(@"backup_view_content_diff_added", @"LocalizableBackup", nil) icon:[UIImage imageNamed:@"GroupsIcon"] value:self.restoreReport.groups.added color:Design.BLACK_COLOR]];
                 }
                 
                 if (self.restoreReport.groups.modified != 0) {
-                    [self.restoreItems addObject:[[UIRestoreItem alloc] initWithType:UIRestoreItemTypeContent text:TwinmeLocalizedStringFromTable(@"backup_view_content_diff_updated", @"LocalizableBackup", nil) icon:[UIImage imageNamed:@"ActionEdit"] value:self.restoreReport.groups.modified color:Design.SWITCH_BORDER_COLOR]];
+                    [self.restoreItems addObject:[[UIRestoreItem alloc] initWithType:UIRestoreItemTypeContent text:TwinmeLocalizedStringFromTable(@"backup_view_content_diff_updated", @"LocalizableBackup", nil) icon:[UIImage imageNamed:@"ActionEdit"] value:self.restoreReport.groups.modified color:Design.BLACK_COLOR]];
                 }
                 
                 if (self.restoreReport.groups.deleted != 0) {

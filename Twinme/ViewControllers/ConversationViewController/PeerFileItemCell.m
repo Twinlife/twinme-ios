@@ -361,6 +361,8 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
         self.typeFileImageView.image = [UIImage imageNamed:@"FileIconExcel"];
     } else if ([extension isEqualToString:@"ppt"] || [extension isEqualToString:@"pptx"]) {
         self.typeFileImageView.image = [UIImage imageNamed:@"FileIconPowerPoint"];
+    } else if ([extension isEqualToString:@"mp3"] || [extension isEqualToString:@"wav"] || [extension isEqualToString:@"ogg"] || [extension isEqualToString:@"wav"] || [extension isEqualToString:@"aac"]) {
+        self.typeFileImageView.image = [UIImage imageNamed:@"MusicPlaceholder"];
     } else {
         self.typeFileImageView.image = [UIImage imageNamed:@"ToolbarFileGrey"];
     }

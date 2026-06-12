@@ -406,6 +406,7 @@ typedef enum {
 @property (nonatomic) NSMutableArray *previewMediaPicking;
 @property (nonatomic) BOOL errorMediaPicking;
 @property (nonatomic) BOOL pickerImportFile;
+@property (nonatomic) NSMutableArray<NSURL *> *copiedFileURLs;
 
 @property (nonatomic) BOOL editingMessage;
 @property (nonatomic) BOOL sendAllowed;
@@ -467,6 +468,7 @@ typedef enum {
         _countMediaPicking = 0;
         _textInputBarHeight = 0;
         _previewMediaPicking = [[NSMutableArray alloc]init];
+        _copiedFileURLs = [[NSMutableArray alloc] init];
         
         _items = [[NSMutableArray alloc] init];
         _selectedItems = [[NSMutableArray alloc]init];
@@ -3195,6 +3197,9 @@ typedef enum {
     DDLogVerbose(@"%@ documentPicker: %@ didPickDocumentsAtURLs: %@", LOG_TAG, controller, urls);
     
     if (urls.count == 0) {
+        if (!self.pickerImportFile) {
+            [self removeCopiedFiles];
+        }
         return;
     }
     
@@ -3202,6 +3207,9 @@ typedef enum {
     NSURL *url = [urls firstObject];
     [url getResourceValue:&value forKey:NSURLIsPackageKey error:nil];
     if ([value boolValue]) {
+        if (!self.pickerImportFile) {
+            [self removeCopiedFiles];
+        }
         AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
         alertMessageView.alertMessageViewDelegate = self;
         [alertMessageView initWithTitle:TwinmeLocalizedString(@"deleted_account_view_warning", nil) message:TwinmeLocalizedString(@"conversation_view_file_type_not_supported", nil)];
@@ -3234,8 +3242,18 @@ typedef enum {
                 [window makeToast:TwinmeLocalizedString(@"conversation_view_menu_item_view_save_message", nil)];
             }
             [self closeMenu];
+            [self removeCopiedFiles];
         });
     }
+}
+
+- (void)documentPickerWasCancelled:(UIDocumentPickerViewController *)controller {
+    DDLogVerbose(@"%@ documentPickerWasCancelled: %@", LOG_TAG, controller);
+    
+    if (!self.pickerImportFile) {
+        [self removeCopiedFiles];
+    }
+    self.pickerImportFile = NO;
 }
 
 #pragma mark - DocumentInteractionControllerDelegate
@@ -4468,7 +4486,6 @@ typedef enum {
             }
             return;
         }
-        
         switch (self.selectedItem.type) {
             case ItemTypeImage:
             case ItemTypePeerImage:
@@ -4519,6 +4536,8 @@ typedef enum {
             return;
         }
         
+        [self removeCopiedFiles];
+        
         switch (self.selectedItem.type) {
             case ItemTypeMessage: {
                 MessageItem *messageItem = (MessageItem *)self.selectedItem;
@@ -4561,18 +4580,29 @@ typedef enum {
             case ItemTypeAudio:
             case ItemTypePeerAudio:
             case ItemTypeVideo:
-            case ItemTypePeerVideo:
-            case ItemTypeFile:
-            case ItemTypePeerFile:
+            case ItemTypePeerVideo: {
                 activityItems = [NSMutableArray arrayWithObjects:[self.selectedItem getURL], nil];
                 break;
+            }
+                
+            case ItemTypeFile:
+            case ItemTypePeerFile: {
+                NSURL *exportURL = [self copyItemURL:self.selectedItem];
+                if (exportURL) {
+                    activityItems = [NSMutableArray arrayWithObjects:exportURL, nil];
+                }
+                break;
+            }
                 
             default:
                 break;
         }
         
         if (activityItems) {
-            UIActivityViewController *activityViewController = [[UIActivityViewController alloc] initWithActivityItems:activityItems applicationActivities:nil];       
+            UIActivityViewController *activityViewController = [[UIActivityViewController alloc] initWithActivityItems:activityItems applicationActivities:nil];
+            activityViewController.completionWithItemsHandler = ^(UIActivityType activityType, BOOL completed, NSArray *returnedItems, NSError *activityError) {
+                [self removeCopiedFiles];
+            };            
             if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
                 [self presentViewController:activityViewController animated:YES completion:nil];
             } else {
@@ -4819,7 +4849,8 @@ typedef enum {
     DDLogVerbose(@"%@ didTapShareAction", LOG_TAG);
     
     NSMutableArray *activityItems = [[NSMutableArray alloc]init];
-        
+    [self removeCopiedFiles];
+    
     for (Item *item in self.selectedItems) {
         if ([self isShareItem:item]) {
             switch (item.type) {
@@ -4853,11 +4884,19 @@ typedef enum {
                 case ItemTypeAudio:
                 case ItemTypePeerAudio:
                 case ItemTypeVideo:
-                case ItemTypePeerVideo:
-                case ItemTypeFile:
-                case ItemTypePeerFile:
+                case ItemTypePeerVideo: {
                     [activityItems addObject:[item getURL]];
                     break;
+                }
+                    
+                case ItemTypeFile:
+                case ItemTypePeerFile: {
+                    NSURL *exportURL = [self copyItemURL:item];
+                    if (exportURL) {
+                        [activityItems addObject:exportURL];
+                    }
+                    break;
+                }
                     
                 default:
                     break;
@@ -4867,6 +4906,9 @@ typedef enum {
     
     if (activityItems.count > 0) {
         UIActivityViewController *activityViewController = [[UIActivityViewController alloc] initWithActivityItems:activityItems applicationActivities:nil];
+        [activityViewController setCompletionWithItemsHandler:^(UIActivityType activityType, BOOL completed, NSArray *returnedItems, NSError *activityError) {
+            [self removeCopiedFiles];
+        }];
                 
         if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
             [self presentViewController:activityViewController animated:YES completion:nil];
@@ -6876,7 +6918,7 @@ typedef enum {
 - (void)saveMediaInGalleryWithPermissionCheck {
     DDLogVerbose(@"%@ saveMediaInGalleryWithPermissionCheck", LOG_TAG);
     
-    PHAuthorizationStatus photoAuthorizationStatus = [DeviceAuthorization devicePhotoAuthorizationStatus];
+    PHAuthorizationStatus photoAuthorizationStatus = [DeviceAuthorization devicePhotoAuthorizationStatus:PHAccessLevelAddOnly];
     switch (photoAuthorizationStatus) {
         case PHAuthorizationStatusNotDetermined: {
             [PHPhotoLibrary requestAuthorizationForAccessLevel:PHAccessLevelAddOnly handler:^(PHAuthorizationStatus authorizationStatus) {
@@ -6905,37 +6947,58 @@ typedef enum {
     NSURL *urlToSave = [self.selectedItem getURL];
     
     if (urlToSave) {
-        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"title = %@", TwinmeLocalizedString(@"application_name", nil)];
-        PHFetchOptions *fetchOptions = [[PHFetchOptions alloc] init];
-        fetchOptions.predicate = predicate;
-        PHFetchResult *result = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeAlbum subtype:PHAssetCollectionSubtypeAny options:fetchOptions];
+        PHAuthorizationStatus readWriteStatus = [PHPhotoLibrary authorizationStatusForAccessLevel:PHAccessLevelReadWrite];
+        BOOL canReadWrite = readWriteStatus == PHAuthorizationStatusAuthorized || readWriteStatus == PHAuthorizationStatusLimited;
         
-        [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
-            PHAssetCollectionChangeRequest *albumRequest;
-            if (result.count == 0) {
-                albumRequest = [PHAssetCollectionChangeRequest creationRequestForAssetCollectionWithTitle:TwinmeLocalizedString(@"application_name", nil)];
-            } else {
-                albumRequest = [PHAssetCollectionChangeRequest changeRequestForAssetCollection:result.firstObject];
+        dispatch_block_t successMessage = ^{
+            UIWindow *window = [self currentWindow];
+            if (window) {
+                [window makeToast:TwinmeLocalizedString(@"conversation_view_menu_item_view_save_message", nil)];
             }
+            [self closeMenu];
+        };
+        
+        if (canReadWrite) {
+            NSPredicate *predicate = [NSPredicate predicateWithFormat:@"title = %@", TwinmeLocalizedString(@"application_name", nil)];
+            PHFetchOptions *fetchOptions = [[PHFetchOptions alloc] init];
+            fetchOptions.predicate = predicate;
+            PHFetchResult *result = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeAlbum subtype:PHAssetCollectionSubtypeAny options:fetchOptions];
             
-            if (self.selectedItem.type == ItemTypeImage || self.selectedItem.type == ItemTypePeerImage) {
-                PHAssetChangeRequest *createImageRequest = [PHAssetChangeRequest creationRequestForAssetFromImageAtFileURL:urlToSave];
-                [albumRequest addAssets:@[createImageRequest.placeholderForCreatedAsset]];
-            } else if (self.selectedItem.type == ItemTypeVideo || self.selectedItem.type == ItemTypePeerVideo) {
-                PHAssetChangeRequest *createVideoRequest = [PHAssetChangeRequest creationRequestForAssetFromVideoAtFileURL:urlToSave];
-                [albumRequest addAssets:@[createVideoRequest.placeholderForCreatedAsset]];
-            }
-        } completionHandler:^(BOOL success, NSError *error) {
-            if (success) {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    UIWindow *window = [self currentWindow];
-                    if (window) {
-                        [window makeToast:TwinmeLocalizedString(@"conversation_view_menu_item_view_save_message", nil)];
-                    }
-                    [self closeMenu];
-                });
-            }
-        }];
+            [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
+                PHAssetCollectionChangeRequest *albumRequest;
+                if (result.count == 0) {
+                    albumRequest = [PHAssetCollectionChangeRequest creationRequestForAssetCollectionWithTitle:TwinmeLocalizedString(@"application_name", nil)];
+                } else {
+                    albumRequest = [PHAssetCollectionChangeRequest changeRequestForAssetCollection:result.firstObject];
+                }
+                
+                if (self.selectedItem.type == ItemTypeImage || self.selectedItem.type == ItemTypePeerImage) {
+                    PHAssetChangeRequest *createImageRequest = [PHAssetChangeRequest creationRequestForAssetFromImageAtFileURL:urlToSave];
+                    [albumRequest addAssets:@[createImageRequest.placeholderForCreatedAsset]];
+                } else if (self.selectedItem.type == ItemTypeVideo || self.selectedItem.type == ItemTypePeerVideo) {
+                    PHAssetChangeRequest *createVideoRequest = [PHAssetChangeRequest creationRequestForAssetFromVideoAtFileURL:urlToSave];
+                    [albumRequest addAssets:@[createVideoRequest.placeholderForCreatedAsset]];
+                }
+            } completionHandler:^(BOOL success, NSError *error) {
+                if (success) {
+                    dispatch_sync(dispatch_get_main_queue(), successMessage);
+                }
+            }];
+        } else {
+            [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
+                if (self.selectedItem.type == ItemTypeImage || self.selectedItem.type == ItemTypePeerImage) {
+                    [PHAssetChangeRequest creationRequestForAssetFromImageAtFileURL:urlToSave];
+                } else if (self.selectedItem.type == ItemTypeVideo || self.selectedItem.type == ItemTypePeerVideo) {
+                    [PHAssetChangeRequest creationRequestForAssetFromVideoAtFileURL:urlToSave];
+                }
+            } completionHandler:^(BOOL success, NSError *error) {
+                if (success) {
+                    dispatch_sync(dispatch_get_main_queue(), successMessage);
+                }
+            }];
+        }
+        
+        
     }
 }
 
@@ -6946,13 +7009,70 @@ typedef enum {
     
     if (urlToSave) {
         self.pickerImportFile = NO;
-        UIDocumentPickerViewController *documentPickerViewController = [[UIDocumentPickerViewController alloc]initForExportingURLs:@[urlToSave] asCopy:YES];
+        [self removeCopiedFiles];
+        NSURL *exportURL = [self copyItemURL:self.selectedItem];
+        UIDocumentPickerViewController *documentPickerViewController = [[UIDocumentPickerViewController alloc]initForExportingURLs:@[exportURL] asCopy:YES];
         documentPickerViewController.delegate = self;
         documentPickerViewController.modalPresentationStyle = UIModalPresentationFormSheet;
         [self presentViewController:documentPickerViewController animated:YES completion:nil];
     }
 }
 
+- (NSURL *)copyItemURL:(Item *)item {
+    DDLogVerbose(@"%@ copyItemURL: %@", LOG_TAG, item);
+    
+    NSURL *urlToCopy = [item getURL];
+    if (!urlToCopy || !urlToCopy.isFileURL) {
+        return urlToCopy;
+    }
+    
+    NSString *fileName = @"";
+    if (item.type == ItemTypeFile) {
+        FileItem *fileItem = (FileItem *)item;
+        fileName = fileItem.namedFileDescriptor.name;
+    } else if (item.type == ItemTypePeerFile) {
+        PeerFileItem *peerFileItem = (PeerFileItem *)item;
+        fileName = peerFileItem.namedFileDescriptor.name;
+    }
+    fileName = [NSString copyFileName:fileName fileExtension:[item getExtension] urlToCopy:urlToCopy];
+    
+    NSURL *exportDirectoryURL = [[NSURL fileURLWithPath:NSTemporaryDirectory() isDirectory:YES] URLByAppendingPathComponent:[[NSProcessInfo processInfo] globallyUniqueString] isDirectory:YES];
+    
+    NSError *error = nil;
+    if (![[NSFileManager defaultManager] createDirectoryAtURL:exportDirectoryURL withIntermediateDirectories:YES attributes:nil error:&error]) {
+        return urlToCopy;
+    }
+    
+    NSURL *copyURL = [exportDirectoryURL URLByAppendingPathComponent:fileName];
+    if (![[NSFileManager defaultManager] copyItemAtURL:urlToCopy toURL:copyURL error:&error]) {
+        [[NSFileManager defaultManager] removeItemAtURL:exportDirectoryURL error:nil];
+        return urlToCopy;
+    }
+    
+    [self.copiedFileURLs addObject:copyURL];
+
+    return copyURL;
+}
+
+- (void)removeCopiedFiles {
+    DDLogVerbose(@"%@ removeCopiedFiles", LOG_TAG);
+    
+    if (self.copiedFileURLs.count == 0) {
+        return;
+    }
+        
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    BOOL isDirectory;
+    for (NSURL *exportedFileURL in self.copiedFileURLs) {
+        NSURL *exportDirectoryURL = [exportedFileURL URLByDeletingLastPathComponent];
+        if ([fileManager fileExistsAtPath:exportDirectoryURL.path isDirectory:&isDirectory]) {
+            [fileManager removeItemAtURL:exportedFileURL error:nil];
+        }
+    }
+    
+    [self.copiedFileURLs removeAllObjects];
+}
+        
 - (void)openCamera {
     DDLogVerbose(@"%@ openCamera", LOG_TAG);
     

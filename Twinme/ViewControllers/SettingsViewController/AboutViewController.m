@@ -22,14 +22,13 @@
 #import "UpdateAvailableCell.h"
 
 #import "LastVersionManager.h"
+#import "LastVersion.h"
 
 #if 0
 static const int ddLogLevel = DDLogLevelVerbose;
 #else
 static const int ddLogLevel = DDLogLevelWarning;
 #endif
-
-static CGFloat DESIGN_UPDTAE_AVAILABLE_HEIGHT = 160;
 
 static const int ABOUT_VIEW_SECTION = 0;
 static const int LEGAL_VIEW_SECTION = 1;
@@ -52,7 +51,7 @@ static NSString *SETTINGS_INFORMATION_CELL_IDENTIFIER = @"SettingsInformationCel
 // Interface: AboutViewController
 //
 
-@interface AboutViewController ()<UITableViewDelegate, UITableViewDataSource, UpdateVersionDelegate>
+@interface AboutViewController ()<UITableViewDelegate, UITableViewDataSource>
 
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 
@@ -94,9 +93,6 @@ static NSString *SETTINGS_INFORMATION_CELL_IDENTIFIER = @"SettingsInformationCel
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath  {
     DDLogVerbose(@"%@ tableView: %@ heightForRowAtIndexPath: %@", LOG_TAG, tableView, indexPath);
     
-    if (indexPath.section == ABOUT_VIEW_SECTION && indexPath.row == 1) {
-        return DESIGN_UPDTAE_AVAILABLE_HEIGHT * Design.HEIGHT_RATIO;
-    }
     return Design.SETTING_CELL_HEIGHT;
 }
 
@@ -192,8 +188,7 @@ static NSString *SETTINGS_INFORMATION_CELL_IDENTIFIER = @"SettingsInformationCel
                 cell = [[UpdateAvailableCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:UPDATE_AVAILABLE_CELL_IDENTIFIER];
             }
             
-            cell.updateVersionDelegate = self;
-            [cell bind];
+            [cell bind:self.twinmeApplication.lastVersionManager.lastVersion.versionNumber];
             
             return cell;
         }
@@ -258,6 +253,8 @@ static NSString *SETTINGS_INFORMATION_CELL_IDENTIFIER = @"SettingsInformationCel
             WhatsNewViewController *whatsNewViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"WhatsNewViewController"];
             whatsNewViewController.currentVersion = YES;
             [whatsNewViewController showInView:self.navigationController];
+        } else if (indexPath.row == 2) {
+            [self updateAppVersion];
         }
     } else if (indexPath.section == LEGAL_VIEW_SECTION) {
         if (indexPath.row == TERMS_OF_SERVICE_ROW) {

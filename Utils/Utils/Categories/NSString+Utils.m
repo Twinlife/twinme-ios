@@ -424,4 +424,31 @@ static int BOLD_VALUE = -2;
     return NO;
 }
 
++ (nonnull NSString *)copyFileName:(nonnull NSString *)fileName fileExtension:(nonnull NSString *)fileExtension urlToCopy:(nonnull NSURL *)urlToCopy {
+        
+    fileName = [fileName stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    
+    if (fileName.length == 0) {
+        fileName = urlToCopy.lastPathComponent;
+    }
+    
+    fileName = [fileName stringByFoldingWithOptions:NSDiacriticInsensitiveSearch locale:[NSLocale currentLocale]];
+    
+    if (fileExtension.length == 0) {
+        fileExtension = urlToCopy.pathExtension;
+    }
+    
+    if (fileExtension.length > 0 && fileName.pathExtension.length == 0) {
+        fileName = [fileName stringByAppendingPathExtension:fileExtension];
+    }
+    
+    NSCharacterSet *invalidCharacters = [NSCharacterSet characterSetWithCharactersInString:@"<>\"\\/:|?*"];
+    fileName = [[fileName componentsSeparatedByCharactersInSet:invalidCharacters] componentsJoinedByString:@"_"];
+    if (fileName.length == 0) {
+        fileName = [urlToCopy.path lastPathComponent];
+    }
+    
+    return fileName;
+}
+
 @end

@@ -13,7 +13,7 @@
 
 #import "UIPollChoice.h"
 
-#define MAX_CHOICE_LENGTH 32
+#define MAX_CHOICE_LENGTH 128
 
 //
 // Interface: PollAddChoiceCell

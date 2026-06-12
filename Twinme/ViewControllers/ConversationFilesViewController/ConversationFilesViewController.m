@@ -100,6 +100,7 @@ typedef enum {
 @property (nonatomic) NSMutableArray<Item *> *items;
 @property (nonatomic) NSMutableArray<Item *> *selectedItems;
 @property (nonatomic) NSArray<UIFileSection *> *filesSection;
+@property (nonatomic) NSMutableArray<NSURL *> *copiedFileURLs;
 @property (nonatomic) NSIndexPath *lastIndexPath;
 
 @property (nonatomic) BOOL isSelectMode;
@@ -140,6 +141,7 @@ typedef enum {
         _conversationFileService = [[ConversationFilesService alloc] initWithTwinmeContext:self.twinmeContext delegate:self];
         _items = [[NSMutableArray alloc]init];
         _selectedItems = [[NSMutableArray alloc]init];
+        _copiedFileURLs = [[NSMutableArray alloc]init];
         _isSelectMode = NO;
         _asyncLoaderManager = [[AsyncManager alloc] initWithTwinmeContext:self.twinmeContext delegate:self];
     }
@@ -562,11 +564,19 @@ typedef enum {
                 case ItemTypeAudio:
                 case ItemTypePeerAudio:
                 case ItemTypeVideo:
-                case ItemTypePeerVideo:
-                case ItemTypeFile:
-                case ItemTypePeerFile:
+                case ItemTypePeerVideo: {
                     [activityItems addObject:[item getURL]];
                     break;
+                }
+                    
+                case ItemTypeFile:
+                case ItemTypePeerFile: {
+                    NSURL *fileCopyURL = [self copyItemURL:item];
+                    if (fileCopyURL) {
+                        activityItems = [NSMutableArray arrayWithObjects:fileCopyURL, nil];
+                    }
+                    break;
+                }
                     
                 default:
                     break;
@@ -576,6 +586,10 @@ typedef enum {
     
     if (activityItems.count > 0) {
         UIActivityViewController *activityViewController = [[UIActivityViewController alloc] initWithActivityItems:activityItems applicationActivities:nil];
+        
+        activityViewController.completionWithItemsHandler = ^(UIActivityType activityType, BOOL completed, NSArray *returnedItems, NSError *activityError) {
+            [self removeCopiedFiles];
+        };
         
         if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
             [self presentViewController:activityViewController animated:YES completion:nil];
@@ -901,6 +915,61 @@ typedef enum {
     if (self.filesSection.count == 0 && ![self.conversationFileService isGetDescriptorDone]) {
         [self.conversationFileService getPreviousDescriptors];
     }
+}
+
+- (NSURL *)copyItemURL:(Item *)item {
+    DDLogVerbose(@"%@ copyItemURL: %@", LOG_TAG, item);
+    
+    NSURL *urlToCopy = [item getURL];
+    if (!urlToCopy || !urlToCopy.isFileURL) {
+        return urlToCopy;
+    }
+    
+    NSString *fileName = @"";
+    if (item.type == ItemTypeFile) {
+        FileItem *fileItem = (FileItem *)item;
+        fileName = fileItem.namedFileDescriptor.name;
+    } else if (item.type == ItemTypePeerFile) {
+        PeerFileItem *peerFileItem = (PeerFileItem *)item;
+        fileName = peerFileItem.namedFileDescriptor.name;
+    }
+    fileName = [NSString copyFileName:fileName fileExtension:[item getExtension] urlToCopy:urlToCopy];
+    
+    NSURL *exportDirectoryURL = [[NSURL fileURLWithPath:NSTemporaryDirectory() isDirectory:YES] URLByAppendingPathComponent:[[NSProcessInfo processInfo] globallyUniqueString] isDirectory:YES];
+    
+    NSError *error = nil;
+    if (![[NSFileManager defaultManager] createDirectoryAtURL:exportDirectoryURL withIntermediateDirectories:YES attributes:nil error:&error]) {
+        return urlToCopy;
+    }
+    
+    NSURL *copyURL = [exportDirectoryURL URLByAppendingPathComponent:fileName];
+    if (![[NSFileManager defaultManager] copyItemAtURL:urlToCopy toURL:copyURL error:&error]) {
+        [[NSFileManager defaultManager] removeItemAtURL:exportDirectoryURL error:nil];
+        return urlToCopy;
+    }
+    
+    [self.copiedFileURLs addObject:copyURL];
+
+    return copyURL;
+}
+
+- (void)removeCopiedFiles {
+    DDLogVerbose(@"%@ removeCopiedFiles", LOG_TAG);
+    
+    if (self.copiedFileURLs.count == 0) {
+        return;
+    }
+        
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    BOOL isDirectory;
+    for (NSURL *exportedFileURL in self.copiedFileURLs) {
+        NSURL *exportDirectoryURL = [exportedFileURL URLByDeletingLastPathComponent];
+        if ([fileManager fileExistsAtPath:exportDirectoryURL.path isDirectory:&isDirectory]) {
+            [fileManager removeItemAtURL:exportedFileURL error:nil];
+        }
+    }
+    
+    [self.copiedFileURLs removeAllObjects];
 }
 
 - (void)updateFont {

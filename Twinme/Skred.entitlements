@@ -8,6 +8,7 @@
 	<array>
 		<string>applinks:invite.skred.mobi</string>
 		<string>applinks:authenticate.skred.mobi</string>
+		<string>applinks:migration.skred.mobi</string>
 		<string>applinks:proxy.skred.mobi</string>
 	</array>
 	<key>com.apple.security.application-groups</key>
