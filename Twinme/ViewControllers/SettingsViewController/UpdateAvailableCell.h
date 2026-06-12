@@ -10,12 +10,8 @@
 // Interface: UpdateAvailableCell
 //
 
-@protocol UpdateVersionDelegate;
-
 @interface UpdateAvailableCell : UITableViewCell
 
-@property (weak, nonatomic) id<UpdateVersionDelegate> updateVersionDelegate;
-
-- (void)bind;
+- (void)bind:(NSString *)version;
 
 @end

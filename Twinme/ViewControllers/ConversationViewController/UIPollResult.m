@@ -33,4 +33,28 @@
     return self.choice.label;
 }
 
+- (void)calculateChoiceHeightWithMaxWidth:(CGFloat)maxWidth font:(nonnull UIFont *)font {
+    
+    if (maxWidth <= 0.0) {
+        self.choiceHeight = ceil(font.lineHeight);
+        return;
+    }
+    
+    NSString *choiceLabel = [self getChoiceLabel];
+    if (choiceLabel.length == 0) {
+        self.choiceHeight = ceil(font.lineHeight);
+        return;
+    }
+    
+    CGSize constraintSize = CGSizeMake(maxWidth, CGFLOAT_MAX);
+    NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
+    paragraphStyle.lineBreakMode = NSLineBreakByWordWrapping;
+    
+    CGRect choiceLabelRect = [choiceLabel boundingRectWithSize:constraintSize
+                                                       options:NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading
+                                                    attributes:@{NSFontAttributeName: font, NSParagraphStyleAttributeName: paragraphStyle}
+                                                       context:nil];
+    self.choiceHeight = ceil(MAX(font.lineHeight, CGRectGetHeight(choiceLabelRect)));
+}
+
 @end

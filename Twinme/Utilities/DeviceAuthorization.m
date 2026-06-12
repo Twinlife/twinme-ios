@@ -17,9 +17,9 @@
 
 @implementation DeviceAuthorization
 
-+ (PHAuthorizationStatus)devicePhotoAuthorizationStatus {
++ (PHAuthorizationStatus)devicePhotoAuthorizationStatus:(PHAccessLevel)level {
     
-    return [PHPhotoLibrary authorizationStatusForAccessLevel:PHAccessLevelAddOnly];
+    return [PHPhotoLibrary authorizationStatusForAccessLevel:level];
 }
 
 + (BOOL)devicePhotoAuthorizationAccessGranted:(PHAuthorizationStatus)status {

@@ -257,9 +257,9 @@ static const CGFloat DESIGN_INFO_HORIZONTAL_MARGIN = 34;
         NSNumber *count = stats[schemaId];
         
         if (type == BackupContentTypeContacts) {
-            [self.items addObject:[[UIRestoreItem alloc] initWithType:UIRestoreItemTypeContent text:TwinmeLocalizedString(@"contacts_view_title", nil) icon:[UIImage imageNamed:@"ContactsIcon"] value:count.intValue color:nil]];
+            [self.items addObject:[[UIRestoreItem alloc] initWithType:UIRestoreItemTypeContent text:TwinmeLocalizedString(@"contacts_view_title", nil) icon:[UIImage imageNamed:@"ContactsIcon"] value:count.intValue color:Design.BLACK_COLOR]];
         } else if (type == BackupContentTypeGroups) {
-            [self.items addObject:[[UIRestoreItem alloc] initWithType:UIRestoreItemTypeContent text:TwinmeLocalizedString(@"share_view_group_list", nil) icon:[UIImage imageNamed:@"GroupsIcon"] value:count.intValue color:nil]];
+            [self.items addObject:[[UIRestoreItem alloc] initWithType:UIRestoreItemTypeContent text:TwinmeLocalizedString(@"share_view_group_list", nil) icon:[UIImage imageNamed:@"GroupsIcon"] value:count.intValue color:Design.BLACK_COLOR]];
         }
     }
     
@@ -281,7 +281,7 @@ static const CGFloat DESIGN_INFO_HORIZONTAL_MARGIN = 34;
         if (![restoreReport.profiles isStatsUpToDate]) {
             [self.items addObject:[[UIRestoreItem alloc] initWithType:UIRestoreItemTypeSection text:TwinmeLocalizedString(@"application_profile", nil) icon:nil value:-1 color:nil]];
             estimateSize += contentCellHeight;
-            [self.items addObject:[[UIRestoreItem alloc] initWithType:UIRestoreItemTypeContent text:TwinmeLocalizedStringFromTable(@"restore_view_content_profile_reset", @"LocalizableBackup", nil) icon:[UIImage imageNamed:@"GenerateCode"] value:-1 color:Design.SWITCH_BORDER_COLOR]];
+            [self.items addObject:[[UIRestoreItem alloc] initWithType:UIRestoreItemTypeContent text:TwinmeLocalizedStringFromTable(@"restore_view_content_profile_reset", @"LocalizableBackup", nil) icon:[UIImage imageNamed:@"GenerateCode"] value:-1 color:Design.BLACK_COLOR]];
             estimateSize += contentCellHeight;
             [self.items addObject:[[UIRestoreItem alloc] initWithType:UIRestoreItemTypeInfo text:TwinmeLocalizedStringFromTable(@"restore_view_content_profile_reset_message", @"LocalizableBackup", nil) icon:nil value:-1 color:nil]];
             estimateSize += [self estimateInfoSize:TwinmeLocalizedStringFromTable(@"restore_view_content_profile_reset_message", @"LocalizableBackup", nil)];
@@ -291,12 +291,12 @@ static const CGFloat DESIGN_INFO_HORIZONTAL_MARGIN = 34;
             [self.items addObject:[[UIRestoreItem alloc] initWithType:UIRestoreItemTypeSection text:TwinmeLocalizedString(@"contacts_view_title", nil) icon:nil value:-1 color:nil]];
             estimateSize += contentCellHeight;
             if (restoreReport.contacts.added != 0) {
-                [self.items addObject:[[UIRestoreItem alloc] initWithType:UIRestoreItemTypeContent text:TwinmeLocalizedStringFromTable(@"backup_view_content_diff_added", @"LocalizableBackup", nil) icon:[UIImage imageNamed:@"ContactsIcon"] value:restoreReport.contacts.added color:Design.SWITCH_BORDER_COLOR]];
+                [self.items addObject:[[UIRestoreItem alloc] initWithType:UIRestoreItemTypeContent text:TwinmeLocalizedStringFromTable(@"backup_view_content_diff_added", @"LocalizableBackup", nil) icon:[UIImage imageNamed:@"ContactsIcon"] value:restoreReport.contacts.added color:Design.BLACK_COLOR]];
                 estimateSize += contentCellHeight;
             }
             
             if (restoreReport.contacts.modified != 0) {
-                [self.items addObject:[[UIRestoreItem alloc] initWithType:UIRestoreItemTypeContent text:TwinmeLocalizedStringFromTable(@"backup_view_content_diff_updated", @"LocalizableBackup", nil) icon:[UIImage imageNamed:@"ActionEdit"] value:restoreReport.contacts.modified color:Design.SWITCH_BORDER_COLOR]];
+                [self.items addObject:[[UIRestoreItem alloc] initWithType:UIRestoreItemTypeContent text:TwinmeLocalizedStringFromTable(@"backup_view_content_diff_updated", @"LocalizableBackup", nil) icon:[UIImage imageNamed:@"ActionEdit"] value:restoreReport.contacts.modified color:Design.BLACK_COLOR]];
                 estimateSize += contentCellHeight;
             }
             
@@ -312,12 +312,12 @@ static const CGFloat DESIGN_INFO_HORIZONTAL_MARGIN = 34;
             [self.items addObject:[[UIRestoreItem alloc] initWithType:UIRestoreItemTypeSection text:TwinmeLocalizedString(@"share_view_group_list", nil) icon:nil value:-1 color:nil]];
             estimateSize += contentCellHeight;
             if (restoreReport.groups.added != 0) {
-                [self.items addObject:[[UIRestoreItem alloc] initWithType:UIRestoreItemTypeContent text:TwinmeLocalizedStringFromTable(@"backup_view_content_diff_added", @"LocalizableBackup", nil) icon:[UIImage imageNamed:@"GroupsIcon"] value:restoreReport.groups.added color:Design.SWITCH_BORDER_COLOR]];
+                [self.items addObject:[[UIRestoreItem alloc] initWithType:UIRestoreItemTypeContent text:TwinmeLocalizedStringFromTable(@"backup_view_content_diff_added", @"LocalizableBackup", nil) icon:[UIImage imageNamed:@"GroupsIcon"] value:restoreReport.groups.added color:Design.BLACK_COLOR]];
                 estimateSize += contentCellHeight;
             }
             
             if (restoreReport.groups.modified != 0) {
-                [self.items addObject:[[UIRestoreItem alloc] initWithType:UIRestoreItemTypeContent text:TwinmeLocalizedStringFromTable(@"backup_view_content_diff_updated", @"LocalizableBackup", nil) icon:[UIImage imageNamed:@"ActionEdit"] value:restoreReport.groups.modified color:Design.SWITCH_BORDER_COLOR]];
+                [self.items addObject:[[UIRestoreItem alloc] initWithType:UIRestoreItemTypeContent text:TwinmeLocalizedStringFromTable(@"backup_view_content_diff_updated", @"LocalizableBackup", nil) icon:[UIImage imageNamed:@"ActionEdit"] value:restoreReport.groups.modified color:Design.BLACK_COLOR]];
                 estimateSize += contentCellHeight;
             }
             
@@ -329,9 +329,9 @@ static const CGFloat DESIGN_INFO_HORIZONTAL_MARGIN = 34;
             }
         }
     } else {
-        [self.items addObject:[[UIRestoreItem alloc] initWithType:UIRestoreItemTypeContent text:TwinmeLocalizedString(@"contacts_view_title", nil) icon:[UIImage imageNamed:@"ContactsIcon"] value:restoreReport.contacts.upToDate color:nil]];
+        [self.items addObject:[[UIRestoreItem alloc] initWithType:UIRestoreItemTypeContent text:TwinmeLocalizedString(@"contacts_view_title", nil) icon:[UIImage imageNamed:@"ContactsIcon"] value:restoreReport.contacts.upToDate color:Design.BLACK_COLOR]];
         estimateSize += contentCellHeight;
-        [self.items addObject:[[UIRestoreItem alloc] initWithType:UIRestoreItemTypeContent text:TwinmeLocalizedString(@"share_view_group_list", nil) icon:[UIImage imageNamed:@"GroupsIcon"] value:restoreReport.groups.upToDate color:nil]];
+        [self.items addObject:[[UIRestoreItem alloc] initWithType:UIRestoreItemTypeContent text:TwinmeLocalizedString(@"share_view_group_list", nil) icon:[UIImage imageNamed:@"GroupsIcon"] value:restoreReport.groups.upToDate color:Design.BLACK_COLOR]];
         estimateSize += contentCellHeight;
     }
         

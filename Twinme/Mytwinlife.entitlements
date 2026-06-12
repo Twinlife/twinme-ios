@@ -9,6 +9,7 @@
 		<string>applinks:invite.mytwinlife.net</string>
 		<string>applinks:authenticate.mytwinlife.net</string>
 		<string>applinks:proxy.mytwinlife.net</string>
+		<string>applinks:migration.mytwinlife.net</string>
 	</array>
 	<key>com.apple.security.application-groups</key>
 	<array>

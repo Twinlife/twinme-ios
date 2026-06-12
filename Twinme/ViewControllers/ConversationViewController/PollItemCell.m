@@ -93,6 +93,7 @@ static const CGFloat DESIGN_CHOICE_HEIGHT = 80;
 
 @property (nonatomic) TLPollDescriptor *pollDescriptor;
 @property (nonatomic) NSMutableArray *pollResults;
+@property (nonatomic) int maxResult;
 
 @end
 
@@ -111,6 +112,7 @@ static const CGFloat DESIGN_CHOICE_HEIGHT = 80;
     [super awakeFromNib];
     
     self.isDeleteAnimationStarted = NO;
+    self.maxResult = 0;
     self.selectionStyle = UITableViewCellSelectionStyleNone;
     
     self.messageFont = Design.FONT_REGULAR34;
@@ -270,9 +272,16 @@ static const CGFloat DESIGN_CHOICE_HEIGHT = 80;
     self.infoImageView.hidden = YES;
     
     self.questionLabel.text = self.pollDescriptor.question;
-    self.choicesTableViewHeightConstraint.constant = self.pollDescriptor.choices.count * roundf(DESIGN_CHOICE_HEIGHT * Design.HEIGHT_RATIO);
-    [self.choicesTableView reloadData];
     
+    CGFloat choicesHeight = 0;
+    for (UIPollResult *pollResult in self.pollResults) {
+        CGFloat choiceHeight = [PollChoiceCell cellHeightForChoice:pollResult.choiceHeight];
+        choicesHeight = choicesHeight + choiceHeight;
+    }
+    
+    self.choicesTableViewHeightConstraint.constant = choicesHeight;
+    [self.choicesTableView reloadData];
+
     int corners = pollItem.corners;
     
     switch (pollItem.state) {
@@ -386,7 +395,8 @@ static const CGFloat DESIGN_CHOICE_HEIGHT = 80;
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath  {
     DDLogVerbose(@"%@ tableView: %@ heightForRowAtIndexPath: %@", LOG_TAG, tableView, indexPath);
         
-    return roundf(DESIGN_CHOICE_HEIGHT * Design.HEIGHT_RATIO);
+    UIPollResult *pollResult = [self.pollResults objectAtIndex:indexPath.row];
+    return [PollChoiceCell cellHeightForChoice:pollResult.choiceHeight];
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
@@ -404,7 +414,7 @@ static const CGFloat DESIGN_CHOICE_HEIGHT = 80;
     }
         
     UIPollResult *pollResult = [self.pollResults objectAtIndex:indexPath.row];
-    [cell bindWithPollResult:pollResult textColor:[UIColor whiteColor]];
+    [cell bindWithPollResult:pollResult textColor:[UIColor whiteColor] maxResult:self.maxResult];
     
     return cell;
 }
@@ -683,6 +693,16 @@ static const CGFloat DESIGN_CHOICE_HEIGHT = 80;
             }
         }
     }
+    
+    self.maxResult = 0;
+    CGFloat maxWidth = [PollChoiceCell maxChoiceWidth:self.contentPollViewWidthConstraint.constant - self.choicesTableViewLeadingConstraint.constant *2];
+    for (UIPollResult *pollResult in pollResults) {
+        [pollResult calculateChoiceHeightWithMaxWidth:maxWidth font:Design.FONT_MEDIUM32];
+        if (pollResult.count > self.maxResult) {
+            self.maxResult = pollResult.count;
+        }
+    }
+    
     return pollResults;
 }
 

@@ -18,9 +18,12 @@
 @property (nonatomic) int count;
 @property (nonatomic) BOOL isSelected;
 @property (nonatomic, nullable) NSMutableArray *voters;
+@property (nonatomic) CGFloat choiceHeight;
 
 - (nonnull instancetype)initWithChoice:(nonnull TLChoice *)choice;
 
 - (nonnull NSString *)getChoiceLabel;
+
+- (void)calculateChoiceHeightWithMaxWidth:(CGFloat)maxWidth font:(nonnull UIFont *)font;
 
 @end

@@ -499,7 +499,7 @@ static const int ddLogLevel = DDLogLevelWarning;
 - (void)saveQRCodeWithPermissionCheck {
     DDLogVerbose(@"%@ saveQRCodeWithPermissionCheck", LOG_TAG);
     
-    PHAuthorizationStatus photoAuthorizationStatus = [DeviceAuthorization devicePhotoAuthorizationStatus];
+    PHAuthorizationStatus photoAuthorizationStatus = [DeviceAuthorization devicePhotoAuthorizationStatus:PHAccessLevelAddOnly];
     switch (photoAuthorizationStatus) {
         case PHAuthorizationStatusNotDetermined: {
             [PHPhotoLibrary requestAuthorizationForAccessLevel:PHAccessLevelAddOnly handler:^(PHAuthorizationStatus authorizationStatus) {
@@ -547,33 +547,48 @@ static const int ddLogLevel = DDLogLevelWarning;
     
     [[PHPhotoLibrary sharedPhotoLibrary] registerChangeObserver:self];
     
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"title = %@", TwinmeLocalizedString(@"application_name", nil)];
-    PHFetchOptions *fetchOptions = [[PHFetchOptions alloc] init];
-    fetchOptions.predicate = predicate;
-    PHFetchResult *result = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeAlbum subtype:PHAssetCollectionSubtypeAny options:fetchOptions];
+    PHAuthorizationStatus readWriteStatus = [PHPhotoLibrary authorizationStatusForAccessLevel:PHAccessLevelReadWrite];
+    BOOL canReadWrite = readWriteStatus == PHAuthorizationStatusAuthorized || readWriteStatus == PHAuthorizationStatusLimited;
+    
+    dispatch_block_t successMessage = ^{
+        self.saveQRCodeInGallery = NO;
+        UIWindow *window = [self currentWindow];
+        if (window) {
+            [window makeToast:TwinmeLocalizedString(@"capture_view_qrcode_saved",nil)];
+        }
+    };
     
     twincodeView = nil;
     
-    [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
-        PHAssetCollectionChangeRequest *albumRequest;
-        if (result.count == 0) {
-            albumRequest = [PHAssetCollectionChangeRequest creationRequestForAssetCollectionWithTitle:TwinmeLocalizedString(@"application_name", nil)];
-        } else {
-            albumRequest = [PHAssetCollectionChangeRequest changeRequestForAssetCollection:result.firstObject];
-        }
-        PHAssetChangeRequest *createImageRequest = [PHAssetChangeRequest creationRequestForAssetFromImage:qrcodeToSave];
-        [albumRequest addAssets:@[createImageRequest.placeholderForCreatedAsset]];
-    } completionHandler:^(BOOL success, NSError *error) {
-        if (success) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                self.saveQRCodeInGallery = NO;
-                UIWindow *window = [self currentWindow];
-                if (window) {
-                    [window makeToast:TwinmeLocalizedString(@"capture_view_qrcode_saved",nil)];
-                }
-            });
-        }
-    }];
+    if (canReadWrite) {
+        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"title = %@", TwinmeLocalizedString(@"application_name", nil)];
+        PHFetchOptions *fetchOptions = [[PHFetchOptions alloc] init];
+        fetchOptions.predicate = predicate;
+        PHFetchResult *result = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeAlbum subtype:PHAssetCollectionSubtypeAny options:fetchOptions];
+        
+        [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
+            PHAssetCollectionChangeRequest *albumRequest;
+            if (result.count == 0) {
+                albumRequest = [PHAssetCollectionChangeRequest creationRequestForAssetCollectionWithTitle:TwinmeLocalizedString(@"application_name", nil)];
+            } else {
+                albumRequest = [PHAssetCollectionChangeRequest changeRequestForAssetCollection:result.firstObject];
+            }
+            PHAssetChangeRequest *createImageRequest = [PHAssetChangeRequest creationRequestForAssetFromImage:qrcodeToSave];
+            [albumRequest addAssets:@[createImageRequest.placeholderForCreatedAsset]];
+        } completionHandler:^(BOOL success, NSError *error) {
+            if (success) {
+                dispatch_async(dispatch_get_main_queue(), successMessage);
+            }
+        }];
+    } else {
+        [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
+            [PHAssetChangeRequest creationRequestForAssetFromImage:qrcodeToSave];
+        } completionHandler:^(BOOL success, NSError *error) {
+            if (success) {
+                dispatch_async(dispatch_get_main_queue(), successMessage);
+            }
+        }];
+    }
 }
 
 

@@ -589,7 +589,7 @@ static CGFloat AVATAR_VIEW_HEIGHT;
             [customTitleView addSubview:self.subTitleLabel];
         }
         
-        if (![self.uiContact.contact isGroup]) {
+        if (!self.isCallReceiver && ![self.uiContact.contact isGroup]) {
             TLContact *contact = (TLContact *)self.uiContact.contact;
             if (contact.certificationLevel == TLCertificationLevel4) {
                 UIImageView *certifiedImageView = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"AuthentifiedRelationWhiteIcon"]];

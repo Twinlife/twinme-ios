@@ -17,7 +17,7 @@
 
 @interface DeviceAuthorization : NSObject
 
-+ (PHAuthorizationStatus)devicePhotoAuthorizationStatus;
++ (PHAuthorizationStatus)devicePhotoAuthorizationStatus:(PHAccessLevel)level;
 
 + (BOOL)devicePhotoAuthorizationAccessGranted:(PHAuthorizationStatus)status;
 

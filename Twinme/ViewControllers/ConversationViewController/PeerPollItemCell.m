@@ -91,6 +91,7 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
 
 @property (nonatomic) TLPollDescriptor *pollDescriptor;
 @property (nonatomic) NSMutableArray *pollResults;
+@property (nonatomic) int maxResult;
 
 @end
 
@@ -116,6 +117,7 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
     
     self.selectionStyle = UITableViewCellSelectionStyleNone;
     self.messageFont = Design.FONT_REGULAR34;
+    self.maxResult = 0;
     
     UITapGestureRecognizer *tapContentGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onTouchUpInsideContentView:)];
     tapContentGesture.cancelsTouchesInView = NO;
@@ -255,7 +257,13 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
     }
     
     self.questionLabel.text = self.pollDescriptor.question;
-    self.choicesTableViewHeightConstraint.constant = self.pollDescriptor.choices.count * roundf(DESIGN_CHOICE_HEIGHT * Design.HEIGHT_RATIO);
+    CGFloat choicesHeight = 0;
+    for (UIPollResult *pollResult in self.pollResults) {
+        CGFloat choiceHeight = [PollChoiceCell cellHeightForChoice:pollResult.choiceHeight];
+        choicesHeight = choicesHeight + choiceHeight;
+    }
+    
+    self.choicesTableViewHeightConstraint.constant = choicesHeight;
     [self.choicesTableView reloadData];
     
     int corners = peerPollItem.corners;
@@ -324,7 +332,8 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath  {
     DDLogVerbose(@"%@ tableView: %@ heightForRowAtIndexPath: %@", LOG_TAG, tableView, indexPath);
         
-    return roundf(DESIGN_CHOICE_HEIGHT * Design.HEIGHT_RATIO);
+    UIPollResult *pollResult = [self.pollResults objectAtIndex:indexPath.row];
+    return [PollChoiceCell cellHeightForChoice:pollResult.choiceHeight];
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
@@ -342,7 +351,7 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
     }
         
     UIPollResult *pollResult = [self.pollResults objectAtIndex:indexPath.row];
-    [cell bindWithPollResult:pollResult textColor:Design.FONT_COLOR_DEFAULT];
+    [cell bindWithPollResult:pollResult textColor:Design.FONT_COLOR_DEFAULT maxResult:self.maxResult];
     
     return cell;
 }
@@ -549,6 +558,16 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
             }
         }
     }
+    
+    self.maxResult = 0;
+    CGFloat maxWidth = [PollChoiceCell maxChoiceWidth:self.contentPollViewWidthConstraint.constant - self.choicesTableViewLeadingConstraint.constant *2];
+    for (UIPollResult *pollResult in pollResults) {
+        [pollResult calculateChoiceHeightWithMaxWidth:maxWidth font:Design.FONT_MEDIUM32];
+        if (pollResult.count > self.maxResult) {
+            self.maxResult = pollResult.count;
+        }
+    }
+    
     return pollResults;
 }
 

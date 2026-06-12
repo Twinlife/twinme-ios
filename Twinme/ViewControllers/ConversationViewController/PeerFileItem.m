@@ -83,6 +83,11 @@
         [fileInfo appendString:@"\n"];
     }
     
+    if (self.namedFileDescriptor.name) {
+        [fileInfo appendString:self.namedFileDescriptor.name];
+        [fileInfo appendString:@"\n"];
+    }
+    
     if ([self getLength] > 0) {
         NSByteCountFormatter *byteCountFormatter = [[NSByteCountFormatter alloc] init];
         byteCountFormatter.countStyle = NSByteCountFormatterCountStyleFile;

@@ -181,8 +181,8 @@ static NSString *BACKUP_WORDS_CELL_IDENTIFIER = @"BackupWordsCellIdentifier";
     DDLogVerbose(@"%@ onTerminateRestoreWithTerminateReason:%d", LOG_TAG, terminateReason);
 }
 
-- (void)onCheckFileSignatureWithResult:(BOOL)result {
-    DDLogVerbose(@"%@ onCheckFileSignatureWithResult: %@", LOG_TAG, result ? @"YES" : @"NO");
+- (void)onCheckFileCompatibilityWithResult:(TLBackupServiceErrorCode)result {
+    DDLogVerbose(@"%@ onCheckFileCompatibilityWithResult: %d", LOG_TAG, result);
 }
 
 - (void)onTerminateVerifyWithReport:(nonnull RestoreReport *)report {

@@ -46,4 +46,6 @@
 
 + (nonnull NSAttributedString *)formatText:(nonnull NSString *)text fontSize:(int)fontSize fontColor:(nonnull UIColor *)fontColor fontSearch:(nullable UIFont *)fontSearch;
 
++ (nonnull NSString *)copyFileName:(nonnull NSString *)fileName fileExtension:(nonnull NSString *)fileExtension urlToCopy:(nonnull NSURL *)urlToCopy;
+
 @end

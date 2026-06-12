@@ -9,6 +9,7 @@
 		<string>applinks:invite.twin.me</string>
 		<string>applinks:authenticate.twin.me</string>
 		<string>applinks:proxy.twin.me</string>
+		<string>applinks:migration.twin.me</string>
 	</array>
 	<key>com.apple.security.application-groups</key>
 	<array>
