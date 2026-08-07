@@ -12,7 +12,6 @@
 #import "MessageSettingsViewController.h"
 #import "ConversationAppearanceViewController.h"
 
-#import "SettingsSectionHeaderCell.h"
 #import "PersonalizationCell.h"
 #import "SettingsItemCell.h"
 #import "TwinmeSettingsItemCell.h"
@@ -20,6 +19,7 @@
 
 #import "SwitchView.h"
 #import <TwinmeCommon/Design.h>
+#import <TwinmeCommon/SettingsSectionHeaderCell.h>
 
 #import <Utils/NSString+Utils.h>
 

@@ -11,7 +11,6 @@
 #import "BackupContentConfirmView.h"
 
 #import "BackupContentCell.h"
-#import "SettingsSectionHeaderCell.h"
 #import "SettingsInformationCell.h"
 
 #import "UIRestoreItem.h"
@@ -26,6 +25,7 @@
 
 #import <TwinmeCommon/Design.h>
 #import <TwinmeCommon/BackupService.h>
+#import <TwinmeCommon/SettingsSectionHeaderCell.h>
 
 #import <Twinlife/TLRestoreContent.h>
 

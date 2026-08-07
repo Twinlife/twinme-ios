@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2024 twinlife SA.
+ *  Copyright (c) 2024-2026 twinlife SA.
  *  SPDX-License-Identifier: AGPL-3.0-only
  *
  *  Contributors:
@@ -12,7 +12,7 @@
 
 @interface MenuIconCell : UITableViewCell
 
-- (void)bindWithTitle:(NSString *)title icon:(NSString *)icon hideSeparator:(BOOL)hideSeparator;
+- (void)bindWithTitle:(NSString *)title icon:(NSString *)icon iconColor:(UIColor *)iconColor hideSeparator:(BOOL)hideSeparator;
 
 @end
 

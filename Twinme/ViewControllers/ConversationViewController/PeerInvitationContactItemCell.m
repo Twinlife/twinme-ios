@@ -42,18 +42,37 @@ static const int ddLogLevel = DDLogLevelWarning;
 @property (weak, nonatomic) IBOutlet UIImageView *avatarView;
 @property (weak, nonatomic) IBOutlet UIView *contentInvitationView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *contentInvitationViewWidthConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *contentInvitationViewHeightConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *contentInvitationViewTopConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *contentInvitationViewBottomConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *contentInvitationViewLeadingConstraint;
-@property (weak, nonatomic) IBOutlet UIImageView *contactImageView;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *contactImageViewHeightConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *contactImageViewLeadingConstraint;
-@property (weak, nonatomic) IBOutlet UILabel *invitationLabel;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *invitationLabelWidthConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *leftAvatarImageViewTopConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *leftAvatarImageViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *leftAvatarImageViewLeadingConstraint;
+@property (weak, nonatomic) IBOutlet UIImageView *leftAvatarImageView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *rightAvatarImageViewTopConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *rightAvatarImageViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *rightAvatarImageViewTrailingConstraint;
+@property (weak, nonatomic) IBOutlet UIImageView *rightAvatarImageView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *lineLeftViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet UIView *lineLeftView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *lineRightViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet UIView *lineRightView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *iconRoundedViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet UIView *iconRoundedView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *iconImageViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet UIImageView *iconImageView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *invitationLabelLeadingConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *invitationLabelTrailingConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *invitationLabelTopConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *invitationLabelBottomConstraint;
+@property (weak, nonatomic) IBOutlet UILabel *invitationLabel;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *actionLabelLeadingConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *actionLabelTrailingConstraint;
+@property (weak, nonatomic) IBOutlet UILabel *actionLabel;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *actionViewViewWidthConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *actionViewViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *actionViewViewTopConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *actionViewViewBottomConstraint;
+@property (weak, nonatomic) IBOutlet UIView *actionView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *checkMarkViewHeightConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *checkMarkViewLeadingConstraint;
 @property (weak, nonatomic) IBOutlet UIView *checkMarkView;
@@ -65,6 +84,8 @@ static const int ddLogLevel = DDLogLevelWarning;
 @property (nonatomic) CGFloat topRightRadius;
 @property (nonatomic) CGFloat bottomRightRadius;
 @property (nonatomic) CGFloat bottomLeftRadius;
+@property (nonatomic) CAShapeLayer *lineLeftDashLayer;
+@property (nonatomic) CAShapeLayer *lineRightDashLayer;
 @property (nonatomic) CAShapeLayer *borderLayer;
 
 @property (nonatomic) TwinmeApplication *twinmeApplication;
@@ -109,7 +130,6 @@ static const int ddLogLevel = DDLogLevelWarning;
     self.avatarView.layer.masksToBounds = YES;
     
     self.contentInvitationViewWidthConstraint.constant *= Design.WIDTH_RATIO;
-    self.contentInvitationViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     self.contentInvitationViewBottomConstraint.constant *= Design.HEIGHT_RATIO;
     self.contentInvitationViewLeadingConstraint.constant *= Design.WIDTH_RATIO;
     
@@ -121,17 +141,64 @@ static const int ddLogLevel = DDLogLevelWarning;
     [self.contentInvitationView addGestureRecognizer:longPressGesture];
     [tapGesture requireGestureRecognizerToFail:longPressGesture];
     
-    self.contactImageViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
-    self.contactImageViewLeadingConstraint.constant *= Design.HEIGHT_RATIO;
-    self.contactImageView.clipsToBounds = YES;
-    self.contactImageView.layer.cornerRadius = self.contactImageViewHeightConstraint.constant * 0.5;
+    self.leftAvatarImageViewTopConstraint.constant *= Design.HEIGHT_RATIO;
+    self.leftAvatarImageViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    self.leftAvatarImageViewLeadingConstraint.constant *= Design.WIDTH_RATIO;
     
-    self.invitationLabel.font = Design.FONT_REGULAR26;
-    self.invitationLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    self.invitationLabelWidthConstraint.constant *= Design.WIDTH_RATIO;
+    self.leftAvatarImageView.clipsToBounds = YES;
+    self.leftAvatarImageView.layer.cornerRadius = self.leftAvatarImageViewHeightConstraint.constant * 0.5f;
+    self.leftAvatarImageView.layer.borderColor = Design.FONT_COLOR_GREY.CGColor;
+    self.leftAvatarImageView.layer.borderWidth = Design.ITEM_BORDER_WIDTH;
+    
+    self.rightAvatarImageViewTopConstraint.constant *= Design.HEIGHT_RATIO;
+    self.rightAvatarImageViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    self.rightAvatarImageViewTrailingConstraint.constant *= Design.WIDTH_RATIO;
+        
+    self.rightAvatarImageView.clipsToBounds = YES;
+    self.rightAvatarImageView.layer.cornerRadius = self.rightAvatarImageViewHeightConstraint.constant * 0.5f;
+    self.rightAvatarImageView.layer.borderColor = Design.FONT_COLOR_GREY.CGColor;
+    self.rightAvatarImageView.layer.borderWidth = Design.ITEM_BORDER_WIDTH;
+    
+    self.lineLeftViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    self.lineLeftView.backgroundColor = [UIColor clearColor];
+    
+    self.lineRightViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    self.lineRightView.backgroundColor = [UIColor clearColor];
+    
+    self.iconRoundedViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    
+    self.iconRoundedView.backgroundColor = Design.WHITE_COLOR;
+    self.iconRoundedView.clipsToBounds = YES;
+    self.iconRoundedView.layer.cornerRadius = self.iconRoundedViewHeightConstraint.constant * 0.5f;
+    self.iconRoundedView.layer.borderColor = Design.FONT_COLOR_GREY.CGColor;
+    self.iconRoundedView.layer.borderWidth = Design.ITEM_BORDER_WIDTH;
+    
+    self.iconImageViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    self.iconImageView.image =  [self.iconImageView.image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    self.iconImageView.tintColor = Design.FONT_COLOR_GREY;
+    
     self.invitationLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
+    self.invitationLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
     self.invitationLabelTopConstraint.constant *= Design.HEIGHT_RATIO;
-    self.invitationLabelBottomConstraint.constant *= Design.HEIGHT_RATIO;
+    
+    self.invitationLabel.font = Design.FONT_MEDIUM32;
+    self.invitationLabel.textColor = Design.FONT_COLOR_DEFAULT;
+    
+    self.actionLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
+    self.actionLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
+    
+    self.actionLabel.font = Design.FONT_MEDIUM34;
+    self.actionLabel.textColor = [UIColor whiteColor];
+    self.actionLabel.text = TwinmeLocalizedString(@"conversation_view_menu_item_view_reply_title", nil);
+    
+    self.actionViewViewWidthConstraint.constant *= Design.WIDTH_RATIO;
+    self.actionViewViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    self.actionViewViewTopConstraint.constant *= Design.HEIGHT_RATIO;
+    self.actionViewViewBottomConstraint.constant *= Design.HEIGHT_RATIO;
+    
+    self.actionView.backgroundColor = Design.FONT_COLOR_GREY;
+    self.actionView.clipsToBounds = YES;
+    self.actionView.layer.cornerRadius = self.actionViewViewHeightConstraint.constant * 0.5f;
     
     self.overlayView.hidden = YES;
     self.overlayView.backgroundColor = Design.BACKGROUND_COLOR_WHITE_OPACITY85;
@@ -173,6 +240,71 @@ static const int ddLogLevel = DDLogLevelWarning;
     self.bottomLeftRadius = 0;
 }
 
+- (void)layoutSubviews {
+    DDLogVerbose(@"%@ layoutSubviews", LOG_TAG);
+    
+    [super layoutSubviews];
+    [self updateLineView];
+}
+
+- (void)updateLineView {
+    DDLogVerbose(@"%@ updateLineView", LOG_TAG);
+    
+    if (CGRectIsEmpty(self.lineLeftView.bounds)) {
+        return;
+    }
+    
+    NSArray<NSNumber *> *lineDashPattern = @[
+        @(Design.LINE_DASH_LONG_LENGTH),
+        @(Design.LINE_DASH_SPACING),
+        @(Design.LINE_DASH_SHORT_LENGTH),
+        @(Design.LINE_DASH_SPACING)
+    ];
+    
+    if (self.lineLeftDashLayer) {
+        [self.lineLeftDashLayer removeFromSuperlayer];
+    }
+    
+    if (self.lineRightDashLayer) {
+        [self.lineRightDashLayer removeFromSuperlayer];
+    }
+    
+    self.lineLeftDashLayer = [CAShapeLayer layer];
+    self.lineLeftDashLayer.frame = self.lineLeftView.bounds;
+
+    UIBezierPath *lineLeftPath = [UIBezierPath bezierPath];
+    [lineLeftPath moveToPoint:CGPointMake(0, self.lineLeftView.bounds.size.height / 2.0)];
+    [lineLeftPath addLineToPoint:CGPointMake(self.lineLeftView.bounds.size.width,
+                                     self.lineLeftView.bounds.size.height / 2.0)];
+
+    self.lineLeftDashLayer.path = lineLeftPath.CGPath;
+    self.lineLeftDashLayer.strokeColor = Design.FONT_COLOR_GREY.CGColor;
+    self.lineLeftDashLayer.fillColor = nil;
+    self.lineLeftDashLayer.lineWidth = self.lineLeftViewHeightConstraint.constant;
+    self.lineLeftDashLayer.lineCap = kCALineCapRound;
+    self.lineLeftDashLayer.lineDashPattern = lineDashPattern;
+    
+    [self.lineLeftView.layer addSublayer:self.lineLeftDashLayer];
+    
+    self.lineRightDashLayer = [CAShapeLayer layer];
+    self.lineRightDashLayer.frame = self.lineRightView.bounds;
+    
+    UIBezierPath *lineRightPath = [UIBezierPath bezierPath];
+    [lineRightPath moveToPoint:CGPointMake(self.lineRightView.bounds.size.width,
+                                     self.lineRightView.bounds.size.height / 2.0)];
+    [lineRightPath addLineToPoint:CGPointMake(0, self.lineRightView.bounds.size.height / 2.0)];
+
+    self.lineRightDashLayer.path = lineRightPath.CGPath;
+    self.lineRightDashLayer.strokeColor = Design.FONT_COLOR_GREY.CGColor;
+    self.lineRightDashLayer.fillColor = nil;
+    self.lineRightDashLayer.lineWidth = self.lineRightViewHeightConstraint.constant;
+    self.lineRightDashLayer.lineCap = kCALineCapRound;
+    self.lineRightDashLayer.lineDashPattern = lineDashPattern;
+    
+    [self.lineRightView.layer addSublayer:self.lineRightDashLayer];
+}
+
+
 #pragma mark - TLGetTwincodeAction
 
 - (void)onGetTwincodeActionWithErrorCode:(TLBaseServiceErrorCode)errorCode name:(nullable NSString *)name avatar:(nullable UIImage *)avatar {
@@ -182,6 +314,13 @@ static const int ddLogLevel = DDLogLevelWarning;
 
     if (errorCode != TLBaseServiceErrorCodeSuccess || !name) {
         self.invitationLabel.text = @"";
+        
+        if (errorCode == TLBaseServiceErrorCodeExpired) {
+            if ([self.deleteActionDelegate respondsToSelector:@selector(deleteExpiredItem:)]) {
+                [self.deleteActionDelegate deleteExpiredItem:self.item];
+            }
+        }
+        
         return;
     }
 
@@ -190,15 +329,8 @@ static const int ddLogLevel = DDLogLevelWarning;
     }
 
     self.name = name;
-    NSMutableParagraphStyle *style = [[NSMutableParagraphStyle alloc] init];
-    [style setLineSpacing:Design.INVITATION_LINE_SPACING];
-    NSMutableAttributedString *invitationAttributedString = [[NSMutableAttributedString alloc] initWithString:self.name attributes:[NSDictionary dictionaryWithObject:Design.FONT_MEDIUM26 forKey:NSFontAttributeName]];
-    [invitationAttributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:@"\n"]];
-    [invitationAttributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:TwinmeLocalizedString(@"accept_invitation_view_message", nil), self.name] attributes:[NSDictionary dictionaryWithObject:Design.FONT_REGULAR26 forKey:NSFontAttributeName]]];
-    [invitationAttributedString addAttribute:NSParagraphStyleAttributeName value:style range:NSMakeRange(0, invitationAttributedString.length - 1)];
-    self.invitationLabel.attributedText = invitationAttributedString;
-    
-    self.contactImageView.image = avatar;
+    self.invitationLabel.text = [NSString stringWithFormat:TwinmeLocalizedString(@"accept_invitation_view_message", nil), self.name];
+    self.rightAvatarImageView.image = avatar;
 }
 
 #pragma mark - PanGestureRecognizerDelegate
@@ -219,17 +351,14 @@ static const int ddLogLevel = DDLogLevelWarning;
     self.contentInvitationViewTopConstraint.constant = [conversationViewController getTopMarginWithMask:peerInvitationContactItem.corners & ITEM_TOP_LEFT item:item];
     self.contentInvitationViewBottomConstraint.constant = -[conversationViewController getBottomMarginWithMask:peerInvitationContactItem.corners & ITEM_BOTTOM_LEFT item:item];
 
-    CGFloat leadingMargin = (self.contentInvitationViewHeightConstraint.constant - self.contactImageViewHeightConstraint.constant) * 0.5;
-    self.contactImageViewLeadingConstraint.constant = leadingMargin;
-    self.invitationLabelLeadingConstraint.constant = leadingMargin;
-    
     self.twincodeAction = [[TLGetTwincodeAction alloc] initWithTwinmeContext:self.twinmeContext twincodeOutboundId:self.twincodeDescriptor.twincodeId withBlock:^(TLBaseServiceErrorCode errorCode, NSString *name, UIImage *avatar) {
         dispatch_async(dispatch_get_main_queue(), ^{
             [self onGetTwincodeActionWithErrorCode:errorCode name:name avatar:avatar];
+            [conversationViewController updateTableView];
         });
     }];
     [self.twincodeAction start];
-
+    
     int corners = peerInvitationContactItem.corners;
     if ([[UIApplication sharedApplication] userInterfaceLayoutDirection] == UIUserInterfaceLayoutDirectionRightToLeft) {
         self.topLeftRadius = [conversationViewController getRadiusWithMask:corners & ITEM_TOP_RIGHT];
@@ -242,6 +371,8 @@ static const int ddLogLevel = DDLogLevelWarning;
         self.bottomRightRadius = [conversationViewController getRadiusWithMask:corners & ITEM_BOTTOM_RIGHT];
         self.bottomLeftRadius = [conversationViewController getRadiusWithMask:corners & ITEM_BOTTOM_LEFT];
     }
+    
+    self.leftAvatarImageView.image = [conversationViewController getIdentityAvatar];
     
     if (peerInvitationContactItem.visibleAvatar && [conversationViewController displayPeerItemAvatar]) {
         self.avatarView.hidden = NO;

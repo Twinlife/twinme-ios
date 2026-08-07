@@ -44,6 +44,7 @@
 #import "UIConversation.h"
 #import "UIContact.h"
 #import "UICustomTab.h"
+#import "UITimeout.h"
 
 #import "UIGroupConversation.h"
 
@@ -55,6 +56,8 @@
 #import "CellActionView.h"
 #import "CustomTabView.h"
 #import "ResetConversationConfirmView.h"
+#import "MenuConversationShorcutView.h"
+#import "MenuSelectValueView.h"
 
 #if 0
 static const int ddLogLevel = DDLogLevelVerbose;
@@ -93,7 +96,7 @@ static int LAST_USED_CONVERSATION_COUNT = 99999;
 // Interface: ConversationsViewController
 //
 
-@interface ConversationsViewController () <UITableViewDataSource, UITableViewDelegate, ChatServiceDelegate, UISearchBarDelegate, UISearchControllerDelegate, ConversationsActionDelegate, BottomSheetViewDelegate, CustomTabViewDelegate, SearchSectionDelegate, EnableNotificationDelegate>
+@interface ConversationsViewController () <UITableViewDataSource, UITableViewDelegate, ChatServiceDelegate, UISearchBarDelegate, UISearchControllerDelegate, ConversationsActionDelegate, BottomSheetViewDelegate, CustomTabViewDelegate, SearchSectionDelegate, EnableNotificationDelegate, MenuConversationShorcutDelegate, MenuSelectValueDelegate>
 
 @property (weak, nonatomic) IBOutlet UITableView *conversationsTableView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *conversationsTableViewBottomConstraint;
@@ -162,6 +165,7 @@ static int LAST_USED_CONVERSATION_COUNT = 99999;
 @property (nonatomic) NSMutableDictionary<NSUUID*,UIImage*> *groupMembersAvatar;
 @property (nonatomic) NSMutableDictionary<NSUUID*,UIGroupConversation*> *membersToGroupConversations;
 @property (nonatomic) UIConversation *resetConversation;
+@property (nonatomic) UIConversation *silentModeConversation;
 
 @property (nonatomic) ChatService *chatService;
 @property (nonatomic) BOOL needRefresh;
@@ -989,6 +993,9 @@ static int LAST_USED_CONVERSATION_COUNT = 99999;
     } else {
         if (!self.isNotificationEnabled && indexPath.section == 0) {
             [[UIApplication sharedApplication] openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString] options:@{} completionHandler:nil];
+        } else {
+            UIConversation *uiConversation = self.filteredConversations[indexPath.row];
+            [self didTapConversation:uiConversation];
         }
     }
 }
@@ -1178,6 +1185,46 @@ static int LAST_USED_CONVERSATION_COUNT = 99999;
     
     [self hapticFeedBack:UIImpactFeedbackStyleMedium];
     
+    BOOL silentMode = NO;
+    BOOL notificationReaction = YES;
+    int64_t silentExpiration;
+    
+    if ([uiConversation.uiContact.contact isKindOfClass:[TLGroup class]]) {
+        TLGroup * group = (TLGroup *)uiConversation.uiContact.contact;
+        silentMode = [group getBooleanWithName:PROPERTY_CONVERSATION_SILENT_MODE defaultValue:NO];
+        notificationReaction = [group getBooleanWithName:PROPERTY_CONVERSATION_NOTIFICATION_REACTION defaultValue:YES];
+        silentExpiration = [group getNumberWithName:PROPERTY_CONVERSATION_SILENT_MODE_EXPIRATION defaultValue:0];
+    } else {
+        TLContact *contact = (TLContact *)uiConversation.uiContact.contact;
+        silentMode = [contact getBooleanWithName:PROPERTY_CONVERSATION_SILENT_MODE defaultValue:NO];
+        notificationReaction = [contact getBooleanWithName:PROPERTY_CONVERSATION_NOTIFICATION_REACTION defaultValue:YES];
+        silentExpiration = [contact getNumberWithName:PROPERTY_CONVERSATION_SILENT_MODE_EXPIRATION defaultValue:0];
+    }
+    
+    NSTimeInterval timeInterval = [[NSDate date] timeIntervalSince1970];
+    if (silentExpiration > 0 && silentExpiration < timeInterval) {
+        silentMode = NO;
+    }
+    
+    MenuConversationShorcutView *menuConversationShorcutView  = [[MenuConversationShorcutView alloc] init];
+    menuConversationShorcutView.menuConversationShorcutDelegate = self;
+    [self.tabBarController.view addSubview:menuConversationShorcutView];
+    [menuConversationShorcutView openMenu:uiConversation silentMode:silentMode notificationReaction:notificationReaction silentExpiration:silentExpiration];
+}
+
+#pragma mark - MenuConversationShorcutDelegate
+
+- (void)resetConversation:(nonnull MenuConversationShorcutView *)menuConversationShorcutView conversation:(nonnull UIConversation *)uiConversation {
+    DDLogVerbose(@"%@ resetConversation: %@ conversation: %@", LOG_TAG, menuConversationShorcutView, uiConversation);
+    
+    self.resetConversation = uiConversation;
+    [self openResetConversationConfirmView:self.resetConversation.uiContact.avatar];
+    [menuConversationShorcutView closeMenu];
+}
+
+- (void)showOriginator:(nonnull MenuConversationShorcutView *)menuConversationShorcutView conversation:(nonnull UIConversation *)uiConversation {
+    DDLogVerbose(@"%@ showOriginator: %@ conversation: %@", LOG_TAG, menuConversationShorcutView, uiConversation);
+    
     if (self.searchController.active) {
         [self.searchController dismissViewControllerAnimated:YES completion:^{
             [self showOriginator:uiConversation];
@@ -1185,7 +1232,80 @@ static int LAST_USED_CONVERSATION_COUNT = 99999;
     } else {
         [self showOriginator:uiConversation];
     }
+    
+    [menuConversationShorcutView closeMenu];
 }
+
+- (void)saveConversationSettings:(nonnull MenuConversationShorcutView *)menuConversationShorcutView conversation:(nonnull UIConversation *)uiConversation silentMode:(BOOL)silentMode silentModeExpiration:(long)silentModeExpiration notificationReaction:(BOOL)notificationReaction {
+    DDLogVerbose(@"%@ saveConversationSettings: %@ conversation: %@ silentMode: %d silentModeDuration: %ld notificationReaction: %d", LOG_TAG, menuConversationShorcutView, uiConversation, silentMode, (long)silentModeExpiration, notificationReaction);
+    
+    if ([uiConversation.uiContact.contact isKindOfClass:[TLGroup class]]) {
+        TLGroup * group = (TLGroup *)uiConversation.uiContact.contact;
+        [group setBooleanWithName:PROPERTY_CONVERSATION_NOTIFICATION_REACTION value:notificationReaction twinmeContext:self.twinmeContext];
+        [group setBooleanWithName:PROPERTY_CONVERSATION_SILENT_MODE value:silentMode twinmeContext:self.twinmeContext];
+    } else {
+        TLContact *contact = (TLContact *)uiConversation.uiContact.contact;
+        [contact setBooleanWithName:PROPERTY_CONVERSATION_NOTIFICATION_REACTION value:notificationReaction twinmeContext:self.twinmeContext];
+        [contact setBooleanWithName:PROPERTY_CONVERSATION_SILENT_MODE value:silentMode twinmeContext:self.twinmeContext];
+    }
+    
+    [menuConversationShorcutView removeFromSuperview];
+    [self reloadData];
+}
+
+- (void)selectSilentModeDuration:(MenuConversationShorcutView *)menuConversationShorcutView conversation:(UIConversation *)uiConversation {
+    DDLogVerbose(@"%@ selectSilentModeDuration: %@ conversation: %@", LOG_TAG, menuConversationShorcutView, uiConversation);
+    
+    [menuConversationShorcutView removeFromSuperview];
+    self.silentModeConversation = uiConversation;
+    [self selectSilentModeDuration];
+}
+
+#pragma mark - MenuSelectValueDelegate
+
+- (void)selectValue:(MenuSelectValueView *)menuSelectValueView value:(int)value {
+    DDLogVerbose(@"%@ selectValue: %d", LOG_TAG, value);
+
+    [menuSelectValueView removeFromSuperview];
+    self.silentModeConversation = nil;
+}
+
+- (void)selectTimeout:(nonnull MenuSelectValueView *)menuSelectValueView uiTimeout:(nonnull UITimeout *)uiTimeout {
+    DDLogVerbose(@"%@ selectTimeout: %@", LOG_TAG, uiTimeout);
+
+    [menuSelectValueView removeFromSuperview];
+    
+    int64_t expiration = 0;
+    if (uiTimeout.timeout > 0) {
+        NSDate *expirationDate = [[NSDate date] dateByAddingTimeInterval:(NSTimeInterval)uiTimeout.timeout];
+        expiration = (int64_t)[expirationDate timeIntervalSince1970];
+    } else {
+        expiration = uiTimeout.timeout;
+    }
+
+    if (self.silentModeConversation) {
+        if ([self.silentModeConversation.uiContact.contact isKindOfClass:[TLGroup class]]) {
+            TLGroup * group = (TLGroup *)self.silentModeConversation.uiContact.contact;
+            [group setBooleanWithName:PROPERTY_CONVERSATION_SILENT_MODE value:YES twinmeContext:self.twinmeContext];
+            [group setNumberWithName:PROPERTY_CONVERSATION_SILENT_MODE_EXPIRATION value:expiration twinmeContext:self.twinmeContext];
+        } else {
+            TLContact *contact = (TLContact *)self.silentModeConversation.uiContact.contact;
+            [contact setBooleanWithName:PROPERTY_CONVERSATION_SILENT_MODE value:YES twinmeContext:self.twinmeContext];
+            [contact setNumberWithName:PROPERTY_CONVERSATION_SILENT_MODE_EXPIRATION value:expiration twinmeContext:self.twinmeContext];
+        }
+    }
+    
+    self.silentModeConversation = nil;
+    [self reloadData];
+}
+
+- (void)cancelMenuSelectValue:(MenuSelectValueView *)menuSelectValueView {
+    DDLogVerbose(@"%@ cancelMenuSelectValue: %@", LOG_TAG, menuSelectValueView);
+    
+    [menuSelectValueView removeFromSuperview];
+    self.silentModeConversation = nil;
+}
+
 
 #pragma mark - CustomTabViewDelegate
 
@@ -1776,6 +1896,16 @@ static int LAST_USED_CONVERSATION_COUNT = 99999;
     [self.resetConversationConfirmView initWithTitle:TwinmeLocalizedString(@"deleted_account_view_warning", nil) message:alertMessage avatar:avatar icon:[UIImage imageNamed:@"ActionBarDelete"]];
     [self.tabBarController.view addSubview:self.resetConversationConfirmView];
     [self.resetConversationConfirmView showConfirmView];
+}
+
+- (void)selectSilentModeDuration {
+    DDLogVerbose(@"%@ selectSilentModeDuration", LOG_TAG);
+    
+    MenuSelectValueView *menuSelectValueView = [[MenuSelectValueView alloc]init];
+    menuSelectValueView.menuSelectValueDelegate = self;
+    [self.tabBarController.view addSubview:menuSelectValueView];
+    [menuSelectValueView setMenuSelectValueTypeWithType:MenuSelectValueTypeSilentModeDuration defaultValue:0];
+    [menuSelectValueView openMenu];
 }
 
 - (void)updateFont {

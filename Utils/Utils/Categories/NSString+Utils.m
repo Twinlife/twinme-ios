@@ -188,6 +188,41 @@ static int BOLD_VALUE = -2;
     }
 }
 
++ (NSString *)formatTimeout:(int64_t)timeout {
+    
+    int64_t oneMinute = 60;
+    int64_t oneHour = oneMinute * 60;
+    int64_t oneDay = oneHour * 24;
+    int64_t oneWeek = oneDay * 7;
+    int64_t oneMonth = oneDay * 30;
+    
+    if (timeout == -1) {
+        return TwinmeLocalizedString(@"contact_capabilities_view_camera_control_allow", nil);
+    } else if (timeout == 0) {
+        return TwinmeLocalizedString(@"privacy_view_lock_screen_timeout_instant", nil);
+    } else if (timeout < oneMinute) {
+        return [NSString stringWithFormat:TwinmeLocalizedString(@"application_timeout_seconds", nil),[NSString convertWithLocale:[NSString stringWithFormat:@"%lld",timeout]]];
+    } else if (timeout == oneMinute) {
+        return TwinmeLocalizedString(@"application_timeout_minute", nil);
+    } else if (timeout < oneHour) {
+        int64_t minutes = timeout / oneMinute;
+        return [NSString stringWithFormat:TwinmeLocalizedString(@"application_timeout_minutes", nil),[NSString convertWithLocale:[NSString stringWithFormat:@"%lld",minutes]]];
+    } else if (timeout == oneHour) {
+        return TwinmeLocalizedString(@"application_timeout_hour", nil);
+    } else if (timeout < oneDay) {
+        int64_t hours = timeout / oneHour;
+        return [NSString stringWithFormat:TwinmeLocalizedString(@"application_timeout_hours", nil),[NSString convertWithLocale:[NSString stringWithFormat:@"%lld",hours]]];
+    } else if (timeout == oneDay) {
+        return TwinmeLocalizedString(@"application_timeout_day", nil);
+    } else if (timeout == oneWeek) {
+        return TwinmeLocalizedString(@"application_timeout_week", nil);
+    } else if (timeout == oneMonth) {
+        return TwinmeLocalizedString(@"application_timeout_month", nil);
+    }
+    
+    return [NSString convertWithLocale:[NSString stringWithFormat:@"%lld",timeout]];
+}
+
 + (NSString *)firstCharacter:(NSString *)string {
     
     if (!string || string.length == 0) {

@@ -24,7 +24,7 @@
 #import <TwinmeCommon/Utils.h>
 
 #import "DeviceAuthorization.h"
-#import "OnboardingConfirmView.h"
+#import <TwinmeCommon/OnboardingConfirmView.h>
 #import "DefaultConfirmView.h"
 #import "ProxyView.h"
 #import "UIView+Toast.h"

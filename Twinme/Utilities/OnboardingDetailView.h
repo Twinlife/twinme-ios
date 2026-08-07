@@ -6,7 +6,7 @@
  *   Fabrice Trescartes (Fabrice.Trescartes@twin.life)
  */
 
-#import "OnboardingConfirmView.h"
+#import <TwinmeCommon/OnboardingConfirmView.h>
 
 //
 // Interface: OnboardingConfirmView

@@ -14,7 +14,6 @@
 #import "BackupInfoCell.h"
 #import "BackupActionCell.h"
 #import "SettingsInformationCell.h"
-#import "SettingsSectionHeaderCell.h"
 
 #import "UIBackupWord.h"
 
@@ -24,7 +23,8 @@
 
 #import "UIView+Toast.h"
 #import "DefaultConfirmView.h"
-#import "OnboardingConfirmView.h"
+#import <TwinmeCommon/OnboardingConfirmView.h>
+#import <TwinmeCommon/SettingsSectionHeaderCell.h>
 
 #if 0
 static const int ddLogLevel = DDLogLevelVerbose;
@@ -121,7 +121,7 @@ typedef enum {
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath  {
     DDLogVerbose(@"%@ tableView: %@ heightForRowAtIndexPath: %@", LOG_TAG, tableView, indexPath);
     
-    if (indexPath.row == 0) {
+    if (indexPath.row == 0 && indexPath.section == SECTION_INFO) {
         return roundf(DESIGN_INFO_CELL_HEIGHT * Design.HEIGHT_RATIO);
     }
     

@@ -104,7 +104,7 @@ static const int ddLogLevel = DDLogLevelWarning;
     if (self) {
         _twinmeApplication = [[TwinmeApplication alloc] init];
         _twinmeContext = [[TLTwinmeContext alloc] initWithTwinmeApplication:_twinmeApplication configuration:[[Configuration alloc] init]];
-        _adminService = [[AdminService alloc] initWithTwinmeContext:_twinmeContext];
+        _adminService = [[AdminService alloc] initWithTwinmeContext:_twinmeContext twinmeApplication:_twinmeApplication];
         _enableCallkit = ![[[NSLocale currentLocale] countryCode] containsString:@"CN"] && ![[[NSLocale currentLocale] countryCode] containsString:@"CHN"];
         
         _callService = [[CallService alloc] initWithTwinmeContext:_twinmeContext twinmeApplication:_twinmeApplication enableCallkit:_enableCallkit];
@@ -422,9 +422,15 @@ static const int ddLogLevel = DDLogLevelWarning;
     [lagFreeField removeFromSuperview];
 }
 
+- (void)sceneWillResignActive {
+    DDLogVerbose(@"%@ sceneWillResignActive", LOG_TAG);
+    
+    [self.callService applicationDidEnterBackground:[UIApplication sharedApplication]];
+}
+
 - (void)sceneDidEnterBackground {
     DDLogVerbose(@"%@ sceneDidEnterBackground", LOG_TAG);
-
+    
     self.inBackground = YES;
     [self.twinmeContext applicationDidEnterBackground:self];
     [self.callService applicationDidEnterBackground:[UIApplication sharedApplication]];
@@ -437,7 +443,7 @@ static const int ddLogLevel = DDLogLevelWarning;
 
 - (void)sceneWillEnterForeground {
     DDLogVerbose(@"%@ sceneWillEnterForeground", LOG_TAG);
-
+    
     [self checkAllowNotifications];
     [self.twinmeContext applicationDidBecomeActive:self];
     [self.callService applicationWillEnterForeground:[UIApplication sharedApplication]];
@@ -455,10 +461,12 @@ static const int ddLogLevel = DDLogLevelWarning;
 
 - (void)sceneDidBecomeActive {
     DDLogVerbose(@"%@ sceneDidBecomeActive", LOG_TAG);
-
+    
     if (self.inBackground) {
         [self.twinmeContext applicationDidBecomeActive:self];
         self.inBackground = NO;
+    } else {
+        [self.callService applicationWillEnterForeground:[UIApplication sharedApplication]];
     }
 
     if (![[self.twinmeContext getAccountService] isReconnectable]) {
@@ -611,6 +619,14 @@ static const int ddLogLevel = DDLogLevelWarning;
     ApplicationDelegate *delegate = (ApplicationDelegate *)UIApplication.sharedApplication.delegate;
     [delegate attachWindow:self.window];
     [delegate sceneDidEnterBackground];
+}
+
+- (void)sceneWillResignActive:(UIScene *)scene {
+    DDLogVerbose(@"%@ sceneWillResignActive: %@", LOG_TAG, scene);
+    
+    ApplicationDelegate *delegate = (ApplicationDelegate *)UIApplication.sharedApplication.delegate;
+    [delegate attachWindow:self.window];
+    [delegate sceneWillResignActive];
 }
 
 - (void)scene:(UIScene *)scene continueUserActivity:(NSUserActivity *)userActivity {

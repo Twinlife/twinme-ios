@@ -11,8 +11,7 @@
 #import "TwinmeSettingsItemCell.h"
 
 #import <TwinmeCommon/Design.h>
-
-#import "PaddingLabel.h"
+#import <TwinmeCommon/PaddingLabel.h>
 
 #if 0
 static const int ddLogLevel = DDLogLevelVerbose;

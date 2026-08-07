@@ -196,20 +196,39 @@ static const BOOL SYSTEM_NOTIFICATION_ON_CONTACT_UPDATE = YES;
             
             break;
             
-        case TLDescriptorTypeTwincodeDescriptor:
+        case TLDescriptorTypeTwincodeDescriptor: {
             type = TLNotificationTypeNewContactInvitation;
-            
+            TLTwincodeDescriptor *twincodeDescriptor = (TLTwincodeDescriptor *) descriptor;
+            BOOL fromShareContact = [twincodeDescriptor.schemaId isEqual:[TLContactShareDescriptor CONTACT_SHARE_SCHEMA_ID]];
             if (displayNotificationSender && displayNotificationContent) {
-                notificationBackgroundMessage = TwinmeLocalizedString(@"notification_center_invitation", nil);
+                notificationBackgroundMessage = fromShareContact ? TwinmeLocalizedString(@"notification_center_connection_request", nil) : TwinmeLocalizedString(@"notification_center_invitation", nil);
             } else if (displayNotificationSender && !displayNotificationContent) {
                 notificationBackgroundMessage = TwinmeLocalizedString(@"notification_center_message_received", nil);
             } else if (!displayNotificationSender && displayNotificationContent) {
-                notificationBackgroundMessage = TwinmeLocalizedString(@"notification_center_invitation_received", nil);
+                notificationBackgroundMessage = fromShareContact ? TwinmeLocalizedString(@"notification_center_connection_request", nil) : TwinmeLocalizedString(@"notification_center_invitation", nil);
             } else {
                 notificationBackgroundMessage = TwinmeLocalizedString(@"notification_center_message_received", nil);
             }
             
-            notificationMessage = TwinmeLocalizedString(@"notification_center_invitation", nil);
+            notificationMessage = fromShareContact ? TwinmeLocalizedString(@"notification_center_connection_request", nil) : TwinmeLocalizedString(@"notification_center_invitation", nil);
+            
+            break;
+        }
+            
+        case TLDescriptorTypeContactShareDescriptor:
+            type = TLNotificationTypeNewContactShare;
+            
+            if (displayNotificationSender && displayNotificationContent) {
+                notificationBackgroundMessage = TwinmeLocalizedString(@"notification_center_connection_request", nil);
+            } else if (displayNotificationSender && !displayNotificationContent) {
+                notificationBackgroundMessage = TwinmeLocalizedString(@"notification_center_message_received", nil);
+            } else if (!displayNotificationSender && displayNotificationContent) {
+                notificationBackgroundMessage = TwinmeLocalizedString(@"notification_center_connection_request", nil);
+            } else {
+                notificationBackgroundMessage = TwinmeLocalizedString(@"notification_center_message_received", nil);
+            }
+            
+            notificationMessage = TwinmeLocalizedString(@"notification_center_connection_request", nil);
             
             break;
 
@@ -306,8 +325,10 @@ static const BOOL SYSTEM_NOTIFICATION_ON_CONTACT_UPDATE = YES;
         return nil;
     }
     
+    BOOL isUpdatedAnnotationNotification = NO;
     if (type == TLNotificationTypeUpdatedAnnotation) {
         if (notification.annotationType == TLDescriptorAnnotationTypeLike) {
+            isUpdatedAnnotationNotification = YES;
             BOOL displayNotificationContent = [self.settings hasDisplayNotificationSender] && [self.settings hasDisplayNotificationContent] && !contact.identityCapabilities.hasDiscreet;
             int value = notification.annotationValue;
             NSString *emoji = [self emojiFromAnnotationValue:value];
@@ -353,19 +374,49 @@ static const BOOL SYSTEM_NOTIFICATION_ON_CONTACT_UPDATE = YES;
         originatorForAvatar = contact;
     }
     
+    BOOL isSilentNotification = NO;
+    BOOL notificationReaction = YES;
+    int64_t silentExpiration = 0;
+    if ([(NSObject *)contact isKindOfClass:[TLGroupMember class]]) {
+        TLGroupMember *groupMember = (TLGroupMember *)contact;
+        id group = (id)groupMember.group;
+        isSilentNotification = [group getBooleanWithName:PROPERTY_CONVERSATION_SILENT_MODE defaultValue:NO];
+        notificationReaction = [group getBooleanWithName:PROPERTY_CONVERSATION_NOTIFICATION_REACTION defaultValue:YES];
+        silentExpiration = [group getNumberWithName:PROPERTY_CONVERSATION_SILENT_MODE_EXPIRATION defaultValue:0];
+    } else if ([(NSObject *)contact isKindOfClass:[TLGroup class]]) {
+        TLGroup *group = (TLGroup *)contact;
+        isSilentNotification = [group getBooleanWithName:PROPERTY_CONVERSATION_SILENT_MODE defaultValue:NO];
+        notificationReaction = [group getBooleanWithName:PROPERTY_CONVERSATION_NOTIFICATION_REACTION defaultValue:YES];
+        silentExpiration = [group getNumberWithName:PROPERTY_CONVERSATION_SILENT_MODE_EXPIRATION defaultValue:0];
+    } else if ([(NSObject *)contact isKindOfClass:[TLContact class]]) {
+        TLContact *contactItem = (TLContact *)contact;
+        isSilentNotification = [contactItem getBooleanWithName:PROPERTY_CONVERSATION_SILENT_MODE defaultValue:NO];
+        notificationReaction = [contactItem getBooleanWithName:PROPERTY_CONVERSATION_NOTIFICATION_REACTION defaultValue:YES];
+        silentExpiration = [contactItem getNumberWithName:PROPERTY_CONVERSATION_SILENT_MODE_EXPIRATION defaultValue:0];
+    }
+    
+    NSTimeInterval timeInterval = [[NSDate date] timeIntervalSince1970];
+    if (silentExpiration > 0 && silentExpiration < timeInterval) {
+        isSilentNotification = NO;
+    }
+    
+    if (isUpdatedAnnotationNotification && !notificationReaction) {
+        isSilentNotification = YES;
+    }
+
     // TBD
     // int count = [newMessageNotification getAndIncrementCount];
     NotificationInfo *localNotification = [[NotificationInfo alloc] init];
     localNotification.notification = notification;
     localNotification.alertSound = nil;
-    localNotification.alertPrivateTitle = callerName;
+    localNotification.alertPrivateTitle = !isSilentNotification ? callerName : nil;
     localNotification.originator = originatorForAvatar;
     localNotification.notification = notification;
     if ([self.settings hasDisplayNotificationSender] && !originatorForAvatar.identityCapabilities.hasDiscreet) {
-        localNotification.alertTitle = callerName;
+        localNotification.alertTitle = !isSilentNotification ? callerName : nil;
     }
     
-    localNotification.alertBody = notificationBackgroundMessage;
+    localNotification.alertBody = !isSilentNotification ? notificationBackgroundMessage : nil;
     localNotification.identifier = notification.uuid;
     localNotification.userInfo = @{@"notificationId": localNotification.identifier.UUIDString};
     

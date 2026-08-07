@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2020 twinlife SA.
+ *  Copyright (c) 2020-2026 twinlife SA.
  *  SPDX-License-Identifier: AGPL-3.0-only
  *
  *  Contributors:
@@ -23,12 +23,16 @@
 
 #import "AccountMigrationScannerViewController.h"
 #import "AccountMigrationViewController.h"
+#import "RestoreViewController.h"
 #import <TwinmeCommon/TwinmeNavigationController.h>
 #import <TwinmeCommon/MainViewController.h>
 
 #import "AlertMessageView.h"
 #import "DefaultConfirmView.h"
-#import "OnboardingConfirmView.h"
+#import <TwinmeCommon/OnboardingConfirmView.h>
+#import "UIAccountMigrationItem.h"
+#import "AccountMigrationCell.h"
+
 #import <TwinmeCommon/Design.h>
 #import <TwinmeCommon/Utils.h>
 
@@ -38,19 +42,26 @@ static const int ddLogLevel = DDLogLevelVerbose;
 static const int ddLogLevel = DDLogLevelWarning;
 #endif
 
+static const CGFloat DESIGN_CELL_HEIGHT = 90;
 static const CGFloat DESIGN_HIGHLIGHT_VIEW_CORNER_RADIUS = 4;
+
+static NSString *ACCOUNT_MIGRATION_CELL_IDENTIFIER = @"AccountMigrationCellIdentifier";
+
+static int RESTORE_ALERT_TAG = 10;
 
 //
 // Interface: AccountMigrationScannerViewController ()
 //
 
-@interface AccountMigrationScannerViewController () <AVCaptureMetadataOutputObjectsDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, AlertMessageViewDelegate, BottomSheetViewDelegate, AccountMigrationScannerServiceDelegate>
+@interface AccountMigrationScannerViewController () <AVCaptureMetadataOutputObjectsDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewDataSource, UIDocumentPickerDelegate, UIDocumentInteractionControllerDelegate, AlertMessageViewDelegate, BottomSheetViewDelegate, AccountMigrationScannerServiceDelegate>
 
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *accountViewHeightConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *accountViewWidthConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *accountViewTopConstraint;
 @property (weak, nonatomic) IBOutlet UIView *accountView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *qrcodeViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *qrcodeViewTopConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *qrcodeViewBottomConstraint;
 @property (weak, nonatomic) IBOutlet UIImageView *qrcodeView;
 @property (weak, nonatomic) IBOutlet UIView *captureView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *messageScanViewHeightConstraint;
@@ -65,7 +76,17 @@ static const CGFloat DESIGN_HIGHLIGHT_VIEW_CORNER_RADIUS = 4;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *messageNoPermissionScanLabelWidthConstraint;
 @property (weak, nonatomic) IBOutlet UILabel *messageNoPermissionScanLabel;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *messageLabelWidthConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *messageLabelTopConstraint;
 @property (weak, nonatomic) IBOutlet UILabel *messageLabel;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *tableViewWidthConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *tableViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *tableViewTopConstraint;
+@property (weak, nonatomic) IBOutlet UITableView *tableView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *restoreViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet UIView *restoreView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *restoreLabelLeadingConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *restoreLabelTrailingConstraint;
+@property (weak, nonatomic) IBOutlet UILabel *restoreLabel;
 @property (weak, nonatomic) IBOutlet UIActivityIndicatorView *activityIndicatorView;
 
 @property UIView *highlightView;
@@ -78,6 +99,7 @@ static const CGFloat DESIGN_HIGHLIGHT_VIEW_CORNER_RADIUS = 4;
 @property (nonatomic) BOOL hasRelations;
 @property (nonatomic, nonnull) AccountMigrationScannerService *accountMigrationScannerService;
 @property (nonatomic) BOOL showOnboardingView;
+@property (nonatomic) NSMutableArray<UIAccountMigrationItem *> *accountMigrationItems;
 
 @end
 
@@ -99,6 +121,7 @@ static const CGFloat DESIGN_HIGHLIGHT_VIEW_CORNER_RADIUS = 4;
         _accountMigrationScannerService = [[AccountMigrationScannerService alloc] initWithTwinmeContext:self.twinmeContext delegate:self];
         _hasRelations = NO;
         _fromCurrentDevice = NO;
+        _accountMigrationItems = [[NSMutableArray alloc] init];
     }
     return self;
 }
@@ -115,7 +138,7 @@ static const CGFloat DESIGN_HIGHLIGHT_VIEW_CORNER_RADIUS = 4;
     DDLogVerbose(@"%@ viewWillAppear: %d", LOG_TAG, animated);
     
     [super viewWillAppear:animated];
-    
+        
     if (!self.showOnboardingView && [self.twinmeApplication startOnboarding:OnboardingTypeTransfer]) {
         self.showOnboardingView = YES;
         
@@ -251,6 +274,28 @@ static const CGFloat DESIGN_HIGHLIGHT_VIEW_CORNER_RADIUS = 4;
     [picker dismissViewControllerAnimated:YES completion:nil];
 }
 
+#pragma mark - DocumentPickerDelegate
+
+- (void)documentPicker:(UIDocumentPickerViewController *)controller didPickDocumentsAtURLs:(NSArray <NSURL *>*)urls {
+    DDLogVerbose(@"%@ documentPicker: %@ didPickDocumentsAtURLs: %@", LOG_TAG, controller, urls);
+    
+    if (urls.count == 0) {
+        return;
+    }
+    
+    NSNumber *value = nil;
+    NSURL *url = [urls firstObject];
+    [url getResourceValue:&value forKey:NSURLIsPackageKey error:nil];
+    [self unlockBackup:url];
+}
+
+#pragma mark - DocumentInteractionControllerDelegate
+
+- (UIViewController *)documentInteractionControllerViewControllerForPreview:(UIDocumentInteractionController *)controller {
+    
+    return self;
+}
+
 #pragma mark - AcceptInvitationDelegate
 
 - (void)invitationDidFinish {
@@ -286,7 +331,12 @@ static const CGFloat DESIGN_HIGHLIGHT_VIEW_CORNER_RADIUS = 4;
 - (void)didTapConfirm:(nonnull AbstractBottomSheetView *)abstractBottomSheetView {
     DDLogVerbose(@"%@ didTapConfirm: %@", LOG_TAG, abstractBottomSheetView);
     
-    if ([abstractBottomSheetView isKindOfClass:[DefaultConfirmView class]]) {
+    if (abstractBottomSheetView.tag == RESTORE_ALERT_TAG) {
+        UIDocumentPickerViewController *documentPicker = [[UIDocumentPickerViewController alloc] initForOpeningContentTypes:@[UTTypeData, UTTypeContent] asCopy:YES];
+        documentPicker.delegate = self;
+        documentPicker.modalPresentationStyle = UIModalPresentationFormSheet;
+        [self presentViewController:documentPicker animated:YES completion:nil];
+    } else if ([abstractBottomSheetView isKindOfClass:[DefaultConfirmView class]]) {
         if (self.twincodeOutbound) {
             [self.accountMigrationScannerService bindAccountMigrationWithTwincodeOutbound:self.twincodeOutbound];
         }
@@ -328,6 +378,53 @@ static const CGFloat DESIGN_HIGHLIGHT_VIEW_CORNER_RADIUS = 4;
     [abstractBottomSheetView removeFromSuperview];
 }
 
+#pragma mark - UITableViewDataSource
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+    DDLogVerbose(@"%@ numberOfSectionsInTableView: %@", LOG_TAG, tableView);
+    
+    return 1;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath  {
+    DDLogVerbose(@"%@ tableView: %@ heightForRowAtIndexPath: %@", LOG_TAG, tableView, indexPath);
+    
+    return roundf(DESIGN_CELL_HEIGHT * Design.HEIGHT_RATIO);
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
+    DDLogVerbose(@"%@ tableView: %@ heightForHeaderInSection: %ld", LOG_TAG, tableView, (long)section);
+    
+    return CGFLOAT_MIN;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section {
+    DDLogVerbose(@"%@ tableView: %@ heightForFooterInSection: %ld", LOG_TAG, tableView, (long)section);
+    
+    return CGFLOAT_MIN;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    DDLogVerbose(@"%@ tableView: %@ numberOfRowsInSection: %ld", LOG_TAG, tableView, (long)section);
+    
+    return self.accountMigrationItems.count;
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    DDLogVerbose(@"%@ tableView: %@ cellForRowAtIndexPath: %@", LOG_TAG, tableView, indexPath);
+    
+    UIAccountMigrationItem *accountMigrationItem = [self.accountMigrationItems objectAtIndex:indexPath.row];
+    AccountMigrationCell *cell = [tableView dequeueReusableCellWithIdentifier:ACCOUNT_MIGRATION_CELL_IDENTIFIER];
+    if (!cell) {
+        cell = [[AccountMigrationCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:ACCOUNT_MIGRATION_CELL_IDENTIFIER];
+    }
+    
+    [cell bindWithItem:accountMigrationItem];
+    
+    return cell;
+}
+
+
 #pragma mark - Private methods
 
 - (void)initViews {
@@ -346,6 +443,8 @@ static const CGFloat DESIGN_HIGHLIGHT_VIEW_CORNER_RADIUS = 4;
     self.accountView.clipsToBounds = YES;
     
     self.qrcodeViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    self.qrcodeViewTopConstraint.constant *= Design.HEIGHT_RATIO;
+    self.qrcodeViewBottomConstraint.constant *= Design.HEIGHT_RATIO;
     
     self.qrcodeView.backgroundColor = Design.WHITE_COLOR;
     self.qrcodeView.layer.cornerRadius = Design.POPUP_RADIUS;
@@ -377,6 +476,7 @@ static const CGFloat DESIGN_HIGHLIGHT_VIEW_CORNER_RADIUS = 4;
     self.messageNoPermissionScanLabel.text = TwinmeLocalizedString(@"application_permission_scan_code", nil);
     self.messageNoPermissionScanLabel.hidden = YES;
     
+    self.messageLabelTopConstraint.constant *= Design.HEIGHT_RATIO;
     self.messageLabelWidthConstraint.constant *= Design.MIN_RATIO;
     [self.messageLabel setFont:Design.FONT_REGULAR34];
     self.messageLabel.textColor = Design.FONT_COLOR_DEFAULT;
@@ -403,12 +503,63 @@ static const CGFloat DESIGN_HIGHLIGHT_VIEW_CORNER_RADIUS = 4;
         
         [self setupCaptureSession];
         self.previewLayer.frame = self.captureView.bounds;
-        self.messageLabel.text = TwinmeLocalizedString(@"account_migration_scanner_view_migration_start_from_current_device_message", nil);
+        self.messageLabel.text = TwinmeLocalizedString(@"account_migration_scanner_view_header_my_device", nil);
     } else {
         self.captureView.hidden = YES;
         self.accountView.hidden = NO;
-        self.messageLabel.text = TwinmeLocalizedString(@"account_migration_scanner_view_migration_start_from_another_device_message", nil);
+        self.messageLabel.text = TwinmeLocalizedString(@"account_migration_scanner_view_header_other_device", nil);
     }
+    
+    self.tableViewTopConstraint.constant *= Design.HEIGHT_RATIO;
+    self.tableViewWidthConstraint.constant *= Design.WIDTH_RATIO;
+    self.tableViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+        
+    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+    [self.tableView registerNib:[UINib nibWithNibName:@"AccountMigrationCell" bundle:nil] forCellReuseIdentifier:ACCOUNT_MIGRATION_CELL_IDENTIFIER];
+
+    self.tableView.backgroundColor = Design.WHITE_COLOR;
+    self.tableView.dataSource = self;
+    self.tableView.scrollEnabled = NO;
+    self.tableView.rowHeight = roundf(DESIGN_CELL_HEIGHT * Design.HEIGHT_RATIO);
+    self.tableView.clipsToBounds = YES;
+    self.tableView.layer.cornerRadius = Design.POPUP_RADIUS;
+    self.tableView.layer.masksToBounds = YES;
+    
+    UIView *shadowView = [[UIView alloc] initWithFrame:CGRectZero];
+    shadowView.translatesAutoresizingMaskIntoConstraints = NO;
+    shadowView.userInteractionEnabled = NO;
+    shadowView.backgroundColor = Design.WHITE_COLOR;
+    shadowView.layer.cornerRadius = Design.POPUP_RADIUS;
+    shadowView.layer.shadowOpacity = Design.SHADOW_OPACITY;
+    shadowView.layer.shadowOffset = Design.SHADOW_OFFSET;
+    shadowView.layer.shadowRadius = Design.SHADOW_RADIUS;
+    shadowView.layer.shadowColor = Design.SHADOW_COLOR_DEFAULT.CGColor;
+    shadowView.layer.masksToBounds = NO;
+    [self.tableView.superview insertSubview:shadowView belowSubview:self.tableView];
+    
+    [NSLayoutConstraint activateConstraints:@[
+        [shadowView.leadingAnchor constraintEqualToAnchor:self.tableView.leadingAnchor],
+        [shadowView.trailingAnchor constraintEqualToAnchor:self.tableView.trailingAnchor],
+        [shadowView.topAnchor constraintEqualToAnchor:self.tableView.topAnchor],
+        [shadowView.bottomAnchor constraintEqualToAnchor:self.tableView.bottomAnchor]
+    ]];
+    
+    self.restoreViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    
+    self.restoreView.userInteractionEnabled = YES;
+    [self.restoreView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleRestoreTapGesture:)]];
+    
+    self.restoreLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
+    self.restoreLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
+        
+    self.restoreLabel.textColor = Design.MAIN_COLOR;
+    self.restoreLabel.font = Design.FONT_MEDIUM32;
+    
+    NSMutableAttributedString *restoreAttributedString = [[NSMutableAttributedString alloc] initWithString:TwinmeLocalizedString(@"account_migration_scanner_view_restore_title", nil)];
+    [restoreAttributedString addAttribute:NSUnderlineStyleAttributeName value:@1 range:NSMakeRange(0,[restoreAttributedString length])];
+    [self.restoreLabel setAttributedText:restoreAttributedString];
+    
+    [self loadItems];
 }
 
 - (void)handleDecodeWithURI:(nonnull NSURL *)uri {
@@ -439,6 +590,28 @@ static const CGFloat DESIGN_HIGHLIGHT_VIEW_CORNER_RADIUS = 4;
     [self handleDecodeWithURI:uri];
 }
 
+- (void)handleRestoreTapGesture:(UITapGestureRecognizer *)sender {
+    DDLogVerbose(@"%@ handleRestoreTapGesture: %@", LOG_TAG, sender);
+    
+    if (sender.state == UIGestureRecognizerStateEnded) {
+        OnboardingConfirmView *onboardingConfirmView = [[OnboardingConfirmView alloc] init];
+        onboardingConfirmView.bottomSheetViewDelegate = self;
+        onboardingConfirmView.tag = RESTORE_ALERT_TAG;
+        
+        UIImage *image = [UIImage imageNamed:@"OnboardingBackup"];
+        
+        NSString *title = TwinmeLocalizedString(@"account_migration_scanner_view_restore_title", nil);
+        NSString *message = [NSString stringWithFormat:@"%@\n\n%@", TwinmeLocalizedString(@"account_migration_scanner_view_restore_message",  nil), TwinmeLocalizedStringFromTable(@"restore_view_onboarding_words", @"LocalizableBackup", nil)];
+        
+        NSString *action = TwinmeLocalizedStringFromTable(@"restore_view_restore", @"LocalizableBackup", nil);
+        
+        [onboardingConfirmView initWithTitle:title message:message image:image action:action actionColor:nil cancel:TwinmeLocalizedString(@"application_cancel", nil)];
+        
+        [self.navigationController.view addSubview:onboardingConfirmView];
+        [onboardingConfirmView showConfirmView];
+    }
+}
+
 - (void)incorrectQRCode {
     DDLogVerbose(@"%@ incorrectQRCode", LOG_TAG);
         
@@ -460,21 +633,6 @@ static const CGFloat DESIGN_HIGHLIGHT_VIEW_CORNER_RADIUS = 4;
             [[UIApplication sharedApplication] openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString] options:@{} completionHandler:nil];
         }
     }
-}
-
-- (void)updateFont {
-    DDLogVerbose(@"%@ updateFont", LOG_TAG);
-    
-    [self.messageLabel setFont:Design.FONT_REGULAR34];
-    [self.messageScanLabel setFont:Design.FONT_MEDIUM32];
-    [self.messageNoPermissionScanLabel setFont:Design.FONT_MEDIUM32];
-}
-
-- (void)updateColor {
-    DDLogVerbose(@"%@ updateColor", LOG_TAG);
-    
-    self.qrcodeView.backgroundColor = Design.WHITE_COLOR;
-    self.messageLabel.textColor = Design.FONT_COLOR_DEFAULT;
 }
 
 - (void)onGetTwincodeNotFound {
@@ -623,6 +781,50 @@ static const CGFloat DESIGN_HIGHLIGHT_VIEW_CORNER_RADIUS = 4;
             self.qrcodeView.image = qrImage;
         });
     });
+}
+
+- (void)unlockBackup:(NSURL *)filePath {
+    DDLogVerbose(@"%@ unlockBackup", LOG_TAG);
+    
+    RestoreViewController *restoreViewController = [[UIStoryboard storyboardWithName:@"Backup" bundle:nil] instantiateViewControllerWithIdentifier:@"RestoreViewController"];
+    [restoreViewController initWithFileURL:filePath verifyMode:NO pickFileInApp:YES];
+    TwinmeNavigationController *navigationController = [[TwinmeNavigationController alloc] initWithRootViewController:restoreViewController];
+    [self presentViewController:navigationController animated:YES completion:nil];
+}
+
+- (void)loadItems {
+    DDLogVerbose(@"%@ loadItems", LOG_TAG);
+    
+    [self.accountMigrationItems removeAllObjects];
+    [self.accountMigrationItems addObject:[[UIAccountMigrationItem alloc] initWithPosition:1 text:TwinmeLocalizedString(@"account_migration_scanner_view_step_1", nil)]];
+    [self.accountMigrationItems addObject:[[UIAccountMigrationItem alloc] initWithPosition:2 text:TwinmeLocalizedString(@"account_migration_scanner_view_step_2", nil)]];
+    [self.accountMigrationItems addObject:[[UIAccountMigrationItem alloc] initWithPosition:3 text:TwinmeLocalizedString(@"account_migration_scanner_view_step_3", nil)]];
+    
+    if (self.fromCurrentDevice) {
+        [self.accountMigrationItems addObject:[[UIAccountMigrationItem alloc] initWithPosition:4 text:TwinmeLocalizedString(@"account_migration_scanner_view_step_4_another_device", nil)]];
+        [self.accountMigrationItems addObject:[[UIAccountMigrationItem alloc] initWithPosition:5 text:TwinmeLocalizedString(@"account_migration_scanner_view_step_5_my_device", nil)]];
+    } else {
+        [self.accountMigrationItems addObject:[[UIAccountMigrationItem alloc] initWithPosition:4 text:TwinmeLocalizedString(@"account_migration_scanner_view_step_4_my_device", nil)]];
+        [self.accountMigrationItems addObject:[[UIAccountMigrationItem alloc] initWithPosition:5 text:TwinmeLocalizedString(@"account_migration_scanner_view_step_5_another_device", nil)]];
+    }
+    
+    self.tableViewHeightConstraint.constant = roundf(DESIGN_CELL_HEIGHT * Design.HEIGHT_RATIO) * self.accountMigrationItems.count;
+}
+
+- (void)updateFont {
+    DDLogVerbose(@"%@ updateFont", LOG_TAG);
+    
+    [self.messageLabel setFont:Design.FONT_REGULAR34];
+    [self.messageScanLabel setFont:Design.FONT_MEDIUM32];
+    [self.messageNoPermissionScanLabel setFont:Design.FONT_MEDIUM32];
+}
+
+- (void)updateColor {
+    DDLogVerbose(@"%@ updateColor", LOG_TAG);
+    
+    self.qrcodeView.backgroundColor = Design.WHITE_COLOR;
+    self.messageLabel.textColor = Design.FONT_COLOR_DEFAULT;
+    self.tableView.backgroundColor = Design.POPUP_BACKGROUND_COLOR;
 }
 
 @end

@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2025 twinlife SA.
+ *  Copyright (c) 2025-2026 twinlife SA.
  *  SPDX-License-Identifier: AGPL-3.0-only
  *
  *  Contributors:
@@ -15,6 +15,7 @@
 #import <TwinmeCommon/AbstractTwinmeService.h>
 #import <TwinmeCommon/AbstractTwinmeService+Protected.h>
 #import <TwinmeCommon/Design.h>
+#import <TwinmeCommon/SettingsSectionHeaderCell.h>
 
 #import <Utils/NSString+Utils.h>
 
@@ -25,14 +26,15 @@
 #import "DebugSettingsViewController.h"
 
 #import "SettingsItemCell.h"
-#import "SettingsSectionHeaderCell.h"
 #import "SettingsInformationCell.h"
 #import "TwinmeSettingsItemCell.h"
 #import "ProxyCell.h"
 #import "ConnexionStatusCell.h"
+#import "SettingsValueItemCell.h"
 
 #import "SwitchView.h"
 #import "AlertMessageView.h"
+#import "MenuSelectValueView.h"
 #import "UIAppInfo.h"
 
 #if 0
@@ -46,13 +48,14 @@ static NSString *HEADER_SETTINGS_CELL_IDENTIFIER = @"HeaderSettingsCellIdentifie
 static NSString *SETTINGS_INFORMATION_CELL_IDENTIFIER = @"SettingsInformationCellIdentifier";
 static NSString *TWINME_SETTINGS_CELL_IDENTIFIER = @"TwinmeSettingsCellIdentifier";
 static NSString *CONNEXION_STATUS_CELL_IDENTIFIER = @"ConnexionStatusCellIdentifier";
+static NSString *SETTINGS_VALUE_CELL_IDENTIFIER = @"SettingsValueCellIdentifier";
 static NSString *PROXY_CELL_IDENTIFIER = @"ProxyCellIdentifier";
 
 //
 // Interface: SettingsAdvancedViewController ()
 //
 
-@interface SettingsAdvancedViewController () <SettingsActionDelegate, AlertMessageViewDelegate, AbstractTwinmeDelegate>
+@interface SettingsAdvancedViewController () <SettingsActionDelegate, AlertMessageViewDelegate, AbstractTwinmeDelegate, MenuSelectValueDelegate>
 
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 
@@ -66,9 +69,14 @@ static NSString *PROXY_CELL_IDENTIFIER = @"ProxyCellIdentifier";
 typedef enum {
     SECTION_CONNEXION_STATUS,
     SECTION_PROXIES,
+    SECTION_SECURITY,
+    SECTION_CONVERSATIONS,
     SECTION_DEBUG,
     SECTION_COUNT
 } SettingAdvancedSection;
+
+static const int PROXY_SWITCH_TAG = 0;
+static const int LINK_SWITCH_TAG = 1;
 
 //
 // Implementation: SettingsAdvancedViewController
@@ -122,8 +130,44 @@ typedef enum {
 - (void)switchChangeValue:(SwitchView *)updatedSwitch {
     DDLogVerbose(@"%@ switchChangeValue: %@", LOG_TAG, updatedSwitch);
     
-    [[self.twinmeContext getConnectivityService] saveWithProxyEnabled:updatedSwitch.isOn];
+    if (updatedSwitch.tag == PROXY_SWITCH_TAG) {
+        [[self.twinmeContext getConnectivityService] saveWithProxyEnabled:updatedSwitch.isOn];
+    } else if (updatedSwitch.tag == LINK_SWITCH_TAG) {
+        if (self.twinmeApplication.iceTransportMode == TLPeerConnectionServiceIceTransportModeRelay) {
+            AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
+            alertMessageView.alertMessageViewDelegate = self;
+            [alertMessageView initWithTitle:TwinmeLocalizedString(@"settings_advanced_view_security_title", nil) message:TwinmeLocalizedString(@"settings_advanced_view_security_unauthorized_update", nil)];
+            [self.navigationController.view addSubview:alertMessageView];
+            [alertMessageView showAlertView];
+        } else {
+            [self.twinmeApplication setVisualizationLinkWithState:updatedSwitch.isOn];
+        }
+    }
 }
+
+#pragma mark - MenuSelectValueDelegate
+
+- (void)selectValue:(MenuSelectValueView *)menuSelectValueView value:(int)value {
+    DDLogVerbose(@"%@ selectValue: %d", LOG_TAG, value);
+
+    [menuSelectValueView removeFromSuperview];
+    
+    [self.twinmeApplication setIceTransportModeWithMode:value];
+    [self.twinmeService updateIceTransportMode:value];
+    
+    if (value == TLPeerConnectionServiceIceTransportModeRelay) {
+        [self.twinmeApplication setVisualizationLinkWithState:NO];
+    }
+    
+    [self.tableView reloadData];
+}
+
+- (void)cancelMenuSelectValue:(MenuSelectValueView *)menuSelectValueView {
+    DDLogVerbose(@"%@ cancelMenuSelectValue: %@", LOG_TAG, menuSelectValueView);
+    
+    [menuSelectValueView removeFromSuperview];
+}
+
 
 #pragma mark - UITableViewDataSource
 
@@ -179,6 +223,14 @@ typedef enum {
             hideSeparator = YES;
             break;
             
+        case SECTION_SECURITY:
+            sectionName = TwinmeLocalizedString(@"settings_advanced_view_security_title", nil);
+            break;
+            
+        case SECTION_CONVERSATIONS:
+            sectionName = TwinmeLocalizedString(@"conversations_view_title", nil);
+            break;
+            
         case SECTION_DEBUG:
             sectionName = TwinmeLocalizedString(@"settings_advanced_view_debug", nil);
             break;
@@ -199,6 +251,8 @@ typedef enum {
     NSInteger numberOfRowsInSection;
     switch (section) {
         case SECTION_CONNEXION_STATUS:
+        case SECTION_SECURITY:
+        case SECTION_CONVERSATIONS:
             numberOfRowsInSection = 2;
             break;
             
@@ -236,6 +290,10 @@ typedef enum {
             } else {
                 text = TwinmeLocalizedString(@"proxy_view_information", nil);
             }
+        } else if (indexPath.section == SECTION_SECURITY) {
+            text = TwinmeLocalizedString(@"settings_advanced_view_security_info", nil);
+        } else if (indexPath.section == SECTION_CONVERSATIONS) {
+            text = TwinmeLocalizedString(@"settings_advanced_view_conversation_info", nil);
         }
         
         [cell bindWithText:text];
@@ -283,7 +341,7 @@ typedef enum {
             
             cell.settingsActionDelegate = self;
                         
-            [cell bindWithTitle:TwinmeLocalizedString(@"proxy_view_enable", nil) subTitle:nil icon:nil stateSwitch:[[self.twinmeContext getConnectivityService] isProxyEnabled] tagSwitch:0 hiddenSwitch:NO disableSwitch:self.proxies.count == 0 backgroundColor:Design.WHITE_COLOR hiddenSeparator:NO];
+            [cell bindWithTitle:TwinmeLocalizedString(@"proxy_view_enable", nil) subTitle:nil icon:nil stateSwitch:[[self.twinmeContext getConnectivityService] isProxyEnabled] tagSwitch:PROXY_SWITCH_TAG hiddenSwitch:NO disableSwitch:self.proxies.count == 0 backgroundColor:Design.WHITE_COLOR hiddenSeparator:NO];
             
             return cell;
         } else if (indexPath.row == self.proxies.count + 2) {
@@ -306,6 +364,45 @@ typedef enum {
             
             return cell;
         }
+    } else if (indexPath.section == SECTION_SECURITY) {
+        SettingsValueItemCell *cell = [tableView dequeueReusableCellWithIdentifier:SETTINGS_VALUE_CELL_IDENTIFIER];
+        if (!cell) {
+            cell = [[SettingsValueItemCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:SETTINGS_VALUE_CELL_IDENTIFIER];
+        }
+        
+        NSString *value;
+        switch (self.twinmeApplication.iceTransportMode) {
+            case TLPeerConnectionServiceIceTransportModeAll:
+                value = TwinmeLocalizedString(@"settings_advanced_view_security_optimized", nil);
+                break;
+                
+            case TLPeerConnectionServiceIceTransportModeTurns:
+                value = TwinmeLocalizedString(@"settings_advanced_view_security_advanced", nil);
+                break;
+                
+            case TLPeerConnectionServiceIceTransportModeRelay:
+                value = TwinmeLocalizedString(@"settings_advanced_view_security_expert", nil);
+                break;
+                
+            default:
+                value = @"";
+                break;
+        }
+        
+        [cell bindWithTitle:TwinmeLocalizedString(@"settings_advanced_view_security_level_title", nil) value:value icon:nil];
+        return cell;
+        
+    } else if (indexPath.section == SECTION_CONVERSATIONS) {
+        SettingsItemCell *cell = [tableView dequeueReusableCellWithIdentifier:SETTINGS_CELL_IDENTIFIER];
+        if (!cell) {
+            cell = [[SettingsItemCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:SETTINGS_CELL_IDENTIFIER];
+        }
+        
+        cell.settingsActionDelegate = self;
+        
+        [cell bindWithTitle:TwinmeLocalizedString(@"conversation_settings_view_link_title", nil) subTitle:TwinmeLocalizedString(@"conversation_settings_view_link_preview_message", nil) icon:nil stateSwitch:[[self.twinmeContext getConnectivityService] isProxyEnabled] tagSwitch:LINK_SWITCH_TAG hiddenSwitch:NO disableSwitch:self.twinmeApplication.iceTransportMode == TLPeerConnectionServiceIceTransportModeRelay backgroundColor:Design.WHITE_COLOR hiddenSeparator:NO];
+        
+        return cell;
     } else {
         TwinmeSettingsItemCell *cell = [tableView dequeueReusableCellWithIdentifier:TWINME_SETTINGS_CELL_IDENTIFIER];
         if (!cell) {
@@ -342,6 +439,8 @@ typedef enum {
             proxyViewController.proxyPosition = (int) (indexPath.row - 2);
             [self.navigationController pushViewController:proxyViewController animated:YES];
         }
+    } else if (indexPath.section == SECTION_SECURITY && indexPath.row == 1) {
+        [self openMenuSecurityLevel];
     } else if (indexPath.section == SECTION_DEBUG) {
         DebugSettingsViewController *debugSettingsViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"DebugSettingsViewController"];
         [self.navigationController pushViewController:debugSettingsViewController animated:YES];
@@ -379,7 +478,8 @@ typedef enum {
     [self.tableView registerNib:[UINib nibWithNibName:@"TwinmeSettingsItemCell" bundle:nil] forCellReuseIdentifier:TWINME_SETTINGS_CELL_IDENTIFIER];
     [self.tableView registerNib:[UINib nibWithNibName:@"ConnexionStatusCell" bundle:nil] forCellReuseIdentifier:CONNEXION_STATUS_CELL_IDENTIFIER];
     [self.tableView registerNib:[UINib nibWithNibName:@"ProxyCell" bundle:nil] forCellReuseIdentifier:PROXY_CELL_IDENTIFIER];
-    
+    [self.tableView registerNib:[UINib nibWithNibName:@"SettingsValueItemCell" bundle:nil] forCellReuseIdentifier:SETTINGS_VALUE_CELL_IDENTIFIER];
+
     self.tableView.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
 }
 
@@ -394,6 +494,16 @@ typedef enum {
         [self.twinmeContext removeDelegate:self.twinmeServiceDelegate];
         self.twinmeServiceDelegate = nil;
     }
+}
+
+- (void)openMenuSecurityLevel {
+    DDLogVerbose(@"%@ openMenuSecurityLevel", LOG_TAG);
+    
+    MenuSelectValueView *menuSelectValueView = [[MenuSelectValueView alloc]init];
+    menuSelectValueView.menuSelectValueDelegate = self;
+    [self.tabBarController.view addSubview:menuSelectValueView];
+    [menuSelectValueView setMenuSelectValueTypeWithType:MenuSelectValueTypeSecurityLevel defaultValue:(int)self.twinmeApplication.iceTransportMode];
+    [menuSelectValueView openMenu];
 }
 
 - (void)reloadData {
@@ -422,7 +532,7 @@ typedef enum {
 
 - (BOOL)isInformationPath:(NSIndexPath *)indexPath {
     
-    if ((indexPath.section == SECTION_CONNEXION_STATUS || indexPath.section == SECTION_PROXIES) && indexPath.row == 0) {
+    if (indexPath.section != SECTION_DEBUG && indexPath.row == 0) {
         return YES;
     }
     

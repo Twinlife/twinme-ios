@@ -35,4 +35,6 @@
 
 - (BOOL)isLocalDescriptor;
 
+- (BOOL)isSilentMode;
+
 @end

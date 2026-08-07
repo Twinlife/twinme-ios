@@ -15,11 +15,12 @@
 #import "SoundSettingsViewController.h"
 #import "MessageSettingsViewController.h"
 #import "SettingsItemCell.h"
-#import "SettingsSectionHeaderCell.h"
 #import "TwinmeSettingsItemCell.h"
 
 #import <TwinmeCommon/Design.h>
 #import <TwinmeCommon/NotificationSound.h>
+#import <TwinmeCommon/SettingsSectionHeaderCell.h>
+
 #import "SelectNotificationSoundViewController.h"
 #import "SwitchView.h"
 

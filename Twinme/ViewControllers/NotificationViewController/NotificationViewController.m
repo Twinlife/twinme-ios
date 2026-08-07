@@ -536,6 +536,7 @@ static NSString *NOTIFICATION_CELL_IDENTIFIER = @"NotificationCellIdentifier";
         case TLNotificationTypeNewVideoMessage:
         case TLNotificationTypeNewFileMessage:
         case TLNotificationTypeNewPollMessage:
+        case TLNotificationTypeNewContactShare:
         case TLNotificationTypeUpdatedAnnotation:
         case TLNotificationTypeResetConversation: {
             if ([subject isKindOfClass:[TLGroup class]]) {
@@ -550,6 +551,7 @@ static NSString *NOTIFICATION_CELL_IDENTIFIER = @"NotificationCellIdentifier";
             } else if ([subject conformsToProtocol:@protocol(TLOriginator)]) {
                 ConversationViewController *conversationViewController = (ConversationViewController *)[self.storyboard instantiateViewControllerWithIdentifier:@"ConversationViewController"];
                 [conversationViewController initWithContact:(id<TLOriginator>) subject];
+                [conversationViewController scrollToDescriptor:notification.descriptorId];
                 [self.navigationController pushViewController:conversationViewController animated:YES];
             }
             break;

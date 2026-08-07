@@ -20,7 +20,7 @@
 #import "SuccessAuthentifiedRelationView.h"
 
 #import "AlertMessageView.h"
-#import "OnboardingConfirmView.h"
+#import <TwinmeCommon/OnboardingConfirmView.h>
 
 #import <TwinmeCommon/Design.h>
 #import <TwinmeCommon/MainViewController.h>

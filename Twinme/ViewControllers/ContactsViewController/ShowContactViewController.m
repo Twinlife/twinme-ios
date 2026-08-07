@@ -36,18 +36,21 @@
 #import "ContactCapabilitiesViewController.h"
 #import "CoachMarkViewController.h"
 #import "ExportViewController.h"
+#import "ConversationNotificationsViewController.h"
 #import "TypeCleanupViewController.h"
 #import "ConversationFilesViewController.h"
 #import "AuthentifiedRelationViewController.h"
+#import "ShareContactViewController.h"
 
 #import "AlertMessageView.h"
 #import "InsideBorderView.h"
 #import "DeviceAuthorization.h"
-#import "OnboardingConfirmView.h"
 #import "SlideContactView.h"
 #import "MenuCertifyView.h"
-#import "PaddingLabel.h"
 #import "UIView+Toast.h"
+
+#import <TwinmeCommon/OnboardingConfirmView.h>
+#import <TwinmeCommon/PaddingLabel.h>
 
 #if 0
 static const int ddLogLevel = DDLogLevelVerbose;
@@ -65,7 +68,7 @@ static CGFloat DESIGN_NAME_DEFAULT_WIDTH = 420;
 
 @class ShowContactViewControllerTwinmeContextDelegate;
 
-@interface ShowContactViewController () <ShowContactServiceDelegate, AlertMessageViewDelegate, CoachMarkDelegate, MenuCertifyViewDelegate, BottomSheetViewDelegate>
+@interface ShowContactViewController () <ShowContactServiceDelegate, AlertMessageViewDelegate, CoachMarkDelegate, MenuCertifyViewDelegate, BottomSheetViewDelegate, ShareContactViewDelegate>
 
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *nameLabelXConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *certifiedRelationImageViewHeightConstraint;
@@ -106,10 +109,34 @@ static CGFloat DESIGN_NAME_DEFAULT_WIDTH = 420;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *authentifiedRelationAccessoryViewTrailingConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *authentifiedRelationAccessoryViewHeightConstraint;
 @property (weak, nonatomic) IBOutlet UIImageView *authentifiedRelationAccessoryView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *shareContactViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *shareContactViewTopConstraint;
+@property (weak, nonatomic) IBOutlet InsideBorderView *shareContactView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *shareContactImageViewLeadingConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *shareContactImageViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet UIImageView *shareContactImageView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *shareContactLabelLeadingConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *shareContactLabelTrailingConstraint;
+@property (weak, nonatomic) IBOutlet UILabel *shareContactLabel;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *shareContactAccessoryViewTrailingConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *shareContactAccessoryViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet UIImageView *shareContactAccessoryView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *settingsTitleLabelLeadingConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *settingsTitleLabelTrailingConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *settingsTitleLabelTopConstraint;
 @property (weak, nonatomic) IBOutlet UILabel *settingsTitleLabel;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *notificationsViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *notificationsViewTopConstraint;
+@property (weak, nonatomic) IBOutlet InsideBorderView *notificationsView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *notificationsImageViewLeadingConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *notificationsImageViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet UIImageView *notificationsImageView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *notificationsLabelLeadingConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *notificationsLabelTrailingConstraint;
+@property (weak, nonatomic) IBOutlet UILabel *notificationsLabel;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *notificationsAccessoryViewTrailingConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *notificationsAccessoryViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet UIImageView *notificationsAccessoryView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *settingsViewHeightConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *settingsViewTopConstraint;
 @property (weak, nonatomic) IBOutlet InsideBorderView *settingsView;
@@ -524,6 +551,23 @@ static CGFloat DESIGN_NAME_DEFAULT_WIDTH = 420;
     [abstractBottomSheetView removeFromSuperview];
 }
 
+#pragma mark - ShareContactViewDelegate
+
+- (void)didCancelShareContactView {
+    DDLogVerbose(@"%@ didCancelShareContactView", LOG_TAG);
+    
+}
+
+- (void)didSelectContactToShare:(TLContact *)contact {
+    DDLogVerbose(@"%@ didSelectContactToShare: %@", LOG_TAG, contact);
+    
+    self.navigationController.navigationBarHidden = NO;
+    ConversationViewController *conversationViewController = (ConversationViewController *)[[UIStoryboard storyboardWithName:@"iPhone" bundle:nil] instantiateViewControllerWithIdentifier:@"ConversationViewController"];
+    [conversationViewController initWithContact:self.contact];
+    [conversationViewController initWiwhContactToShare:contact];
+    [self.navigationController pushViewController:conversationViewController animated:YES];
+}
+
 #pragma mark - Private methods
 
 - (void)initViews {
@@ -598,6 +642,9 @@ static CGFloat DESIGN_NAME_DEFAULT_WIDTH = 420;
     UITapGestureRecognizer *authentifiedRelationViewGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleAuthentifiedRelationTapGesture:)];
     [self.authentifiedRelationView addGestureRecognizer:authentifiedRelationViewGestureRecognizer];
     
+    self.authentifiedRelationView.accessibilityLabel = TwinmeLocalizedString(@"authentified_relation_view_title", nil);;
+    self.authentifiedRelationView.isAccessibilityElement = YES;
+    
     [self.authentifiedRelationView setBorder:Design.SEPARATOR_COLOR_GREY borderWidth:Design.SEPARATOR_HEIGHT width:Design.DISPLAY_WIDTH height:self.authentifiedRelationViewHeightConstraint.constant left:false right:false top:true bottom:true];
     
     self.authentifiedRelationImageViewLeadingConstraint.constant *= Design.WIDTH_RATIO;
@@ -617,19 +664,72 @@ static CGFloat DESIGN_NAME_DEFAULT_WIDTH = 420;
     self.authentifiedRelationAccessoryView.tintColor = Design.ACCESSORY_COLOR;
     self.authentifiedRelationAccessoryView.image = [self.authentifiedRelationAccessoryView.image imageFlippedForRightToLeftLayoutDirection];
     
+    self.shareContactViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    self.shareContactViewTopConstraint.constant *= Design.HEIGHT_RATIO;
+    
+    UITapGestureRecognizer *shareContactViewGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleShareContactTapGesture:)];
+    [self.shareContactView addGestureRecognizer:shareContactViewGestureRecognizer];
+    self.shareContactView.accessibilityLabel = TwinmeLocalizedString(@"show_contact_view_share_contact", nil);;
+    self.shareContactView.isAccessibilityElement = YES;
+    [self.shareContactView setBorder:Design.SEPARATOR_COLOR_GREY borderWidth:Design.SEPARATOR_HEIGHT width:Design.DISPLAY_WIDTH height:self.shareContactViewHeightConstraint.constant left:false right:false top:true bottom:true];
+    
+    self.shareContactImageViewLeadingConstraint.constant *= Design.WIDTH_RATIO;
+    self.shareContactImageViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    self.shareContactImageView.tintColor = Design.UNSELECTED_TAB_COLOR;
+    
+    self.shareContactLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
+    self.shareContactLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
+
+    self.shareContactLabel.text = TwinmeLocalizedString(@"show_contact_view_share_contact", nil);
+    self.shareContactLabel.font = Design.FONT_REGULAR34;
+    self.shareContactLabel.textColor = Design.FONT_COLOR_DEFAULT;
+    
+    self.shareContactAccessoryViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    self.shareContactAccessoryViewTrailingConstraint.constant *= Design.HEIGHT_RATIO;
+    
+    self.shareContactAccessoryView.tintColor = Design.ACCESSORY_COLOR;
+    self.shareContactAccessoryView.image = [self.shareContactAccessoryView.image imageFlippedForRightToLeftLayoutDirection];
+    
     self.settingsTitleLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
     self.settingsTitleLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
     self.settingsTitleLabelTopConstraint.constant *= Design.HEIGHT_RATIO;
     
     self.settingsTitleLabel.font = Design.FONT_BOLD26;
     self.settingsTitleLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    self.settingsTitleLabel.text = TwinmeLocalizedString(@"navigation_view_settings", nil).uppercaseString;
+    self.settingsTitleLabel.text = TwinmeLocalizedString(@"application_configuration", nil).uppercaseString;
+    
+    self.notificationsViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    self.notificationsViewTopConstraint.constant *= Design.HEIGHT_RATIO;
+    
+    UITapGestureRecognizer *notificationsViewGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleNotificationsTapGesture:)];
+    [self.notificationsView addGestureRecognizer:notificationsViewGestureRecognizer];
+    
+    self.notificationsView.accessibilityLabel = TwinmeLocalizedString(@"application_notifications", nil);;
+    self.notificationsView.isAccessibilityElement = YES;
+    
+    [self.notificationsView setBorder:Design.SEPARATOR_COLOR_GREY borderWidth:Design.SEPARATOR_HEIGHT width:Design.DISPLAY_WIDTH height:self.notificationsViewHeightConstraint.constant left:false right:false top:true bottom:true];
+    
+    self.notificationsImageViewLeadingConstraint.constant *= Design.HEIGHT_RATIO;
+    self.notificationsImageViewHeightConstraint.constant *= Design.WIDTH_RATIO;
+    self.notificationsImageView.tintColor = Design.UNSELECTED_TAB_COLOR;
+    
+    self.notificationsLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
+    self.notificationsLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
+    self.notificationsLabel.text = TwinmeLocalizedString(@"application_notifications", nil);
+        
+    self.notificationsAccessoryViewTrailingConstraint.constant *= Design.WIDTH_RATIO;
+    self.notificationsAccessoryViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    self.notificationsAccessoryView.tintColor = Design.ACCESSORY_COLOR;
+    self.notificationsAccessoryView.image = [self.notificationsAccessoryView.image imageFlippedForRightToLeftLayoutDirection];
     
     self.settingsViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     self.settingsViewTopConstraint.constant *= Design.HEIGHT_RATIO;
     
     UITapGestureRecognizer *settingsViewGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSettingsTapGesture:)];
     [self.settingsView addGestureRecognizer:settingsViewGestureRecognizer];
+    
+    self.settingsView.accessibilityLabel = TwinmeLocalizedString(@"contact_capabilities_view_call_settings", nil);;
+    self.settingsView.isAccessibilityElement = YES;
     
     [self.settingsView setBorder:Design.SEPARATOR_COLOR_GREY borderWidth:Design.SEPARATOR_HEIGHT width:Design.DISPLAY_WIDTH height:self.settingsViewHeightConstraint.constant left:false right:false top:true bottom:true];
     
@@ -652,7 +752,6 @@ static CGFloat DESIGN_NAME_DEFAULT_WIDTH = 420;
     self.settingsNewLabel.userInteractionEnabled = YES;
     self.settingsNewLabel.backgroundColor = Design.MAIN_COLOR;
     self.settingsNewLabel.layer.cornerRadius = self.settingsNewLabelHeightConstraint.constant * 0.5;
-    self.settingsNewLabel.hidden = YES;
     
     UITapGestureRecognizer *settingsNewFeatureViewGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSettingsNewFeatureTapGesture:)];
     [self.settingsNewLabel addGestureRecognizer:settingsNewFeatureViewGestureRecognizer];
@@ -680,6 +779,9 @@ static CGFloat DESIGN_NAME_DEFAULT_WIDTH = 420;
     UITapGestureRecognizer *lastCallViewGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleLastCallsTapGesture:)];
     [self.lastCallView addGestureRecognizer:lastCallViewGestureRecognizer];
     
+    self.lastCallView.accessibilityLabel = TwinmeLocalizedString(@"show_contact_view_last_calls", nil);;
+    self.lastCallView.isAccessibilityElement = YES;
+    
     [self.lastCallView setBorder:Design.SEPARATOR_COLOR_GREY borderWidth:Design.SEPARATOR_HEIGHT width:Design.DISPLAY_WIDTH height:self.lastCallViewHeightConstraint.constant left:false right:false top:true bottom:true];
     
     self.lastCallImageViewLeadingConstraint.constant *= Design.WIDTH_RATIO;
@@ -704,6 +806,9 @@ static CGFloat DESIGN_NAME_DEFAULT_WIDTH = 420;
     
     UITapGestureRecognizer *filesViewGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleFilesTapGesture:)];
     [self.filesView addGestureRecognizer:filesViewGestureRecognizer];
+    
+    self.filesView.accessibilityLabel = TwinmeLocalizedString(@"conversation_files_view_title", nil);;
+    self.filesView.isAccessibilityElement = YES;
     
     [self.filesView setBorder:Design.SEPARATOR_COLOR_GREY borderWidth:Design.SEPARATOR_HEIGHT width:Design.DISPLAY_WIDTH height:self.filesViewHeightConstraint.constant left:false right:false top:true bottom:true];
     
@@ -730,6 +835,9 @@ static CGFloat DESIGN_NAME_DEFAULT_WIDTH = 420;
     UITapGestureRecognizer *exportViewGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleExportTapGesture:)];
     [self.exportView addGestureRecognizer:exportViewGestureRecognizer];
     
+    self.exportView.accessibilityLabel = TwinmeLocalizedString(@"show_contact_view_export_contents", nil);;
+    self.exportView.isAccessibilityElement = YES;
+    
     [self.exportView setBorder:Design.SEPARATOR_COLOR_GREY borderWidth:Design.SEPARATOR_HEIGHT width:Design.DISPLAY_WIDTH height:self.exportViewHeightConstraint.constant left:false right:false top:true bottom:true];
     
     self.exportImageViewLeadingConstraint.constant *= Design.WIDTH_RATIO;
@@ -754,6 +862,9 @@ static CGFloat DESIGN_NAME_DEFAULT_WIDTH = 420;
     
     UITapGestureRecognizer *cleanViewGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleCleanTapGesture:)];
     [self.cleanView addGestureRecognizer:cleanViewGestureRecognizer];
+    
+    self.cleanView.accessibilityLabel = TwinmeLocalizedString(@"show_contact_view_cleanup", nil);;
+    self.cleanView.isAccessibilityElement = YES;
     
     [self.cleanView setBorder:Design.SEPARATOR_COLOR_GREY borderWidth:Design.SEPARATOR_HEIGHT width:Design.DISPLAY_WIDTH height:self.cleanViewHeightConstraint.constant left:false right:false top:true bottom:true];
     
@@ -1007,6 +1118,20 @@ static CGFloat DESIGN_NAME_DEFAULT_WIDTH = 420;
     }
 }
 
+- (void)handleShareContactTapGesture:(UITapGestureRecognizer *)sender {
+    DDLogVerbose(@"%@ handleShareContactTapGesture: %@", LOG_TAG, sender);
+    
+    if (self.contact && sender.state == UIGestureRecognizerStateEnded) {
+        ShareContactViewController *shareContactViewController = (ShareContactViewController *)[self.storyboard instantiateViewControllerWithIdentifier:@"ShareContactViewController"];
+        shareContactViewController.shareContactViewDelegate = self;
+        [shareContactViewController initWithContact:self.contact];
+        
+        TwinmeNavigationController *navigationController = [[TwinmeNavigationController alloc]initWithRootViewController:shareContactViewController];
+        [self presentViewController:navigationController animated:YES completion:nil];
+        self.startModal = YES;
+    }
+}
+
 - (void)handleLastCallsTapGesture:(UITapGestureRecognizer *)sender {
     DDLogVerbose(@"%@ handleLastCallsTapGesture: %@", LOG_TAG, sender);
     
@@ -1035,6 +1160,17 @@ static CGFloat DESIGN_NAME_DEFAULT_WIDTH = 420;
     }
 }
 
+- (void)handleNotificationsTapGesture:(UITapGestureRecognizer *)sender {
+    DDLogVerbose(@"%@ handleNotificationsTapGesture: %@", LOG_TAG, sender);
+    
+    if (self.contact && sender.state == UIGestureRecognizerStateEnded) {
+        self.navigationController.navigationBarHidden = NO;
+        ConversationNotificationsViewController *conversationNotificationsViewController = (ConversationNotificationsViewController *)[self.storyboard instantiateViewControllerWithIdentifier:@"ConversationNotificationsViewController"];
+        [conversationNotificationsViewController initWithOriginator:self.contact];
+        [self.navigationController pushViewController:conversationNotificationsViewController animated:YES];
+    }
+}
+
 - (void)handleSettingsTapGesture:(UITapGestureRecognizer *)sender {
     DDLogVerbose(@"%@ handleSettingsTapGesture: %@", LOG_TAG, sender);
     
@@ -1052,8 +1188,16 @@ static CGFloat DESIGN_NAME_DEFAULT_WIDTH = 420;
     if (sender.state == UIGestureRecognizerStateEnded) {
         OnboardingConfirmView *onboardingConfirmView = [[OnboardingConfirmView alloc] init];
         onboardingConfirmView.bottomSheetViewDelegate = self;
-        onboardingConfirmView.tag = OnboardingTypeRemoteCameraSettings;
-        [onboardingConfirmView initWithTitle:TwinmeLocalizedString(@"call_view_camera_control_needs_help", nil) message: TwinmeLocalizedString(@"contact_capabilities_view_camera_control_onboarding", nil) image:[UIImage imageNamed:@"OnboardingControlCamera"] action:TwinmeLocalizedString(@"application_ok", nil) actionColor:nil cancel:TwinmeLocalizedString(@"application_do_not_display", nil)];
+        onboardingConfirmView.tag = OnboardingTypeShareContact;
+        
+        NSMutableString *message = [[NSMutableString alloc] initWithString:@""];
+        [message appendString:TwinmeLocalizedString(@"share_contact_view_onboarding_part_1", nil)];
+        [message appendString:@"\n\n"];
+        [message appendString:TwinmeLocalizedString(@"share_contact_view_onboarding_part_2", nil)];
+        [message appendString:@"\n\n"];
+        [message appendString:TwinmeLocalizedString(@"share_contact_view_onboarding_part_3", nil)];
+        
+        [onboardingConfirmView initWithTitle:TwinmeLocalizedString(@"privacy_view_share_invitation_title", nil) message:message image:[UIImage imageNamed:@"OnboardingShareContact"] action:TwinmeLocalizedString(@"application_ok", nil) actionColor:nil cancel:TwinmeLocalizedString(@"application_do_not_display", nil)];
         [onboardingConfirmView hideCancelAction];
         [self.navigationController.view addSubview:onboardingConfirmView];
         [onboardingConfirmView showConfirmView];
@@ -1182,6 +1326,8 @@ static CGFloat DESIGN_NAME_DEFAULT_WIDTH = 420;
     self.historyTitleLabel.font = Design.FONT_BOLD26;
     self.settingsTitleLabel.font = Design.FONT_BOLD26;
     self.settingsLabel.font = Design.FONT_REGULAR34;
+    self.notificationsLabel.font = Design.FONT_REGULAR34;
+    self.shareContactLabel.font = Design.FONT_REGULAR34;
     self.settingsNewLabel.font = Design.FONT_MEDIUM32;
     self.conversationsTitleLabel.font = Design.FONT_BOLD26;
     self.lastCallLabel.font = Design.FONT_REGULAR34;
@@ -1202,8 +1348,10 @@ static CGFloat DESIGN_NAME_DEFAULT_WIDTH = 420;
     self.videoLabel.textColor = Design.FONT_COLOR_DEFAULT;
     self.audioLabel.textColor = Design.FONT_COLOR_DEFAULT;
     self.conversationsTitleLabel.textColor = Design.FONT_COLOR_DEFAULT;
+    self.shareContactLabel.textColor = Design.FONT_COLOR_DEFAULT;
     self.settingsTitleLabel.textColor = Design.FONT_COLOR_DEFAULT;
     self.settingsLabel.textColor = Design.FONT_COLOR_DEFAULT;
+    self.notificationsLabel.textColor = Design.FONT_COLOR_DEFAULT;
     self.settingsNewLabel.backgroundColor = Design.MAIN_COLOR;
     self.historyTitleLabel.textColor = Design.FONT_COLOR_DEFAULT;
     self.lastCallLabel.textColor = Design.FONT_COLOR_DEFAULT;

@@ -23,7 +23,6 @@
 #import "MessageSettingsViewController.h"
 #import "WebViewController.h"
 #import "TwinmeSettingsItemCell.h"
-#import "SettingsSectionHeaderCell.h"
 #import "DefaultProfileCell.h"
 #import "AddProfileViewController.h"
 #import "AccountViewController.h"
@@ -41,8 +40,10 @@
 #import <TwinmeCommon/ApplicationDelegate.h>
 #import <TwinmeCommon/Design.h>
 #import <TwinmeCommon/MainViewController.h>
+#import <TwinmeCommon/SettingsSectionHeaderCell.h>
 #import <TwinmeCommon/TwinmeNavigationController.h>
 #import <TwinmeCommon/UIViewController+Utils.h>
+
 #import "TabBarViewController.h"
 #import "UIProfile.h"
 #import "UIPremiumFeature.h"

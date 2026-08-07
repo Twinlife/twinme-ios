@@ -34,6 +34,8 @@
 
 - (void)initWithProfile:(nullable TLProfile *)profile url:(nullable NSURL *)url descriptorId:(nullable TLDescriptorId *)descriptorId originatorId:(nullable NSUUID *)originatorId isGroup:(BOOL)isGroup notification:(nullable TLNotification *)notification popToRootViewController:(BOOL)popToRootViewController;
 
+- (void)initShareContact:(nullable NSString *)fromName;
+
 - (void)showInView:(nonnull UIView *)view;
 
 @end

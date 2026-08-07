@@ -67,7 +67,7 @@
 - (void)getImageWithGroup:(nonnull TLGroup *)group withBlock:(nonnull void (^)(UIImage *_Nonnull image))block;
 
 /// Build a URL to redirect to the Twinme application with the given Contact/Group.  The URL allows to launch Twinme.
-- (nonnull NSURL *)getConversationURLWithOriginator:(nonnull id<TLOriginator>)originator;
+- (nonnull NSURL *)getConversationURLWithOriginator:(nonnull id<TLOriginator>)originator  startPreviewFile:(BOOL)startPreviewFile;
 
 - (nonnull TLSpaceSettings *)getDefaultSpaceSettings;
 

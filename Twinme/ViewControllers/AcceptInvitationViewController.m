@@ -64,21 +64,30 @@ static const CGFloat DESIGN_CANCEL_HEIGHT = 140;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *slideMarkViewHeightConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *slideMarkViewWidthConstraint;
 @property (weak, nonatomic) IBOutlet UIView *slideMarkView;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *avatarContainerViewHeightConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *avatarContainerViewTopConstraint;
-@property (weak, nonatomic) IBOutlet UIView *avatarContainerView;
-@property (weak, nonatomic) IBOutlet UIImageView *avatarView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *leftAvatarContainerViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *leftAvatarContainerViewTopConstraint;
+@property (weak, nonatomic) IBOutlet UIView *leftAvatarContainerView;
+@property (weak, nonatomic) IBOutlet UIImageView *leftAvatarView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *rightAvatarContainerViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *rightAvatarContainerViewTopConstraint;
+@property (weak, nonatomic) IBOutlet UIView *rightAvatarContainerView;
+@property (weak, nonatomic) IBOutlet UIImageView *rightAvatarView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *lineLeftViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *lineLeftViewLeadingConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *lineLeftViewTrailingConstraint;
+@property (weak, nonatomic) IBOutlet UIView *lineLeftView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *lineRightViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *lineRightViewLeadingConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *lineRightViewTrailingConstraint;
+@property (weak, nonatomic) IBOutlet UIView *lineRightView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *iconViewHeightConstraint;
 @property (weak, nonatomic) IBOutlet UIView *iconView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *iconImageViewHeightConstraint;
 @property (weak, nonatomic) IBOutlet UIImageView *iconImageView;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *bulletViewHeightConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *bulletViewTrailingConstraint;
-@property (weak, nonatomic) IBOutlet UIView *bulletView;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *nameLabelTopConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *nameLabelLeadingConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *nameLabelTrailingConstraint;
-@property (weak, nonatomic) IBOutlet UILabel *nameLabel;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *nameLeftLabelTopConstraint;
+@property (weak, nonatomic) IBOutlet UILabel *nameLeftLabel;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *nameRightLabelTopConstraint;
+@property (weak, nonatomic) IBOutlet UILabel *nameRightLabel;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *messageLabelTopConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *messageLabelLeadingConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *messageLabelTrailingConstraint;
@@ -110,6 +119,7 @@ static const CGFloat DESIGN_CANCEL_HEIGHT = 140;
 @property (nonatomic) TLNotification *notification;
 @property (nonatomic) TLContact *contact;
 @property (nonatomic) NSURL *url;
+@property (nonatomic, nullable) NSString *fromName;
 
 @property (nonatomic) AcceptInvitationService *acceptInvitationService;
 
@@ -197,6 +207,12 @@ static const CGFloat DESIGN_CANCEL_HEIGHT = 140;
     self.notification = notification;
 }
 
+- (void)initShareContact:(nullable NSString *)fromName {
+    DDLogVerbose(@"%@ initShareContact: %@", LOG_TAG, fromName);
+    
+    self.fromName = fromName;
+}
+
 - (void)showInView:(UIView *)view {
     DDLogVerbose(@"%@ showInView: %@", LOG_TAG, view);
     
@@ -204,6 +220,7 @@ static const CGFloat DESIGN_CANCEL_HEIGHT = 140;
     [view addSubview:self.view];
     [self showActionView];
 }
+
 
 #pragma mark - AcceptInvitationServiceDelegate
 
@@ -330,7 +347,14 @@ static const CGFloat DESIGN_CANCEL_HEIGHT = 140;
         self.messageLabel.text = TwinmeLocalizedString(@"accept_invitation_view_existing_contact_message", nil);
     } else {
         self.hasExistingContact = NO;
-        self.messageLabel.text = [NSString stringWithFormat:TwinmeLocalizedString(@"accept_invitation_view_message", nil), self.contactName];
+        if (self.fromName) {
+            NSMutableString *message = [[NSMutableString alloc] initWithString: [NSString stringWithFormat:TwinmeLocalizedString(@"share_contact_accept_view_message", nil), self.fromName, self.contactName]];
+            [message appendString:@"\n"];
+            [message appendString:[NSString stringWithFormat:TwinmeLocalizedString(@"share_contact_accept_view_invite_message", nil), self.contactName]];
+            self.messageLabel.text = message;
+        } else {
+            self.messageLabel.text = [NSString stringWithFormat:TwinmeLocalizedString(@"accept_invitation_view_message", nil), self.contactName];
+        }
     }
 }
 
@@ -441,7 +465,7 @@ static const CGFloat DESIGN_CANCEL_HEIGHT = 140;
     
     [self.view insertSubview:self.overlayView atIndex:0];
     
-    UITapGestureRecognizer *tapOverlayGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleCancelTapGesture:)];
+    UITapGestureRecognizer *tapOverlayGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleOverlayTapGesture:)];
     [self.overlayView addGestureRecognizer:tapOverlayGestureRecognizer];
     
     self.actionViewTopConstraint.constant *= Design.HEIGHT_RATIO;
@@ -465,37 +489,63 @@ static const CGFloat DESIGN_CANCEL_HEIGHT = 140;
     self.slideMarkView.layer.cornerRadius = self.slideMarkViewHeightConstraint.constant * 0.5;
     self.slideMarkView.clipsToBounds = YES;
     
-    self.avatarContainerViewTopConstraint.constant *= Design.HEIGHT_RATIO;
-    self.avatarContainerViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    self.leftAvatarContainerViewTopConstraint.constant *= Design.HEIGHT_RATIO;
+    self.leftAvatarContainerViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     
-    self.avatarContainerView.clipsToBounds = YES;
-    self.avatarContainerView.layer.cornerRadius = self.avatarContainerViewHeightConstraint.constant * 0.5f;
-    self.avatarContainerView.layer.borderWidth = 3.f;
-    self.avatarContainerView.layer.borderColor = [UIColor whiteColor].CGColor;
+    self.leftAvatarContainerView.clipsToBounds = YES;
+    self.leftAvatarContainerView.layer.cornerRadius = self.leftAvatarContainerViewHeightConstraint.constant * 0.5f;
+    self.leftAvatarContainerView.layer.borderWidth = 3.f;
+    self.leftAvatarContainerView.layer.borderColor = [UIColor whiteColor].CGColor;
 
-    self.avatarContainerView.layer.shadowOpacity = Design.SHADOW_OPACITY;
-    self.avatarContainerView.layer.shadowOffset = Design.SHADOW_OFFSET;
-    self.avatarContainerView.layer.shadowRadius = Design.SHADOW_RADIUS;
-    self.avatarContainerView.layer.shadowColor = [UIColor blackColor].CGColor;
-    self.avatarContainerView.layer.masksToBounds = NO;
+    self.leftAvatarContainerView.layer.shadowOpacity = Design.SHADOW_OPACITY;
+    self.leftAvatarContainerView.layer.shadowOffset = Design.SHADOW_OFFSET;
+    self.leftAvatarContainerView.layer.shadowRadius = Design.SHADOW_RADIUS;
+    self.leftAvatarContainerView.layer.shadowColor = [UIColor blackColor].CGColor;
+    self.leftAvatarContainerView.layer.masksToBounds = NO;
     
-    self.avatarView.clipsToBounds = YES;
-    self.avatarView.layer.cornerRadius = self.avatarContainerViewHeightConstraint.constant * 0.5f;
-    self.avatarView.image = self.contactAvatar;
+    self.leftAvatarView.clipsToBounds = YES;
+    self.leftAvatarView.layer.cornerRadius = self.leftAvatarContainerViewHeightConstraint.constant * 0.5f;
+    self.leftAvatarView.image = self.contactAvatar;
     
-    self.nameLabelTopConstraint.constant *= Design.HEIGHT_RATIO;
-    self.nameLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
-    self.nameLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
+    self.rightAvatarContainerViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    self.rightAvatarContainerViewTopConstraint.constant *= Design.HEIGHT_RATIO;
     
-    if (self.contactName) {
-        NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:self.contactName attributes:[NSDictionary dictionaryWithObjectsAndKeys: Design.FONT_BOLD44, NSFontAttributeName, Design.FONT_COLOR_DEFAULT, NSForegroundColorAttributeName, nil]];
-        if (![self.contactDescription isEqual:@""] && ![self.contactDescription isEqual:TwinmeLocalizedString(@"navigation_view_about_twinme", nil)]) {
-            [attributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:@"\n"]];
-            [attributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:self.contactDescription attributes:[NSDictionary dictionaryWithObjectsAndKeys: Design.FONT_MEDIUM30, NSFontAttributeName, Design.FONT_COLOR_GREY, NSForegroundColorAttributeName, nil]]];
-        }
+    self.rightAvatarContainerView.clipsToBounds = YES;
+    self.rightAvatarContainerView.layer.cornerRadius = self.rightAvatarContainerViewHeightConstraint.constant * 0.5f;
+    self.rightAvatarContainerView.layer.borderWidth = 3.f;
+    self.rightAvatarContainerView.layer.borderColor = [UIColor whiteColor].CGColor;
+    
+    self.rightAvatarContainerView.layer.shadowOpacity = Design.SHADOW_OPACITY;
+    self.rightAvatarContainerView.layer.shadowOffset = Design.SHADOW_OFFSET;
+    self.rightAvatarContainerView.layer.shadowRadius = Design.SHADOW_RADIUS;
+    self.rightAvatarContainerView.layer.shadowColor = [UIColor blackColor].CGColor;
+    self.rightAvatarContainerView.layer.masksToBounds = NO;
+    
+    self.rightAvatarView.clipsToBounds = YES;
+    self.rightAvatarView.layer.cornerRadius = self.rightAvatarContainerViewHeightConstraint.constant * 0.5f;
+    self.rightAvatarView.image = self.contactAvatar;
+    
+    self.lineLeftViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    self.lineLeftViewLeadingConstraint.constant *= Design.WIDTH_RATIO;
+    self.lineLeftViewTrailingConstraint.constant *= Design.WIDTH_RATIO;
+    
+    self.lineLeftView.backgroundColor = [UIColor clearColor];
+    
+    self.lineRightViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    self.lineRightViewLeadingConstraint.constant *= Design.WIDTH_RATIO;
+    self.lineRightViewTrailingConstraint.constant *= Design.WIDTH_RATIO;
+    
+    self.lineRightView.backgroundColor = [UIColor clearColor];
+    
+    self.nameLeftLabelTopConstraint.constant *= Design.HEIGHT_RATIO;
 
-        self.nameLabel.attributedText = attributedString;
-    }
+    self.nameLeftLabel.font = Design.FONT_BOLD36;
+    self.nameLeftLabel.textColor = Design.FONT_COLOR_DEFAULT;
+    
+    self.nameRightLabelTopConstraint.constant *= Design.HEIGHT_RATIO;
+
+    self.nameRightLabel.font = Design.FONT_BOLD36;
+    self.nameRightLabel.textColor = Design.FONT_COLOR_DEFAULT;
     
     self.messageLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
     self.messageLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
@@ -520,16 +570,6 @@ static const CGFloat DESIGN_CANCEL_HEIGHT = 140;
     self.iconImageViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     self.iconImageView.tintColor = [UIColor whiteColor];
 
-    self.bulletViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
-    self.bulletViewTrailingConstraint.constant *= Design.WIDTH_RATIO;
-    
-    self.bulletView.clipsToBounds = YES;
-    self.bulletView.layer.cornerRadius = self.bulletViewHeightConstraint.constant * 0.5f;
-    self.bulletView.layer.borderWidth = 3.f;
-    self.bulletView.layer.borderColor = [UIColor whiteColor].CGColor;
-    self.bulletView.backgroundColor = ICON_BACKGROUND_COLOR;
-    
-    
     self.confirmViewTopConstraint.constant *= Design.HEIGHT_RATIO;
     self.confirmViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     self.confirmViewWidthConstraint.constant *= Design.WIDTH_RATIO;
@@ -582,7 +622,7 @@ static const CGFloat DESIGN_CANCEL_HEIGHT = 140;
     [self updateTwincode];
     self.actionView.frame = CGRectMake(0, Design.DISPLAY_HEIGHT, Design.DISPLAY_WIDTH, self.actionView.frame.size.height);
     self.actionView.hidden = NO;
-
+  
     [UIView animateWithDuration:Design.ANIMATION_VIEW_DURATION
                           delay:0
                         options:0
@@ -590,7 +630,10 @@ static const CGFloat DESIGN_CANCEL_HEIGHT = 140;
         self.overlayView.alpha = 0.3f;
         self.actionView.frame = CGRectMake(0, Design.DISPLAY_HEIGHT - self.actionView.frame.size.height, Design.DISPLAY_WIDTH, self.actionView.frame.size.height);
     }
-                     completion:nil];
+                     completion:^(BOOL finished) {
+        
+        [self updateLineView];
+    }];
 }
 
 - (void)closeActionView {
@@ -652,6 +695,18 @@ static const CGFloat DESIGN_CANCEL_HEIGHT = 140;
     }
 }
 
+- (void)handleOverlayTapGesture:(UITapGestureRecognizer *)sender {
+    DDLogVerbose(@"%@ handleOverlayTapGesture: %@", LOG_TAG, sender);
+    
+    if (sender.state == UIGestureRecognizerStateEnded) {
+        if (!self.actionEnable) {
+            return;
+        }
+        
+        [self closeActionView];
+    }
+}
+
 - (void)incorrectQRCode {
     DDLogVerbose(@"%@ incorrectQRCode", LOG_TAG);
         
@@ -700,44 +755,104 @@ static const CGFloat DESIGN_CANCEL_HEIGHT = 140;
     DDLogVerbose(@"%@ updateTwincode", LOG_TAG);
     
     if (self.hasTwincode) {
-        self.avatarContainerViewHeightConstraint.constant = DESIGN_AVATAR_HEIGHT * Design.HEIGHT_RATIO;
+        self.leftAvatarContainerViewHeightConstraint.constant = DESIGN_AVATAR_HEIGHT * Design.HEIGHT_RATIO;
+        self.rightAvatarContainerViewHeightConstraint.constant = DESIGN_AVATAR_HEIGHT * Design.HEIGHT_RATIO;
         self.cancelViewHeightConstraint.constant = DESIGN_CANCEL_HEIGHT * Design.HEIGHT_RATIO;
         self.confirmViewHeightConstraint.constant = DESIGN_CONFIRM_HEIGHT * Design.HEIGHT_RATIO;
         
-        self.avatarContainerView.hidden = NO;
-        self.bulletView.hidden = NO;
+        self.leftAvatarContainerView.hidden = NO;
+        self.rightAvatarContainerView.hidden = NO;
         self.iconView.hidden = NO;
-        self.nameLabel.hidden = NO;
+        self.nameLeftLabel.hidden = NO;
+        self.nameRightLabel.hidden = NO;
         self.confirmView.hidden = NO;
         self.cancelView.hidden = NO;
-        NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:self.contactName attributes:[NSDictionary dictionaryWithObjectsAndKeys: Design.FONT_BOLD44, NSFontAttributeName, Design.FONT_COLOR_DEFAULT, NSForegroundColorAttributeName, nil]];
-        if (self.contactDescription && ![self.contactDescription isEqual:@""] && ![self.contactDescription isEqual:TwinmeLocalizedString(@"navigation_view_about_twinme", nil)]) {
-            [attributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:@"\n"]];
-            [attributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:self.contactDescription attributes:[NSDictionary dictionaryWithObjectsAndKeys: Design.FONT_MEDIUM30, NSFontAttributeName, Design.FONT_COLOR_GREY, NSForegroundColorAttributeName, nil]]];
-        }
+        self.lineLeftView.hidden = NO;
+        self.lineRightView.hidden = NO;
         
-        self.nameLabel.attributedText = attributedString;
+        self.nameRightLabel.text = self.contactName;
+        self.rightAvatarView.image = self.contactAvatar;
         
-        self.avatarView.image = self.contactAvatar;
+        [self.acceptInvitationService getImageWithProfile:self.profile withBlock:^(UIImage *image) {
+            self.leftAvatarView.image = image;
+            self.nameLeftLabel.text = self.profile.name;
+        }];
             
-        if (self.hasExistingContact ) {
+        if (self.hasExistingContact) {
             self.messageLabel.text = TwinmeLocalizedString(@"accept_invitation_view_existing_contact_message", nil);
         } else {
-            self.messageLabel.text = [NSString stringWithFormat:TwinmeLocalizedString(@"accept_invitation_view_message", nil), self.contactName];
+            if (self.fromName) {
+                NSMutableString *message = [[NSMutableString alloc] initWithString: [NSString stringWithFormat:TwinmeLocalizedString(@"share_contact_accept_view_message", nil), self.fromName, self.contactName]];
+                [message appendString:@"\n"];
+                [message appendString:[NSString stringWithFormat:TwinmeLocalizedString(@"share_contact_accept_view_invite_message", nil), self.contactName]];
+                self.messageLabel.text = message;
+            } else {
+                self.messageLabel.text = [NSString stringWithFormat:TwinmeLocalizedString(@"accept_invitation_view_message", nil), self.contactName];
+            }
         }
     } else {
-        self.avatarContainerViewHeightConstraint.constant = 0;
+        self.leftAvatarContainerViewHeightConstraint.constant = 0;
+        self.rightAvatarContainerViewHeightConstraint.constant = 0;
         self.cancelViewHeightConstraint.constant = 0;
         self.confirmViewHeightConstraint.constant = 0;
         
-        self.avatarContainerView.hidden = YES;
-        self.bulletView.hidden = YES;
+        self.leftAvatarContainerView.hidden = YES;
+        self.rightAvatarContainerView.hidden = YES;
         self.iconView.hidden = YES;
-        self.nameLabel.hidden = YES;
+        self.nameLeftLabel.hidden = YES;
+        self.nameRightLabel.hidden = YES;
+        self.lineLeftView.hidden = YES;
+        self.lineRightView.hidden = YES;
+        
         self.confirmView.hidden = YES;
         self.cancelView.hidden = YES;
         self.messageLabel.text = [NSString stringWithFormat:@"%@\n%@", TwinmeLocalizedString(@"accept_invitation_view_being_transferred", nil), TwinmeLocalizedString(@"accept_invitation_view_check_connection", nil)];
     }
+}
+
+- (void)updateLineView {
+    DDLogVerbose(@"%@ updateLineView", LOG_TAG);
+    
+    NSArray<NSNumber *> *lineDashPattern = @[
+        @(Design.LINE_DASH_LONG_LENGTH),
+        @(Design.LINE_DASH_SPACING),
+        @(Design.LINE_DASH_SHORT_LENGTH),
+        @(Design.LINE_DASH_SPACING)
+    ];
+    
+    CAShapeLayer *lineDashLayer = [CAShapeLayer layer];
+    lineDashLayer.frame = self.lineLeftView.bounds;
+
+    UIBezierPath *lineLeftPath = [UIBezierPath bezierPath];
+    [lineLeftPath moveToPoint:CGPointMake(0, self.lineLeftView.bounds.size.height / 2.0)];
+    [lineLeftPath addLineToPoint:CGPointMake(self.lineLeftView.bounds.size.width,
+                                     self.lineLeftView.bounds.size.height / 2.0)];
+
+    lineDashLayer.path = lineLeftPath.CGPath;
+    lineDashLayer.strokeColor = ICON_BACKGROUND_COLOR.CGColor;
+    lineDashLayer.fillColor = nil;
+    lineDashLayer.lineWidth = self.lineLeftViewHeightConstraint.constant;
+    lineDashLayer.lineCap = kCALineCapRound;
+    lineDashLayer.lineDashPattern = lineDashPattern;
+    
+    [self.lineLeftView.layer addSublayer:lineDashLayer];
+    
+    lineDashLayer = [CAShapeLayer layer];
+    lineDashLayer.frame = self.lineRightView.bounds;
+    
+    UIBezierPath *lineRightPath = [UIBezierPath bezierPath];
+    [lineRightPath moveToPoint:CGPointMake(self.lineRightView.bounds.size.width,
+                                     self.lineRightView.bounds.size.height / 2.0)];
+    [lineRightPath addLineToPoint:CGPointMake(0, self.lineRightView.bounds.size.height / 2.0)];
+
+    lineDashLayer.path = lineRightPath.CGPath;
+    lineDashLayer.strokeColor = ICON_BACKGROUND_COLOR.CGColor;
+    lineDashLayer.fillColor = nil;
+    lineDashLayer.lineWidth = self.lineRightViewHeightConstraint.constant;
+    lineDashLayer.lineCap = kCALineCapRound;
+    lineDashLayer.lineDashPattern = lineDashPattern;
+    
+    [self.lineRightView.layer addSublayer:lineDashLayer];
 }
 
 - (void)updateFont {
@@ -746,6 +861,8 @@ static const CGFloat DESIGN_CANCEL_HEIGHT = 140;
     self.messageLabel.font = Design.FONT_MEDIUM40;
     self.confirmLabel.font = Design.FONT_BOLD36;
     self.cancelLabel.font = Design.FONT_BOLD36;
+    self.nameLeftLabel.font = Design.FONT_BOLD36;
+    self.nameRightLabel.font = Design.FONT_BOLD36;
 }
 
 - (void)updateColor {
@@ -753,6 +870,8 @@ static const CGFloat DESIGN_CANCEL_HEIGHT = 140;
     
     self.actionView.backgroundColor = Design.POPUP_BACKGROUND_COLOR;
     self.messageLabel.textColor = Design.FONT_COLOR_GREY;
+    self.nameLeftLabel.textColor = Design.FONT_COLOR_DEFAULT;
+    self.nameRightLabel.textColor = Design.FONT_COLOR_DEFAULT;
 }
 
 @end

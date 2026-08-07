@@ -10,7 +10,6 @@
 
 #import "FAQViewController.h"
 
-#import "SettingsSectionHeaderCell.h"
 #import "FAQCell.h"
 #import "FAQArticleView.h"
 
@@ -19,6 +18,7 @@
 
 #import <TwinmeCommon/Design.h>
 #import <TwinmeCommon/FAQManager.h>
+#import <TwinmeCommon/SettingsSectionHeaderCell.h>
 #import <TwinmeCommon/UIFAQArticle.h>
 #import <TwinmeCommon/UIFAQCategory.h>
 

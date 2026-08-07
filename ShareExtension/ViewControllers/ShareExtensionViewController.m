@@ -137,6 +137,9 @@ static const int GROUPS_VIEW_SECTION = 1;
 @property (nonatomic) id<TLOriginator> contact;
 
 @property (nonatomic) int currentItem;
+@property (nonatomic) BOOL finsihWithAction;
+
+@property (nonatomic) NSString *previewPath;
 
 @end
 
@@ -163,6 +166,7 @@ static const int GROUPS_VIEW_SECTION = 1;
         _messageCopyAllowed = NO;
         _refreshTableScheduled = NO;
         _currentItem = 0;
+        _finsihWithAction = NO;
         _contents = [[NSMutableArray alloc]init];
         _shareService = [ShareExtensionService instance];
         _shareService.shareExtensionServiceDelegate = self;
@@ -175,6 +179,7 @@ static const int GROUPS_VIEW_SECTION = 1;
     
     [super viewDidLoad];
     
+    [self setupDirectory];
     [self initViews];
 }
 
@@ -182,7 +187,27 @@ static const int GROUPS_VIEW_SECTION = 1;
     DDLogVerbose(@"%@ viewWillAppear: %@", LOG_TAG, animated ? @"YES":@"NO");
     
     [super viewWillAppear:animated];
+
     [self.shareService start];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    DDLogVerbose(@"%@ viewWillDisappear: %@", LOG_TAG, animated ? @"YES":@"NO");
+    
+    [super viewWillDisappear:animated];
+    
+    if (!self.finsihWithAction) {
+        [self.uiContacts removeAllObjects];
+        [self.uiGroups removeAllObjects];
+        [self refreshTable];
+        self.contact = nil;
+
+        // Stop the twinlife framework and acknowledge the shared content only when we are ready to suspend.
+        [self.shareService stopWithCompletionHandler:^(TLBaseServiceErrorCode errorCode) {
+            NSError *error = [[NSError alloc]initWithDomain:[[NSBundle mainBundle] bundleIdentifier] code:0 userInfo:nil];
+            [self.extensionContext cancelRequestWithError:error];
+        }];
+    }
 }
 
 #pragma mark - ShareExtensionServiceDelegate
@@ -233,24 +258,18 @@ static const int GROUPS_VIEW_SECTION = 1;
     DDLogVerbose(@"%@ onGetConversation: %@", LOG_TAG, conversation);
     
     if (self.contents.count > 0) {
-        
+          
+        BOOL sendMessage = NO;
         for (id object in self.contents) {
             if ([object isKindOfClass:[NSString class]]) {
+                sendMessage = YES;
                 NSString *message = (NSString *)object;
                 [self.shareService pushMessage:message copyAllowed:self.messageCopyAllowed];
-            } else if ([object isKindOfClass:[NSURL class]]) {
-                NSURL *url = (NSURL *)object;
-                
-                if ([self isImageFile:url.path]) {
-                    [self.shareService pushFileWithPath:url.path type:TLDescriptorTypeImageDescriptor toBeDeleted:YES copyAllowed:self.fileCopyAllowed];
-                } else  if ([self isVideoFile:url.path]) {
-                    [self.shareService pushFileWithPath:url.path type:TLDescriptorTypeVideoDescriptor toBeDeleted:YES copyAllowed:self.fileCopyAllowed];
-                } else  if ([self isAudioFile:url.path]) {
-                    [self.shareService pushFileWithPath:url.path type:TLDescriptorTypeAudioDescriptor toBeDeleted:YES copyAllowed:self.fileCopyAllowed];
-                } else {
-                    [self.shareService pushFileWithPath:url.path type:TLDescriptorTypeNamedFileDescriptor toBeDeleted:YES copyAllowed:self.messageCopyAllowed];
-                }
             }
+        }
+        
+        if (!sendMessage) {
+            [self onShareCompleted];
         }
     }
 }
@@ -277,7 +296,20 @@ static const int GROUPS_VIEW_SECTION = 1;
     DDLogVerbose(@"%@ onShareCompleted", LOG_TAG);
     
     [self.activityIndicatorView stopAnimating];
-    [self openURL:[self.shareService getConversationURLWithOriginator:self.contact]];
+    
+    BOOL fileToSend = NO;
+    if (self.contents.count > 0) {
+        for (id object in self.contents) {
+            if ([object isKindOfClass:[NSURL class]]) {
+                fileToSend = YES;
+                break;
+            }
+        }
+    }
+    
+    [self openURL:[self.shareService getConversationURLWithOriginator:self.contact startPreviewFile:fileToSend]];
+    
+    self.finsihWithAction = YES;
     
     [self.uiContacts removeAllObjects];
     [self.uiGroups removeAllObjects];
@@ -621,9 +653,25 @@ static const int GROUPS_VIEW_SECTION = 1;
     [self.view addSubview:self.activityIndicatorView];
 }
 
+- (void)setupDirectory {
+    DDLogVerbose(@"%@ setupDirectory", LOG_TAG);
+    
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSURL *groupURL = [fileManager containerURLForSecurityApplicationGroupIdentifier:[TLTwinlife APP_GROUP_NAME]];
+    self.previewPath = [groupURL URLByAppendingPathComponent:@"preview" isDirectory:YES].path;
+        
+    [fileManager removeItemAtPath:self.previewPath error:nil];
+
+    [fileManager createDirectoryAtPath:self.previewPath
+           withIntermediateDirectories:YES
+                            attributes:nil
+                                 error:nil];
+}
+
 - (void)handleCancelTapGesture:(UIButton *)sender {
     DDLogVerbose(@"%@ handlecancelTapGesture: %@", LOG_TAG, sender);
 
+    self.finsihWithAction = YES;
     [self.uiContacts removeAllObjects];
     [self.uiGroups removeAllObjects];
     [self refreshTable];
@@ -675,11 +723,11 @@ static const int GROUPS_VIEW_SECTION = 1;
                         }
                         
                         NSString *fileName = [NSString stringWithFormat:@"%@_%@", [[NSProcessInfo processInfo] globallyUniqueString], extension];
-                        NSURL *url = [NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingPathComponent:fileName]];
+                        NSURL *url = [NSURL fileURLWithPath:[self.previewPath stringByAppendingPathComponent:fileName]];
                         if ([data writeToURL:url options:NSDataWritingAtomic error:nil]) {
                             [self.contents addObject:url];
                         }
-                        
+                       
                         self.currentItem++;
                         [self loadItem];
                     });
@@ -696,7 +744,7 @@ static const int GROUPS_VIEW_SECTION = 1;
                                 }
                                 if (image) {
                                     NSString *fileName = [NSString stringWithFormat:@"%@.jpg", [[NSProcessInfo processInfo] globallyUniqueString]];
-                                    NSURL *fileURL = [NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingPathComponent:fileName]];
+                                    NSURL *fileURL = [NSURL fileURLWithPath:[self.previewPath stringByAppendingPathComponent:fileName]];
                                     NSData *imageData = UIImageJPEGRepresentation(image, 1.0);
                                     if ([imageData writeToURL:fileURL options:NSDataWritingAtomic error:nil]) {
                                         [self.contents addObject:fileURL];
@@ -715,9 +763,8 @@ static const int GROUPS_VIEW_SECTION = 1;
                                             options:nil
                                   completionHandler:^(NSURL *url, NSError *error) {
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    
                     NSString *fileName = url.lastPathComponent;
-                    NSURL *fileURL = [NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingPathComponent:fileName]];
+                    NSURL *fileURL = [NSURL fileURLWithPath:[self.previewPath stringByAppendingPathComponent:fileName]];
                     NSFileManager *fileManager = [NSFileManager defaultManager];
                     
                     if (![fileManager createFileAtPath:fileURL.path contents:nil attributes:nil]) {

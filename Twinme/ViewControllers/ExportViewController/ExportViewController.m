@@ -16,7 +16,7 @@
 #import "ExportViewController.h"
 
 #import "SettingsInformationCell.h"
-#import "SettingsSectionHeaderCell.h"
+
 #import "ExportActionCell.h"
 #import "ExportContentCell.h"
 #import "ExportProgressCell.h"
@@ -25,6 +25,7 @@
 
 #import <TwinmeCommon/Design.h>
 #import <TwinmeCommon/ExportService.h>
+#import <TwinmeCommon/SettingsSectionHeaderCell.h>
 
 #import "UIExport.h"
 #import "PremiumFeatureConfirmView.h"

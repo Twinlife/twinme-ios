@@ -68,6 +68,7 @@ static const CGFloat DESIGN_WORD_HEIGHT = 100;
     
     self.wordsCollectionView.dataSource = self;
     self.wordsCollectionView.delegate = self;
+    self.wordsCollectionView.scrollEnabled = NO;
     self.wordsCollectionView.backgroundColor = Design.WHITE_COLOR;
     [self.wordsCollectionView registerNib:[UINib nibWithNibName:@"BackupWordCell" bundle:nil] forCellWithReuseIdentifier:BACKUP_WORD_CELL_IDENTIFIER];
     

@@ -263,9 +263,15 @@ static CGFloat DESIGN_THUMBNAIL_SIZE = 120;
 - (void)initWithPreviewFiles:(NSArray <NSURL *>*)previewFiles {
     DDLogVerbose(@"%@ initWithPreviewFiles: %@", LOG_TAG, previewFiles);
     
+    self.countFilePicking = 0;
+    self.endFilePicking = NO;
     for (NSURL *url in previewFiles) {
+        self.countFilePicking++;
         [self addPreviewFile:url fromPicker:NO];
     }
+    
+    self.endFilePicking = YES;
+    [self loadFileFromConversation];
 }
 
 #pragma mark - UIImagePickerControllerDelegate
@@ -841,20 +847,64 @@ static CGFloat DESIGN_THUMBNAIL_SIZE = 120;
         BOOL isVideo = (type && [type conformsToType:UTTypeMovie]);
         
         if (isImage) {
-            UIPreviewMedia *previewMedia = [[UIPreviewMedia alloc]initWithUrl:url path:url.path size:CGSizeZero isVideo:NO];
+            CGSize size = [self imageSizeAtURL:url];
+            UIPreviewMedia *previewMedia = [[UIPreviewMedia alloc]initWithUrl:url path:url.path size:size isVideo:NO];
             [self.files addObject:previewMedia];
             if (fromPicker) {
                 [self addPreviewFileFromPicker];
             } else {
-                [self reloadData];
+                self.countFilePicking--;
+                [self loadFileFromConversation];;
             }
         } else if (isVideo) {
-            UIPreviewMedia *previewMedia = [[UIPreviewMedia alloc]initWithUrl:url path:url.path size:CGSizeZero isVideo:YES];
-            [self.files addObject:previewMedia];
-            if (fromPicker) {
-                [self addPreviewFileFromPicker];
+            AVURLAsset *avAsset = [AVURLAsset URLAssetWithURL:url options:nil];
+            NSArray *compatiblePresets = [AVAssetExportSession exportPresetsCompatibleWithAsset:avAsset];
+            if ([compatiblePresets containsObject:AVAssetExportPresetHighestQuality]) {
+                AVAssetExportSession *exportSession = [[AVAssetExportSession alloc]initWithAsset:avAsset presetName:AVAssetExportPresetHighestQuality];
+                NSString *videoPath = [url.path stringByReplacingOccurrencesOfString:url.pathExtension withString:@"mp4"];
+                NSURL *urlExport = [[NSURL alloc] initFileURLWithPath:videoPath];
+                if ([[NSFileManager defaultManager]fileExistsAtPath:videoPath]) {
+                    [[NSFileManager defaultManager]removeItemAtPath:videoPath error:nil];
+                }
+                exportSession.outputURL = urlExport;
+                exportSession.outputFileType = AVFileTypeMPEG4;
+                exportSession.shouldOptimizeForNetworkUse = YES;
+                [exportSession exportAsynchronouslyWithCompletionHandler:^{
+                    if ([exportSession status] == AVAssetExportSessionStatusCompleted) {
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            UIPreviewMedia *previewMedia = [[UIPreviewMedia alloc]initWithUrl:urlExport path:urlExport.path size:CGSizeZero isVideo:YES];
+                            [self.files addObject:previewMedia];
+                            if (fromPicker) {
+                                [self addPreviewFileFromPicker];
+                            } else {
+                                self.countFilePicking--;
+                                [self loadFileFromConversation];;
+                            }
+                            [[NSFileManager defaultManager]removeItemAtPath:url.path error:nil];
+                        });
+                        
+                    } else {
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            UIPreviewMedia *previewMedia = [[UIPreviewMedia alloc]initWithUrl:url path:url.path size:CGSizeZero isVideo:YES];
+                            [self.files addObject:previewMedia];
+                            if (fromPicker) {
+                                [self addPreviewFileFromPicker];
+                            } else {
+                                self.countFilePicking--;
+                                [self loadFileFromConversation];
+                            }
+                        });
+                    }
+                }];
             } else {
-                [self reloadData];
+                UIPreviewMedia *previewMedia = [[UIPreviewMedia alloc]initWithUrl:url path:url.path size:CGSizeZero isVideo:YES];
+                [self.files addObject:previewMedia];
+                if (fromPicker) {
+                    [self addPreviewFileFromPicker];
+                } else {
+                    self.countFilePicking--;
+                    [self loadFileFromConversation];
+                }
             }
         } else {
             NSString *fileName = documentInteractionController.name;
@@ -892,7 +942,8 @@ static CGFloat DESIGN_THUMBNAIL_SIZE = 120;
                 if (fromPicker) {
                     [self addPreviewFileFromPicker];
                 } else {
-                    [self reloadData];
+                    self.countFilePicking--;
+                    [self loadFileFromConversation];
                 }
             }];
         }
@@ -916,6 +967,29 @@ static CGFloat DESIGN_THUMBNAIL_SIZE = 120;
     
     [self.filesCollectionView reloadData];
     [self.thumbnailCollectionView reloadData];
+}
+
+- (void)loadFileFromConversation {
+    DDLogVerbose(@"%@ loadFileFromConversation", LOG_TAG);
+     
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if (self.endFilePicking && self.countFilePicking == 0) {
+            self.overlayView.hidden = YES;
+            if ([self.activityIndicatorView isAnimating]) {
+                [self.activityIndicatorView stopAnimating];
+            }
+                        
+            [self reloadData];
+            
+        } else {
+            self.overlayView.hidden = NO;
+            if (![self.activityIndicatorView isAnimating]) {
+                [self.activityIndicatorView startAnimating];
+            }
+            
+            self.stateLabel.text = TwinmeLocalizedString(@"preview_files_view_retrieving_media_message", nil);
+        }
+    });
 }
 
 - (void)addFile {
@@ -1016,6 +1090,49 @@ static CGFloat DESIGN_THUMBNAIL_SIZE = 120;
             self.stateLabel.text = TwinmeLocalizedString(@"preview_files_view_retrieving_media_message", nil);
         }
     });
+}
+
+- (CGSize)imageSizeAtURL:(NSURL *)url {
+    DDLogVerbose(@"%@ imageSizeAtURL: %@", LOG_TAG, url);
+    
+    CGImageSourceRef source = CGImageSourceCreateWithURL((__bridge CFURLRef)url, NULL);
+
+    if (!source) {
+        return CGSizeZero;
+    }
+
+    NSDictionary *properties = (__bridge_transfer NSDictionary *)CGImageSourceCopyPropertiesAtIndex(source, 0, NULL);
+    CFRelease(source);
+    
+    if (!properties) {
+        return CGSizeZero;
+    }
+
+    CGFloat width = [properties[(NSString *)kCGImagePropertyPixelWidth] doubleValue];
+    CGFloat height = [properties[(NSString *)kCGImagePropertyPixelHeight] doubleValue];
+    NSNumber *orientation = properties[(NSString *)kCGImagePropertyOrientation];
+
+    BOOL reverseProperties = NO;
+    if (orientation != nil) {
+        switch (orientation.integerValue) {
+            case kCGImagePropertyOrientationLeftMirrored:
+            case kCGImagePropertyOrientationRight:
+            case kCGImagePropertyOrientationRightMirrored:
+            case kCGImagePropertyOrientationLeft: {
+                reverseProperties = YES;
+                break;
+            }
+
+            default:
+                break;
+        }
+    }
+
+    if (reverseProperties) {
+        return CGSizeMake(height, width);
+    } else {
+        return CGSizeMake(width, height);
+    }
 }
 
 @end

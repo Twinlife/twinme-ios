@@ -10,14 +10,18 @@
 
 #import <Twinme/TLTwinmeContext.h>
 #import <Twinme/TLContact.h>
+#import <Twinme/TLGroup.h>
 #import <Twinme/TLMessage.h>
 
+#import <Notification/NotificationSettings.h>
 #import <Utils/NSString+Utils.h>
 
 #import "UIConversation.h"
 #import "UIContact.h"
 
 #import <TwinmeCommon/Design.h>
+
+#import "MenuConversationShorcutView.h"
 
 //
 // Implementation: UIConversation
@@ -121,9 +125,24 @@
                 break;
                 
             case TLDescriptorTypeTwincodeDescriptor: {
-                lastMessage = [[NSAttributedString alloc]initWithString:TwinmeLocalizedString(@"notification_center_invitation_received", nil)];
+                TLTwincodeDescriptor *twincodeDescriptor = (TLTwincodeDescriptor *)self.lastDescriptor;
+                if ([twincodeDescriptor.schemaId isEqual:[TLContactShareDescriptor CONTACT_SHARE_SCHEMA_ID]]) {
+                    lastMessage = [[NSAttributedString alloc]initWithString:TwinmeLocalizedString(@"notification_center_connection_request", nil)];
+                } else {
+                    lastMessage = [[NSAttributedString alloc]initWithString:TwinmeLocalizedString(@"notification_center_invitation_received", nil)];
+                }
                 break;
             }
+                
+            case TLDescriptorTypeContactShareDescriptor: {
+                TLContactShareDescriptor *contactShareDescriptor = (TLContactShareDescriptor *)self.lastDescriptor;
+                if ([self isLocalDescriptor]) {
+                    lastMessage = [[NSAttributedString alloc]initWithString:[NSString stringWithFormat:TwinmeLocalizedString(@"conversation_view_share_contact_item_local_message", nil), self.uiContact.name, contactShareDescriptor.name]];
+                } else {
+                    lastMessage = [[NSAttributedString alloc]initWithString:[NSString stringWithFormat:TwinmeLocalizedString(@"conversation_view_share_contact_item_peer_message", nil), contactShareDescriptor.name]];
+                }
+            }
+                
             default:
                 break;
         }
@@ -165,6 +184,30 @@
 - (BOOL)isLocalDescriptor {
     
     return [self.lastDescriptor isTwincodeOutbound:self.uiContact.contact.twincodeOutboundId];
+}
+
+- (BOOL)isSilentMode {
+    
+    BOOL silentMode = NO;
+    int64_t silentExpiration;
+    
+    if ([self.uiContact.contact isKindOfClass:[TLGroup class]]) {
+        TLGroup * group = (TLGroup *)self.uiContact.contact;
+        silentMode = [group getBooleanWithName:PROPERTY_CONVERSATION_SILENT_MODE defaultValue:NO];
+        silentExpiration = [group getNumberWithName:PROPERTY_CONVERSATION_SILENT_MODE_EXPIRATION defaultValue:0];
+    } else {
+        TLContact *contact = (TLContact *)self.uiContact.contact;
+        silentMode = [contact getBooleanWithName:PROPERTY_CONVERSATION_SILENT_MODE defaultValue:NO];
+        silentExpiration = [contact getNumberWithName:PROPERTY_CONVERSATION_SILENT_MODE_EXPIRATION defaultValue:0];
+    }
+    
+    
+    NSTimeInterval timeInterval = [[NSDate date] timeIntervalSince1970];
+    if (silentExpiration > 0 && silentExpiration < timeInterval) {
+        silentMode = NO;
+    }
+    
+    return silentMode;
 }
 
 @end

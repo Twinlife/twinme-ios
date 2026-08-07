@@ -17,10 +17,10 @@
 #import "UIAnnotation.h"
 #import "UIPollResult.h"
 #import "UIPollResultVoter.h"
-#import "SettingsSectionHeaderCell.h"
 #import "AnnotationInfoCell.h"
 
 #import <TwinmeCommon/Design.h>
+#import <TwinmeCommon/SettingsSectionHeaderCell.h>
 #import <TwinmeCommon/UIViewController+Utils.h>
 
 #if 0

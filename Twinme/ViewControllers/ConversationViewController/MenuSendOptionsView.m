@@ -205,9 +205,10 @@ typedef enum {
         
         NSString *title = TwinmeLocalizedString(@"application_timeout", nil);
         NSString *value = TwinmeLocalizedString(@"application_timeout_day", nil);
-        
+        UIImage *icon = [UIImage imageNamed:@"SendOptionEphemeralIcon"];
+
         cell.forceDarkMode = self.forceDarkMode;
-        [cell bindWithTitle:title value:value];
+        [cell bindWithTitle:title value:value icon:icon];
         
         return cell;
     } else {

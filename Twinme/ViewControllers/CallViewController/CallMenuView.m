@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2022 twinlife SA.
+ *  Copyright (c) 2022-2026 twinlife SA.
  *  SPDX-License-Identifier: AGPL-3.0-only
  *
  *  Contributors:
@@ -154,7 +154,7 @@ static const CGFloat DESIGN_ICON_RESUME_CALL_HEIGHT = 40;
     [self.speakerOnImageView setTintColor:[UIColor blackColor]];
  }
 
-- (void)updateMenu:(CallStatus)callStatus isAudioMuted:(BOOL)isAudioMuted isSpeakerOn:(BOOL)isSpeakerOn isCameraMuted:(BOOL)isCameraMuted isLocalVideoTrack:(BOOL)isLocalVideoTrack isVideoAllowed:(BOOL)isVideoAllowed isConversationAllowed:(BOOL)isConversationAllowed isStreamingAudioSupported:(BOOL)isStreamingAudioSupported isShareInvitationAllowed:(BOOL)isShareInvitationAllowed hideCertify:(BOOL)hideCertify isCertifyRunning:(BOOL)isCertifyRunning audioDevice:(AudioDevice *)audioDevice isHeadSetAvailable:(BOOL)isHeadSetAvailable isCameraControlAllowed:(BOOL)isCameraControlAllowed isRemoteCameraControl:(BOOL)isRemoteCameraControl isWaitingForCameraControlAnswer:(BOOL)isWaitingForCameraControlAnswer {
+- (void)updateMenu:(CallStatus)callStatus isAudioMuted:(BOOL)isAudioMuted isSpeakerOn:(BOOL)isSpeakerOn isCameraMuted:(BOOL)isCameraMuted isLocalVideoTrack:(BOOL)isLocalVideoTrack isVideoAllowed:(BOOL)isVideoAllowed isConversationAllowed:(BOOL)isConversationAllowed isStreamingAudioSupported:(BOOL)isStreamingAudioSupported isShareInvitationAllowed:(BOOL)isShareInvitationAllowed hideCertify:(BOOL)hideCertify isCertifyRunning:(BOOL)isCertifyRunning audioDevice:(AudioDevice *)audioDevice isCameraControlAllowed:(BOOL)isCameraControlAllowed isRemoteCameraControl:(BOOL)isRemoteCameraControl isWaitingForCameraControlAnswer:(BOOL)isWaitingForCameraControlAnswer {
     DDLogVerbose(@"%@ updateMenu", LOG_TAG);
     
     BOOL isActive = CALL_IS_ACTIVE(callStatus);
@@ -200,7 +200,7 @@ static const CGFloat DESIGN_ICON_RESUME_CALL_HEIGHT = 40;
         self.microMuteImageView.image = [UIImage imageNamed:@"MuteActionCallOff"];
     }
     
-    if (!isHeadSetAvailable) {
+    if (!audioDevice.isHeadsetAvailable) {
         if (isSpeakerOn) {
             self.speakerOnImageView.image = [UIImage imageNamed:@"LoudSpeakerActionCallOn"];
         } else {
@@ -313,12 +313,14 @@ static const CGFloat DESIGN_ICON_RESUME_CALL_HEIGHT = 40;
     }
 }
 
-- (void)updateMenuState:(CallMenuViewState)callMenuViewState {
+- (void)updateMenuState:(CallMenuViewState)callMenuViewState animated:(BOOL)animated {
     DDLogVerbose(@"%@ updateMenuState", LOG_TAG);
     
     self.callMenuViewState = callMenuViewState;
     
-    [self animateMenu];
+    if (animated) {
+        [self animateMenu];
+    }
 }
 
 #pragma mark - Private methods

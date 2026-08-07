@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="19455" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19454"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="default" indentationWidth="10" reuseIdentifier="TimeoutCellIdentifier" id="KGk-i7-Jjw" customClass="TimeoutCell">
+            <rect key="frame" x="0.0" y="0.0" width="750" height="120"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
+                <rect key="frame" x="0.0" y="0.0" width="750" height="120"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text=".title" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QhB-id-6nV">
+                        <rect key="frame" x="95" y="0.0" width="560" height="120"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="560" id="q1m-Ux-Qc0"/>
+                        </constraints>
+                        <fontDescription key="fontDescription" type="system" pointSize="24"/>
+                        <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="MNr-pT-WHp">
+                        <rect key="frame" x="0.0" y="119" width="750" height="1"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="1" id="cUT-FK-KiC"/>
+                        </constraints>
+                    </view>
+                </subviews>
+                <constraints>
+                    <constraint firstItem="QhB-id-6nV" firstAttribute="height" secondItem="H2p-sc-9uM" secondAttribute="height" id="3Ht-f7-75o"/>
+                    <constraint firstItem="QhB-id-6nV" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="LKj-5a-Mhs"/>
+                    <constraint firstItem="QhB-id-6nV" firstAttribute="centerX" secondItem="H2p-sc-9uM" secondAttribute="centerX" id="Wou-b7-9xi"/>
+                    <constraint firstItem="MNr-pT-WHp" firstAttribute="centerX" secondItem="H2p-sc-9uM" secondAttribute="centerX" id="tLu-Ko-Gjq"/>
+                    <constraint firstItem="MNr-pT-WHp" firstAttribute="width" secondItem="H2p-sc-9uM" secondAttribute="width" id="tbV-dc-Ppg"/>
+                    <constraint firstAttribute="bottom" secondItem="MNr-pT-WHp" secondAttribute="bottom" id="zAa-cT-keB"/>
+                </constraints>
+            </tableViewCellContentView>
+            <connections>
+                <outlet property="separatorView" destination="MNr-pT-WHp" id="f9c-su-eJC"/>
+                <outlet property="separatorViewHeightConstraint" destination="cUT-FK-KiC" id="1uy-KC-tve"/>
+                <outlet property="titleLabel" destination="QhB-id-6nV" id="z6R-qv-KSp"/>
+                <outlet property="titleLabelWidthConstraint" destination="q1m-Ux-Qc0" id="aLg-ev-uqb"/>
+            </connections>
+            <point key="canvasLocation" x="-81" y="49"/>
+        </tableViewCell>
+    </objects>
+    <resources>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+    </resources>
+</document>

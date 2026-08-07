@@ -25,10 +25,11 @@
 #import "OnboardingExternalCallViewController.h"
 
 #import "SettingsIconCell.h"
-#import "SettingsSectionHeaderCell.h"
-#import "OnboardingConfirmView.h"
 
 #import <TwinmeCommon/Design.h>
+#import <TwinmeCommon/OnboardingConfirmView.h>
+#import <TwinmeCommon/SettingsSectionHeaderCell.h>
+
 #import "SwitchView.h"
 #import "UIHelpItem.h"
 #import "UIHelpSection.h"

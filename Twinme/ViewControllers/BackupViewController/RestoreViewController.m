@@ -15,7 +15,6 @@
 #import "BackupContentCell.h"
 #import "BackupFooterCell.h"
 #import "RestoreStateCell.h"
-#import "SettingsSectionHeaderCell.h"
 #import "SettingsInformationCell.h"
 #import "WordCompletionView.h"
 #import "DefaultConfirmView.h"
@@ -27,6 +26,7 @@
 #import <TwinmeCommon/BackupService.h>
 #import <TwinmeCommon/MainViewController.h>
 #import <TwinmeCommon/MnemonicCodeUtils.h>
+#import <TwinmeCommon/SettingsSectionHeaderCell.h>
 #import <TwinmeCommon/TwinmeNavigationController.h>
 
 #import <Twinlife/TLRestoreContent.h>
@@ -309,8 +309,7 @@ static NSInteger HEADER_INFO_VIEW_TAG = 1001;
     DDLogVerbose(@"%@ onCheckFileCompatibilityWithResult:%d", LOG_TAG, result);
     
     if (result != TLBackupServiceErrorCodeSuccess) {
-        // TODO BKP handle TLBackupServiceErrorCodeWrongVersion and TLBackupServiceErrorCodeWrongApp.
-        [self showErrorMessage:TLBackupServiceErrorCodeInvalidFile];
+        [self showErrorMessage:result];
     }
 }
 
@@ -720,8 +719,10 @@ static NSInteger HEADER_INFO_VIEW_TAG = 1001;
         message = TwinmeLocalizedStringFromTable(@"backup_view_error_words", @"LocalizableBackup", nil);
     } else if (errorCode == TLBackupServiceErrorCodeDifferentAccount) {
         message = TwinmeLocalizedStringFromTable(@"restore_view_verify_same_account", @"LocalizableBackup", nil);
-    } else if (errorCode == TLBackupServiceErrorCodeInvalidFile && !self.isBackupHeaderInfoOK) {
+    } else if ((errorCode == TLBackupServiceErrorCodeInvalidFile || errorCode == TLBackupServiceErrorCodeWrongApp) && !self.isBackupHeaderInfoOK) {
         message = TwinmeLocalizedStringFromTable(@"restore_view_file_not_supported", @"LocalizableBackup", nil);
+    } else if (errorCode == TLBackupServiceErrorCodeWrongVersion && !self.isBackupHeaderInfoOK) {
+        message = TwinmeLocalizedStringFromTable(@"restore_view_update_message", @"LocalizableBackup", nil);
     } else {
         message = TwinmeLocalizedStringFromTable(@"restore_view_error_message", @"LocalizableBackup", nil);
     }

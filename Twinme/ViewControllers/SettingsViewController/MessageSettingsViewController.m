@@ -15,13 +15,14 @@
 #import "MessageSettingsViewController.h"
 
 #import "SettingsItemCell.h"
-#import "SettingsSectionHeaderCell.h"
 #import "SettingsInformationCell.h"
 #import "SettingsValueItemCell.h"
 #import "TwinmeSettingsItemCell.h"
 
 #import <TwinmeCommon/Design.h>
 #import <TwinmeCommon/NotificationSound.h>
+#import <TwinmeCommon/SettingsSectionHeaderCell.h>
+
 #import "SelectNotificationSoundViewController.h"
 #import "SwitchView.h"
 #import "UIPremiumFeature.h"
@@ -56,7 +57,6 @@ typedef enum {
     SECTION_CALLS,
     SECTION_EPHEMERAL,
     SECTION_CONTENT,
-    SECTION_LINK,
     SECTION_COUNT
 } TLTSettingSection;
 
@@ -66,8 +66,7 @@ typedef enum {
     TAG_DISPLAY_NOTIFCATION_LIKE,
     TAG_ALLOW_COPY_TEXT,
     TAG_ALLOW_COPY_FILE,
-    TAG_ALLOW_EPHEMERAL,
-    TAG_LINK_PREVIEW
+    TAG_ALLOW_EPHEMERAL
 } TLTSettingTag;
 
 //
@@ -130,10 +129,6 @@ typedef enum {
             break;
         }
             
-        case TAG_LINK_PREVIEW:
-            [self.twinmeApplication setVisualizationLinkWithState:updatedSwitch.isOn];
-            break;
-            
         default:
             break;
     }
@@ -159,11 +154,7 @@ typedef enum {
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
     DDLogVerbose(@"%@ tableView: %@ heightForHeaderInSection: %ld", LOG_TAG, tableView, (long)section);
-    
-    if (section == SECTION_LINK) {
-        return Design.SETTING_SECTION_HEIGHT;
-    }
-    
+        
     return Design.SETTING_SECTION_HEIGHT;
 }
 
@@ -208,11 +199,6 @@ typedef enum {
             hideSeparator = YES;
             break;
             
-        case SECTION_LINK:
-            sectionName = TwinmeLocalizedString(@"conversation_settings_view_link_title", nil).uppercaseString;;
-            hideSeparator = YES;
-            break;
-            
         default:
             sectionName = @"";
             break;
@@ -247,11 +233,7 @@ typedef enum {
         case SECTION_CONTENT:
             numberOfRowsInSection = 2;
             break;
-            
-        case SECTION_LINK:
-            numberOfRowsInSection = 2;
-            break;
-            
+
         default:
             numberOfRowsInSection = 0;
             break;
@@ -275,8 +257,6 @@ typedef enum {
             text = TwinmeLocalizedString(@"settings_view_display_call_title", nil);
         } else if (indexPath.section == SECTION_CONTENT) {
             text = TwinmeLocalizedString(@"settings_view_content_information", nil);
-        } else if (indexPath.section == SECTION_LINK) {
-            text = TwinmeLocalizedString(@"conversation_settings_view_link_preview_message", nil);
         } else {
             text = TwinmeLocalizedString(@"settings_view_ephemeral_message", nil);
         }
@@ -313,7 +293,7 @@ typedef enum {
             }
         }
         
-        [cell bindWithTitle:title value:value];
+        [cell bindWithTitle:title value:value icon:nil];
         
         return cell;
     } else {
@@ -393,13 +373,6 @@ typedef enum {
                 }
                 break;
                 
-            case SECTION_LINK:
-                switchState =  self.twinmeApplication.visualizationLink;
-                hiddenSwitch = NO;
-                disableSwitch = NO;
-                tag = TAG_LINK_PREVIEW;
-                title = TwinmeLocalizedString(@"conversation_settings_view_link_preview", nil);
-                break;
             default:
                 break;
         }
@@ -517,7 +490,7 @@ typedef enum {
 
 - (BOOL)isInformationPath:(NSIndexPath *)indexPath {
     
-    if ((indexPath.section == SECTION_ALLOW_COPY || indexPath.section == SECTION_EPHEMERAL || indexPath.section == SECTION_CONTENT || indexPath.section == SECTION_LINK || indexPath.section == SECTION_CALLS) && indexPath.row == 0) {
+    if ((indexPath.section == SECTION_ALLOW_COPY || indexPath.section == SECTION_EPHEMERAL || indexPath.section == SECTION_CONTENT || indexPath.section == SECTION_CALLS) && indexPath.row == 0) {
         return YES;
     }
     

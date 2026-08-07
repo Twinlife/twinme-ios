@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2017-2024 twinlife SA.
+ *  Copyright (c) 2017-2026 twinlife SA.
  *  SPDX-License-Identifier: AGPL-3.0-only
  *
  *  Contributors:
@@ -47,6 +47,7 @@ static const int GET_TRANSFER_CALL = 1 << 12;
 static const int GET_TRANSFER_CALL_DONE = 1 << 13;
 static const int GET_CONTACTS = 1 << 14;
 static const int GET_CONTACTS_DONE = 1 << 15;
+static const int FIND_SUBJECT = 1 << 16;
 
 //
 // Interface: MainService ()
@@ -59,6 +60,8 @@ static const int GET_CONTACTS_DONE = 1 << 15;
 @property (nonatomic) int work;
 @property (nonatomic, nullable) TLProfile *profile;
 @property (nonatomic, nullable) TLSpace *space;
+@property (nonatomic, nullable) NSString *handle;
+@property (nonatomic, nullable) void (^onFindSubject) (TLBaseServiceErrorCode errorCode, id<TLOriginator> subject);
 
 - (void)onOperation;
 
@@ -268,6 +271,16 @@ static const int GET_CONTACTS_DONE = 1 << 15;
     }];
 }
 
+- (void)findSubjectWithHandle:(nonnull NSString *)handle withBlock:(nonnull void (^)(TLBaseServiceErrorCode errorCode, id<TLOriginator> _Nullable subject))block {
+    DDLogError(@"%@ findSubjectWithHandle: %@ isReady: %d", LOG_TAG, handle, self.isTwinlifeReady);
+
+    // We have to wait for the SQLCipher database to be opened again (that is wait for the isTwinlifeReady).
+    self.handle = handle;
+    self.work = FIND_SUBJECT;
+    self.state &= ~(FIND_SUBJECT);
+    self.onFindSubject = block;
+    [self startOperation];
+}
 
 - (void)activeProfile:(nonnull TLProfile *)profile {
     DDLogVerbose(@"%@ activeProfile: %@", LOG_TAG, profile);
@@ -442,6 +455,20 @@ static const int GET_CONTACTS_DONE = 1 << 15;
         }
     }
     
+    // Resolve the subject from the handle asynchronously because we have to wait for the SQLcipher database to be opened.
+    if (self.handle && (self.work & FIND_SUBJECT) != 0) {
+        if ((self.state & FIND_SUBJECT) == 0) {
+            self.state |= FIND_SUBJECT;
+            id<TLOriginator> subject = [self.twinmeContext findSubjectWithHandle:self.handle];
+
+            dispatch_async(dispatch_get_main_queue(), ^{
+                self.onFindSubject(subject ? TLBaseServiceErrorCodeSuccess : TLBaseServiceErrorCodeItemNotFound, subject);
+                self.onFindSubject = nil;
+                self.handle = nil;
+            });
+        }
+    }
+
     //
     // Last Step
     //

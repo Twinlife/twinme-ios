@@ -653,6 +653,7 @@ typedef enum {
             case TLNotificationTypeNewVideoMessage:
             case TLNotificationTypeNewFileMessage:
             case TLNotificationTypeNewPollMessage:
+            case TLNotificationTypeNewContactShare:
             case TLNotificationTypeResetConversation:
             case TLNotificationTypeUpdatedAnnotation: {
                 [mainViewController selectTab:2];
@@ -661,6 +662,7 @@ typedef enum {
                 
                 ConversationViewController *conversationViewController = (ConversationViewController *)[mainViewController.storyboard instantiateViewControllerWithIdentifier:@"ConversationViewController"];
                 [conversationViewController initWithContact:(id<TLOriginator>)subject];
+                [conversationViewController scrollToDescriptor:notification.descriptorId];
                 [selectedNavigationController pushViewController:conversationViewController animated:YES];
                 
                 break;

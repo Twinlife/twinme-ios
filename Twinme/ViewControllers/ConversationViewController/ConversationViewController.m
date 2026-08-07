@@ -62,6 +62,8 @@
 #import "PeerCallItem.h"
 #import "InvitationContactItem.h"
 #import "PeerInvitationContactItem.h"
+#import "ShareContactItem.h"
+#import "PeerShareContactItem.h"
 #import "ClearItem.h"
 #import "PeerClearItem.h"
 
@@ -82,6 +84,8 @@
 #import "PeerInvitationItemCell.h"
 #import "PollItemCell.h"
 #import "PeerPollItemCell.h"
+#import "ShareContactItemCell.h"
+#import "PeerShareContactItemCell.h"
 #import "NameItemCell.h"
 #import "CallItemCell.h"
 #import "PeerCallItemCell.h"
@@ -133,6 +137,7 @@
 #import "UIPremiumFeature.h"
 #import "DeleteConfirmView.h"
 #import "CallAgainConfirmView.h"
+#import "ShareContactConfirmView.h"
 #import "TextViewRightView.h"
 #import "UIPreviewMedia.h"
 #import "EditMessageView.h"
@@ -153,6 +158,8 @@
 #import <TwinmeCommon/GroupService.h>
 #import <TwinmeCommon/TwinmeApplication.h>
 #import <TwinmeCommon/TwinmeNavigationController.h>
+#import <TwinmeCommon/SoundEffect.h>
+#import <TwinmeCommon/UIViewController+Utils.h>
 #import <TwinmeCommon/Utils.h>
 
 #if 0
@@ -188,6 +195,8 @@ static NSString *INVITATION_CONTACT_ITEM_CELL_IDENTIFIER = @"InvitationContactIt
 static NSString *PEER_INVITATION_CONTACT_ITEM_CELL_IDENTIFIER = @"PeerInvitationContactItemCellIdentifier";
 static NSString *CLEAR_ITEM_CELL_IDENTIFIER = @"ClearItemCellIdentifier";
 static NSString *PEER_CLEAR_ITEM_CELL_IDENTIFIER = @"PeerClearItemCellIdentifier";
+static NSString *SHARE_CONTACT_ITEM_CELL_IDENTIFIER = @"ShareContactItemCellIdentifier";
+static NSString *PEER_SHARE_CONTACT_ITEM_CELL_IDENTIFIER = @"PeerShareContactItemCellIdentifier";
 
 static UIColor *DESIGN_HEADER_COLOR;
 static UIColor *DESIGN_FOOTER_COLOR;
@@ -244,7 +253,7 @@ typedef enum {
     ModeAudioRecorder
 } Mode;
 
-@interface ConversationViewController () <ConversationServiceDelegate, UITextViewDelegate, AlertMessageViewDelegate, AVAudioRecorderDelegate, AudioActionDelegate, ImageActionDelegate, VideoActionDelegate, FileActionDelegate, DeleteActionDelegate, MenuActionDelegate, GroupActionDelegate, CallActionDelegate, TwincodeActionDelegate, LinkActionDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIDocumentPickerDelegate, UIDocumentInteractionControllerDelegate, GroupInvitationServiceDelegate, GroupServiceDelegate, SwitchViewDelegate, ReplyViewDelegate, SelectItemDelegate, MenuItemDelegate, ReplyItemDelegate, AsyncLoaderDelegate, PreviewViewDelegate, CoachMarkDelegate, MenuReactionDelegate, ItemSelectedActionViewDelegate, ReactionViewDelegate, AnnotationsViewDelegate, BottomSheetViewDelegate, MenuActionConversationDelegate, MenuSendOptionsDelegate, MenuManageConversationViewDelegate, UITableViewDataSourcePrefetching, PHPickerViewControllerDelegate, CreatePollViewControllerDelegate, PollActionDelegate, PollResultViewDelegate, InfoItemDelegate>
+@interface ConversationViewController () <ConversationServiceDelegate, UITextViewDelegate, AlertMessageViewDelegate, AVAudioRecorderDelegate, AudioActionDelegate, ImageActionDelegate, VideoActionDelegate, FileActionDelegate, DeleteActionDelegate, MenuActionDelegate, GroupActionDelegate, CallActionDelegate, TwincodeActionDelegate, LinkActionDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIDocumentPickerDelegate, UIDocumentInteractionControllerDelegate, GroupInvitationServiceDelegate, GroupServiceDelegate, SwitchViewDelegate, ReplyViewDelegate, SelectItemDelegate, MenuItemDelegate, ReplyItemDelegate, AsyncLoaderDelegate, PreviewViewDelegate, CoachMarkDelegate, MenuReactionDelegate, ItemSelectedActionViewDelegate, ReactionViewDelegate, AnnotationsViewDelegate, BottomSheetViewDelegate, MenuActionConversationDelegate, MenuSendOptionsDelegate, MenuManageConversationViewDelegate, UITableViewDataSourcePrefetching, PHPickerViewControllerDelegate, CreatePollViewControllerDelegate, PollActionDelegate, PollResultViewDelegate, InfoItemDelegate, ShareContactActionDelegate>
 
 @property (weak, nonatomic) IBOutlet UIView *safeAreaView;
 @property (weak, nonatomic) IBOutlet UIView *headerView;
@@ -294,6 +303,7 @@ typedef enum {
 @property (nonatomic) EditMessageView * editMessageView;
 
 @property (nonatomic) id<TLOriginator> contact;
+@property (nonatomic, nullable) TLContact* shareContact;
 @property (nonatomic) TLGroup *group;
 @property (nonatomic) id<TLGroupConversation> groupConversation;
 @property (nonatomic) NSMutableDictionary *groupMembers;
@@ -379,6 +389,7 @@ typedef enum {
 
 @property (nonatomic) BOOL editingMessage;
 @property (nonatomic) BOOL sendAllowed;
+@property (nonatomic) BOOL defferedStartPreview;
 
 @property (nonatomic) CGFloat textInputBarHeight;
 
@@ -422,6 +433,7 @@ typedef enum {
         _openGroupFromInvitation = NO;
         _errorMediaPicking = NO;
         _menuOpen = NO;
+        _defferedStartPreview = NO;
         _selectItemMode = NO;
         _menuSendOptionsOpen = NO;
         _editingMessage = NO;
@@ -538,6 +550,11 @@ typedef enum {
     
     [self.conversationService setActiveConversation];
     
+    if (self.shareContact) {
+        [self.conversationService pushContactShareWithContactId:self.shareContact.uuid];
+        self.shareContact = nil;
+    }
+    
     // Mark the view as being in the "Appearing" state so that we mark as-read new messages.
     self.viewAppearing = YES;
     self.keyboardHeight = [self.twinmeApplication getDefaultKeyboardHeight];
@@ -550,6 +567,11 @@ typedef enum {
         
     if (self.needsRefresh) {
         [self reloadData];
+    }
+    
+    if (self.defferedStartPreview) {
+        self.defferedStartPreview = NO;
+        [self startPreview];
     }
 }
 
@@ -592,6 +614,14 @@ typedef enum {
     if (self.typingTimer) {
         [self.typingTimer invalidate];
         self.typingTimer = nil;
+    }
+    
+    BOOL isViewPopped = self.isMovingFromParentViewController;
+    BOOL isViewDismissed = self.isBeingDismissed || self.navigationController.isBeingDismissed;
+    BOOL isViewPushed = self.navigationController && !isViewPopped && !isViewDismissed && self.navigationController.topViewController != self;
+
+    if (isViewPopped || isViewDismissed || isViewPushed) {
+        [self clearBottomSheetViews];
     }
     
     [self saveDraft:self.textView.text];
@@ -746,6 +776,64 @@ typedef enum {
     }
 }
 
+- (void)initWiwhContactToShare:(nullable TLContact *)shareContact {
+    DDLogVerbose(@"%@ initWiwhContactToShare; %@", LOG_TAG, shareContact);
+    
+    self.shareContact = shareContact;
+}
+
+- (void)startFromShareExtension {
+    DDLogVerbose(@"%@ startFromShareExtension", LOG_TAG);
+    
+    if (self.viewAppearing) {
+        [self startPreview];
+    } else {
+        self.defferedStartPreview = YES;
+    }
+}
+
+- (void)startPreview {
+    DDLogVerbose(@"%@ startPreview", LOG_TAG);
+    
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSURL *groupURL = [fileManager containerURLForSecurityApplicationGroupIdentifier:[TLTwinlife APP_GROUP_NAME]];
+    
+    NSURL *directoryURL = [groupURL
+            URLByAppendingPathComponent:@"preview"
+                            isDirectory:YES];
+    NSArray<NSURL *> *files =
+        [fileManager contentsOfDirectoryAtURL:directoryURL
+                   includingPropertiesForKeys:nil
+                                      options:0
+                                        error:nil];
+    
+    
+    BOOL hasFiles = NO;
+    for (NSURL *file in files) {
+        if (![self isImageFile:file.path] && ![self isVideoFile:file.path]) {
+            hasFiles = YES;
+            break;
+        }
+    }
+    
+    PreviewFilesViewController *previewFileViewController = (PreviewFilesViewController *)[self.storyboard instantiateViewControllerWithIdentifier:@"PreviewFilesViewController"];
+    previewFileViewController.previewViewDelegate = self;
+    previewFileViewController.startWithMedia = !hasFiles;
+    [previewFileViewController initWithPreviewFiles:files];
+    
+    BOOL certified = NO;
+    if (!self.group && self.contact) {
+        TLContact *contact = (TLContact *)self.contact;
+        if (contact.certificationLevel == TLCertificationLevel4) {
+            certified = YES;
+        }
+    }
+    
+    [previewFileViewController initWithName:self.contactName avatar:self.contactAvatar certified:certified message:self.textView.text];
+    
+    [self presentViewController:previewFileViewController animated:YES completion:nil];
+}
+
 - (void)scrollToDescriptor:(TLDescriptorId *)descriptorId {
     DDLogVerbose(@"%@ scrollToDescriptor: %@", LOG_TAG, descriptorId);
     
@@ -818,6 +906,12 @@ typedef enum {
     }
 }
 
+- (UIImage *)getIdentityAvatar {
+    DDLogVerbose(@"%@ getIdentityAvatar", LOG_TAG);
+    
+    return self.identityAvatar;
+}
+
 - (BOOL)isUserVote:(NSUUID *)peerTwincodeOutboundId {
     DDLogVerbose(@"%@ isUserVote: %@", LOG_TAG, peerTwincodeOutboundId);
     
@@ -846,6 +940,14 @@ typedef enum {
     }
 }
 
+- (void)updateTableView {
+
+    [UIView performWithoutAnimation:^{
+        [self.tableView beginUpdates];
+        [self.tableView endUpdates];
+    }];
+}
+
 - (BOOL)isSameDayWithDate1:(NSDate*)date1 date2:(NSDate*)date2 {
     DDLogVerbose(@"%@ isSameDayWithDate1: %@ date2: %@", LOG_TAG, date1, date2);
     
@@ -872,6 +974,8 @@ typedef enum {
     [self.conversationService pushFileWithPath:path type:type toBeDeleted:toBeDeleted copyAllowed:allowCopy expiredTimeout:0 sendTo:sendTo replyTo:replyTo];
     
     self.replyItem = nil;
+    
+    [SoundEffect playSoundWithType:SoundEffectTypeSendMessage];
     
     if (self.replyView) {
         self.replyView.hidden = YES;
@@ -1060,6 +1164,12 @@ typedef enum {
                 break;
             }
                 
+            case TLDescriptorTypeContactShareDescriptor: {
+                TLContactShareDescriptor *contactShareDescriptor = (TLContactShareDescriptor *)descriptor;
+                [self addContactShareDescriptor:contactShareDescriptor];
+                break;
+            }
+                
             case TLDescriptorTypeClearDescriptor: {
                 TLClearDescriptor *clearDescriptor = (TLClearDescriptor *)descriptor;
                 [self addClearDescriptor:clearDescriptor];
@@ -1166,6 +1276,12 @@ typedef enum {
             break;
         }
             
+        case TLDescriptorTypeContactShareDescriptor: {
+            TLContactShareDescriptor *contactShareDescriptor = (TLContactShareDescriptor *)descriptor;
+            [self addContactShareDescriptor:contactShareDescriptor];
+            break;
+        }
+            
         case TLDescriptorTypeClearDescriptor: {
             TLClearDescriptor *clearDescriptor = (TLClearDescriptor *)descriptor;
             [self addClearDescriptor:clearDescriptor];
@@ -1194,35 +1310,40 @@ typedef enum {
     DDLogVerbose(@"%@ onPopDescriptor: %@", LOG_TAG, descriptor);
     
     NSUInteger countItem = self.items.count;
-    
+    BOOL playSound = NO;
     switch (descriptor.getType) {
         case TLDescriptorTypeObjectDescriptor: {
             TLObjectDescriptor *objectDescriptor = (TLObjectDescriptor *)descriptor;
             [self addObjectDescriptor:objectDescriptor];
+            playSound = YES;
             break;
         }
             
         case TLDescriptorTypeImageDescriptor: {
             TLImageDescriptor *imageDescriptor= (TLImageDescriptor *)descriptor;
             [self addImageDescriptor:imageDescriptor];
+            playSound = YES;
             break;
         }
             
         case TLDescriptorTypeVideoDescriptor: {
             TLVideoDescriptor *videoDescriptor = (TLVideoDescriptor *)descriptor;
             [self addVideoDescriptor:videoDescriptor];
+            playSound = YES;
             break;
         }
             
         case TLDescriptorTypeNamedFileDescriptor: {
             TLNamedFileDescriptor *fileDescriptor = (TLNamedFileDescriptor *)descriptor;
             [self addNamedFileDescriptor:fileDescriptor];
+            playSound = YES;
             break;
         }
             
         case TLDescriptorTypeInvitationDescriptor: {
             TLInvitationDescriptor *invitationDescriptor = (TLInvitationDescriptor *)descriptor;
             [self addInvitationDescriptor:invitationDescriptor];
+            playSound = YES;
             break;
         }
             
@@ -1241,12 +1362,21 @@ typedef enum {
         case TLDescriptorTypeTwincodeDescriptor: {
             TLTwincodeDescriptor *twincodeDescriptor = (TLTwincodeDescriptor *)descriptor;
             [self addTwincodeDescriptor:twincodeDescriptor];
+            playSound = YES;
             break;
         }
             
         case TLDescriptorTypePollDescriptor: {
             TLPollDescriptor *pollDescriptor = (TLPollDescriptor *)descriptor;
             [self addPollDescriptor:pollDescriptor];
+            playSound = YES;
+            break;
+        }
+            
+        case TLDescriptorTypeContactShareDescriptor: {
+            TLContactShareDescriptor *contactShareDescriptor = (TLContactShareDescriptor *)descriptor;
+            [self addContactShareDescriptor:contactShareDescriptor];
+            playSound = YES;
             break;
         }
             
@@ -1258,6 +1388,10 @@ typedef enum {
             
         default:
             break;
+    }
+    
+    if (playSound) {
+        [SoundEffect playSoundWithType:SoundEffectTypeNewMessage];
     }
     
     if (self.items.count > countItem) {
@@ -1342,6 +1476,7 @@ typedef enum {
                 case TLDescriptorTypeAudioDescriptor: {
                     TLAudioDescriptor *audioDescriptor = (TLAudioDescriptor *)descriptor;
                     if (audioDescriptor.isAvailable) {
+                        [SoundEffect playSoundWithType:SoundEffectTypeNewMessage];
                         [self addAudioDescriptor:audioDescriptor];
                     }
                     break;
@@ -1394,6 +1529,41 @@ typedef enum {
                 case TLDescriptorTypePollDescriptor: {
                     TLPollDescriptor *pollDescriptor = (TLPollDescriptor *)descriptor;
                     [self addPollDescriptor:pollDescriptor];
+                    break;
+                }
+                    
+                case TLDescriptorTypeContactShareDescriptor: {
+                    NSInteger itemIndex = -1;
+                    TLDescriptorId *descriptorId = descriptor.descriptorId;
+                    for (NSInteger index = self.items.count - 1; index >= 0; index--) {
+                        Item *item = [self.items objectAtIndex:index];
+                        if ([item.descriptorId isEqual:descriptorId]) {
+                            itemIndex = index;
+                            break;
+                        }
+                    }
+                    if (itemIndex == -1) {
+                        TLContactShareDescriptor *contactShareDescriptor = (TLContactShareDescriptor *)descriptor;
+                        [self addContactShareDescriptor:contactShareDescriptor];
+                    } else if (!self.batchUpdate) {
+                        Item *item = [self.items objectAtIndex:itemIndex];
+                        [item updateTimestampsWithDescriptor:descriptor];
+                        
+                        ItemCell *itemCell = [self.tableView cellForRowAtIndexPath:[self itemIndexToIndexPath:itemIndex]];
+                        if (itemCell && itemCell.item == item) {
+                            if (item.type == ItemTypePeerShareContact) {
+                                PeerShareContactItem *peerShareContactItem = (PeerShareContactItem *)item;
+                                peerShareContactItem.contactShareDescriptor = (TLContactShareDescriptor *)descriptor;
+                                [itemCell bindWithItem:peerShareContactItem conversationViewController:self];
+                            } else {
+                                ShareContactItem *shareContactItem = (ShareContactItem *)item;
+                                shareContactItem.contactShareDescriptor = (TLContactShareDescriptor *)descriptor;
+                                [itemCell bindWithItem:shareContactItem conversationViewController:self];
+                            }
+                        }
+                        
+                        [self.tableView reloadRowsAtIndexPaths:@[[self itemIndexToIndexPath:itemIndex]] withRowAnimation:UITableViewRowAnimationNone];
+                    }
                     break;
                 }
                     
@@ -1629,6 +1799,10 @@ typedef enum {
                 PeerPollItem *peerPollItem = (PeerPollItem *)updatedItem;
                 TLPollDescriptor *pollDescriptor = (TLPollDescriptor *)descriptor;
                 [peerPollItem updateVotesWithDescriptor:pollDescriptor];
+            }
+            
+            if (updateType == TLConversationServiceUpdateTypePeerAnnotations && ![updatedItem isPeerItem]) {
+                [SoundEffect playSoundWithType:SoundEffectTypeEmoji];
             }
             
             ItemCell *itemCell = (ItemCell *)[self.tableView cellForRowAtIndexPath:[self itemIndexToIndexPath:updatedItemIndex]];
@@ -2260,6 +2434,30 @@ typedef enum {
             return peerInvitationContactItemCell;
         }
             
+        case ItemTypeShareContact: {
+            ShareContactItem *shareContactItem = (ShareContactItem *)item;
+            ShareContactItemCell *shareContactItemCell = (ShareContactItemCell *)[self.tableView dequeueReusableCellWithIdentifier:SHARE_CONTACT_ITEM_CELL_IDENTIFIER forIndexPath:indexPath];
+            [shareContactItemCell bindWithItem:shareContactItem conversationViewController:self];
+            shareContactItemCell.transform = self.tableView.transform;
+            shareContactItemCell.deleteActionDelegate = self;
+            shareContactItemCell.menuActionDelegate = self;
+            shareContactItemCell.selectItemDelegate = self;
+            shareContactItemCell.infoItemDelegate = self;
+            return shareContactItemCell;
+        }
+            
+        case ItemTypePeerShareContact: {
+            PeerShareContactItem *peerShareContactItem = (PeerShareContactItem *)item;
+            PeerShareContactItemCell *peerShareContactItemCell = (PeerShareContactItemCell *)[self.tableView dequeueReusableCellWithIdentifier:PEER_SHARE_CONTACT_ITEM_CELL_IDENTIFIER forIndexPath:indexPath];
+            [peerShareContactItemCell bindWithItem:peerShareContactItem conversationViewController:self];
+            peerShareContactItemCell.transform = self.tableView.transform;
+            peerShareContactItemCell.deleteActionDelegate = self;
+            peerShareContactItemCell.menuActionDelegate = self;
+            peerShareContactItemCell.selectItemDelegate = self;
+            peerShareContactItemCell.shareContactActionDelegate = self;
+            return peerShareContactItemCell;
+        }
+            
         case ItemTypeName: {
             NameItem *nameItem = (NameItem *)item;
             NameItemCell *nameCell = (NameItemCell *)[self.tableView dequeueReusableCellWithIdentifier:NAME_ITEM_CELL_IDENTIFIER forIndexPath:indexPath];
@@ -2290,6 +2488,7 @@ typedef enum {
             case ItemTypePeerPoll:
             case ItemTypePeerInvitation:
             case ItemTypePeerInvitationContact:
+            case ItemTypePeerShareContact:
             case ItemTypePeerClear:
                 if ([item needsUpdateReadTimestamp]) {
                     // Because willDisplayCell is called several times, mark the descriptor as read
@@ -2547,6 +2746,7 @@ typedef enum {
     
     [self updateSendButton:NO];
     [self closeMenu];
+    [SoundEffect playSoundWithType:SoundEffectTypeSendMessage];
     
     self.replyItem = nil;
     
@@ -2975,6 +3175,10 @@ typedef enum {
     } else if([abstractBottomSheetView isKindOfClass:[DeleteConfirmView class]]) {
         [self deleteSelectedItems];
         [self handleCancelSelectModeTapGesture:nil];
+    } else if([abstractBottomSheetView isKindOfClass:[ShareContactConfirmView class]]) {
+        ShareContactConfirmView *shareContactConfirmView = (ShareContactConfirmView *)abstractBottomSheetView;
+        TLContactShareDescriptor *contactShareDescriptor = shareContactConfirmView.contactShareDescriptor;
+        [self.conversationService answerContactShareWithDescriptorId:contactShareDescriptor.descriptorId answer:TLInvitationDescriptorStatusTypeAccepted];
     }
     
     [abstractBottomSheetView closeConfirmView];
@@ -2987,6 +3191,10 @@ typedef enum {
         [self.twinmeApplication setShowWarningEditMessageWithState:NO];
     } else if([abstractBottomSheetView isKindOfClass:[DeleteConfirmView class]]) {
         [self handleCancelSelectModeTapGesture:nil];
+    } else if ([abstractBottomSheetView isKindOfClass:[ShareContactConfirmView class]]) {
+        ShareContactConfirmView *shareContactConfirmView = (ShareContactConfirmView *)abstractBottomSheetView;
+        TLContactShareDescriptor *contactShareDescriptor = shareContactConfirmView.contactShareDescriptor;
+        [self.conversationService answerContactShareWithDescriptorId:contactShareDescriptor.descriptorId answer:TLInvitationDescriptorStatusTypeRefused];
     }
      
     [abstractBottomSheetView closeConfirmView];
@@ -3136,7 +3344,7 @@ typedef enum {
         
         UITapGestureRecognizer *microTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didPressRecordButton:)];
         [self.textViewRightView.microView addGestureRecognizer:microTapGestureRecognizer];
-        self.textViewRightView.microView.accessibilityLabel = TwinmeLocalizedString(@"conversation_view_record_title", nil);
+        self.textViewRightView.microView.accessibilityLabel = TwinmeLocalizedString(@"conversation_view_audio_message", nil);
         
         [self updateSendButton:NO];
     }
@@ -3284,12 +3492,26 @@ typedef enum {
                 }
             });
         }
-        
+        [SoundEffect playSoundWithType:SoundEffectTypeDeleteMessage];
         [self deleteItemInternal:item];
         
         if (self.selectedItem.descriptorId == item.descriptorId && self.isMenuOpen) {
             [self closeMenu];
         }
+    }
+}
+
+- (void)deleteExpiredItem:(Item *)item {
+    DDLogVerbose(@"%@ deleteExpiredItem: %@", LOG_TAG, item);
+    
+    if (item) {
+        if (item.isPeerItem) {
+            [self.conversationService deleteDescriptorWithDescriptorId:item.descriptorId];
+        } else {
+            [self.conversationService markDescriptorDeletedWithDescriptorId:item.descriptorId];
+        }
+        
+        [self deleteItem:item];
     }
 }
 
@@ -3532,6 +3754,42 @@ typedef enum {
     [self.conversationService submitPollVotes:pollDescriptor.descriptorId choices:choices];
 }
 
+#pragma mark - ShareContactActionDelegate
+
+- (void)openShareContactDescriptor:(TLContactShareDescriptor *)contactShareDescriptor {
+    DDLogVerbose(@"%@ openShareContactDescriptor: %@", LOG_TAG, contactShareDescriptor);
+    
+    if (self.selectItemMode || contactShareDescriptor.status != TLInvitationDescriptorStatusTypePending) {
+        return;
+    }
+    
+    [Utils hapticFeedback:UIImpactFeedbackStyleHeavy];
+    
+    [self.twinmeContext getContactShareAvatarWithDescriptor:contactShareDescriptor withBlock:^(UIImage * _Nullable avatar) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            ShareContactConfirmView *shareContactConfirmView = [[ShareContactConfirmView alloc] init];
+            shareContactConfirmView.bottomSheetViewDelegate = self;
+            shareContactConfirmView.contactShareDescriptor = contactShareDescriptor;
+            [shareContactConfirmView setup:self.contact.identityName rightName:contactShareDescriptor.name contactName:self.contact.name leftAvatar:self.identityAvatar rightAvatar:avatar];
+            [self.tabBarController.view addSubview:shareContactConfirmView];
+            [shareContactConfirmView showConfirmView];
+        });
+    }];
+}
+
+- (void)openTwincodeDescriptorFromShareContact:(TLTwincodeDescriptor *)twincodeDescriptor {
+    DDLogVerbose(@"%@ openTwincodeDescriptorFromShareContact: %@", LOG_TAG, twincodeDescriptor);
+    
+    AcceptInvitationViewController *acceptInvitationViewController = (AcceptInvitationViewController *)[self.storyboard instantiateViewControllerWithIdentifier:@"AcceptInvitationViewController"];
+    if (self.group) {
+        [acceptInvitationViewController initWithProfile:nil url:nil descriptorId:twincodeDescriptor.descriptorId  originatorId:self.group.uuid isGroup:YES notification:nil popToRootViewController:NO];
+    } else {
+        [acceptInvitationViewController initWithProfile:nil url:nil descriptorId:twincodeDescriptor.descriptorId  originatorId:self.contact.uuid isGroup:NO notification:nil popToRootViewController:NO];
+    }
+    [acceptInvitationViewController initShareContact:self.contact.name];
+    [acceptInvitationViewController showInView:self.navigationController.view];
+}
+
 #pragma mark - MenuActionDelegate
 
 - (void)openMenu:(Item *)item {
@@ -3603,6 +3861,11 @@ typedef enum {
             case ItemTypeInvitationContact:
             case ItemTypePeerInvitationContact:
                 menuType = MenuTypeInvitation;
+                break;
+            case ItemTypeShareContact:
+            case ItemTypePeerShareContact:
+                menuType = MenuTypeInvitation;
+                addReaction = YES;
                 break;
             case ItemTypeCall:
             case ItemTypePeerCall:
@@ -5037,6 +5300,8 @@ typedef enum {
     [self.tableView registerNib:[UINib nibWithNibName:@"PeerCallItemCell" bundle:nil] forCellReuseIdentifier:PEER_CALL_ITEM_CELL_IDENTIFIER];
     [self.tableView registerNib:[UINib nibWithNibName:@"InvitationContactItemCell" bundle:nil] forCellReuseIdentifier:INVITATION_CONTACT_ITEM_CELL_IDENTIFIER];
     [self.tableView registerNib:[UINib nibWithNibName:@"PeerInvitationContactItemCell" bundle:nil] forCellReuseIdentifier:PEER_INVITATION_CONTACT_ITEM_CELL_IDENTIFIER];
+    [self.tableView registerNib:[UINib nibWithNibName:@"ShareContactItemCell" bundle:nil] forCellReuseIdentifier:SHARE_CONTACT_ITEM_CELL_IDENTIFIER];
+    [self.tableView registerNib:[UINib nibWithNibName:@"PeerShareContactItemCell" bundle:nil] forCellReuseIdentifier:PEER_SHARE_CONTACT_ITEM_CELL_IDENTIFIER];
     [self.tableView registerNib:[UINib nibWithNibName:@"ClearItemCell" bundle:nil] forCellReuseIdentifier:CLEAR_ITEM_CELL_IDENTIFIER];
     [self.tableView registerNib:[UINib nibWithNibName:@"PeerClearItemCell" bundle:nil] forCellReuseIdentifier:PEER_CLEAR_ITEM_CELL_IDENTIFIER];
     
@@ -5195,6 +5460,8 @@ typedef enum {
     if (self.replyView) {
         [self.replyView finish];
     }
+    
+    [SoundEffect disposeSounds];
         
     if (self.viewAppearing) {
         [self.navigationController popViewControllerAnimated:YES];
@@ -5571,11 +5838,21 @@ typedef enum {
     DDLogVerbose(@"%@ addTwincodeDescriptor: %@", LOG_TAG, twincodeDescriptor);
     
     if ([self.conversationService isLocalDescriptor:twincodeDescriptor]) {
-        InvitationContactItem *invitationItem = [[InvitationContactItem alloc] initWithTwincodeDescriptor:twincodeDescriptor];
-        [self addItem:invitationItem];
+        if ([twincodeDescriptor.schemaId isEqual:[TLContactShareDescriptor CONTACT_SHARE_SCHEMA_ID]]) {
+            ShareContactItem *shareContactItem = [[ShareContactItem alloc] initWithTwincodeDescriptor:twincodeDescriptor];
+            [self addItem:shareContactItem];
+        } else {
+            InvitationContactItem *invitationItem = [[InvitationContactItem alloc] initWithTwincodeDescriptor:twincodeDescriptor];
+            [self addItem:invitationItem];
+        }
     } else if ([self.conversationService isPeerDescriptor:twincodeDescriptor]) {
-        PeerInvitationContactItem *peerInvitationItem = [[PeerInvitationContactItem alloc] initWithTwincodeDescriptor:twincodeDescriptor];
-        [self addItem:peerInvitationItem];
+        if ([twincodeDescriptor.schemaId isEqual:[TLContactShareDescriptor CONTACT_SHARE_SCHEMA_ID]]) {
+            PeerShareContactItem *peerShareContactItem = [[PeerShareContactItem alloc] initWithTwincodeDescriptor:twincodeDescriptor];
+            [self addItem:peerShareContactItem];
+        } else {
+            PeerInvitationContactItem *peerInvitationItem = [[PeerInvitationContactItem alloc] initWithTwincodeDescriptor:twincodeDescriptor];
+            [self addItem:peerInvitationItem];
+        }
     } else {
         [self.twinmeContext assertionWithAssertPoint:[ApplicationAssertPoint INVALID_DESCRIPTOR], [TLAssertValue initWithSubject:self.contact], [TLAssertValue initWithTwincodeId:twincodeDescriptor.descriptorId.twincodeOutboundId], [TLAssertValue initWithNumber:[twincodeDescriptor getType]], [TLAssertValue initWithTwincodeId:[self.conversationService debugGetTwincodeOutboundId]], [TLAssertValue initWithTwincodeId:[self.conversationService debugGetPeerTwincodeOutboundId]], nil];
     }
@@ -5592,6 +5869,20 @@ typedef enum {
         [self addItem:peerPollItem];
     } else {
         [self.twinmeContext assertionWithAssertPoint:[ApplicationAssertPoint INVALID_DESCRIPTOR], [TLAssertValue initWithSubject:self.contact], [TLAssertValue initWithTwincodeId:pollDescriptor.descriptorId.twincodeOutboundId], [TLAssertValue initWithNumber:[pollDescriptor getType]], [TLAssertValue initWithTwincodeId:[self.conversationService debugGetTwincodeOutboundId]], [TLAssertValue initWithTwincodeId:[self.conversationService debugGetPeerTwincodeOutboundId]], nil];
+    }
+}
+
+- (void)addContactShareDescriptor:(nonnull TLContactShareDescriptor *)contactShareDescriptor {
+    DDLogVerbose(@"%@ addContactShareDescriptor: %@", LOG_TAG, contactShareDescriptor);
+    
+    if ([self.conversationService isLocalDescriptor:contactShareDescriptor]) {
+        ShareContactItem *shareContactItem = [[ShareContactItem alloc] initWithContactShareDescriptor:contactShareDescriptor];
+        [self addItem:shareContactItem];
+    } else if ([self.conversationService isPeerDescriptor:contactShareDescriptor]) {
+        PeerShareContactItem *peerShareContactItem = [[PeerShareContactItem alloc] initWithContactShareDescriptor:contactShareDescriptor];
+        [self addItem:peerShareContactItem];
+    } else {
+        [self.twinmeContext assertionWithAssertPoint:[ApplicationAssertPoint INVALID_DESCRIPTOR], [TLAssertValue initWithSubject:self.contact], [TLAssertValue initWithTwincodeId:contactShareDescriptor.descriptorId.twincodeOutboundId], [TLAssertValue initWithNumber:[contactShareDescriptor getType]], [TLAssertValue initWithTwincodeId:[self.conversationService debugGetTwincodeOutboundId]], [TLAssertValue initWithTwincodeId:[self.conversationService debugGetPeerTwincodeOutboundId]], nil];
     }
 }
 
@@ -5795,7 +6086,8 @@ typedef enum {
         case ItemTypePoll:
         case ItemTypeInvitation:
         case ItemTypeCall:
-        case ItemTypeInvitationContact: {
+        case ItemTypeInvitationContact:
+        case ItemTypeShareContact:{
             if (previousItem) {
                 switch (previousItem.type) {
                     case ItemTypeMessage:
@@ -5807,7 +6099,8 @@ typedef enum {
                     case ItemTypePoll:
                     case ItemTypeInvitation:
                     case ItemTypeCall:
-                    case ItemTypeInvitationContact: {
+                    case ItemTypeInvitationContact:
+                    case ItemTypeShareContact: {
                         if (item.timestamp - previousItem.timestamp < DESIGN_MAX_DELTA_TIMESTAMP1) {
                             previousItem.corners &= ~ITEM_BOTTOM_RIGHT;
                             item.corners &= ~ITEM_TOP_RIGHT;
@@ -5826,7 +6119,8 @@ typedef enum {
                     case ItemTypePeerPoll:
                     case ItemTypePeerInvitation:
                     case ItemTypePeerCall:
-                    case ItemTypePeerInvitationContact: {
+                    case ItemTypePeerInvitationContact:
+                    case ItemTypePeerShareContact: {
                         previousItem.corners |= ITEM_BOTTOM_LEFT;
                         previousItem.visibleAvatar = YES;
                         item.corners |= ITEM_TOP_RIGHT;
@@ -5850,6 +6144,7 @@ typedef enum {
                     case ItemTypeInvitation:
                     case ItemTypeCall:
                     case ItemTypeInvitationContact:
+                    case ItemTypeShareContact:
                         if (nextItem.timestamp - item.timestamp < DESIGN_MAX_DELTA_TIMESTAMP1) {
                             item.corners &= ~ITEM_BOTTOM_RIGHT;
                             nextItem.corners &= ~ITEM_TOP_RIGHT;
@@ -5867,7 +6162,8 @@ typedef enum {
                     case ItemTypePeerPoll:
                     case ItemTypePeerInvitation:
                     case ItemTypePeerCall:
-                    case ItemTypePeerInvitationContact: {
+                    case ItemTypePeerInvitationContact:
+                    case ItemTypePeerShareContact: {
                         item.corners |= ITEM_BOTTOM_RIGHT;
                         nextItem.corners |= ITEM_TOP_LEFT;
                         break;
@@ -5889,7 +6185,8 @@ typedef enum {
         case ItemTypePeerPoll:
         case ItemTypePeerInvitation:
         case ItemTypePeerCall:
-        case ItemTypePeerInvitationContact: {
+        case ItemTypePeerInvitationContact:
+        case ItemTypePeerShareContact: {
             item.visibleAvatar = YES;
             if (previousItem) {
                 switch (previousItem.type) {
@@ -5902,7 +6199,8 @@ typedef enum {
                     case ItemTypePoll:
                     case ItemTypeInvitation:
                     case ItemTypeCall:
-                    case ItemTypeInvitationContact: {
+                    case ItemTypeInvitationContact:
+                    case ItemTypeShareContact: {
                         previousItem.corners |= ITEM_BOTTOM_RIGHT;
                         item.corners |= ITEM_TOP_LEFT;
                         break;
@@ -5918,6 +6216,7 @@ typedef enum {
                     case ItemTypePeerInvitation:
                     case ItemTypePeerCall:
                     case ItemTypePeerInvitationContact:
+                    case ItemTypePeerShareContact:
                         if (item.timestamp - previousItem.timestamp < DESIGN_MAX_DELTA_TIMESTAMP1) {
                             previousItem.corners &= ~ITEM_BOTTOM_LEFT;
                             previousItem.visibleAvatar = NO;
@@ -5943,7 +6242,8 @@ typedef enum {
                     case ItemTypePoll:
                     case ItemTypeInvitation:
                     case ItemTypeCall:
-                    case ItemTypeInvitationContact: {
+                    case ItemTypeInvitationContact:
+                    case ItemTypeShareContact: {
                         item.corners |= ITEM_BOTTOM_LEFT;
                         nextItem.corners |= ITEM_TOP_RIGHT;
                         break;
@@ -5959,6 +6259,7 @@ typedef enum {
                     case ItemTypePeerInvitation:
                     case ItemTypePeerCall:
                     case ItemTypePeerInvitationContact:
+                    case ItemTypePeerShareContact:
                         if (nextItem.timestamp - item.timestamp < DESIGN_MAX_DELTA_TIMESTAMP1) {
                             item.corners &= ~ITEM_BOTTOM_LEFT;
                             item.visibleAvatar = NO;
@@ -6149,7 +6450,8 @@ typedef enum {
             case ItemTypePoll:
             case ItemTypeInvitation:
             case ItemTypeCall:
-            case ItemTypeInvitationContact: {
+            case ItemTypeInvitationContact:
+            case ItemTypeShareContact: {
                 if (!nextItem) {
                     previousItem.corners &= ~ITEM_BOTTOM_RIGHT;
                     [previousItem updateState];
@@ -6174,7 +6476,8 @@ typedef enum {
             case ItemTypePeerPoll:
             case ItemTypePeerInvitation:
             case ItemTypePeerCall:
-            case ItemTypePeerInvitationContact: {
+            case ItemTypePeerInvitationContact:
+            case ItemTypePeerShareContact: {
                 if (!nextItem) {
                     previousItem.corners |= ITEM_BOTTOM_LEFT;
                     previousItem.visibleAvatar = YES;
@@ -6211,6 +6514,7 @@ typedef enum {
             case ItemTypeInvitation:
             case ItemTypeCall:
             case ItemTypeInvitationContact:
+            case ItemTypeShareContact:
                 if (!previousItem) {
                     nextItem.corners |= ITEM_TOP_RIGHT;
                 } else if (![previousItem isSamePeer:nextItem]) {
@@ -6233,7 +6537,8 @@ typedef enum {
             case ItemTypePeerPoll:
             case ItemTypePeerInvitation:
             case ItemTypePeerCall:
-            case ItemTypePeerInvitationContact: {
+            case ItemTypePeerInvitationContact:
+            case ItemTypePeerShareContact: {
                 nextItem.corners |= ITEM_BOTTOM_RIGHT;
                 nextItem.corners |= ITEM_TOP_LEFT;
                 break;

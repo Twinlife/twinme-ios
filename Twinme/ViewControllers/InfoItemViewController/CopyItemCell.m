@@ -98,6 +98,7 @@ static const int ddLogLevel = DDLogLevelWarning;
 - (void)updateColor {
     DDLogVerbose(@"%@ updateColor", LOG_TAG);
     
+    self.contentView.backgroundColor = Design.WHITE_COLOR;
     self.allowCopyLabel.textColor = Design.FONT_COLOR_DEFAULT;
     self.separatorView.backgroundColor = Design.SEPARATOR_COLOR_GREY;
     self.allowCopyImageView.tintColor = Design.BLACK_COLOR;

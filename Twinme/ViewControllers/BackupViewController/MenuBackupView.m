@@ -131,7 +131,7 @@ static NSString *BACKUP_INFO_CELL_IDENTIFIER = @"BackupInfoCellIdentifier";
             hideSeparator = YES;
         }
         
-        [cell bindWithTitle:title icon:icon hideSeparator:hideSeparator];
+        [cell bindWithTitle:title icon:icon iconColor:Design.BLACK_COLOR hideSeparator:hideSeparator];
             
         return cell;
     }

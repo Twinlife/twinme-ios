@@ -17,13 +17,14 @@
 #import "AboutCell.h"
 #import "SettingsInformationCell.h"
 #import "TwinmeSettingsItemCell.h"
-#import "SettingsSectionHeaderCell.h"
 #import "SettingsSectionFooterCell.h"
 #import "SettingsValueItemCell.h"
 #import "UpdateAvailableCell.h"
 
 #import "LastVersionManager.h"
 #import "LastVersion.h"
+
+#import <TwinmeCommon/SettingsSectionHeaderCell.h>
 
 #if 0
 static const int ddLogLevel = DDLogLevelVerbose;

@@ -22,10 +22,10 @@
 #import <TwinmeCommon/CallReceiverService.h>
 #import <TwinmeCommon/CallViewController.h>
 #import <TwinmeCommon/Design.h>
+#import <TwinmeCommon/SettingsSectionHeaderCell.h>
 
 #import <Utils/NSString+Utils.h>
 
-#import "SettingsSectionHeaderCell.h"
 #import "SettingsValueItemCell.h"
 #import "ScheduleCell.h"
 #import "SettingsItemCell.h"
@@ -346,7 +346,7 @@ static NSString *SETTINGS_INFORMATION_CELL_IDENTIFIER = @"SettingsInformationCel
             } else {
                 value = [UIConfigExternalCall getCallCapabilities:self.configExternalCall.allowVoiceCall allowVideo:self.configExternalCall.allowVideoCall allowGroup:self.configExternalCall.allowGroupCall];
             }
-            [cell bindWithTitle:[configItem getTitle] value:value];
+            [cell bindWithTitle:[configItem getTitle] value:value icon:nil];
             
             return cell;
         }

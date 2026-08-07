@@ -17,7 +17,7 @@
 
 #import <TwinmeCommon/Design.h>
 #import "DefaultConfirmView.h"
-#import "OnboardingConfirmView.h"
+#import <TwinmeCommon/OnboardingConfirmView.h>
 
 #import "BackupCell.h"
 #import "UIBackupInfo.h"

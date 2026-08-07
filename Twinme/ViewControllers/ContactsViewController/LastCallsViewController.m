@@ -600,7 +600,7 @@ static CGFloat AVATAR_VIEW_HEIGHT;
         
         self.navigationItem.titleView = customTitleView;
         
-        if ([self.uiContact.contact isGroup]) {
+        if (!self.isCallReceiver && [self.uiContact.contact isGroup]) {
             self.titleLabel.text = self.callOriginator.name;
             self.subTitleLabel.text = TwinmeLocalizedString(@"conversation_view_group_one_member", nil);
         }

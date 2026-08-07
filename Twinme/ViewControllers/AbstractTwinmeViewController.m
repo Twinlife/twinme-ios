@@ -26,6 +26,9 @@
 #import <TwinmeCommon/Utils.h>
 
 #import "LastVersionManager.h"
+#import <TwinmeCommon/AbstractBottomSheetView.h>
+#import "AbstractMenuView.h"
+#import <TwinmeCommon/UIViewController+Utils.h>
 
 #if 0
 static const int ddLogLevel = DDLogLevelVerbose;
@@ -98,6 +101,14 @@ static CGFloat DESIGN_UPDATE_VERSION_MARGIN = 4.0;
     [super viewWillDisappear:animated];
     
     self.navigationItem.title = @"";
+    
+    BOOL isViewPopped = self.isMovingFromParentViewController;
+    BOOL isViewDismissed = self.isBeingDismissed || self.navigationController.isBeingDismissed;
+    BOOL isViewPushed = self.navigationController && !isViewPopped && !isViewDismissed && self.navigationController.topViewController != self;
+
+    if (self.isAppear && (isViewPopped || isViewDismissed || isViewPushed)) {
+        [self clearBottomSheetViews];
+    }
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -108,10 +119,6 @@ static CGFloat DESIGN_UPDATE_VERSION_MARGIN = 4.0;
 
 - (void)viewDidDisappear:(BOOL)animated {
     [super viewDidDisappear:animated];
-    
-    if (self.isAppear && (self.isMovingFromParentViewController || self.isBeingDismissed)) {
-        [self finish];
-    }
     
     self.isAppear = NO;
 }

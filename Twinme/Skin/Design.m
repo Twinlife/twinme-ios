@@ -219,6 +219,10 @@ static float DESIGN_PROGESS_VIEW_HEIGHT = 5;
 
 static CGFloat DESIGN_ANIMATION_VIEW_DURATION = 0.3;
 
+static const CGFloat DESIGN_LINE_DASH_LONG_LENGTH = 8.0;
+static const CGFloat DESIGN_LINE_DASH_SHORT_LENGTH = 4.0;
+static const CGFloat DESIGN_LINE_DASH_SPACING = 4.0;
+
 static CFMutableCharacterSetRef DESIGN_EMOJI_CHARACTER_SET;
 
 static NSString *MAIN_STYLE = @"MainStyle";
@@ -1425,6 +1429,25 @@ static TLStringConfigIdentifier *mainStyleConfig;
 + (CGFloat)POPUP_RADIUS {
     
     return DESIGN_POPUP_RADIUS;
+}
+
+//
+// Dash line
+//
+
++ (CGFloat)LINE_DASH_LONG_LENGTH {
+    
+    return DESIGN_LINE_DASH_LONG_LENGTH;
+}
+
++ (CGFloat)LINE_DASH_SHORT_LENGTH {
+    
+    return DESIGN_LINE_DASH_SHORT_LENGTH;
+}
+
++ (CGFloat)LINE_DASH_SPACING {
+    
+    return DESIGN_LINE_DASH_SPACING;
 }
 
 //

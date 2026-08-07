@@ -48,6 +48,7 @@ static const int ddLogLevel = DDLogLevelWarning;
 #define DISPLAY_MODE @"DefaultDisplayMode"
 #define HAPTIC_FEEDBACK_MODE @"DefaultHapticFeedbackMode"
 #define HAPTIC_FEEDBACK_ENABLE @"DefaultHapticFeedbackEnable"
+#define SOUND_EFFECTS_ENABLE @"SoundEffectsEnable"
 #define FIRST_SHOW_UPGRADE_SCREEN @"FirstShowUpgradeScreen_2023"
 #define LAST_SHOW_UPGRADE_SCREEN @"LastShowUpgradeScreen_2023"
 #define CAN_SHOW_UPGRADE_SCREEN @"CanShowUpgradeScreen"
@@ -67,6 +68,7 @@ static const int ddLogLevel = DDLogLevelWarning;
 #define SHOW_ONBOARDING_RESTORE @"ShowOnboardingRestore"
 #define SHOW_ONBOARDING_VERIFY_BACKUP @"ShowOnboardingVerifyBackup"
 #define SHOW_ONBOARDING_BACKUP_BETA @"ShowOnboardingBackupBeta"
+#define SHOW_ONBOARDING_SHARE_CONTACT @"ShowOnboardingShareContact"
 #define SHOW_WARNING_EDIT_MESSAGE @"ShowWarningEditMessage"
 #define DEFAULT_TAB @"DefaultTab"
 #define IS_VIDEO_IN_FIT_MODE @"IsVideoInFitMode"
@@ -81,6 +83,8 @@ static const int ddLogLevel = DDLogLevelWarning;
 #define LAST_BACKUP @"LastBackup"
 #define FIRST_INSTALLATION_WITH_BACKUP @"FirstInstallationWithBackup"
 #define LAST_ALERT_BACKUP @"LastAlertBackup"
+#define ICE_TRANSPORT_MODE @"IceTransportMode"
+#define SHARE_INVITATION_MODE @"ShareInvitationMode"
 
 #define DEFAULT_COLOR @"#00AEFF"
 
@@ -99,6 +103,7 @@ static TLBooleanConfigIdentifier *showWelcomeConfig;
 static TLBooleanConfigIdentifier *visualizationLinkConfig;
 static TLIntegerConfigIdentifier *hapticFeedbackModeConfig;
 static TLBooleanConfigIdentifier *hapticFeedbackEnableConfig;
+static TLBooleanConfigIdentifier *soundEffectsEnableConfig;
 static TLIntegerConfigIdentifier *defaultTabConfig;
 static TLIntegerConfigIdentifier *displayModeConfig;
 static TLIntegerConfigIdentifier *displayCallsModeConfig;
@@ -136,6 +141,7 @@ static TLBooleanConfigIdentifier *showOnboardingEnterMiniCodeConfig;
 static TLBooleanConfigIdentifier *showOnboardingMiniCodeConfig;
 static TLBooleanConfigIdentifier *showOnboardingRemoteCamera;
 static TLBooleanConfigIdentifier *showOnboardingRemoteCameraSettings;
+static TLBooleanConfigIdentifier *showOnboardingShareContact;
 static TLBooleanConfigIdentifier *showOnboardingTransferCall;
 static TLBooleanConfigIdentifier *showOnboardingProxy;
 static TLBooleanConfigIdentifier *showOnboardingBackup;
@@ -150,6 +156,12 @@ static TLFloatConfigIdentifier *audioItemRateConfig;
 static TLIntegerConfigIdentifier *lastBackupConfig;
 static TLIntegerConfigIdentifier *firstInstallationWithBackupConfig;
 static TLIntegerConfigIdentifier *lastBackupAlertConfig;
+
+// Security Level
+static TLEnumSharedConfigIdentifier *iceTransportModeConfig;
+
+// Share Invitation
+static TLEnumSharedConfigIdentifier *shareInvitationModeConfig;
 
 //
 // Interface: TwinmeApplication ()
@@ -204,6 +216,8 @@ static TLIntegerConfigIdentifier *lastBackupAlertConfig;
         
         hapticFeedbackEnableConfig = [TLBooleanConfigIdentifier defineWithName:HAPTIC_FEEDBACK_ENABLE uuid:@"A33B5A34-1C22-4FFA-B1DB-DFB8E2338DD6" defaultValue:[self hapticFeedbackMode] != HapticFeedbackModeOff];
         
+        soundEffectsEnableConfig = [TLBooleanConfigIdentifier defineWithName:SOUND_EFFECTS_ENABLE uuid:@"94DAC351-DE6C-4219-B35E-BA409078089B" defaultValue:YES];
+
         defaultTabConfig = [TLIntegerConfigIdentifier defineWithName:DEFAULT_TAB uuid:@"AD11179C-1510-4F1A-A4C2-0F29DC989997" defaultValue:DefaultTabConversations];
 
         qualityMediaConfig = [TLIntegerConfigIdentifier defineWithName:QUALITY_MEDIA uuid:@"85F98FDE-5C4E-11ED-9B6A-0242AC120002" defaultValue:QualityMediaOrginal];
@@ -222,7 +236,11 @@ static TLIntegerConfigIdentifier *lastBackupAlertConfig;
         [self setFirstInstallationWithBackup];
         
         showGroupCallAnimationConfig = [TLBooleanConfigIdentifier defineWithName:SHOW_GROUP_CALL_ANIMATION uuid:@"BB834EE6-3927-42E1-BC46-5663B2AB47DB" defaultValue:YES];
-
+        
+        iceTransportModeConfig = [TLEnumSharedConfigIdentifier defineWithName:ICE_TRANSPORT_MODE uuid:@"4B83AA59-303A-4585-9A5E-DF55CE5CC7F5" defaultValue:TLPeerConnectionServiceIceTransportModeAll];
+        
+        shareInvitationModeConfig = [TLEnumSharedConfigIdentifier defineWithName:SHARE_INVITATION_MODE uuid:@"84214DEC-3392-4880-BC3A-7F8203C2BD2E" defaultValue:ShareInvitationModeAsk];
+        
         // Configurations not migrated between devices.
         firstInstallationConfig = [TLIntegerConfigIdentifier defineWithName:FIRST_INSTALLATION defaultValue:0];
         keyboardHeightConfig = [TLFloatConfigIdentifier defineWithName:DEFAULT_KEYBOARD_HEIGHT defaultValue:0];
@@ -251,6 +269,7 @@ static TLIntegerConfigIdentifier *lastBackupAlertConfig;
         showOnboardingRestore = [TLBooleanConfigIdentifier defineWithName:SHOW_ONBOARDING_RESTORE defaultValue:YES];
         showOnboardingVerifyBackup = [TLBooleanConfigIdentifier defineWithName:SHOW_ONBOARDING_VERIFY_BACKUP defaultValue:YES];
         showOnboardingBackupBeta = [TLBooleanConfigIdentifier defineWithName:SHOW_ONBOARDING_BACKUP_BETA defaultValue:YES];
+        showOnboardingShareContact = [TLBooleanConfigIdentifier defineWithName:SHOW_ONBOARDING_SHARE_CONTACT defaultValue:YES];
         showWarningEditMessage = [TLBooleanConfigIdentifier defineWithName:SHOW_WARNING_EDIT_MESSAGE defaultValue:YES];
     }
     
@@ -421,6 +440,34 @@ static TLIntegerConfigIdentifier *lastBackupAlertConfig;
 }
 
 //
+// Security Level
+//
+
+- (TLPeerConnectionServiceIceTransportMode)iceTransportMode {
+    
+    return iceTransportModeConfig.enumValue;
+}
+
+- (void)setIceTransportModeWithMode:(TLPeerConnectionServiceIceTransportMode)iceTransportMode {
+    
+    iceTransportModeConfig.enumValue = iceTransportMode;
+}
+
+//
+// Share Invitation Mode
+//
+
+- (ShareInvitationMode)shareInvitationMode {
+    
+    return shareInvitationModeConfig.enumValue;
+}
+
+- (void)setShareInvitationModeWithMode:(ShareInvitationMode)shareInvitationMode {
+    
+    shareInvitationModeConfig.enumValue = shareInvitationMode;
+}
+
+//
 // Audio Player
 //
 
@@ -521,6 +568,16 @@ static TLIntegerConfigIdentifier *lastBackupAlertConfig;
 - (void)setHapticFeedbackEnableWithState:(BOOL)state {
     
     hapticFeedbackEnableConfig.boolValue = state;
+}
+
+- (BOOL)allowSoundEffects {
+    
+    return soundEffectsEnableConfig.boolValue;
+}
+
+- (void)setSoundEffectsEnableWithState:(BOOL)state {
+    
+    soundEffectsEnableConfig.boolValue = state;
 }
 
 - (DefaultTab)defaultTab {
@@ -826,6 +883,9 @@ static TLIntegerConfigIdentifier *lastBackupAlertConfig;
         case OnboardingTypeBackupBeta:
             return showOnboardingBackupBeta.boolValue;
             
+        case OnboardingTypeShareContact:
+            return showOnboardingShareContact.boolValue;
+            
         default:
             return NO;
     }
@@ -888,9 +948,15 @@ static TLIntegerConfigIdentifier *lastBackupAlertConfig;
             
         case OnboardingTypeVerifyBackup:
             showOnboardingVerifyBackup.boolValue = state;
+            break;
             
         case OnboardingTypeBackupBeta:
             showOnboardingBackupBeta.boolValue = state;
+            break;
+            
+        case OnboardingTypeShareContact:
+            showOnboardingShareContact.boolValue = state;
+            break;
             
         default:
             break;

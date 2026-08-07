@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="24765" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24743"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -145,6 +145,12 @@
                             <constraint firstAttribute="height" constant="20" id="LsC-ka-rEv"/>
                         </constraints>
                     </view>
+                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="SilentIcon" translatesAutoresizingMaskIntoConstraints="NO" id="qiX-HZ-eJf">
+                        <rect key="frame" x="692.5" y="64" width="23.5" height="28"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="28" id="VmT-nZ-y9u"/>
+                        </constraints>
+                    </imageView>
                 </subviews>
                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                 <constraints>
@@ -158,12 +164,15 @@
                     <constraint firstItem="jso-Ch-QJQ" firstAttribute="centerY" secondItem="i45-dI-v5A" secondAttribute="centerY" id="Grk-Zg-d30"/>
                     <constraint firstItem="jso-Ch-QJQ" firstAttribute="leading" secondItem="i45-dI-v5A" secondAttribute="trailing" constant="20" id="IhY-gW-OYc"/>
                     <constraint firstItem="cnG-Y5-xVj" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="LGW-Ss-OoZ"/>
+                    <constraint firstItem="qiX-HZ-eJf" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="LZ3-Uw-kqk"/>
                     <constraint firstItem="NQz-hw-fgo" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="11" id="Miq-Cb-kIQ"/>
                     <constraint firstItem="9ea-k9-qL0" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="42" id="QMV-jc-HPu"/>
                     <constraint firstAttribute="bottom" secondItem="V0a-ps-Bun" secondAttribute="bottom" id="TkQ-Yj-9ba"/>
                     <constraint firstItem="hg1-90-mS7" firstAttribute="leading" secondItem="i45-dI-v5A" secondAttribute="leading" id="VAV-n8-GXh"/>
                     <constraint firstItem="gOw-kN-kmB" firstAttribute="centerY" secondItem="i45-dI-v5A" secondAttribute="centerY" id="Vts-mb-xwa"/>
                     <constraint firstAttribute="trailing" secondItem="cnG-Y5-xVj" secondAttribute="trailing" constant="34" id="auJ-Hr-xfM"/>
+                    <constraint firstItem="qiX-HZ-eJf" firstAttribute="width" secondItem="qiX-HZ-eJf" secondAttribute="height" multiplier="81:96" id="e1G-Yq-UWA"/>
+                    <constraint firstAttribute="trailing" secondItem="qiX-HZ-eJf" secondAttribute="trailing" constant="34" id="eGt-2W-zfc"/>
                     <constraint firstItem="gOw-kN-kmB" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="i45-dI-v5A" secondAttribute="trailing" constant="20" id="gc9-jF-LvS"/>
                     <constraint firstItem="9ea-k9-qL0" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="rWO-i8-ddT"/>
                     <constraint firstAttribute="trailing" secondItem="gOw-kN-kmB" secondAttribute="trailing" constant="34" id="re2-od-d7F"/>
@@ -184,6 +193,9 @@
                 <outlet property="dateLabel" destination="gOw-kN-kmB" id="VQa-U6-kx9"/>
                 <outlet property="dateLabelTrailingConstraint" destination="re2-od-d7F" id="qUM-4U-3hh"/>
                 <outlet property="dateLabelWidthConstraint" destination="C0g-56-5XI" id="85P-Rn-9qv"/>
+                <outlet property="iconView" destination="qiX-HZ-eJf" id="BfI-tB-hHR"/>
+                <outlet property="iconViewHeightConstraint" destination="VmT-nZ-y9u" id="cvE-Ad-c86"/>
+                <outlet property="iconViewTrailingConstraint" destination="eGt-2W-zfc" id="v4e-20-Nh3"/>
                 <outlet property="memberFourAvatarView" destination="jsD-ro-yZL" id="ijV-Kt-Aqw"/>
                 <outlet property="memberFourAvatarViewHeightConstraint" destination="6h7-qQ-XCl" id="hej-ed-Bf5"/>
                 <outlet property="memberOneAvatarView" destination="tIM-Lp-wOz" id="Rza-6Q-NEn"/>
@@ -223,6 +235,7 @@
     </objects>
     <resources>
         <image name="AuthentifiedRelationIcon" width="26" height="26"/>
+        <image name="SilentIcon" width="20" height="23"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>

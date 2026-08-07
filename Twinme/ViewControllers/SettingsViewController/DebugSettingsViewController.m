@@ -17,10 +17,12 @@
 #import "MessageSettingsViewController.h"
 
 #import "SettingsItemCell.h"
-#import "SettingsSectionHeaderCell.h"
 #import "ResetSettingsCell.h"
 
 #import "SwitchView.h"
+
+#import <TwinmeCommon/SettingsSectionHeaderCell.h>
+
 
 #if 0
 static const int ddLogLevel = DDLogLevelVerbose;
@@ -229,6 +231,9 @@ static NSString *RESET_SETTINGS_CELL_IDENTIFIER = @"ResetSettingsCellIdentifier"
             
         case OnboardingTypeBackupBeta:
             return [NSString stringWithFormat:@"%@ - %@", TwinmeLocalizedStringFromTable(@"account_view_backup_restore", @"LocalizableBackup", nil), TwinmeLocalizedString(@"application_beta", nil)];
+            
+        case OnboardingTypeShareContact:
+            return TwinmeLocalizedString(@"privacy_view_share_invitation_title", nil);
             
         default:
             return @"";

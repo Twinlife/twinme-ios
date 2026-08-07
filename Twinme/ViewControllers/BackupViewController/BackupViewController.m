@@ -19,7 +19,6 @@
 #import "BackupWordsCell.h"
 #import "BackupWaitingCell.h"
 #import "SettingsInformationCell.h"
-#import "SettingsSectionHeaderCell.h"
 
 #import "BackupContentConfirmView.h"
 #import "AlertMessageView.h"
@@ -34,8 +33,9 @@
 #import <Twinme/TLCallReceiver.h>
 #import <Twinme/TLSpace.h>
 
-#import <TwinmeCommon/Design.h>
 #import <TwinmeCommon/BackupService.h>
+#import <TwinmeCommon/Design.h>
+#import <TwinmeCommon/SettingsSectionHeaderCell.h>
 
 #import "UIView+Toast.h"
 

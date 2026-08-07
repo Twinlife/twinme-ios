@@ -6,7 +6,7 @@
  *   Fabrice Trescartes (Fabrice.Trescartes@twin.life)
  */
 
-#import "AbstractBottomSheetView.h"
+#import <TwinmeCommon/AbstractBottomSheetView.h>
 
 extern NSString * _Nonnull const PRIVACY_POLICY_LINK;
 extern NSString * _Nonnull const CONTACT_LINK;

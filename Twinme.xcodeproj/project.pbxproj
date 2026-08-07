@@ -354,7 +354,6 @@
 		47CD18942E9CF7DB00F0E361 /* DefaultTabCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 83A6C53026C6598700997FE0 /* DefaultTabCell.m */; };
 		47CD18952E9CF7DB00F0E361 /* InvitationItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 83F6A8022167F020006D3AFD /* InvitationItem.m */; };
 		47CD18962E9CF7DB00F0E361 /* ApplicationAssertion.m in Sources */ = {isa = PBXBuildFile; fileRef = 47F8AD332E3BF5B400977CFA /* ApplicationAssertion.m */; };
-		47CD18972E9CF7DB00F0E361 /* SettingsSectionHeaderCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 83C7E746240161EA005735DD /* SettingsSectionHeaderCell.m */; };
 		47CD18982E9CF7DB00F0E361 /* MenuGroupMemberView.m in Sources */ = {isa = PBXBuildFile; fileRef = 834C96F32487FC9E007C7B4C /* MenuGroupMemberView.m */; };
 		47CD18992E9CF7DB00F0E361 /* WelcomeCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 83C7E6F124015EFC005735DD /* WelcomeCell.m */; };
 		47CD189A2E9CF7DB00F0E361 /* AbstractMenuView.m in Sources */ = {isa = PBXBuildFile; fileRef = 57784DC42B444DBB00B52840 /* AbstractMenuView.m */; };
@@ -496,7 +495,6 @@
 		47CD19242E9CF7DB00F0E361 /* OnboardingSpaceViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5739B1332B5FA78700B15E26 /* OnboardingSpaceViewController.m */; };
 		47CD19252E9CF7DB00F0E361 /* MenuItemView.m in Sources */ = {isa = PBXBuildFile; fileRef = 83D06CD1227743ED00C89C43 /* MenuItemView.m */; };
 		47CD19262E9CF7DB00F0E361 /* EditIdentityViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8386905124484C1500270845 /* EditIdentityViewController.m */; };
-		47CD19272E9CF7DB00F0E361 /* OnboardingConfirmView.m in Sources */ = {isa = PBXBuildFile; fileRef = 57639FDE2D9C2B8A00C18D77 /* OnboardingConfirmView.m */; };
 		47CD19282E9CF7DB00F0E361 /* DeletedAccountViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 83FB2F9221C18CFB009770B6 /* DeletedAccountViewController.m */; };
 		47CD19292E9CF7DB00F0E361 /* LogsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 57D5AD032CEB473B00D46A0C /* LogsViewController.m */; };
 		47CD192A2E9CF7DB00F0E361 /* AddExternalCallCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 01D932AD29F0376100175376 /* AddExternalCallCell.m */; };
@@ -541,7 +539,6 @@
 		47CD19512E9CF7DB00F0E361 /* AbstractCallParticipantView.m in Sources */ = {isa = PBXBuildFile; fileRef = 01131B75285A0405004F4D49 /* AbstractCallParticipantView.m */; };
 		47CD19522E9CF7DB00F0E361 /* AnnotationCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 01B90D662976ED000000A168 /* AnnotationCell.m */; };
 		47CD19532E9CF7DB00F0E361 /* PreviewThumbnailCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 57BB6DC92D91CBA200274A48 /* PreviewThumbnailCell.m */; };
-		47CD19542E9CF7DB00F0E361 /* AbstractBottomSheetView.m in Sources */ = {isa = PBXBuildFile; fileRef = 57BF120E2D01EE69001459CA /* AbstractBottomSheetView.m */; };
 		47CD19552E9CF7DB00F0E361 /* VideoItemCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 83EF7F9520CA85B7002A7224 /* VideoItemCell.m */; };
 		47CD19562E9CF7DB00F0E361 /* AboutCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 839B5BF42702ED6800FCF22F /* AboutCell.m */; };
 		47CD19572E9CF7DB00F0E361 /* TypingAvatarCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 832FE7352260CBE500615897 /* TypingAvatarCell.m */; };
@@ -625,7 +622,6 @@
 		47CD19AE2E9CF7DB00F0E361 /* SelectedMembersCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8394C79124E6889D0014AD53 /* SelectedMembersCell.xib */; };
 		47CD19AF2E9CF7DB00F0E361 /* PeerAudioItemCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 83B07D9E1E3A7C4000BE0B43 /* PeerAudioItemCell.xib */; };
 		47CD19B02E9CF7DB00F0E361 /* GroupMemberCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 837481B7216FE36600B51687 /* GroupMemberCell.xib */; };
-		47CD19B12E9CF7DB00F0E361 /* SettingsSectionHeaderCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 83C7E749240161EA005735DD /* SettingsSectionHeaderCell.xib */; };
 		47CD19B22E9CF7DB00F0E361 /* bip39_wordlist_en.txt in Resources */ = {isa = PBXBuildFile; fileRef = 7A61C5652C5CD3E100639854 /* bip39_wordlist_en.txt */; };
 		47CD19B32E9CF7DB00F0E361 /* PeerFileItemCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 83750CA5214FA2CD0031D78D /* PeerFileItemCell.xib */; };
 		47CD19B42E9CF7DB00F0E361 /* CallHoldView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 575B021F2B84C28900D15880 /* CallHoldView.xib */; };
@@ -666,7 +662,6 @@
 		47CD19D72E9CF7DB00F0E361 /* MenuActionConversationCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5765D5A02D5B4E7F0061DD3B /* MenuActionConversationCell.xib */; };
 		47CD19D82E9CF7DB00F0E361 /* MenuSelectValueView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 01C4542A2913B5180091622D /* MenuSelectValueView.xib */; };
 		47CD19D92E9CF7DB00F0E361 /* help_ja.html in Resources */ = {isa = PBXBuildFile; fileRef = 836C6B682319173C00CD3AF1 /* help_ja.html */; };
-		47CD19DA2E9CF7DB00F0E361 /* OnboardingConfirmView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 57639FE02D9C2BC100C18D77 /* OnboardingConfirmView.xib */; };
 		47CD19DB2E9CF7DB00F0E361 /* AudioItemCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 83B07D9C1E3A7C2500BE0B43 /* AudioItemCell.xib */; };
 		47CD19DC2E9CF7DB00F0E361 /* terms_of_service_de.html in Resources */ = {isa = PBXBuildFile; fileRef = 836C6BE223191A1F00CD3AF1 /* terms_of_service_de.html */; };
 		47CD19DD2E9CF7DB00F0E361 /* ReplyView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 83CE1A82264EB641008A1E3A /* ReplyView.xib */; };
@@ -889,7 +884,21 @@
 		5704E24F2ED7B209006A1B1E /* SuccessAuthentifiedRelationView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5704E24D2ED7B209006A1B1E /* SuccessAuthentifiedRelationView.m */; };
 		5704E2512ED7B217006A1B1E /* SuccessAuthentifiedRelationView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5704E2502ED7B217006A1B1E /* SuccessAuthentifiedRelationView.xib */; };
 		5704E2522ED7B217006A1B1E /* SuccessAuthentifiedRelationView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5704E2502ED7B217006A1B1E /* SuccessAuthentifiedRelationView.xib */; };
+		570CB5702FF2C36400C23D23 /* UIAccountMigrationItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 570CB56F2FF2C36400C23D23 /* UIAccountMigrationItem.m */; };
+		570CB5712FF2C36400C23D23 /* UIAccountMigrationItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 570CB56F2FF2C36400C23D23 /* UIAccountMigrationItem.m */; };
 		571000632D2C0810002954D0 /* DeleteAccountConfirmView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 571000622D2C0810002954D0 /* DeleteAccountConfirmView.xib */; };
+		571842C32FDFEE7300166343 /* MenuConversationShorcutView.m in Sources */ = {isa = PBXBuildFile; fileRef = 571842BE2FDFEE7300166343 /* MenuConversationShorcutView.m */; };
+		571842C42FDFEE7300166343 /* MenuHeaderCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 571842C12FDFEE7300166343 /* MenuHeaderCell.m */; };
+		571842C52FDFEE7300166343 /* MenuHeaderCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 571842C22FDFEE7300166343 /* MenuHeaderCell.xib */; };
+		571842C62FDFEE7300166343 /* MenuConversationShorcutView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 571842BF2FDFEE7300166343 /* MenuConversationShorcutView.xib */; };
+		571842C72FDFEE7300166343 /* MenuConversationShorcutView.m in Sources */ = {isa = PBXBuildFile; fileRef = 571842BE2FDFEE7300166343 /* MenuConversationShorcutView.m */; };
+		571842C82FDFEE7300166343 /* MenuHeaderCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 571842C12FDFEE7300166343 /* MenuHeaderCell.m */; };
+		571842C92FDFEE7300166343 /* MenuHeaderCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 571842C22FDFEE7300166343 /* MenuHeaderCell.xib */; };
+		571842CA2FDFEE7300166343 /* MenuConversationShorcutView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 571842BF2FDFEE7300166343 /* MenuConversationShorcutView.xib */; };
+		571842EE2FDFEEC600166343 /* ConversationNotificationsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 571842ED2FDFEEC600166343 /* ConversationNotificationsViewController.m */; };
+		571842EF2FDFEEC600166343 /* ConversationNotificationsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 571842ED2FDFEEC600166343 /* ConversationNotificationsViewController.m */; };
+		571B1BB02FFE94480007F16B /* UIMenuSelectValueItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 571B1BAF2FFE94480007F16B /* UIMenuSelectValueItem.m */; };
+		571B1BB12FFE94480007F16B /* UIMenuSelectValueItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 571B1BAF2FFE94480007F16B /* UIMenuSelectValueItem.m */; };
 		572175A02EC4CC1D002DB76E /* ProxyViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5721759F2EC4CC1D002DB76E /* ProxyViewController.m */; };
 		572175A12EC4CC1D002DB76E /* ProxyViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5721759F2EC4CC1D002DB76E /* ProxyViewController.m */; };
 		572175AC2EC4DDA9002DB76E /* ProxyView.m in Sources */ = {isa = PBXBuildFile; fileRef = 572175AA2EC4DDA9002DB76E /* ProxyView.m */; };
@@ -933,8 +942,6 @@
 		5746E8F72EEC07F100FC36DE /* FullScreenMediaCollectionView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5746E8F52EEC07F100FC36DE /* FullScreenMediaCollectionView.m */; };
 		574769312DE6E5270043C66F /* EditMessageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 574769302DE6E5270043C66F /* EditMessageView.m */; };
 		574769352DE6E54D0043C66F /* EditMessageView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 574769342DE6E54D0043C66F /* EditMessageView.xib */; };
-		574DB1142EBE3873000E1F90 /* PaddingLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 574DB1132EBE3873000E1F90 /* PaddingLabel.m */; };
-		574DB1152EBE3873000E1F90 /* PaddingLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 574DB1132EBE3873000E1F90 /* PaddingLabel.m */; };
 		574DB19D2EC1D85F000E1F90 /* InfoPlist.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 574DB19C2EC1D85E000E1F90 /* InfoPlist.xcstrings */; };
 		574DB19E2EC1D85F000E1F90 /* InfoPlist.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 574DB19C2EC1D85E000E1F90 /* InfoPlist.xcstrings */; };
 		574ED4E02F6482AD004B5F35 /* CallInfoView.m in Sources */ = {isa = PBXBuildFile; fileRef = 574ED4DE2F6482AD004B5F35 /* CallInfoView.m */; };
@@ -971,8 +978,6 @@
 		576394962F337D1200BAA531 /* ScheduleCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 576394942F337D1200BAA531 /* ScheduleCell.xib */; };
 		576394972F337D1200BAA531 /* ScheduleCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 576394932F337D1200BAA531 /* ScheduleCell.m */; };
 		576394982F337D1200BAA531 /* ScheduleCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 576394942F337D1200BAA531 /* ScheduleCell.xib */; };
-		57639FDF2D9C2B8A00C18D77 /* OnboardingConfirmView.m in Sources */ = {isa = PBXBuildFile; fileRef = 57639FDE2D9C2B8A00C18D77 /* OnboardingConfirmView.m */; };
-		57639FE12D9C2BC100C18D77 /* OnboardingConfirmView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 57639FE02D9C2BC100C18D77 /* OnboardingConfirmView.xib */; };
 		5765D59C2D5B4E570061DD3B /* BottomConversationView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5765D59A2D5B4E570061DD3B /* BottomConversationView.m */; };
 		5765D59D2D5B4E570061DD3B /* BottomConversationView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5765D59B2D5B4E570061DD3B /* BottomConversationView.xib */; };
 		5765D5A42D5B4E7F0061DD3B /* MenuActionConversationCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 5765D59F2D5B4E7F0061DD3B /* MenuActionConversationCell.m */; };
@@ -984,6 +989,8 @@
 		5765D6032D5B503E0061DD3B /* UIPreviewFile.m in Sources */ = {isa = PBXBuildFile; fileRef = 5765D6022D5B503E0061DD3B /* UIPreviewFile.m */; };
 		5766F2042D19651E0081877D /* CallAgainConfirmView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5766F2032D19651E0081877D /* CallAgainConfirmView.m */; };
 		5766F2062D19652B0081877D /* CallAgainConfirmView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5766F2052D19652B0081877D /* CallAgainConfirmView.xib */; };
+		57680DB2301B37F70019E92F /* OnboardingConfirmView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 57680DB1301B37F70019E92F /* OnboardingConfirmView.xib */; };
+		57680DB3301B37F70019E92F /* OnboardingConfirmView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 57680DB1301B37F70019E92F /* OnboardingConfirmView.xib */; };
 		576A9AB02B7D5C2500A1FC65 /* CallNameCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 576A9AAD2B7D5C2500A1FC65 /* CallNameCell.xib */; };
 		576A9AB12B7D5C2500A1FC65 /* CallNameCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 576A9AAE2B7D5C2500A1FC65 /* CallNameCell.m */; };
 		576F555D2F5B1CB0000BC47B /* InfoIconItemCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 576F555C2F5B1CB0000BC47B /* InfoIconItemCell.xib */; };
@@ -1150,6 +1157,12 @@
 		576F56602F5B1D98000BC47B /* notification_5.caf in Resources */ = {isa = PBXBuildFile; fileRef = 576F562C2F5B1D98000BC47B /* notification_5.caf */; };
 		576F56612F5B1D98000BC47B /* audio_call_4_ringtone.caf in Resources */ = {isa = PBXBuildFile; fileRef = 576F56222F5B1D98000BC47B /* audio_call_4_ringtone.caf */; };
 		576F56622F5B1D98000BC47B /* mario_video_call_ringtone.caf in Resources */ = {isa = PBXBuildFile; fileRef = 576F562A2F5B1D98000BC47B /* mario_video_call_ringtone.caf */; };
+		577177562FE14CCE00DD4DBF /* TimeoutCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 577177522FE14CCE00DD4DBF /* TimeoutCell.m */; };
+		577177572FE14CCE00DD4DBF /* UITimeout.m in Sources */ = {isa = PBXBuildFile; fileRef = 577177552FE14CCE00DD4DBF /* UITimeout.m */; };
+		577177582FE14CCE00DD4DBF /* TimeoutCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 577177532FE14CCE00DD4DBF /* TimeoutCell.xib */; };
+		577177592FE14CCE00DD4DBF /* TimeoutCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 577177522FE14CCE00DD4DBF /* TimeoutCell.m */; };
+		5771775A2FE14CCE00DD4DBF /* UITimeout.m in Sources */ = {isa = PBXBuildFile; fileRef = 577177552FE14CCE00DD4DBF /* UITimeout.m */; };
+		5771775B2FE14CCE00DD4DBF /* TimeoutCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 577177532FE14CCE00DD4DBF /* TimeoutCell.xib */; };
 		5774BF302C4AB6F100491014 /* AuthentifiedRelationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5774BF2F2C4AB6F100491014 /* AuthentifiedRelationViewController.m */; };
 		5777A7162C06492B003130CD /* AbstractCapabilitiesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5777A7152C06492B003130CD /* AbstractCapabilitiesViewController.m */; };
 		5777A7192C06F983003130CD /* GroupCapabilitiesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5777A7182C06F983003130CD /* GroupCapabilitiesViewController.m */; };
@@ -1162,6 +1175,20 @@
 		5777FEBF2D3577E9001274EF /* PremiumFeatureConfirmView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5777FEBE2D3577E9001274EF /* PremiumFeatureConfirmView.xib */; };
 		5777FEC02D3577E9001274EF /* PremiumFeatureConfirmView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5777FEBD2D3577E9001274EF /* PremiumFeatureConfirmView.m */; };
 		57784DC62B444DBC00B52840 /* AbstractMenuView.m in Sources */ = {isa = PBXBuildFile; fileRef = 57784DC42B444DBB00B52840 /* AbstractMenuView.m */; };
+		577F423A2FEACA9D00A3693D /* ShareContactViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 577F42392FEACA9D00A3693D /* ShareContactViewController.m */; };
+		577F423B2FEACA9D00A3693D /* ShareContactViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 577F42392FEACA9D00A3693D /* ShareContactViewController.m */; };
+		577F42512FEACAFC00A3693D /* PeerShareContactItemCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 577F42502FEACAFC00A3693D /* PeerShareContactItemCell.xib */; };
+		577F42522FEACAFC00A3693D /* PeerShareContactItemCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 577F424F2FEACAFC00A3693D /* PeerShareContactItemCell.m */; };
+		577F42532FEACAFC00A3693D /* PeerShareContactItemCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 577F424F2FEACAFC00A3693D /* PeerShareContactItemCell.m */; };
+		577F42542FEACAFC00A3693D /* PeerShareContactItemCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 577F42502FEACAFC00A3693D /* PeerShareContactItemCell.xib */; };
+		577F42582FEACB1500A3693D /* ShareContactItemCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 577F42562FEACB1500A3693D /* ShareContactItemCell.m */; };
+		577F42592FEACB1500A3693D /* ShareContactItemCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 577F42572FEACB1500A3693D /* ShareContactItemCell.xib */; };
+		577F425A2FEACB1500A3693D /* ShareContactItemCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 577F42572FEACB1500A3693D /* ShareContactItemCell.xib */; };
+		577F425B2FEACB1500A3693D /* ShareContactItemCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 577F42562FEACB1500A3693D /* ShareContactItemCell.m */; };
+		577F425E2FEACB4700A3693D /* ShareContactItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 577F425D2FEACB4700A3693D /* ShareContactItem.m */; };
+		577F425F2FEACB4700A3693D /* ShareContactItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 577F425D2FEACB4700A3693D /* ShareContactItem.m */; };
+		577F42622FEACB5E00A3693D /* PeerShareContactItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 577F42612FEACB5E00A3693D /* PeerShareContactItem.m */; };
+		577F42632FEACB5E00A3693D /* PeerShareContactItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 577F42612FEACB5E00A3693D /* PeerShareContactItem.m */; };
 		578154E72D5DF03B0081D072 /* MenuManageConversationView.m in Sources */ = {isa = PBXBuildFile; fileRef = 578154E62D5DF03B0081D072 /* MenuManageConversationView.m */; };
 		578154E92D5DF04E0081D072 /* MenuManageConversationView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 578154E82D5DF04E0081D072 /* MenuManageConversationView.xib */; };
 		5781FB862EB3825A0057324F /* OnboardingDetailView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5781FB852EB3825A0057324F /* OnboardingDetailView.m */; };
@@ -1174,6 +1201,8 @@
 		5781FB912EB384390057324F /* OnboardingDetailCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 5781FB8C2EB384390057324F /* OnboardingDetailCell.m */; };
 		5781FC992EB4D1570057324F /* TwinmeSearchController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5781FC982EB4D1570057324F /* TwinmeSearchController.m */; };
 		5781FC9A2EB4D1570057324F /* TwinmeSearchController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5781FC982EB4D1570057324F /* TwinmeSearchController.m */; };
+		5782A3DB302315230054B802 /* SettingsSectionHeaderCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5782A3DA302315230054B802 /* SettingsSectionHeaderCell.xib */; };
+		5782A3DC302315230054B802 /* SettingsSectionHeaderCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5782A3DA302315230054B802 /* SettingsSectionHeaderCell.xib */; };
 		578420C62CB67548007955CC /* certification_animation_success.json in Resources */ = {isa = PBXBuildFile; fileRef = 578420C52CB67548007955CC /* certification_animation_success.json */; };
 		5786E84A2FD6A26C0035515C /* join_call.caf in Resources */ = {isa = PBXBuildFile; fileRef = 5786E8472FD6A26C0035515C /* join_call.caf */; };
 		5786E84B2FD6A26C0035515C /* new_message.caf in Resources */ = {isa = PBXBuildFile; fileRef = 5786E8482FD6A26C0035515C /* new_message.caf */; };
@@ -1280,6 +1309,10 @@
 		57B28B552B2AF28A000A8324 /* MenuCallCapabilitiesView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 57B28B4F2B2AF28A000A8324 /* MenuCallCapabilitiesView.xib */; };
 		57B28B562B2AF28A000A8324 /* MenuDateTimeView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 57B28B512B2AF28A000A8324 /* MenuDateTimeView.xib */; };
 		57B28B572B2AF28A000A8324 /* MenuCallCapabilitiesView.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B28B532B2AF28A000A8324 /* MenuCallCapabilitiesView.m */; };
+		57B5A40C2FFEBB520003249B /* ShareContactConfirmView.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B5A40B2FFEBB520003249B /* ShareContactConfirmView.m */; };
+		57B5A40D2FFEBB520003249B /* ShareContactConfirmView.m in Sources */ = {isa = PBXBuildFile; fileRef = 57B5A40B2FFEBB520003249B /* ShareContactConfirmView.m */; };
+		57B5A4212FFEBB6B0003249B /* ShareContactConfirmView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 57B5A4202FFEBB6B0003249B /* ShareContactConfirmView.xib */; };
+		57B5A4222FFEBB6B0003249B /* ShareContactConfirmView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 57B5A4202FFEBB6B0003249B /* ShareContactConfirmView.xib */; };
 		57BB6DC62D91CB8D00274A48 /* PreviewAddCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 57BB6DC42D91CB8D00274A48 /* PreviewAddCell.m */; };
 		57BB6DC72D91CB8D00274A48 /* PreviewAddCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 57BB6DC52D91CB8D00274A48 /* PreviewAddCell.xib */; };
 		57BB6DCB2D91CBA200274A48 /* PreviewThumbnailCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 57BB6DCA2D91CBA200274A48 /* PreviewThumbnailCell.xib */; };
@@ -1288,12 +1321,15 @@
 		57BCE3172E709CE10049CC31 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 57BCE3162E709CE00049CC31 /* Localizable.xcstrings */; };
 		57BCE3182E709CE10049CC31 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 57BCE3162E709CE00049CC31 /* Localizable.xcstrings */; };
 		57BCE3192E709CE10049CC31 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 57BCE3162E709CE00049CC31 /* Localizable.xcstrings */; };
-		57BF120F2D01EE69001459CA /* AbstractBottomSheetView.m in Sources */ = {isa = PBXBuildFile; fileRef = 57BF120E2D01EE69001459CA /* AbstractBottomSheetView.m */; };
 		57BF12132D01EE9C001459CA /* ResetConversationConfirmView.m in Sources */ = {isa = PBXBuildFile; fileRef = 57BF12112D01EE9C001459CA /* ResetConversationConfirmView.m */; };
 		57BF12142D01EE9C001459CA /* ResetConversationConfirmView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 57BF12122D01EE9C001459CA /* ResetConversationConfirmView.xib */; };
 		57BF122C2D01EF70001459CA /* DeleteConfirmView.m in Sources */ = {isa = PBXBuildFile; fileRef = 57BF122A2D01EF70001459CA /* DeleteConfirmView.m */; };
 		57BF122D2D01EF70001459CA /* DeleteConfirmView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 57BF122B2D01EF70001459CA /* DeleteConfirmView.xib */; };
 		57BF12752D01F143001459CA /* PreviewFilesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 57BF12742D01F143001459CA /* PreviewFilesViewController.m */; };
+		57C13B692FF7F29200957FCE /* ShareContactCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 57C13B672FF7F29200957FCE /* ShareContactCell.m */; };
+		57C13B6A2FF7F29200957FCE /* ShareContactCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 57C13B682FF7F29200957FCE /* ShareContactCell.xib */; };
+		57C13B6B2FF7F29200957FCE /* ShareContactCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 57C13B682FF7F29200957FCE /* ShareContactCell.xib */; };
+		57C13B6C2FF7F29200957FCE /* ShareContactCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 57C13B672FF7F29200957FCE /* ShareContactCell.m */; };
 		57D5AD042CEB473B00D46A0C /* LogsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 57D5AD032CEB473B00D46A0C /* LogsViewController.m */; };
 		57DD46932DBBE4A400F14087 /* MenuAddContactView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 57DD46922DBBE4A400F14087 /* MenuAddContactView.xib */; };
 		57DD46942DBBE4A400F14087 /* MenuAddContactView.m in Sources */ = {isa = PBXBuildFile; fileRef = 57DD46912DBBE4A400F14087 /* MenuAddContactView.m */; };
@@ -1310,6 +1346,10 @@
 		57DD47152DBBE63E00F14087 /* InvitationCodeShareView.m in Sources */ = {isa = PBXBuildFile; fileRef = 57DD47122DBBE63E00F14087 /* InvitationCodeShareView.m */; };
 		57DE12452E43320F00E7106A /* MenuPropagatingProfileView.m in Sources */ = {isa = PBXBuildFile; fileRef = 57DE12442E43320F00E7106A /* MenuPropagatingProfileView.m */; };
 		57DE12492E43330800E7106A /* MenuPropagatingProfileView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 57DE12482E43330800E7106A /* MenuPropagatingProfileView.xib */; };
+		57E6AA0A2FF2512C003C946B /* AccountMigrationCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 57E6AA082FF2512C003C946B /* AccountMigrationCell.m */; };
+		57E6AA0B2FF2512C003C946B /* AccountMigrationCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 57E6AA092FF2512C003C946B /* AccountMigrationCell.xib */; };
+		57E6AA0C2FF2512C003C946B /* AccountMigrationCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 57E6AA082FF2512C003C946B /* AccountMigrationCell.m */; };
+		57E6AA0D2FF2512C003C946B /* AccountMigrationCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 57E6AA092FF2512C003C946B /* AccountMigrationCell.xib */; };
 		57E7909F2E741A5100759A00 /* SettingsAdvancedViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 57E7909E2E741A5100759A00 /* SettingsAdvancedViewController.m */; };
 		57E790A22E741A6D00759A00 /* AddProxyViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 57E790A12E741A6D00759A00 /* AddProxyViewController.m */; };
 		57E790A92E741AB900759A00 /* ProxyCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 57E790A72E741AB900759A00 /* ProxyCell.m */; };
@@ -1600,8 +1640,6 @@
 		83C7E72B24016090005735DD /* CallItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 83C7E7242401608F005735DD /* CallItem.m */; };
 		83C7E72C24016090005735DD /* CallItemCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 83C7E72624016090005735DD /* CallItemCell.xib */; };
 		83C7E74C240161EA005735DD /* TwinmeSettingsItemCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 83C7E745240161EA005735DD /* TwinmeSettingsItemCell.m */; };
-		83C7E74D240161EA005735DD /* SettingsSectionHeaderCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 83C7E746240161EA005735DD /* SettingsSectionHeaderCell.m */; };
-		83C7E74E240161EA005735DD /* SettingsSectionHeaderCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 83C7E749240161EA005735DD /* SettingsSectionHeaderCell.xib */; };
 		83C7E74F240161EA005735DD /* TwinmeSettingsItemCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 83C7E74A240161EA005735DD /* TwinmeSettingsItemCell.xib */; };
 		83CCF7BB25495F52008C0921 /* help_he.html in Resources */ = {isa = PBXBuildFile; fileRef = 83CCF7B825495F51008C0921 /* help_he.html */; };
 		83CCF7BC25495F52008C0921 /* help_pl.html in Resources */ = {isa = PBXBuildFile; fileRef = 83CCF7B925495F51008C0921 /* help_pl.html */; };
@@ -2326,7 +2364,19 @@
 		5704E24C2ED7B209006A1B1E /* SuccessAuthentifiedRelationView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SuccessAuthentifiedRelationView.h; sourceTree = "<group>"; };
 		5704E24D2ED7B209006A1B1E /* SuccessAuthentifiedRelationView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SuccessAuthentifiedRelationView.m; sourceTree = "<group>"; };
 		5704E2502ED7B217006A1B1E /* SuccessAuthentifiedRelationView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SuccessAuthentifiedRelationView.xib; sourceTree = "<group>"; };
+		570CB56E2FF2C36400C23D23 /* UIAccountMigrationItem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = UIAccountMigrationItem.h; path = ViewControllers/AccountMigrationViewController/UIAccountMigrationItem.h; sourceTree = "<group>"; };
+		570CB56F2FF2C36400C23D23 /* UIAccountMigrationItem.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = UIAccountMigrationItem.m; path = ViewControllers/AccountMigrationViewController/UIAccountMigrationItem.m; sourceTree = "<group>"; };
 		571000622D2C0810002954D0 /* DeleteAccountConfirmView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = DeleteAccountConfirmView.xib; sourceTree = "<group>"; };
+		571842BD2FDFEE7300166343 /* MenuConversationShorcutView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MenuConversationShorcutView.h; sourceTree = "<group>"; };
+		571842BE2FDFEE7300166343 /* MenuConversationShorcutView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MenuConversationShorcutView.m; sourceTree = "<group>"; };
+		571842BF2FDFEE7300166343 /* MenuConversationShorcutView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MenuConversationShorcutView.xib; sourceTree = "<group>"; };
+		571842C02FDFEE7300166343 /* MenuHeaderCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MenuHeaderCell.h; sourceTree = "<group>"; };
+		571842C12FDFEE7300166343 /* MenuHeaderCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MenuHeaderCell.m; sourceTree = "<group>"; };
+		571842C22FDFEE7300166343 /* MenuHeaderCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MenuHeaderCell.xib; sourceTree = "<group>"; };
+		571842EC2FDFEEC600166343 /* ConversationNotificationsViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ConversationNotificationsViewController.h; sourceTree = "<group>"; };
+		571842ED2FDFEEC600166343 /* ConversationNotificationsViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ConversationNotificationsViewController.m; sourceTree = "<group>"; };
+		571B1BAE2FFE94480007F16B /* UIMenuSelectValueItem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UIMenuSelectValueItem.h; sourceTree = "<group>"; };
+		571B1BAF2FFE94480007F16B /* UIMenuSelectValueItem.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UIMenuSelectValueItem.m; sourceTree = "<group>"; };
 		5721759E2EC4CC1D002DB76E /* ProxyViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ProxyViewController.h; sourceTree = "<group>"; };
 		5721759F2EC4CC1D002DB76E /* ProxyViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ProxyViewController.m; sourceTree = "<group>"; };
 		572175A92EC4DDA9002DB76E /* ProxyView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ProxyView.h; sourceTree = "<group>"; };
@@ -2373,8 +2423,6 @@
 		5747692F2DE6E5270043C66F /* EditMessageView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = EditMessageView.h; path = ViewControllers/ConversationViewController/EditMessageView.h; sourceTree = "<group>"; };
 		574769302DE6E5270043C66F /* EditMessageView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = EditMessageView.m; path = ViewControllers/ConversationViewController/EditMessageView.m; sourceTree = "<group>"; };
 		574769342DE6E54D0043C66F /* EditMessageView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = EditMessageView.xib; path = ViewControllers/ConversationViewController/EditMessageView.xib; sourceTree = "<group>"; };
-		574DB1122EBE3873000E1F90 /* PaddingLabel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = PaddingLabel.h; path = Utilities/PaddingLabel.h; sourceTree = "<group>"; };
-		574DB1132EBE3873000E1F90 /* PaddingLabel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = PaddingLabel.m; path = Utilities/PaddingLabel.m; sourceTree = "<group>"; };
 		574DB19C2EC1D85E000E1F90 /* InfoPlist.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = InfoPlist.xcstrings; sourceTree = "<group>"; };
 		574ED4DD2F6482AD004B5F35 /* CallInfoView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CallInfoView.h; sourceTree = "<group>"; };
 		574ED4DE2F6482AD004B5F35 /* CallInfoView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CallInfoView.m; sourceTree = "<group>"; };
@@ -2400,9 +2448,6 @@
 		576394922F337D1200BAA531 /* ScheduleCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ScheduleCell.h; sourceTree = "<group>"; };
 		576394932F337D1200BAA531 /* ScheduleCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ScheduleCell.m; sourceTree = "<group>"; };
 		576394942F337D1200BAA531 /* ScheduleCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ScheduleCell.xib; sourceTree = "<group>"; };
-		57639FDD2D9C2B8A00C18D77 /* OnboardingConfirmView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = OnboardingConfirmView.h; path = Utilities/OnboardingConfirmView.h; sourceTree = "<group>"; };
-		57639FDE2D9C2B8A00C18D77 /* OnboardingConfirmView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = OnboardingConfirmView.m; path = Utilities/OnboardingConfirmView.m; sourceTree = "<group>"; };
-		57639FE02D9C2BC100C18D77 /* OnboardingConfirmView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = OnboardingConfirmView.xib; path = Utilities/OnboardingConfirmView.xib; sourceTree = "<group>"; };
 		5765D5992D5B4E570061DD3B /* BottomConversationView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = BottomConversationView.h; path = ViewControllers/ConversationViewController/BottomConversationView.h; sourceTree = "<group>"; };
 		5765D59A2D5B4E570061DD3B /* BottomConversationView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = BottomConversationView.m; path = ViewControllers/ConversationViewController/BottomConversationView.m; sourceTree = "<group>"; };
 		5765D59B2D5B4E570061DD3B /* BottomConversationView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = BottomConversationView.xib; path = ViewControllers/ConversationViewController/BottomConversationView.xib; sourceTree = "<group>"; };
@@ -2421,6 +2466,7 @@
 		5766F2022D19651E0081877D /* CallAgainConfirmView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CallAgainConfirmView.h; sourceTree = "<group>"; };
 		5766F2032D19651E0081877D /* CallAgainConfirmView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CallAgainConfirmView.m; sourceTree = "<group>"; };
 		5766F2052D19652B0081877D /* CallAgainConfirmView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CallAgainConfirmView.xib; sourceTree = "<group>"; };
+		57680DB1301B37F70019E92F /* OnboardingConfirmView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = OnboardingConfirmView.xib; path = TwinmeCommonFramework/TwinmeCommon/Utilities/OnboardingConfirmView.xib; sourceTree = SOURCE_ROOT; };
 		576A9AAD2B7D5C2500A1FC65 /* CallNameCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CallNameCell.xib; sourceTree = "<group>"; };
 		576A9AAE2B7D5C2500A1FC65 /* CallNameCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CallNameCell.m; sourceTree = "<group>"; };
 		576A9AAF2B7D5C2500A1FC65 /* CallNameCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CallNameCell.h; sourceTree = "<group>"; };
@@ -2530,6 +2576,11 @@
 		576F562C2F5B1D98000BC47B /* notification_5.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = notification_5.caf; sourceTree = "<group>"; };
 		576F562D2F5B1D98000BC47B /* notification_6.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = notification_6.caf; sourceTree = "<group>"; };
 		576F562E2F5B1D98000BC47B /* notification_7.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = notification_7.caf; sourceTree = "<group>"; };
+		577177512FE14CCE00DD4DBF /* TimeoutCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TimeoutCell.h; sourceTree = "<group>"; };
+		577177522FE14CCE00DD4DBF /* TimeoutCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TimeoutCell.m; sourceTree = "<group>"; };
+		577177532FE14CCE00DD4DBF /* TimeoutCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TimeoutCell.xib; sourceTree = "<group>"; };
+		577177542FE14CCE00DD4DBF /* UITimeout.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UITimeout.h; sourceTree = "<group>"; };
+		577177552FE14CCE00DD4DBF /* UITimeout.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UITimeout.m; sourceTree = "<group>"; };
 		5774BF2E2C4AB6F100491014 /* AuthentifiedRelationViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AuthentifiedRelationViewController.h; sourceTree = "<group>"; };
 		5774BF2F2C4AB6F100491014 /* AuthentifiedRelationViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AuthentifiedRelationViewController.m; sourceTree = "<group>"; };
 		5777A7142C06492B003130CD /* AbstractCapabilitiesViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AbstractCapabilitiesViewController.h; sourceTree = "<group>"; };
@@ -2548,6 +2599,18 @@
 		5777FEBE2D3577E9001274EF /* PremiumFeatureConfirmView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PremiumFeatureConfirmView.xib; sourceTree = "<group>"; };
 		57784DC42B444DBB00B52840 /* AbstractMenuView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AbstractMenuView.m; sourceTree = "<group>"; };
 		57784DC52B444DBC00B52840 /* AbstractMenuView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AbstractMenuView.h; sourceTree = "<group>"; };
+		577F42382FEACA9D00A3693D /* ShareContactViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ShareContactViewController.h; sourceTree = "<group>"; };
+		577F42392FEACA9D00A3693D /* ShareContactViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ShareContactViewController.m; sourceTree = "<group>"; };
+		577F424E2FEACAFC00A3693D /* PeerShareContactItemCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = PeerShareContactItemCell.h; path = ViewControllers/ConversationViewController/PeerShareContactItemCell.h; sourceTree = "<group>"; };
+		577F424F2FEACAFC00A3693D /* PeerShareContactItemCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = PeerShareContactItemCell.m; path = ViewControllers/ConversationViewController/PeerShareContactItemCell.m; sourceTree = "<group>"; };
+		577F42502FEACAFC00A3693D /* PeerShareContactItemCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = PeerShareContactItemCell.xib; path = ViewControllers/ConversationViewController/PeerShareContactItemCell.xib; sourceTree = "<group>"; };
+		577F42552FEACB1500A3693D /* ShareContactItemCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ShareContactItemCell.h; path = ViewControllers/ConversationViewController/ShareContactItemCell.h; sourceTree = "<group>"; };
+		577F42562FEACB1500A3693D /* ShareContactItemCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = ShareContactItemCell.m; path = ViewControllers/ConversationViewController/ShareContactItemCell.m; sourceTree = "<group>"; };
+		577F42572FEACB1500A3693D /* ShareContactItemCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = ShareContactItemCell.xib; path = ViewControllers/ConversationViewController/ShareContactItemCell.xib; sourceTree = "<group>"; };
+		577F425C2FEACB4700A3693D /* ShareContactItem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ShareContactItem.h; path = ViewControllers/ConversationViewController/ShareContactItem.h; sourceTree = "<group>"; };
+		577F425D2FEACB4700A3693D /* ShareContactItem.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = ShareContactItem.m; path = ViewControllers/ConversationViewController/ShareContactItem.m; sourceTree = "<group>"; };
+		577F42602FEACB5E00A3693D /* PeerShareContactItem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = PeerShareContactItem.h; path = ViewControllers/ConversationViewController/PeerShareContactItem.h; sourceTree = "<group>"; };
+		577F42612FEACB5E00A3693D /* PeerShareContactItem.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = PeerShareContactItem.m; path = ViewControllers/ConversationViewController/PeerShareContactItem.m; sourceTree = "<group>"; };
 		578154E52D5DF03B0081D072 /* MenuManageConversationView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MenuManageConversationView.h; path = ViewControllers/ConversationViewController/MenuManageConversationView.h; sourceTree = "<group>"; };
 		578154E62D5DF03B0081D072 /* MenuManageConversationView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = MenuManageConversationView.m; path = ViewControllers/ConversationViewController/MenuManageConversationView.m; sourceTree = "<group>"; };
 		578154E82D5DF04E0081D072 /* MenuManageConversationView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = MenuManageConversationView.xib; path = ViewControllers/ConversationViewController/MenuManageConversationView.xib; sourceTree = "<group>"; };
@@ -2559,6 +2622,7 @@
 		5781FB8D2EB384390057324F /* OnboardingDetailCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = OnboardingDetailCell.xib; path = Utilities/OnboardingDetailCell.xib; sourceTree = "<group>"; };
 		5781FC972EB4D1570057324F /* TwinmeSearchController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = TwinmeSearchController.h; path = Utilities/TwinmeSearchController.h; sourceTree = "<group>"; };
 		5781FC982EB4D1570057324F /* TwinmeSearchController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = TwinmeSearchController.m; path = Utilities/TwinmeSearchController.m; sourceTree = "<group>"; };
+		5782A3DA302315230054B802 /* SettingsSectionHeaderCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = SettingsSectionHeaderCell.xib; path = TwinmeCommonFramework/TwinmeCommon/ViewControllers/SettingsViewController/SettingsSectionHeaderCell.xib; sourceTree = SOURCE_ROOT; };
 		578420C52CB67548007955CC /* certification_animation_success.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = certification_animation_success.json; sourceTree = "<group>"; };
 		5786E8452FD6A26C0035515C /* delete_message.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = delete_message.caf; sourceTree = "<group>"; };
 		5786E8462FD6A26C0035515C /* emoji.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = emoji.caf; sourceTree = "<group>"; };
@@ -2653,6 +2717,9 @@
 		57B28B512B2AF28A000A8324 /* MenuDateTimeView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MenuDateTimeView.xib; sourceTree = "<group>"; };
 		57B28B522B2AF28A000A8324 /* MenuCallCapabilitiesView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MenuCallCapabilitiesView.h; sourceTree = "<group>"; };
 		57B28B532B2AF28A000A8324 /* MenuCallCapabilitiesView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MenuCallCapabilitiesView.m; sourceTree = "<group>"; };
+		57B5A40A2FFEBB520003249B /* ShareContactConfirmView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ShareContactConfirmView.h; sourceTree = "<group>"; };
+		57B5A40B2FFEBB520003249B /* ShareContactConfirmView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ShareContactConfirmView.m; sourceTree = "<group>"; };
+		57B5A4202FFEBB6B0003249B /* ShareContactConfirmView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ShareContactConfirmView.xib; sourceTree = "<group>"; };
 		57BB6DC32D91CB8D00274A48 /* PreviewAddCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = PreviewAddCell.h; path = ViewControllers/ConversationViewController/PreviewAddCell.h; sourceTree = "<group>"; };
 		57BB6DC42D91CB8D00274A48 /* PreviewAddCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = PreviewAddCell.m; path = ViewControllers/ConversationViewController/PreviewAddCell.m; sourceTree = "<group>"; };
 		57BB6DC52D91CB8D00274A48 /* PreviewAddCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = PreviewAddCell.xib; path = ViewControllers/ConversationViewController/PreviewAddCell.xib; sourceTree = "<group>"; };
@@ -2662,8 +2729,6 @@
 		57BB6DCD2D91CBBC00274A48 /* UIPreviewMedia.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = UIPreviewMedia.h; path = ViewControllers/ConversationViewController/UIPreviewMedia.h; sourceTree = "<group>"; };
 		57BB6DCE2D91CBBC00274A48 /* UIPreviewMedia.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = UIPreviewMedia.m; path = ViewControllers/ConversationViewController/UIPreviewMedia.m; sourceTree = "<group>"; };
 		57BCE3162E709CE00049CC31 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
-		57BF120D2D01EE69001459CA /* AbstractBottomSheetView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AbstractBottomSheetView.h; path = Utilities/AbstractBottomSheetView.h; sourceTree = "<group>"; };
-		57BF120E2D01EE69001459CA /* AbstractBottomSheetView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = AbstractBottomSheetView.m; path = Utilities/AbstractBottomSheetView.m; sourceTree = "<group>"; };
 		57BF12102D01EE9C001459CA /* ResetConversationConfirmView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ResetConversationConfirmView.h; path = ViewControllers/ConversationViewController/ResetConversationConfirmView.h; sourceTree = "<group>"; };
 		57BF12112D01EE9C001459CA /* ResetConversationConfirmView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = ResetConversationConfirmView.m; path = ViewControllers/ConversationViewController/ResetConversationConfirmView.m; sourceTree = "<group>"; };
 		57BF12122D01EE9C001459CA /* ResetConversationConfirmView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = ResetConversationConfirmView.xib; path = ViewControllers/ConversationViewController/ResetConversationConfirmView.xib; sourceTree = "<group>"; };
@@ -2672,6 +2737,9 @@
 		57BF122B2D01EF70001459CA /* DeleteConfirmView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = DeleteConfirmView.xib; sourceTree = "<group>"; };
 		57BF12732D01F143001459CA /* PreviewFilesViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = PreviewFilesViewController.h; path = ViewControllers/ConversationViewController/PreviewFilesViewController.h; sourceTree = "<group>"; };
 		57BF12742D01F143001459CA /* PreviewFilesViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = PreviewFilesViewController.m; path = ViewControllers/ConversationViewController/PreviewFilesViewController.m; sourceTree = "<group>"; };
+		57C13B662FF7F29200957FCE /* ShareContactCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ShareContactCell.h; sourceTree = "<group>"; };
+		57C13B672FF7F29200957FCE /* ShareContactCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ShareContactCell.m; sourceTree = "<group>"; };
+		57C13B682FF7F29200957FCE /* ShareContactCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ShareContactCell.xib; sourceTree = "<group>"; };
 		57D5AD022CEB473B00D46A0C /* LogsViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = LogsViewController.h; path = ViewControllers/LogsViewController.h; sourceTree = "<group>"; };
 		57D5AD032CEB473B00D46A0C /* LogsViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = LogsViewController.m; path = ViewControllers/LogsViewController.m; sourceTree = "<group>"; };
 		57DD46902DBBE4A400F14087 /* MenuAddContactView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MenuAddContactView.h; sourceTree = "<group>"; };
@@ -2698,6 +2766,9 @@
 		57DE12432E43320F00E7106A /* MenuPropagatingProfileView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MenuPropagatingProfileView.h; sourceTree = "<group>"; };
 		57DE12442E43320F00E7106A /* MenuPropagatingProfileView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MenuPropagatingProfileView.m; sourceTree = "<group>"; };
 		57DE12482E43330800E7106A /* MenuPropagatingProfileView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MenuPropagatingProfileView.xib; sourceTree = "<group>"; };
+		57E6AA072FF2512C003C946B /* AccountMigrationCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AccountMigrationCell.h; path = ViewControllers/AccountMigrationViewController/AccountMigrationCell.h; sourceTree = "<group>"; };
+		57E6AA082FF2512C003C946B /* AccountMigrationCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = AccountMigrationCell.m; path = ViewControllers/AccountMigrationViewController/AccountMigrationCell.m; sourceTree = "<group>"; };
+		57E6AA092FF2512C003C946B /* AccountMigrationCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = AccountMigrationCell.xib; path = ViewControllers/AccountMigrationViewController/AccountMigrationCell.xib; sourceTree = "<group>"; };
 		57E7909D2E741A5100759A00 /* SettingsAdvancedViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SettingsAdvancedViewController.h; sourceTree = "<group>"; };
 		57E7909E2E741A5100759A00 /* SettingsAdvancedViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SettingsAdvancedViewController.m; sourceTree = "<group>"; };
 		57E790A02E741A6D00759A00 /* AddProxyViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AddProxyViewController.h; sourceTree = "<group>"; };
@@ -3119,10 +3190,7 @@
 		83C7E7252401608F005735DD /* CallItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CallItem.h; path = ViewControllers/ConversationViewController/CallItem.h; sourceTree = "<group>"; };
 		83C7E72624016090005735DD /* CallItemCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = CallItemCell.xib; path = ViewControllers/ConversationViewController/CallItemCell.xib; sourceTree = "<group>"; };
 		83C7E745240161EA005735DD /* TwinmeSettingsItemCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TwinmeSettingsItemCell.m; sourceTree = "<group>"; };
-		83C7E746240161EA005735DD /* SettingsSectionHeaderCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingsSectionHeaderCell.m; sourceTree = "<group>"; };
-		83C7E747240161EA005735DD /* SettingsSectionHeaderCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingsSectionHeaderCell.h; sourceTree = "<group>"; };
 		83C7E748240161EA005735DD /* TwinmeSettingsItemCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TwinmeSettingsItemCell.h; sourceTree = "<group>"; };
-		83C7E749240161EA005735DD /* SettingsSectionHeaderCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SettingsSectionHeaderCell.xib; sourceTree = "<group>"; };
 		83C7E74A240161EA005735DD /* TwinmeSettingsItemCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TwinmeSettingsItemCell.xib; sourceTree = "<group>"; };
 		83CCF7B825495F51008C0921 /* help_he.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = help_he.html; sourceTree = "<group>"; };
 		83CCF7B925495F51008C0921 /* help_pl.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = help_pl.html; sourceTree = "<group>"; };
@@ -3633,6 +3701,11 @@
 			children = (
 				01EBEA3D29420C7B0034E0F6 /* PrivacyViewController.h */,
 				01EBEA3E29420C7B0034E0F6 /* PrivacyViewController.m */,
+				577177512FE14CCE00DD4DBF /* TimeoutCell.h */,
+				577177522FE14CCE00DD4DBF /* TimeoutCell.m */,
+				577177532FE14CCE00DD4DBF /* TimeoutCell.xib */,
+				577177542FE14CCE00DD4DBF /* UITimeout.h */,
+				577177552FE14CCE00DD4DBF /* UITimeout.m */,
 			);
 			name = PrivacyViewController;
 			path = ViewControllers/PrivacyViewController;
@@ -3742,10 +3815,12 @@
 				576F562C2F5B1D98000BC47B /* notification_5.caf */,
 				576F562D2F5B1D98000BC47B /* notification_6.caf */,
 				576F562E2F5B1D98000BC47B /* notification_7.caf */,
+				57680DB1301B37F70019E92F /* OnboardingConfirmView.xib */,
 				574F955B2E98FFF5008A2DFF /* opensource.html */,
 				8333ADBD1DCC92E100C75E93 /* photo_counter.png */,
 				836C6BB3231918A100CD3AF1 /* privacy_policy */,
 				5786E8492FD6A26C0035515C /* send_message.caf */,
+				5782A3DA302315230054B802 /* SettingsSectionHeaderCell.xib */,
 				5777A9A62C10B9BD003130CD /* shield_animation.json */,
 				8355151925FF8C79005A9C73 /* silence.mp3 */,
 				576393AE2F32069400BAA531 /* skype.caf */,
@@ -3937,8 +4012,6 @@
 			isa = PBXGroup;
 			children = (
 				57A7F03C2FBF098900EFB53B /* FAQ */,
-				57BF120D2D01EE69001459CA /* AbstractBottomSheetView.h */,
-				57BF120E2D01EE69001459CA /* AbstractBottomSheetView.m */,
 				5725B9552D37B6AB00F2E04F /* AlertMessageView.h */,
 				5725B9562D37B6AB00F2E04F /* AlertMessageView.m */,
 				5725B9582D37B6E500F2E04F /* AlertMessageView.xib */,
@@ -3983,17 +4056,12 @@
 				83F6A8302167F383006D3AFD /* InsideBorderView.m */,
 				83505CF325BC65FE004C784C /* NotificationErrorView.m */,
 				83505CF225BC65FD004C784C /* NotificationErrorView.xib */,
-				57639FDD2D9C2B8A00C18D77 /* OnboardingConfirmView.h */,
-				57639FDE2D9C2B8A00C18D77 /* OnboardingConfirmView.m */,
-				57639FE02D9C2BC100C18D77 /* OnboardingConfirmView.xib */,
 				5781FB8B2EB384390057324F /* OnboardingDetailCell.h */,
 				5781FB8C2EB384390057324F /* OnboardingDetailCell.m */,
 				5781FB8D2EB384390057324F /* OnboardingDetailCell.xib */,
 				5781FB842EB3825A0057324F /* OnboardingDetailView.h */,
 				5781FB852EB3825A0057324F /* OnboardingDetailView.m */,
 				5781FB882EB382850057324F /* OnboardingDetailView.xib */,
-				574DB1122EBE3873000E1F90 /* PaddingLabel.h */,
-				574DB1132EBE3873000E1F90 /* PaddingLabel.m */,
 				8393A23626369AE60011BAA2 /* RecordView.h */,
 				8393A23726369AE60011BAA2 /* RecordView.m */,
 				8360B57C1EBF7B1E00628012 /* RoundedShadowView.h */,
@@ -4188,11 +4256,11 @@
 				57DD47132DBBE63E00F14087 /* InvitationCodeShareView.xib */,
 				57DD46C32DBBE51E00F14087 /* InvitationCodeViewController.h */,
 				57DD46C42DBBE51E00F14087 /* InvitationCodeViewController.m */,
-				83C7E70324015F56005735DD /* LastCallsViewController.h */,
-				83C7E70224015F56005735DD /* LastCallsViewController.m */,
 				578815842F7AC57B00CC1F40 /* LastCallCell.h */,
 				578815852F7AC57B00CC1F40 /* LastCallCell.m */,
 				578815862F7AC57B00CC1F40 /* LastCallCell.xib */,
+				83C7E70324015F56005735DD /* LastCallsViewController.h */,
+				83C7E70224015F56005735DD /* LastCallsViewController.m */,
 				57DD46902DBBE4A400F14087 /* MenuAddContactView.h */,
 				57DD46912DBBE4A400F14087 /* MenuAddContactView.m */,
 				57DD46922DBBE4A400F14087 /* MenuAddContactView.xib */,
@@ -4205,6 +4273,14 @@
 				576394922F337D1200BAA531 /* ScheduleCell.h */,
 				576394932F337D1200BAA531 /* ScheduleCell.m */,
 				576394942F337D1200BAA531 /* ScheduleCell.xib */,
+				57C13B662FF7F29200957FCE /* ShareContactCell.h */,
+				57C13B672FF7F29200957FCE /* ShareContactCell.m */,
+				57C13B682FF7F29200957FCE /* ShareContactCell.xib */,
+				57B5A40A2FFEBB520003249B /* ShareContactConfirmView.h */,
+				57B5A40B2FFEBB520003249B /* ShareContactConfirmView.m */,
+				57B5A4202FFEBB6B0003249B /* ShareContactConfirmView.xib */,
+				577F42382FEACA9D00A3693D /* ShareContactViewController.h */,
+				577F42392FEACA9D00A3693D /* ShareContactViewController.m */,
 				83E222A31C5A2FF900350665 /* ShowContactViewController.h */,
 				83E222A41C5A2FF900350665 /* ShowContactViewController.m */,
 				5704E24C2ED7B209006A1B1E /* SuccessAuthentifiedRelationView.h */,
@@ -4512,6 +4588,11 @@
 				578817E92F7AFC1100CC1F40 /* PeerPollItemCell.h */,
 				578817EA2F7AFC1100CC1F40 /* PeerPollItemCell.m */,
 				578817EB2F7AFC1100CC1F40 /* PeerPollItemCell.xib */,
+				577F42602FEACB5E00A3693D /* PeerShareContactItem.h */,
+				577F42612FEACB5E00A3693D /* PeerShareContactItem.m */,
+				577F424E2FEACAFC00A3693D /* PeerShareContactItemCell.h */,
+				577F424F2FEACAFC00A3693D /* PeerShareContactItemCell.m */,
+				577F42502FEACAFC00A3693D /* PeerShareContactItemCell.xib */,
 				83EF7F7D20C990C2002A7224 /* PeerVideoItem.h */,
 				83EF7F7B20C990C1002A7224 /* PeerVideoItem.m */,
 				83EF7F7F20C990C2002A7224 /* PeerVideoItemCell.h */,
@@ -4523,9 +4604,6 @@
 				578817EF2F7AFC1100CC1F40 /* PollChoiceCell.h */,
 				578817F02F7AFC1100CC1F40 /* PollChoiceCell.m */,
 				578817F12F7AFC1100CC1F40 /* PollChoiceCell.xib */,
-				578817F22F7AFC1100CC1F40 /* PollResultView.h */,
-				578817F32F7AFC1100CC1F40 /* PollResultView.m */,
-				578817F42F7AFC1100CC1F40 /* PollResultView.xib */,
 				578817F52F7AFC1100CC1F40 /* PollFooterCell.h */,
 				578817F62F7AFC1100CC1F40 /* PollFooterCell.m */,
 				578817F72F7AFC1100CC1F40 /* PollFooterCell.xib */,
@@ -4537,6 +4615,11 @@
 				578817FD2F7AFC1100CC1F40 /* PollItemCell.h */,
 				578817FE2F7AFC1100CC1F40 /* PollItemCell.m */,
 				578817FF2F7AFC1100CC1F40 /* PollItemCell.xib */,
+				57EFEE162FA0F48E00484771 /* PollResultItem.h */,
+				57EFEE172FA0F48E00484771 /* PollResultItem.m */,
+				578817F22F7AFC1100CC1F40 /* PollResultView.h */,
+				578817F32F7AFC1100CC1F40 /* PollResultView.m */,
+				578817F42F7AFC1100CC1F40 /* PollResultView.xib */,
 				57BB6DC32D91CB8D00274A48 /* PreviewAddCell.h */,
 				57BB6DC42D91CB8D00274A48 /* PreviewAddCell.m */,
 				57BB6DC52D91CB8D00274A48 /* PreviewAddCell.xib */,
@@ -4562,6 +4645,11 @@
 				830400B11DE7384000A3CA39 /* SendButtonView.h */,
 				830400B21DE7384000A3CA39 /* SendButtonView.m */,
 				830400B31DE7384000A3CA39 /* SendButtonView.xib */,
+				577F425C2FEACB4700A3693D /* ShareContactItem.h */,
+				577F425D2FEACB4700A3693D /* ShareContactItem.m */,
+				577F42552FEACB1500A3693D /* ShareContactItemCell.h */,
+				577F42562FEACB1500A3693D /* ShareContactItemCell.m */,
+				577F42572FEACB1500A3693D /* ShareContactItemCell.xib */,
 				83B07D881E39FE9100BE0B43 /* SoundWaveView.h */,
 				83B07D891E39FE9100BE0B43 /* SoundWaveView.m */,
 				57FBA60E2D76FA30001C08AC /* TextViewRightView.h */,
@@ -4590,8 +4678,6 @@
 				579F818B2F9FA0410032EA27 /* UIPollResult.m */,
 				57EFEE122FA0F2E900484771 /* UIPollResultVoter.h */,
 				57EFEE132FA0F2E900484771 /* UIPollResultVoter.m */,
-				57EFEE162FA0F48E00484771 /* PollResultItem.h */,
-				57EFEE172FA0F48E00484771 /* PollResultItem.m */,
 				5765D6012D5B503E0061DD3B /* UIPreviewFile.h */,
 				5765D6022D5B503E0061DD3B /* UIPreviewFile.m */,
 				570214382DAF770800C1EC31 /* UIPreviewInfo.h */,
@@ -4635,10 +4721,15 @@
 		8348F25E25811E1200F95AD7 /* AccountMigrationViewController */ = {
 			isa = PBXGroup;
 			children = (
+				570CB56E2FF2C36400C23D23 /* UIAccountMigrationItem.h */,
+				570CB56F2FF2C36400C23D23 /* UIAccountMigrationItem.m */,
 				8348F26225811E4300F95AD7 /* AccountMigrationScannerViewController.h */,
 				8348F25F25811E4300F95AD7 /* AccountMigrationScannerViewController.m */,
 				8348F26025811E4300F95AD7 /* AccountMigrationViewController.h */,
 				8348F26125811E4300F95AD7 /* AccountMigrationViewController.m */,
+				57E6AA072FF2512C003C946B /* AccountMigrationCell.h */,
+				57E6AA082FF2512C003C946B /* AccountMigrationCell.m */,
+				57E6AA092FF2512C003C946B /* AccountMigrationCell.xib */,
 			);
 			name = AccountMigrationViewController;
 			sourceTree = "<group>";
@@ -4958,11 +5049,19 @@
 		83C7E6F924015F34005735DD /* ConversationsViewController */ = {
 			isa = PBXGroup;
 			children = (
+				571842EC2FDFEEC600166343 /* ConversationNotificationsViewController.h */,
+				571842ED2FDFEEC600166343 /* ConversationNotificationsViewController.m */,
 				83C7E6FC24015F34005735DD /* ConversationsViewController.h */,
 				83C7E6FA24015F34005735DD /* ConversationsViewController.m */,
 				01795E6C2919474600C56352 /* EnableNotificationCell.h */,
 				01795E6D2919474600C56352 /* EnableNotificationCell.m */,
 				01795E6E2919474600C56352 /* EnableNotificationCell.xib */,
+				571842BD2FDFEE7300166343 /* MenuConversationShorcutView.h */,
+				571842BE2FDFEE7300166343 /* MenuConversationShorcutView.m */,
+				571842BF2FDFEE7300166343 /* MenuConversationShorcutView.xib */,
+				571842C02FDFEE7300166343 /* MenuHeaderCell.h */,
+				571842C12FDFEE7300166343 /* MenuHeaderCell.m */,
+				571842C22FDFEE7300166343 /* MenuHeaderCell.xib */,
 				834C96F92487FCC1007C7B4C /* NewConversationViewController.h */,
 				834C96F82487FCC0007C7B4C /* NewConversationViewController.m */,
 				57002A5C2DEF68D7003EDDC3 /* SearchContentMessageCell.h */,
@@ -5137,9 +5236,6 @@
 				839B5BE92702ED6700FCF22F /* SettingsSectionFooterCell.h */,
 				839B5BEB2702ED6700FCF22F /* SettingsSectionFooterCell.m */,
 				839B5BF72702ED6800FCF22F /* SettingsSectionFooterCell.xib */,
-				83C7E747240161EA005735DD /* SettingsSectionHeaderCell.h */,
-				83C7E746240161EA005735DD /* SettingsSectionHeaderCell.m */,
-				83C7E749240161EA005735DD /* SettingsSectionHeaderCell.xib */,
 				839B5BF02702ED6800FCF22F /* SettingsValueItemCell.h */,
 				839B5BF12702ED6800FCF22F /* SettingsValueItemCell.m */,
 				839B5BED2702ED6800FCF22F /* SettingsValueItemCell.xib */,
@@ -5155,6 +5251,8 @@
 				011EB9D027B5AC4F00B01B3E /* UpdateAvailableCell.h */,
 				011EB9D127B5AC4F00B01B3E /* UpdateAvailableCell.m */,
 				011EB9D227B5AC4F00B01B3E /* UpdateAvailableCell.xib */,
+				571B1BAE2FFE94480007F16B /* UIMenuSelectValueItem.h */,
+				571B1BAF2FFE94480007F16B /* UIMenuSelectValueItem.m */,
 			);
 			name = SettingsViewController;
 			path = ViewControllers/SettingsViewController;
@@ -5697,6 +5795,7 @@
 				5703BA1C2BC66F9E001E3C65 /* QualityOfServicesCell.xib in Resources */,
 				8348E9DF249BC48F00AB33DA /* DefaultProfileCell.xib in Resources */,
 				01045B8529A4CC1600769703 /* StorageCell.xib in Resources */,
+				57E6AA0D2FF2512C003C946B /* AccountMigrationCell.xib in Resources */,
 				8355151A25FF8C79005A9C73 /* silence.mp3 in Resources */,
 				57B28B552B2AF28A000A8324 /* MenuCallCapabilitiesView.xib in Resources */,
 				01EBEA52294228360034E0F6 /* ResetSettingsCell.xib in Resources */,
@@ -5716,9 +5815,9 @@
 				01B90D682976ED000000A168 /* AnnotationCell.xib in Resources */,
 				8341A4C426612FF800256515 /* MenuRoomMemberView.xib in Resources */,
 				8394C79324E6889D0014AD53 /* SelectedMembersCell.xib in Resources */,
+				57B5A4212FFEBB6B0003249B /* ShareContactConfirmView.xib in Resources */,
 				83B07D9F1E3A7C4000BE0B43 /* PeerAudioItemCell.xib in Resources */,
 				837481B9216FE36600B51687 /* GroupMemberCell.xib in Resources */,
-				83C7E74E240161EA005735DD /* SettingsSectionHeaderCell.xib in Resources */,
 				7A61C5672C5CD3E200639854 /* bip39_wordlist_en.txt in Resources */,
 				83750CAD214FA2CE0031D78D /* PeerFileItemCell.xib in Resources */,
 				575B02212B84C28900D15880 /* CallHoldView.xib in Resources */,
@@ -5761,7 +5860,6 @@
 				5765D5A72D5B4E7F0061DD3B /* MenuActionConversationCell.xib in Resources */,
 				01C4542B2913B5180091622D /* MenuSelectValueView.xib in Resources */,
 				836C6B7C2319173C00CD3AF1 /* help_ja.html in Resources */,
-				57639FE12D9C2BC100C18D77 /* OnboardingConfirmView.xib in Resources */,
 				83B07D9D1E3A7C2500BE0B43 /* AudioItemCell.xib in Resources */,
 				836C6BF523191A1F00CD3AF1 /* terms_of_service_de.html in Resources */,
 				83CE1A89264EB641008A1E3A /* ReplyView.xib in Resources */,
@@ -5798,6 +5896,8 @@
 				83505CF425BC65FE004C784C /* NotificationErrorView.xib in Resources */,
 				83133A132769DD1500C9C8D9 /* TwincodeView.xib in Resources */,
 				5781FB902EB384390057324F /* OnboardingDetailCell.xib in Resources */,
+				57C13B6B2FF7F29200957FCE /* ShareContactCell.xib in Resources */,
+				577F425A2FEACB1500A3693D /* ShareContactItemCell.xib in Resources */,
 				836C6B842319173C00CD3AF1 /* help_sv.html in Resources */,
 				01045B9E29A4CD1D00769703 /* ExpirationDateCell.xib in Resources */,
 				836C6BD7231918A100CD3AF1 /* privacy_policy_nl.html in Resources */,
@@ -5852,6 +5952,7 @@
 				578818112F7AFC1100CC1F40 /* PollChoiceCell.xib in Resources */,
 				578818122F7AFC1100CC1F40 /* PollHeaderCell.xib in Resources */,
 				578818132F7AFC1100CC1F40 /* PollFooterCell.xib in Resources */,
+				5771775B2FE14CCE00DD4DBF /* TimeoutCell.xib in Resources */,
 				576F55FC2F5B1D35000BC47B /* BackupCell.xib in Resources */,
 				576F55FD2F5B1D35000BC47B /* BackupWordsCell.xib in Resources */,
 				576F55FE2F5B1D35000BC47B /* WordCompletionCell.xib in Resources */,
@@ -5906,7 +6007,10 @@
 				578B01842BBBF4AD00AE3EA8 /* PrivacyInfo.xcprivacy in Resources */,
 				576F557C2F5B1CFF000BC47B /* WeeklyScheduleCell.xib in Resources */,
 				572175AE2EC4DDA9002DB76E /* ProxyView.xib in Resources */,
+				5782A3DC302315230054B802 /* SettingsSectionHeaderCell.xib in Resources */,
 				83750CB7214FA9070031D78D /* PreviewFileCell.xib in Resources */,
+				571842C52FDFEE7300166343 /* MenuHeaderCell.xib in Resources */,
+				571842C62FDFEE7300166343 /* MenuConversationShorcutView.xib in Resources */,
 				836C6BF723191A1F00CD3AF1 /* terms_of_service_fi.html in Resources */,
 				574DB19D2EC1D85F000E1F90 /* InfoPlist.xcstrings in Resources */,
 				83D5B0B0216CDFB80032A0CB /* NameItemCell.xib in Resources */,
@@ -5954,6 +6058,7 @@
 				83C7E72C24016090005735DD /* CallItemCell.xib in Resources */,
 				836C6BF323191A1F00CD3AF1 /* terms_of_service_zh-Hans.html in Resources */,
 				57DD46932DBBE4A400F14087 /* MenuAddContactView.xib in Resources */,
+				577F42512FEACAFC00A3693D /* PeerShareContactItemCell.xib in Resources */,
 				018FB19C27A135DB004305BC /* AddCommentCell.xib in Resources */,
 				578F36DC2D34FDB9001A8F05 /* DefaultConfirmView.xib in Resources */,
 				836C6BF623191A1F00CD3AF1 /* terms_of_service_ru.html in Resources */,
@@ -5962,6 +6067,7 @@
 				83CCF7C12549604C008C0921 /* terms_of_service_id.html in Resources */,
 				836C6BC9231918A100CD3AF1 /* privacy_policy_ar.html in Resources */,
 				574F955C2E98FFF5008A2DFF /* opensource.html in Resources */,
+				57680DB2301B37F70019E92F /* OnboardingConfirmView.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -6019,6 +6125,7 @@
 				47CD19982E9CF7DB00F0E361 /* QualityOfServicesCell.xib in Resources */,
 				47CD19992E9CF7DB00F0E361 /* DefaultProfileCell.xib in Resources */,
 				47CD199A2E9CF7DB00F0E361 /* StorageCell.xib in Resources */,
+				57E6AA0B2FF2512C003C946B /* AccountMigrationCell.xib in Resources */,
 				47CD199B2E9CF7DB00F0E361 /* silence.mp3 in Resources */,
 				47CD199C2E9CF7DB00F0E361 /* MenuCallCapabilitiesView.xib in Resources */,
 				47CD199D2E9CF7DB00F0E361 /* ResetSettingsCell.xib in Resources */,
@@ -6038,9 +6145,9 @@
 				47CD19AC2E9CF7DB00F0E361 /* AnnotationCell.xib in Resources */,
 				47CD19AD2E9CF7DB00F0E361 /* MenuRoomMemberView.xib in Resources */,
 				47CD19AE2E9CF7DB00F0E361 /* SelectedMembersCell.xib in Resources */,
+				57B5A4222FFEBB6B0003249B /* ShareContactConfirmView.xib in Resources */,
 				47CD19AF2E9CF7DB00F0E361 /* PeerAudioItemCell.xib in Resources */,
 				47CD19B02E9CF7DB00F0E361 /* GroupMemberCell.xib in Resources */,
-				47CD19B12E9CF7DB00F0E361 /* SettingsSectionHeaderCell.xib in Resources */,
 				47CD19B22E9CF7DB00F0E361 /* bip39_wordlist_en.txt in Resources */,
 				47CD19B32E9CF7DB00F0E361 /* PeerFileItemCell.xib in Resources */,
 				47CD19B42E9CF7DB00F0E361 /* CallHoldView.xib in Resources */,
@@ -6082,7 +6189,6 @@
 				57A7F0BC2FBF54A000EFB53B /* TimeItemCell.xib in Resources */,
 				47CD19D82E9CF7DB00F0E361 /* MenuSelectValueView.xib in Resources */,
 				47CD19D92E9CF7DB00F0E361 /* help_ja.html in Resources */,
-				47CD19DA2E9CF7DB00F0E361 /* OnboardingConfirmView.xib in Resources */,
 				47CD19DB2E9CF7DB00F0E361 /* AudioItemCell.xib in Resources */,
 				47CD19DC2E9CF7DB00F0E361 /* terms_of_service_de.html in Resources */,
 				47CD19DD2E9CF7DB00F0E361 /* ReplyView.xib in Resources */,
@@ -6120,6 +6226,8 @@
 				47CD19FA2E9CF7DB00F0E361 /* TwincodeView.xib in Resources */,
 				5781FB8E2EB384390057324F /* OnboardingDetailCell.xib in Resources */,
 				47CD19FB2E9CF7DB00F0E361 /* help_sv.html in Resources */,
+				57C13B6A2FF7F29200957FCE /* ShareContactCell.xib in Resources */,
+				577F42592FEACB1500A3693D /* ShareContactItemCell.xib in Resources */,
 				47CD19FC2E9CF7DB00F0E361 /* ExpirationDateCell.xib in Resources */,
 				47CD19FD2E9CF7DB00F0E361 /* privacy_policy_nl.html in Resources */,
 				47CD19FE2E9CF7DB00F0E361 /* NotificationCallView.xib in Resources */,
@@ -6174,6 +6282,7 @@
 				578818182F7AFC1100CC1F40 /* PollChoiceCell.xib in Resources */,
 				578818192F7AFC1100CC1F40 /* PollHeaderCell.xib in Resources */,
 				5788181A2F7AFC1100CC1F40 /* PollFooterCell.xib in Resources */,
+				577177582FE14CCE00DD4DBF /* TimeoutCell.xib in Resources */,
 				576F55EC2F5B1D35000BC47B /* BackupCell.xib in Resources */,
 				576F55ED2F5B1D35000BC47B /* BackupWordsCell.xib in Resources */,
 				576F55EE2F5B1D35000BC47B /* WordCompletionCell.xib in Resources */,
@@ -6228,7 +6337,10 @@
 				47CD1A3C2E9CF7DB00F0E361 /* PrivacyInfo.xcprivacy in Resources */,
 				576F557B2F5B1CFF000BC47B /* WeeklyScheduleCell.xib in Resources */,
 				572175AD2EC4DDA9002DB76E /* ProxyView.xib in Resources */,
+				5782A3DB302315230054B802 /* SettingsSectionHeaderCell.xib in Resources */,
 				47CD1A3D2E9CF7DB00F0E361 /* PreviewFileCell.xib in Resources */,
+				571842C92FDFEE7300166343 /* MenuHeaderCell.xib in Resources */,
+				571842CA2FDFEE7300166343 /* MenuConversationShorcutView.xib in Resources */,
 				47CD1A3E2E9CF7DB00F0E361 /* terms_of_service_fi.html in Resources */,
 				574DB19E2EC1D85F000E1F90 /* InfoPlist.xcstrings in Resources */,
 				47CD1A3F2E9CF7DB00F0E361 /* NameItemCell.xib in Resources */,
@@ -6276,6 +6388,7 @@
 				47CD1A632E9CF7DB00F0E361 /* CallItemCell.xib in Resources */,
 				47CD1A642E9CF7DB00F0E361 /* terms_of_service_zh-Hans.html in Resources */,
 				47CD1A652E9CF7DB00F0E361 /* MenuAddContactView.xib in Resources */,
+				577F42542FEACAFC00A3693D /* PeerShareContactItemCell.xib in Resources */,
 				47CD1A662E9CF7DB00F0E361 /* AddCommentCell.xib in Resources */,
 				47CD1A672E9CF7DB00F0E361 /* DefaultConfirmView.xib in Resources */,
 				47CD1A682E9CF7DB00F0E361 /* terms_of_service_ru.html in Resources */,
@@ -6284,6 +6397,7 @@
 				47CD1A6B2E9CF7DB00F0E361 /* terms_of_service_id.html in Resources */,
 				47CD1A6C2E9CF7DB00F0E361 /* privacy_policy_ar.html in Resources */,
 				47CD1A6D2E9CF7DB00F0E361 /* opensource.html in Resources */,
+				57680DB3301B37F70019E92F /* OnboardingConfirmView.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -6409,13 +6523,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				01C3DDC22A657AFD001077B5 /* FullScreenVideoCell.m in Sources */,
-				574DB1142EBE3873000E1F90 /* PaddingLabel.m in Sources */,
+				577F423B2FEACA9D00A3693D /* ShareContactViewController.m in Sources */,
 				573184882C8B2542001F484A /* MenuCertifyView.m in Sources */,
 				01C4542F2913BBFF0091622D /* SelectValueCell.m in Sources */,
 				83485B061DC1ECF400EFFBAE /* Constants.m in Sources */,
 				019078DD27BE4C930043E615 /* ClearItemCell.m in Sources */,
 				573297C52ED9F28F00C4C0BE /* FAQCell.m in Sources */,
 				83C7E71024015F9D005735DD /* CallAnimationView.m in Sources */,
+				571842EF2FDFEEC600166343 /* ConversationNotificationsViewController.m in Sources */,
 				019078E927BE4CFB0043E615 /* PeerClearItem.m in Sources */,
 				5758AED22E2E235300A970C4 /* UIWelcome.m in Sources */,
 				83E2229E1C5A1EE400350665 /* AddContactViewController.m in Sources */,
@@ -6426,6 +6541,7 @@
 				01543F90298D133C002E636E /* ExportProgressCell.m in Sources */,
 				83F491AF21E8DFF500CAF01A /* NotificationSoundCell.m in Sources */,
 				83E9603526A580440071038B /* AddParticipantsViewController.m in Sources */,
+				57B5A40C2FFEBB520003249B /* ShareContactConfirmView.m in Sources */,
 				576F55692F5B1CBC000BC47B /* InfoSectionItem.m in Sources */,
 				57A41C0C2B5A8037004FB171 /* CallPeerMessageCell.m in Sources */,
 				01A850E829FA60D800D477DC /* WelcomeFlowLayout.m in Sources */,
@@ -6523,6 +6639,7 @@
 				01CAD86E296EE22400555E43 /* UIReaction.m in Sources */,
 				01A4E76B28343ED900E75899 /* AppearanceColorCell.m in Sources */,
 				8341A4C526612FF800256515 /* MenuRoomMemberView.m in Sources */,
+				577F42622FEACB5E00A3693D /* PeerShareContactItem.m in Sources */,
 				8348F26425811E4300F95AD7 /* AccountMigrationViewController.m in Sources */,
 				834FC4E3271FEAC40098B22B /* EditProfileViewController.m in Sources */,
 				83B19D5E1CC4E6E000D546F7 /* TTTAttributedLabel.m in Sources */,
@@ -6589,6 +6706,7 @@
 				57A1D7362EA652EA00EE0071 /* DebugSettingsViewController.m in Sources */,
 				019D5061286B30BA0032EF84 /* CallParticipantRemoteView.m in Sources */,
 				01045B9D29A4CD1D00769703 /* ExpirationPeriodCell.m in Sources */,
+				57C13B6C2FF7F29200957FCE /* ShareContactCell.m in Sources */,
 				839408BB24B2F5C600451E51 /* SoundSettingsViewController.m in Sources */,
 				5777AA662C11E74F003130CD /* UIAppInfo.m in Sources */,
 				83C7E6F524015EFC005735DD /* WelcomeViewController.m in Sources */,
@@ -6599,6 +6717,7 @@
 				839B5BFE2702ED6800FCF22F /* AboutViewController.m in Sources */,
 				83B07D8C1E39FE9100BE0B43 /* SoundWaveView.m in Sources */,
 				839B5BB126FCBF8400FCF22F /* AudioTrackView.m in Sources */,
+				577F425B2FEACB1500A3693D /* ShareContactItemCell.m in Sources */,
 				57002A022DEF48F5003EDDC3 /* SearchSectionFooterCell.m in Sources */,
 				01045B9129A4CD0F00769703 /* UICleanUpExpiration.m in Sources */,
 				0120D59A2791B148006876AC /* LinkItem.m in Sources */,
@@ -6613,11 +6732,12 @@
 				83F6A8062167F021006D3AFD /* InvitationItem.m in Sources */,
 				57EFEE152FA0F2E900484771 /* UIPollResultVoter.m in Sources */,
 				47F8AD342E3BF5B400977CFA /* ApplicationAssertion.m in Sources */,
-				83C7E74D240161EA005735DD /* SettingsSectionHeaderCell.m in Sources */,
 				834C96F62487FC9F007C7B4C /* MenuGroupMemberView.m in Sources */,
 				83C7E6F424015EFC005735DD /* WelcomeCell.m in Sources */,
 				57784DC62B444DBC00B52840 /* AbstractMenuView.m in Sources */,
 				83B95BA9241915E100BA0C57 /* MainViewController.m in Sources */,
+				571842C32FDFEE7300166343 /* MenuConversationShorcutView.m in Sources */,
+				571842C42FDFEE7300166343 /* MenuHeaderCell.m in Sources */,
 				01D4009F2A41D22D00ED1274 /* UICustomTab.m in Sources */,
 				83505CF525BC65FE004C784C /* NotificationErrorView.m in Sources */,
 				839408C224B2F5C600451E51 /* ColorCell.m in Sources */,
@@ -6642,6 +6762,7 @@
 				57E790A92E741AB900759A00 /* ProxyCell.m in Sources */,
 				578B00162BB5711B00AE3EA8 /* InfoFloatingView.m in Sources */,
 				57A41C072B5A801F004FB171 /* CallMessageCell.m in Sources */,
+				577F425F2FEACB4700A3693D /* ShareContactItem.m in Sources */,
 				839B5BFD2702ED6800FCF22F /* SettingsValueItemCell.m in Sources */,
 				011EB9CF27B557C300B01B3E /* LastVersionManager.m in Sources */,
 				011EB9CC27B557AF00B01B3E /* LastVersion.m in Sources */,
@@ -6670,11 +6791,13 @@
 				8319C6CF1E4146A6008B4EF1 /* Configuration.m in Sources */,
 				837A53FC1DCE578700831777 /* PeerMessageItemCell.m in Sources */,
 				83E9603726A580440071038B /* InvitationRoomViewController.m in Sources */,
+				570CB5702FF2C36400C23D23 /* UIAccountMigrationItem.m in Sources */,
 				57ABEDB02B45503000D0F1C8 /* MenuPhotoView.m in Sources */,
 				834C96FA2487FCC1007C7B4C /* NewConversationViewController.m in Sources */,
 				57DD47152DBBE63E00F14087 /* InvitationCodeShareView.m in Sources */,
 				836600F724782C3A008C3141 /* InvitationContactItemCell.m in Sources */,
 				8393A23826369AE60011BAA2 /* RecordView.m in Sources */,
+				577F42522FEACAFC00A3693D /* PeerShareContactItemCell.m in Sources */,
 				01CC210829656C9700C96A66 /* UICall.m in Sources */,
 				572175AF2EC4DDA9002DB76E /* ProxyView.m in Sources */,
 				83750CAC214FA2CE0031D78D /* PeerFileItem.m in Sources */,
@@ -6764,7 +6887,6 @@
 				5739B13E2B5FA78700B15E26 /* OnboardingSpaceViewController.m in Sources */,
 				83D06CD3227743ED00C89C43 /* MenuItemView.m in Sources */,
 				8386905224484C1500270845 /* EditIdentityViewController.m in Sources */,
-				57639FDF2D9C2B8A00C18D77 /* OnboardingConfirmView.m in Sources */,
 				83FB2F9321C18CFB009770B6 /* DeletedAccountViewController.m in Sources */,
 				57D5AD042CEB473B00D46A0C /* LogsViewController.m in Sources */,
 				01D932B929F0376100175376 /* AddExternalCallCell.m in Sources */,
@@ -6773,12 +6895,14 @@
 				8393A63A2371A8EF0051467D /* ZoomSlider.m in Sources */,
 				018FBD432902C445000D4EDB /* PremiumServicesViewController.m in Sources */,
 				836EC6431E3163EA002EBA9A /* TimeItem.m in Sources */,
+				571B1BB02FFE94480007F16B /* UIMenuSelectValueItem.m in Sources */,
 				83F491B121E8DFF500CAF01A /* SelectNotificationSoundViewController.m in Sources */,
 				83F6A8322167F383006D3AFD /* InsideBorderView.m in Sources */,
 				83942A2B1C81E0800046C56A /* DashedLine.m in Sources */,
 				8361BEFE256507E200AD8867 /* ShowMemberCell.m in Sources */,
 				83D88D111EBBA76900AFD6F2 /* UIImage+ImageEffects.m in Sources */,
 				57002A5F2DEF68D7003EDDC3 /* SearchContentMessageCell.m in Sources */,
+				57E6AA0C2FF2512C003C946B /* AccountMigrationCell.m in Sources */,
 				835748831E99142100E12580 /* NotificationViewController.m in Sources */,
 				575B02202B84C28900D15880 /* CallHoldView.m in Sources */,
 				5765D5EC2D5B4FB50061DD3B /* AbstractPreviewViewController.m in Sources */,
@@ -6794,6 +6918,8 @@
 				573184832C8B24F8001F484A /* CallCertifyView.m in Sources */,
 				5777EB312E0978D800CD0911 /* CustomProgressBarView.m in Sources */,
 				01A3A601287EEA95009F34D2 /* CallMenuView.m in Sources */,
+				577177592FE14CCE00DD4DBF /* TimeoutCell.m in Sources */,
+				5771775A2FE14CCE00DD4DBF /* UITimeout.m in Sources */,
 				8348E9E6249BC5B900AB33DA /* SideMenuViewController.m in Sources */,
 				5777A7192C06F983003130CD /* GroupCapabilitiesViewController.m in Sources */,
 				83E9603826A580440071038B /* SettingsRoomViewController.m in Sources */,
@@ -6822,7 +6948,6 @@
 				01131B76285A0405004F4D49 /* AbstractCallParticipantView.m in Sources */,
 				01B90D6A2976ED000000A168 /* AnnotationCell.m in Sources */,
 				57BB6DCC2D91CBA200274A48 /* PreviewThumbnailCell.m in Sources */,
-				57BF120F2D01EE69001459CA /* AbstractBottomSheetView.m in Sources */,
 				83EF7F9920CA85B8002A7224 /* VideoItemCell.m in Sources */,
 				839B5BFF2702ED6800FCF22F /* AboutCell.m in Sources */,
 				832FE73A2260CBE600615897 /* TypingAvatarCell.m in Sources */,
@@ -6841,13 +6966,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				47CD17F82E9CF7DB00F0E361 /* FullScreenVideoCell.m in Sources */,
-				574DB1152EBE3873000E1F90 /* PaddingLabel.m in Sources */,
+				577F423A2FEACA9D00A3693D /* ShareContactViewController.m in Sources */,
 				47CD17F92E9CF7DB00F0E361 /* MenuCertifyView.m in Sources */,
 				47CD17FB2E9CF7DB00F0E361 /* SelectValueCell.m in Sources */,
 				47CD17FC2E9CF7DB00F0E361 /* Constants.m in Sources */,
 				47CD17FD2E9CF7DB00F0E361 /* ClearItemCell.m in Sources */,
 				573297C82ED9F28F00C4C0BE /* FAQCell.m in Sources */,
 				47CD17FE2E9CF7DB00F0E361 /* CallAnimationView.m in Sources */,
+				571842EE2FDFEEC600166343 /* ConversationNotificationsViewController.m in Sources */,
 				47CD17FF2E9CF7DB00F0E361 /* PeerClearItem.m in Sources */,
 				47CD18002E9CF7DB00F0E361 /* UIWelcome.m in Sources */,
 				47CD18012E9CF7DB00F0E361 /* AddContactViewController.m in Sources */,
@@ -6858,6 +6984,7 @@
 				47CD18062E9CF7DB00F0E361 /* ExportProgressCell.m in Sources */,
 				47CD18072E9CF7DB00F0E361 /* NotificationSoundCell.m in Sources */,
 				47CD18082E9CF7DB00F0E361 /* AddParticipantsViewController.m in Sources */,
+				57B5A40D2FFEBB520003249B /* ShareContactConfirmView.m in Sources */,
 				576F556A2F5B1CBC000BC47B /* InfoSectionItem.m in Sources */,
 				47CD18092E9CF7DB00F0E361 /* CallPeerMessageCell.m in Sources */,
 				47CD180A2E9CF7DB00F0E361 /* WelcomeFlowLayout.m in Sources */,
@@ -6955,6 +7082,7 @@
 				47CD18472E9CF7DB00F0E361 /* UIReaction.m in Sources */,
 				47CD18482E9CF7DB00F0E361 /* AppearanceColorCell.m in Sources */,
 				47CD18492E9CF7DB00F0E361 /* MenuRoomMemberView.m in Sources */,
+				577F42632FEACB5E00A3693D /* PeerShareContactItem.m in Sources */,
 				47CD184A2E9CF7DB00F0E361 /* AccountMigrationViewController.m in Sources */,
 				47CD184B2E9CF7DB00F0E361 /* EditProfileViewController.m in Sources */,
 				47CD184C2E9CF7DB00F0E361 /* TTTAttributedLabel.m in Sources */,
@@ -7021,6 +7149,7 @@
 				57A1D7352EA652EA00EE0071 /* DebugSettingsViewController.m in Sources */,
 				47CD18802E9CF7DB00F0E361 /* CallParticipantRemoteView.m in Sources */,
 				47CD18812E9CF7DB00F0E361 /* ExpirationPeriodCell.m in Sources */,
+				57C13B692FF7F29200957FCE /* ShareContactCell.m in Sources */,
 				47CD18822E9CF7DB00F0E361 /* SoundSettingsViewController.m in Sources */,
 				47CD18832E9CF7DB00F0E361 /* UIAppInfo.m in Sources */,
 				47CD18842E9CF7DB00F0E361 /* WelcomeViewController.m in Sources */,
@@ -7031,6 +7160,7 @@
 				47CD18882E9CF7DB00F0E361 /* AboutViewController.m in Sources */,
 				47CD18892E9CF7DB00F0E361 /* SoundWaveView.m in Sources */,
 				47CD188A2E9CF7DB00F0E361 /* AudioTrackView.m in Sources */,
+				577F42582FEACB1500A3693D /* ShareContactItemCell.m in Sources */,
 				47CD188B2E9CF7DB00F0E361 /* SearchSectionFooterCell.m in Sources */,
 				47CD188C2E9CF7DB00F0E361 /* UICleanUpExpiration.m in Sources */,
 				47CD188D2E9CF7DB00F0E361 /* LinkItem.m in Sources */,
@@ -7045,11 +7175,12 @@
 				47CD18952E9CF7DB00F0E361 /* InvitationItem.m in Sources */,
 				57EFEE142FA0F2E900484771 /* UIPollResultVoter.m in Sources */,
 				47CD18962E9CF7DB00F0E361 /* ApplicationAssertion.m in Sources */,
-				47CD18972E9CF7DB00F0E361 /* SettingsSectionHeaderCell.m in Sources */,
 				47CD18982E9CF7DB00F0E361 /* MenuGroupMemberView.m in Sources */,
 				47CD18992E9CF7DB00F0E361 /* WelcomeCell.m in Sources */,
 				47CD189A2E9CF7DB00F0E361 /* AbstractMenuView.m in Sources */,
 				47CD189B2E9CF7DB00F0E361 /* MainViewController.m in Sources */,
+				571842C72FDFEE7300166343 /* MenuConversationShorcutView.m in Sources */,
+				571842C82FDFEE7300166343 /* MenuHeaderCell.m in Sources */,
 				47CD189C2E9CF7DB00F0E361 /* UICustomTab.m in Sources */,
 				47CD189D2E9CF7DB00F0E361 /* NotificationErrorView.m in Sources */,
 				47CD189E2E9CF7DB00F0E361 /* ColorCell.m in Sources */,
@@ -7074,6 +7205,7 @@
 				47CD18AF2E9CF7DB00F0E361 /* ProxyCell.m in Sources */,
 				47CD18B02E9CF7DB00F0E361 /* InfoFloatingView.m in Sources */,
 				47CD18B12E9CF7DB00F0E361 /* CallMessageCell.m in Sources */,
+				577F425E2FEACB4700A3693D /* ShareContactItem.m in Sources */,
 				47CD18B22E9CF7DB00F0E361 /* SettingsValueItemCell.m in Sources */,
 				47CD18B32E9CF7DB00F0E361 /* LastVersionManager.m in Sources */,
 				47CD18B42E9CF7DB00F0E361 /* LastVersion.m in Sources */,
@@ -7102,11 +7234,13 @@
 				47CD18CC2E9CF7DB00F0E361 /* Configuration.m in Sources */,
 				47CD18CD2E9CF7DB00F0E361 /* PeerMessageItemCell.m in Sources */,
 				47CD18CE2E9CF7DB00F0E361 /* InvitationRoomViewController.m in Sources */,
+				570CB5712FF2C36400C23D23 /* UIAccountMigrationItem.m in Sources */,
 				47CD18CF2E9CF7DB00F0E361 /* MenuPhotoView.m in Sources */,
 				47CD18D02E9CF7DB00F0E361 /* NewConversationViewController.m in Sources */,
 				47CD18D12E9CF7DB00F0E361 /* InvitationCodeShareView.m in Sources */,
 				47CD18D22E9CF7DB00F0E361 /* InvitationContactItemCell.m in Sources */,
 				47CD18D32E9CF7DB00F0E361 /* RecordView.m in Sources */,
+				577F42532FEACAFC00A3693D /* PeerShareContactItemCell.m in Sources */,
 				47CD18D42E9CF7DB00F0E361 /* UICall.m in Sources */,
 				572175AC2EC4DDA9002DB76E /* ProxyView.m in Sources */,
 				47CD18D52E9CF7DB00F0E361 /* PeerFileItem.m in Sources */,
@@ -7196,7 +7330,6 @@
 				47CD19242E9CF7DB00F0E361 /* OnboardingSpaceViewController.m in Sources */,
 				47CD19252E9CF7DB00F0E361 /* MenuItemView.m in Sources */,
 				47CD19262E9CF7DB00F0E361 /* EditIdentityViewController.m in Sources */,
-				47CD19272E9CF7DB00F0E361 /* OnboardingConfirmView.m in Sources */,
 				47CD19282E9CF7DB00F0E361 /* DeletedAccountViewController.m in Sources */,
 				47CD19292E9CF7DB00F0E361 /* LogsViewController.m in Sources */,
 				47CD192A2E9CF7DB00F0E361 /* AddExternalCallCell.m in Sources */,
@@ -7205,12 +7338,14 @@
 				47CD192C2E9CF7DB00F0E361 /* ZoomSlider.m in Sources */,
 				47CD192D2E9CF7DB00F0E361 /* PremiumServicesViewController.m in Sources */,
 				47CD192E2E9CF7DB00F0E361 /* TimeItem.m in Sources */,
+				571B1BB12FFE94480007F16B /* UIMenuSelectValueItem.m in Sources */,
 				47CD192F2E9CF7DB00F0E361 /* SelectNotificationSoundViewController.m in Sources */,
 				47CD19302E9CF7DB00F0E361 /* InsideBorderView.m in Sources */,
 				47CD19312E9CF7DB00F0E361 /* DashedLine.m in Sources */,
 				47CD19322E9CF7DB00F0E361 /* ShowMemberCell.m in Sources */,
 				47CD19332E9CF7DB00F0E361 /* UIImage+ImageEffects.m in Sources */,
 				47CD19342E9CF7DB00F0E361 /* SearchContentMessageCell.m in Sources */,
+				57E6AA0A2FF2512C003C946B /* AccountMigrationCell.m in Sources */,
 				47CD19352E9CF7DB00F0E361 /* NotificationViewController.m in Sources */,
 				47CD19362E9CF7DB00F0E361 /* CallHoldView.m in Sources */,
 				47CD19372E9CF7DB00F0E361 /* AbstractPreviewViewController.m in Sources */,
@@ -7226,6 +7361,8 @@
 				47CD19412E9CF7DB00F0E361 /* CallCertifyView.m in Sources */,
 				47CD19422E9CF7DB00F0E361 /* CustomProgressBarView.m in Sources */,
 				47CD19432E9CF7DB00F0E361 /* CallMenuView.m in Sources */,
+				577177562FE14CCE00DD4DBF /* TimeoutCell.m in Sources */,
+				577177572FE14CCE00DD4DBF /* UITimeout.m in Sources */,
 				47CD19442E9CF7DB00F0E361 /* SideMenuViewController.m in Sources */,
 				47CD19452E9CF7DB00F0E361 /* GroupCapabilitiesViewController.m in Sources */,
 				47CD19462E9CF7DB00F0E361 /* SettingsRoomViewController.m in Sources */,
@@ -7254,7 +7391,6 @@
 				47CD19512E9CF7DB00F0E361 /* AbstractCallParticipantView.m in Sources */,
 				47CD19522E9CF7DB00F0E361 /* AnnotationCell.m in Sources */,
 				47CD19532E9CF7DB00F0E361 /* PreviewThumbnailCell.m in Sources */,
-				47CD19542E9CF7DB00F0E361 /* AbstractBottomSheetView.m in Sources */,
 				47CD19552E9CF7DB00F0E361 /* VideoItemCell.m in Sources */,
 				47CD19562E9CF7DB00F0E361 /* AboutCell.m in Sources */,
 				47CD19572E9CF7DB00F0E361 /* TypingAvatarCell.m in Sources */,
