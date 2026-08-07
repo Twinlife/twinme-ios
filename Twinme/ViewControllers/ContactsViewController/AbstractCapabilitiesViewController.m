@@ -21,15 +21,15 @@
 
 #import "SettingsItemCell.h"
 #import "ScheduleCell.h"
-#import "SettingsSectionHeaderCell.h"
 #import "SettingsInformationCell.h"
 #import "SettingsValueItemCell.h"
 #import "PremiumFeatureConfirmView.h"
-#import "OnboardingConfirmView.h"
 #import "UIPremiumFeature.h"
 
 #import <TwinmeCommon/Design.h>
 #import <TwinmeCommon/EditContactCapabilitiesService.h>
+#import <TwinmeCommon/OnboardingConfirmView.h>
+#import <TwinmeCommon/SettingsSectionHeaderCell.h>
 #import <TwinmeCommon/TwinmeNavigationController.h>
 
 #import "SwitchView.h"
@@ -60,7 +60,6 @@ static NSString *SETTINGS_VALUE_CELL_IDENTIFIER = @"SettingsValueCellIdentifier"
 typedef enum {
     SECTION_CALL_PERMISSIONS,
     SECTION_CONTROL_CAMERA,
-    SECTION_DISCREET_RELATION,
     SECTION_PROGRAMMED_CALL,
     SECTION_COUNT
 } TLCapabilitiesSection;
@@ -68,7 +67,6 @@ typedef enum {
 typedef enum {
     TAG_ALLOW_AUDIO_CALL,
     TAG_ALLOW_VIDEO_CALL,
-    TAG_DISCREET_RELATION,
     TAG_ENABLE_SCHEDULE
 } TLCapabitiesTag;
 
@@ -90,7 +88,6 @@ typedef enum {
         _allowAudioCall = YES;
         _allowVideoCall = YES;
         _zoomable = TLVideoZoomableAsk;
-        _discreetRelation = NO;
         _scheduleEnable = NO;
         _canSave = NO;
     }
@@ -157,10 +154,7 @@ typedef enum {
             self.allowVideoCall = updatedSwitch.isOn;
             break;
             
-        case TAG_DISCREET_RELATION:
-            self.discreetRelation = updatedSwitch.isOn;
-            break;
-            
+
         case TAG_ENABLE_SCHEDULE:
             self.scheduleEnable = updatedSwitch.isOn;
             break;
@@ -212,7 +206,7 @@ typedef enum {
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
     DDLogVerbose(@"%@ tableView: %@ heightForHeaderInSection: %ld", LOG_TAG, tableView, (long)section);
     
-    if ((section == SECTION_DISCREET_RELATION || section == SECTION_CONTROL_CAMERA) && [self isGroupCapabilities]) {
+    if (section == SECTION_CONTROL_CAMERA && [self isGroupCapabilities]) {
         return CGFLOAT_MIN;
     }
     
@@ -228,7 +222,7 @@ typedef enum {
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     DDLogVerbose(@"%@ tableView: %@ numberOfRowsInSection: %ld", LOG_TAG, tableView, (long)section);
     
-    if ((section == SECTION_DISCREET_RELATION || section == SECTION_CONTROL_CAMERA) && [self isGroupCapabilities]) {
+    if (section == SECTION_CONTROL_CAMERA && [self isGroupCapabilities]) {
         return 0;
     } else if (section == SECTION_PROGRAMMED_CALL && self.scheduleEnable) {
         return 4;
@@ -260,10 +254,6 @@ typedef enum {
             hideSeparator = YES;
             break;
             
-        case SECTION_DISCREET_RELATION:
-            sectionName = TwinmeLocalizedString(@"privacy_view_title", nil);
-            break;
-            
         case SECTION_PROGRAMMED_CALL:
             sectionName = TwinmeLocalizedString(@"show_call_view_schedule_call", nil).uppercaseString;;
             hideSeparator = YES;
@@ -293,11 +283,7 @@ typedef enum {
             case SECTION_CONTROL_CAMERA:
                 text = TwinmeLocalizedString(@"contact_capabilities_view_camera_control_information", nil);
                 break;
-                
-            case SECTION_DISCREET_RELATION:
-                text = TwinmeLocalizedString(@"contact_capabilities_view_information_discreet_relation", nil);
-                break;
-                
+                                
             case SECTION_PROGRAMMED_CALL:
                 text = [self isGroupCapabilities] ? TwinmeLocalizedString(@"group_capabilities_view_information_programmed_call", nil) : TwinmeLocalizedString(@"contact_capabilities_view_information_programmed_call", nil);
                 break;
@@ -338,7 +324,8 @@ typedef enum {
             value = TwinmeLocalizedString(@"contact_capabilities_view_camera_control_allow", nil);
         }
         
-        [cell bindWithTitle:nil value:value backgroundColor:Design.WHITE_COLOR];
+        [cell bindWithTitle:nil value:value icon:nil backgroundColor:Design.WHITE_COLOR];
+
         return cell;
     } else {
         SettingsItemCell *cell = [tableView dequeueReusableCellWithIdentifier:SETTINGS_CELL_IDENTIFIER];
@@ -366,13 +353,6 @@ typedef enum {
                     title = [self isGroupCapabilities] ? TwinmeLocalizedString(@"group_capabilities_view_information_video_call", nil) : TwinmeLocalizedString(@"contact_capabilities_view_information_video_call", nil);
                 }
                 
-                break;
-                
-            case SECTION_DISCREET_RELATION:
-                switchState = self.discreetRelation;
-                hiddenSwitch = NO;
-                tag = TAG_DISCREET_RELATION;
-                title = TwinmeLocalizedString(@"contact_capabilities_view_discreet_relation", nil);
                 break;
                 
             case SECTION_PROGRAMMED_CALL:
@@ -700,7 +680,7 @@ typedef enum {
 
 - (BOOL)isInformationPath:(NSIndexPath *)indexPath {
     
-    return (indexPath.section == SECTION_DISCREET_RELATION && indexPath.row == 1) || ((indexPath.section == SECTION_CONTROL_CAMERA || indexPath.section == SECTION_PROGRAMMED_CALL) && indexPath.row == 0);
+    return ((indexPath.section == SECTION_CONTROL_CAMERA || indexPath.section == SECTION_PROGRAMMED_CALL) && indexPath.row == 0);
 }
 
 - (void)updateFont {

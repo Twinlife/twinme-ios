@@ -34,6 +34,7 @@
 #import "TypeCleanupViewController.h"
 #import "ConversationViewController.h"
 #import "ConversationFilesViewController.h"
+#import "ConversationNotificationsViewController.h"
 #import "SettingsGroupViewController.h"
 #import "GroupCapabilitiesViewController.h"
 
@@ -138,6 +139,17 @@ static int MAX_GROUP_MEMBER = 5;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *permissionsAccessoryViewTrailingConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *permissionsAccessoryViewHeightConstraint;
 @property (weak, nonatomic) IBOutlet UIImageView *permissionsAccessoryView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *notificationsViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet InsideBorderView *notificationsView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *notificationsImageViewLeadingConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *notificationsImageViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet UIImageView *notificationsImageView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *notificationsLabelLeadingConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *notificationsLabelTrailingConstraint;
+@property (weak, nonatomic) IBOutlet UILabel *notificationsLabel;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *notificationsAccessoryViewTrailingConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *notificationsAccessoryViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet UIImageView *notificationsAccessoryView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *callsSettingsViewHeightConstraint;
 @property (weak, nonatomic) IBOutlet InsideBorderView *callsSettingsView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *callsSettingsImageViewLeadingConstraint;
@@ -729,6 +741,26 @@ static int MAX_GROUP_MEMBER = 5;
     self.permissionsAccessoryView.tintColor = Design.ACCESSORY_COLOR;
     self.permissionsAccessoryView.image = [self.permissionsAccessoryView.image imageFlippedForRightToLeftLayoutDirection];
     
+    self.notificationsViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    
+    UITapGestureRecognizer *notificationsViewGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleNotificationsTapGesture:)];
+    [self.notificationsView addGestureRecognizer:notificationsViewGestureRecognizer];
+    
+    [self.notificationsView setBorder:Design.SEPARATOR_COLOR_GREY borderWidth:Design.SEPARATOR_HEIGHT width:Design.DISPLAY_WIDTH height:self.notificationsViewHeightConstraint.constant left:false right:false top:true bottom:true];
+    
+    self.notificationsImageViewLeadingConstraint.constant *= Design.HEIGHT_RATIO;
+    self.notificationsImageViewHeightConstraint.constant *= Design.WIDTH_RATIO;
+    self.notificationsImageView.tintColor = Design.UNSELECTED_TAB_COLOR;
+    
+    self.notificationsLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
+    self.notificationsLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
+    self.notificationsLabel.text = TwinmeLocalizedString(@"application_notifications", nil);
+        
+    self.notificationsAccessoryViewTrailingConstraint.constant *= Design.WIDTH_RATIO;
+    self.notificationsAccessoryViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    self.notificationsAccessoryView.tintColor = Design.ACCESSORY_COLOR;
+    self.notificationsAccessoryView.image = [self.notificationsAccessoryView.image imageFlippedForRightToLeftLayoutDirection];
+    
     self.callsSettingsViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     
     UITapGestureRecognizer *callsSettingsViewGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleCallsSettingsTapGesture:)];
@@ -1163,6 +1195,17 @@ static int MAX_GROUP_MEMBER = 5;
     }
 }
 
+- (void)handleNotificationsTapGesture:(UITapGestureRecognizer *)sender {
+    DDLogVerbose(@"%@ handleNotificationsTapGesture: %@", LOG_TAG, sender);
+    
+    if (self.group && sender.state == UIGestureRecognizerStateEnded) {
+        self.navigationController.navigationBarHidden = NO;
+        ConversationNotificationsViewController *conversationNotificationsViewController = (ConversationNotificationsViewController *)[[UIStoryboard storyboardWithName:@"Contact" bundle:nil] instantiateViewControllerWithIdentifier:@"ConversationNotificationsViewController"];
+        [conversationNotificationsViewController initWithOriginator:self.group];
+        [self.navigationController pushViewController:conversationNotificationsViewController animated:YES];
+    }
+}
+
 - (void)handleCallsSettingsTapGesture:(UITapGestureRecognizer *)sender {
     DDLogVerbose(@"%@ handleCallsSettingsTapGesture: %@", LOG_TAG, sender);
     
@@ -1313,15 +1356,10 @@ static int MAX_GROUP_MEMBER = 5;
         self.permissionsView.hidden = NO;
         self.callsSettingsView.hidden = NO;
     } else {
-        self.configurationTitleLabel.hidden = YES;
         self.permissionsView.hidden = YES;
         self.callsSettingsView.hidden = YES;
-        
-        self.configurationTitleLabelTopConstraint.constant = 0;
-        self.permissionsViewTopConstraint.constant = 0;
         self.permissionsViewHeightConstraint.constant = 0;
         self.callsSettingsViewHeightConstraint.constant = 0;
-        self.configurationTitleLabel.font = [UIFont systemFontOfSize:0];
     }
     
     [self updateInCall];
@@ -1352,6 +1390,7 @@ static int MAX_GROUP_MEMBER = 5;
     self.inviteLabel.font = Design.FONT_BOLD28;
     self.configurationTitleLabel.font = Design.FONT_BOLD26;
     self.permissionsLabel.font = Design.FONT_REGULAR34;
+    self.notificationsLabel.font = Design.FONT_REGULAR34;
     self.callsSettingsLabel.font = Design.FONT_REGULAR34;
     self.conversationsTitleLabel.font = Design.FONT_BOLD26;
     self.exportLabel.font = Design.FONT_REGULAR34;
@@ -1388,6 +1427,7 @@ static int MAX_GROUP_MEMBER = 5;
     self.inviteLabel.textColor = Design.MAIN_COLOR;
     self.configurationTitleLabel.textColor = Design.FONT_COLOR_DEFAULT;
     self.permissionsLabel.textColor = Design.FONT_COLOR_DEFAULT;
+    self.notificationsLabel.textColor = Design.FONT_COLOR_DEFAULT;
     self.callsSettingsLabel.textColor = Design.FONT_COLOR_DEFAULT;
     self.conversationsTitleLabel.textColor = Design.FONT_COLOR_DEFAULT;
     self.filesLabel.textColor = Design.FONT_COLOR_DEFAULT;

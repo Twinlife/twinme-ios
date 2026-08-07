@@ -216,6 +216,9 @@ static CGFloat DESIGN_NOTIFICATION_LINE_HEIGHT = 22.f;
     self.avatarViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     self.avatarViewLeadingConstraint.constant *= Design.WIDTH_RATIO;
     
+    self.avatarView.clipsToBounds = YES;
+    self.avatarView.layer.cornerRadius = Design.SPACE_RADIUS_RATIO * self.avatarViewHeightConstraint.constant;
+    
     self.notificationLabelWidthConstraint.constant *= Design.WIDTH_RATIO;
     self.notificationLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
     

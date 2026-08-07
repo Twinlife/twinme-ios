@@ -117,6 +117,9 @@ static UIColor *DESIGN_ACTION_BORDER_COLOR;
     
     self.logoViewTopConstraint.constant *= Design.HEIGHT_RATIO;
     self.logoViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    
+    self.logoView.clipsToBounds = YES;
+    self.logoView.layer.cornerRadius = Design.CONTAINER_RADIUS;
             
     self.invitationViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     self.invitationViewWidthConstraint.constant *= Design.WIDTH_RATIO;

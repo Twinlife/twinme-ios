@@ -30,12 +30,11 @@
 #import "UIViewController+ProgressIndicator.h"
 #import "ApplicationAssertion.h"
 #import "DefaultConfirmView.h"
-#import "OnboardingConfirmView.h"
 
 #import <TwinmeCommon/Design.h>
 #import <TwinmeCommon/EditIdentityService.h>
 #import <TwinmeCommon/MainViewController.h>
-
+#import <TwinmeCommon/OnboardingConfirmView.h>
 
 #if 0
 static const int ddLogLevel = DDLogLevelVerbose;

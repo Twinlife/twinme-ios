@@ -13,6 +13,9 @@
 
 #import <TwinmeCommon/MainViewController.h>
 
+#import <TwinmeCommon/AbstractBottomSheetView.h>
+#import "AbstractMenuView.h"
+
 #if 0
 static const int ddLogLevel = DDLogLevelVerbose;
 #else
@@ -71,6 +74,24 @@ static const int ddLogLevel = DDLogLevelWarning;
     DDLogVerbose(@"%@ hasLandscapeMode", LOG_TAG);
     
     return NO;
+}
+
+- (void)clearBottomSheetViews {
+    DDLogVerbose(@"%@ clearBottomSheetViews", LOG_TAG);
+    
+    [self removeFromView:self.navigationController.view];
+    [self removeFromView:self.tabBarController.view];
+    [self removeFromView:self.view];
+}
+
+- (void)removeFromView:(UIView *)view {
+    DDLogVerbose(@"%@ removeFromView: %@", LOG_TAG, view);
+    
+    for (UIView *subView in view.subviews) {
+        if ([subView isKindOfClass:[AbstractMenuView class]] || [subView isKindOfClass:[AbstractBottomSheetView class]]) {
+            [subView removeFromSuperview];
+        }
+    }
 }
 
 #pragma mark - Private methods

@@ -39,6 +39,8 @@ typedef enum {
     ItemTypePeerInvitation,
     ItemTypeLocation,
     ItemTypePeerLocation,
+    ItemTypeShareContact,
+    ItemTypePeerShareContact,
     ItemTypeName,
     ItemTypeCall,
     ItemTypePeerCall,

@@ -59,7 +59,6 @@
 #import "CallConversationView.h"
 #import "CallMapView.h"
 #import "PlayerStreamingAudioView.h"
-#import "OnboardingConfirmView.h"
 #import "DefaultConfirmView.h"
 #import "PremiumFeatureConfirmView.h"
 #import "UIPremiumFeature.h"
@@ -78,8 +77,11 @@
 #import <TwinmeCommon/CoachMark.h>
 #import <TwinmeCommon/KeyCheckSessionHandler.h>
 #import <TwinmeCommon/MainViewController.h>
+#import <TwinmeCommon/OnboardingConfirmView.h>
+#import <TwinmeCommon/SoundEffect.h>
 #import <TwinmeCommon/TwinmeNavigationController.h>
 #import <TwinmeCommon/UIViewController+Utils.h>
+#import "DefaultConfirmView.h"
 
 #if 0
 static const int ddLogLevel = DDLogLevelVerbose;
@@ -259,6 +261,7 @@ static NSInteger WARNING_FINE_LOCATION = 5;
 @property (nonatomic) BOOL getDescriptorsDone;
 @property (nonatomic) BOOL accessCameraGranted;
 @property (nonatomic) BOOL startPopMessageAnimation;
+@property (nonatomic) BOOL isActive;
 
 @property (nonatomic) NSMutableArray *callParticipantViews;
 @property (nonatomic) CallParticipantLocaleView *callParticipantLocaleView;
@@ -350,6 +353,7 @@ static NSInteger WARNING_FINE_LOCATION = 5;
         _getDescriptorsDone = NO;
         _hideMenuOnVideoCall = NO;
         _accessCameraGranted = NO;
+        _isActive = YES;
         _currentAudioDeviceType = AudioDeviceTypeNone;
         _callParticipantViewMode = CallParticipantViewModeSmallLocale;
         _callParticipantViews = [[NSMutableArray alloc]init];
@@ -379,6 +383,10 @@ static NSInteger WARNING_FINE_LOCATION = 5;
     if ([UIDevice currentDevice].proximityMonitoringEnabled) {
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(proximityChanged) name:UIDeviceProximityStateDidChangeNotification object:nil];
     }
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationWillResignActive:) name:UIApplicationWillResignActiveNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidBecomeActive:) name:UIApplicationDidBecomeActiveNotification object:nil];
+    
     [super viewDidLoad];
 }
 
@@ -387,10 +395,14 @@ static NSInteger WARNING_FINE_LOCATION = 5;
     
     [super viewDidLayoutSubviews];
     
+    if (!self.isActive) {
+        return;
+    }
+        
     [self.acceptButton updateGradientBounds];
     [self.declineButton updateGradientBounds];
     [self.cancelButton updateGradientBounds];
-    
+                
     [[NSNotificationCenter defaultCenter] postNotificationName:@"StatusBarOrientationDidChange" object:nil];
     [self setupFrameSize];
     
@@ -439,7 +451,7 @@ static NSInteger WARNING_FINE_LOCATION = 5;
 
 - (void)viewWillDisappear:(BOOL)animated {
     DDLogVerbose(@"%@ viewWillDisappear: %@", LOG_TAG, animated ? @"YES" : @"NO");
-    
+        
     self.callService.callParticipantDelegate = nil;
     [super viewWillDisappear:animated];
     
@@ -458,6 +470,8 @@ static NSInteger WARNING_FINE_LOCATION = 5;
         [self.chronometer invalidate];
         self.chronometer = nil;
     }
+    
+    [self.menuView updateMenuState:CallMenuViewStateDefault animated:NO];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -637,7 +651,7 @@ static NSInteger WARNING_FINE_LOCATION = 5;
 - (IBAction)speakerOn:(id)sender {
     DDLogVerbose(@"%@ speakerOn: %@", LOG_TAG, sender);
     
-    if (self.callService.isHeadsetAvailable) {
+    if ([self.callService getCurrentAudioDevice].isHeadsetAvailable) {
         // Find the button inside the view and simulate a touch event to display the route selection popup.
         for (UIView *v in self.routePickerView.subviews) {
             if ([v isKindOfClass:[UIButton class]]) {
@@ -666,7 +680,7 @@ static NSInteger WARNING_FINE_LOCATION = 5;
     
     [self startCertifyView:YES];
     [self.callService startKeyCheckWithLanguage:[NSLocale currentLocale]];
-    [self.menuView updateMenuState:CallMenuViewStateDefault];
+    [self.menuView updateMenuState:CallMenuViewStateDefault animated:YES];
 }
 
 - (IBAction)cameraControl:(id)sender {
@@ -719,8 +733,7 @@ static NSInteger WARNING_FINE_LOCATION = 5;
             }
         }
     }
-        
-    [self.menuView updateMenuState:CallMenuViewStateDefault];
+    [self.menuView updateMenuState:CallMenuViewStateDefault animated:YES];
 }
 
 - (IBAction)addCallParticipant:(id)sender {
@@ -768,7 +781,7 @@ static NSInteger WARNING_FINE_LOCATION = 5;
 - (IBAction)addStreamingAudio:(id)sender {
     DDLogVerbose(@"%@ addStreamingAudio", LOG_TAG);
     
-    [self.menuView updateMenuState:CallMenuViewStateDefault];
+    [self.menuView updateMenuState:CallMenuViewStateDefault animated:YES];
     
     if (!self.isGroupCallSubscribed) {
         [self showPremiumFeature:FeatureTypeStreaming];
@@ -792,7 +805,7 @@ static NSInteger WARNING_FINE_LOCATION = 5;
         [self.view addSubview:invitationCodeConfirmView];
         [invitationCodeConfirmView showConfirmView];
         
-        [self.menuView updateMenuState:CallMenuViewStateDefault];
+        [self.menuView updateMenuState:CallMenuViewStateDefault animated:YES];
     }];
 }
 
@@ -803,7 +816,7 @@ static NSInteger WARNING_FINE_LOCATION = 5;
         return;
     }
     
-    [self.menuView updateMenuState:CallMenuViewStateDefault];
+    [self.menuView updateMenuState:CallMenuViewStateDefault animated:YES];
     
     if (CALL_IS_PAUSED(self.callService.callStatus)) {
         [self.callService resumeCall];
@@ -829,7 +842,7 @@ static NSInteger WARNING_FINE_LOCATION = 5;
     [self.view bringSubviewToFront:self.conversationView];
     [self.view bringSubviewToFront:self.menuView];
     
-    [self.menuView updateMenuState:CallMenuViewStateDefault];
+    [self.menuView updateMenuState:CallMenuViewStateDefault animated:YES];
 }
 
 - (IBAction)openMap:(id)sender {
@@ -843,7 +856,7 @@ static NSInteger WARNING_FINE_LOCATION = 5;
     
     if ([self.callService isLocationStartShared]) {
         [self stopShareLocation];
-        [self.menuView updateMenuState:CallMenuViewStateDefault];
+        [self.menuView updateMenuState:CallMenuViewStateDefault animated:YES];
     } else {
         [self initMap:NO];
         if ([self.callService canDeviceShareLocation]) {
@@ -960,7 +973,7 @@ static NSInteger WARNING_FINE_LOCATION = 5;
     [self.view bringSubviewToFront:self.mapView];
     [self.view bringSubviewToFront:self.menuView];
     
-    [self.menuView updateMenuState:CallMenuViewStateDefault];
+    [self.menuView updateMenuState:CallMenuViewStateDefault animated:YES];
 }
 
 - (void)proximityChanged {
@@ -978,6 +991,19 @@ static NSInteger WARNING_FINE_LOCATION = 5;
             [self updateView:[self.callService callStatus]];
         }
     }
+}
+
+- (void)applicationWillResignActive:(NSNotification *)notification {
+    DDLogVerbose(@"%@ applicationWillResignActive", LOG_TAG);
+    
+    [self.menuView updateMenuState:CallMenuViewStateDefault animated:NO];
+    self.isActive = NO;
+}
+
+- (void)applicationDidBecomeActive:(NSNotification *)notification {
+    DDLogVerbose(@"%@ applicationDidBecomeActive", LOG_TAG);
+    
+    self.isActive = YES;
 }
 
 - (void)back {
@@ -1135,6 +1161,7 @@ static NSInteger WARNING_FINE_LOCATION = 5;
         
     switch (event) {
         case CallParticipantEventConnected:
+            [SoundEffect playSoundWithType:SoundEffectTypeJoinCall];
             [self updateView:[self.callService callStatus]];
             break;
             
@@ -1325,6 +1352,8 @@ static NSInteger WARNING_FINE_LOCATION = 5;
         self.unreadMessageView.hidden = NO;
         self.sharedLocationViewTrailingConstraint.constant = 0;
         
+        [SoundEffect playSoundWithType:SoundEffectTypeNewMessage];
+
         if (self.conversationView.hidden) {
             self.unreadMessageImageView.image = [UIImage imageNamed:@"CallNewMessageIcon"];
             [self hapticFeedBack:UIImpactFeedbackStyleMedium];
@@ -1384,9 +1413,9 @@ static NSInteger WARNING_FINE_LOCATION = 5;
     
     CallStatus callStatus = [self.callService callStatus];
     if (CALL_IS_ACTIVE(callStatus)) {
-        
-        if ([self.callService getCurrentAudioDevice]) {
-            self.currentAudioDeviceType = [self.callService getCurrentAudioDevice].type;
+        AudioDevice *currentAudioDevice = [self.callService getCurrentAudioDevice];
+        if (currentAudioDevice) {
+            self.currentAudioDeviceType = currentAudioDevice.type;
         }
         
         if (self.isCallReceiver) {
@@ -1451,11 +1480,12 @@ static NSInteger WARNING_FINE_LOCATION = 5;
 - (void)onMessageAudioSinkUpdate:(nonnull NSNotification *)notification {
     DDLogVerbose(@"%@ onMessageAudioSinkUpdate: %@", LOG_TAG, notification);
     
-    if ([self.callService getCurrentAudioDevice].type == self.currentAudioDeviceType) {
+    AudioDevice *currentAudioDevice = [self.callService getCurrentAudioDevice];
+    if (currentAudioDevice.type == self.currentAudioDeviceType) {
         return;
     }
-        
-    self.currentAudioDeviceType = [self.callService getCurrentAudioDevice].type;
+    
+    self.currentAudioDeviceType = currentAudioDevice.type;
     
     if (self.enableSpeakerAfterProximityUpdate) {
         self.enableSpeakerAfterProximityUpdate = NO;
@@ -2264,6 +2294,7 @@ static NSInteger WARNING_FINE_LOCATION = 5;
             self.unreadMessageView.hidden = NO;
             self.sharedLocationViewTrailingConstraint.constant = 0;
             self.unreadMessageImageView.image = [UIImage imageNamed:@"CallMessageIcon"];
+            [SoundEffect playSoundWithType:SoundEffectTypeSendMessage];
             [self.conversationView addDescriptor:descriptor isLocal:YES needsReload:YES name:self.originator.identityName];
         }
     }
@@ -3072,7 +3103,7 @@ static NSInteger WARNING_FINE_LOCATION = 5;
         }
     }
 
-    [self.menuView updateMenu:[self.callService callStatus] isAudioMuted:[self.callService isAudioMuted] isSpeakerOn:[self.callService isSpeakerOn] isCameraMuted:[self.callService isCameraMuted] isLocalVideoTrack:isLocalVideoTrack isVideoAllowed:isVideoAllowed isConversationAllowed:[self isMessageSupported] isStreamingAudioSupported:[self isStreamingSupported] isShareInvitationAllowed:self.isCallReceiver isShareLocationAllowed:[self isLocationSupported] isLocationShared:[self.callService isLocationStartShared] hideCertify:hideCertify isCertifyRunning:[self.callService isKeyCheckRunning] audioDevice:self.callService.getCurrentAudioDevice isHeadSetAvailable:self.callService.isHeadsetAvailable isCameraControlAllowed:isCameraControlAllowed isRemoteCameraControl:isRemoteCameraControl isWaitingForCameraControlAnswer:isWaitingForCameraControlAnswer];
+    [self.menuView updateMenu:[self.callService callStatus] isAudioMuted:[self.callService isAudioMuted] isSpeakerOn:[self.callService isSpeakerOn] isCameraMuted:[self.callService isCameraMuted] isLocalVideoTrack:isLocalVideoTrack isVideoAllowed:isVideoAllowed isConversationAllowed:[self isMessageSupported] isStreamingAudioSupported:[self isStreamingSupported] isShareInvitationAllowed:self.isCallReceiver isShareLocationAllowed:[self isLocationSupported] isLocationShared:[self.callService isLocationStartShared] hideCertify:hideCertify isCertifyRunning:[self.callService isKeyCheckRunning] audioDevice:[self.callService getCurrentAudioDevice] isCameraControlAllowed:isCameraControlAllowed isRemoteCameraControl:isRemoteCameraControl isWaitingForCameraControlAnswer:isWaitingForCameraControlAnswer];
 }
 
 - (BOOL)isMessageSupported {
@@ -3421,6 +3452,8 @@ static NSInteger WARNING_FINE_LOCATION = 5;
     
     [self.addParticipantImageView.layer removeAllAnimations];
     
+    [SoundEffect disposeSounds];
+    
     [[NSNotificationCenter defaultCenter] removeObserver:self name:CallEventMessageConnectionState object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:CallEventMessageTerminateCall object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:CallEventMessageVideoUpdate object:nil];
@@ -3439,6 +3472,9 @@ static NSInteger WARNING_FINE_LOCATION = 5;
     }
     [UIDevice currentDevice].proximityMonitoringEnabled = self.proximityMonitoringEnabled;
     
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationWillResignActiveNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationDidBecomeActiveNotification object:nil];
+
     BOOL isLandscape = NO;
     UIWindow *currentWindow = [self currentWindow];
     if (currentWindow) {
@@ -3569,6 +3605,7 @@ static NSInteger WARNING_FINE_LOCATION = 5;
             self.menuView.alpha = 0;
             self.headerViewTopConstraint.constant = -self.headerViewHeightConstraint.constant;
             self.menuViewBottomConstraint.constant = self.menuViewHeightConstraint.constant;
+            [self.menuView updateMenuState:CallMenuViewStateDefault animated:NO];
         }
         
         [self updateParticipantsViewConstraint];

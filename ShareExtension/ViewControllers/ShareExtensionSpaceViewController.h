@@ -18,6 +18,8 @@
 
 - (void)didSelectSpace:(TLSpace *)space;
 
+- (void)cancelSelectSpace;
+
 @end
 
 //

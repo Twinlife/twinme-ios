@@ -25,7 +25,7 @@ static int64_t STANDARD_RESOLUTION = 1600;
 static CGFloat MAX_COMPRESSION = 0.8f;
 
 @protocol AsyncLoader;
-
+@class TLContact;
 //
 // Protocol: DeleteActionDelegate
 //
@@ -35,6 +35,8 @@ static CGFloat MAX_COMPRESSION = 0.8f;
 @protocol DeleteActionDelegate <NSObject>
 
 - (void)deleteItem:(Item *)item;
+
+- (void)deleteExpiredItem:(Item *)item;
 
 @end
 
@@ -163,6 +165,20 @@ static CGFloat MAX_COMPRESSION = 0.8f;
 - (void)resultsPoll:(TLPollDescriptor *)pollDescriptor;
 
 - (void)selectChoice:(TLChoice *)choice pollDescriptor:(TLPollDescriptor *)pollDescriptor votes:(NSDictionary<NSUUID *, NSArray<TLChoice *> *> *)votes;
+
+@end
+
+//
+// Protocol: ShareContactActionDelegate
+//
+
+@class TLContactShareDescriptor;
+
+@protocol ShareContactActionDelegate <NSObject>
+
+- (void)openShareContactDescriptor:(TLContactShareDescriptor *)contactShareDescriptor;
+
+- (void)openTwincodeDescriptorFromShareContact:(TLTwincodeDescriptor *)twincodeDescriptor;
 
 @end
 
@@ -303,6 +319,8 @@ static CGFloat MAX_COMPRESSION = 0.8f;
 
 - (UIImage *)getContactAvatarForMap:(NSUUID *)peerTwincodeOutboundId;
 
+- (UIImage *)getIdentityAvatar;
+
 - (BOOL)isUserVote:(NSUUID *)peerTwincodeOutboundId;
 
 - (UIImage *)getPollAvatarWithUUID:(NSUUID *)peerTwincodeOutboundId;
@@ -332,5 +350,11 @@ static CGFloat MAX_COMPRESSION = 0.8f;
 - (void)openMenuSendOptions;
 
 - (void)resetVoiceRecorder;
+
+- (void)startFromShareExtension;
+
+- (void)initWiwhContactToShare:(nullable TLContact *)shareContact;
+
+- (void)updateTableView;
 
 @end

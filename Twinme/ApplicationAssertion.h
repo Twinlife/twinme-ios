@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2025 twinlife SA.
+ *  Copyright (c) 2025-2026 twinlife SA.
  *  SPDX-License-Identifier: AGPL-3.0-only
  *
  *  Contributors:
@@ -20,5 +20,6 @@
 +(nonnull TLAssertPoint *)INVALID_NAME;
 +(nonnull TLAssertPoint *)INVALID_DESCRIPTOR;
 +(nonnull TLAssertPoint *)PUSHKIT_LATE_REGISTER;
++(nonnull TLAssertPoint *)MIGRATION_ERROR;
 
 @end

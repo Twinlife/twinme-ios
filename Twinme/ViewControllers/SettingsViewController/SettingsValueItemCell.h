@@ -16,7 +16,7 @@
 
 - (void)bindWithTitle:(nonnull NSString *)title value:(nonnull NSString *)value hiddenAccessory:(BOOL)hiddenAccessory;
 
-- (void)bindWithTitle:(nullable NSString *)title value:(nonnull NSString *)value backgroundColor:(nonnull UIColor *)backgroundColor;
+- (void)bindWithTitle:(nullable NSString *)title value:(nonnull NSString *)value icon:(nullable UIImage *)icon backgroundColor:(nonnull UIColor *)backgroundColor;
 
 - (void)resetMargins;
 

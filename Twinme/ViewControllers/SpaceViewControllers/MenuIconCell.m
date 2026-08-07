@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2022 twinlife SA.
+ *  Copyright (c) 2022-2026 twinlife SA.
  *  SPDX-License-Identifier: AGPL-3.0-only
  *
  *  Contributors:
@@ -69,13 +69,13 @@ static const int ddLogLevel = DDLogLevelWarning;
     [super prepareForReuse];
 }
 
-- (void)bindWithTitle:(NSString *)title icon:(NSString *)icon hideSeparator:(BOOL)hideSeparator {
+- (void)bindWithTitle:(NSString *)title icon:(NSString *)icon iconColor:(UIColor *)iconColor hideSeparator:(BOOL)hideSeparator {
     DDLogVerbose(@"%@ bindWithTitle: %@ icon: %@ hideSeparator: %d", LOG_TAG, title, icon, hideSeparator);
         
     self.titleLabel.text = title;
     self.iconView.image = [UIImage imageNamed:icon];
     self.iconView.image = [self.iconView.image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-    self.iconView.tintColor = Design.BLACK_COLOR;
+    self.iconView.tintColor = iconColor;
     self.separatorView.hidden = hideSeparator;
 }
 

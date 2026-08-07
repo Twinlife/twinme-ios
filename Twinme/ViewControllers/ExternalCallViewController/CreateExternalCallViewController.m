@@ -31,7 +31,6 @@
 #import "MenuSelectValueView.h"
 #import "DeviceAuthorization.h"
 #import "OnboardingDetailView.h"
-#import "SettingsSectionHeaderCell.h"
 #import "SettingsValueItemCell.h"
 #import "ScheduleCell.h"
 #import "SettingsItemCell.h"
@@ -49,6 +48,7 @@
 #import <TwinmeCommon/CallReceiverService.h>
 #import <TwinmeCommon/Design.h>
 #import <TwinmeCommon/MainViewController.h>
+#import <TwinmeCommon/SettingsSectionHeaderCell.h>
 #import <TwinmeCommon/TwinmeNavigationController.h>
 
 
@@ -354,7 +354,7 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
             } else {
                 value = [UIConfigExternalCall getCallCapabilities:self.configExternalCall.allowVoiceCall allowVideo:self.configExternalCall.allowVideoCall allowGroup:self.configExternalCall.allowGroupCall];
             }
-            [cell bindWithTitle:[configItem getTitle] value:value backgroundColor:Design.WHITE_COLOR];
+            [cell bindWithTitle:[configItem getTitle] value:value  icon:nil backgroundColor:Design.WHITE_COLOR];
             
             return cell;
         }

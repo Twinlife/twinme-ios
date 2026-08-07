@@ -1342,30 +1342,38 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
             self.shareContentURL = url;
             return;
         }
-        [self handleExtensionShareContentURL:url];
+        [self handleExtensionShareContentURL:url startPreview:NO];
+    } else if (url && [PREVIEW_ACTION isEqualToString:url.host]) {
+        // Defer opening the shared URL until the main view is fully initialized.
+        if (!self.isInitialized) {
+            self.shareContentURL = url;
+            return;
+        }
+        [self handleExtensionShareContentURL:url startPreview:YES];
     } else if (url && [MIGRATION_ACTION isEqualToString:url.host]) {
         AccountMigrationScannerViewController *accountMigrationScannerViewController = (AccountMigrationScannerViewController *)[[UIStoryboard storyboardWithName:@"iPhone" bundle:nil] instantiateViewControllerWithIdentifier:@"AccountMigrationScannerViewController"];
         accountMigrationScannerViewController.fromCurrentDevice = YES;
         [self.selectedViewController pushViewController:accountMigrationScannerViewController animated:YES];
     } else if (url) {
-        id<TLOriginator> subject = [self.twinmeContext findSubjectWithHandle:[url absoluteString]];
-        if (subject) {
-            UIViewController *topViewController = self.navigationController.topViewController;
-            
-            if (topViewController.presentedViewController) {
-                [topViewController.presentedViewController dismissViewControllerAnimated:NO completion:^{
-                }];
-            }
+        [self.mainService findSubjectWithHandle:[url absoluteString] withBlock:^(TLBaseServiceErrorCode errorCode, id<TLOriginator> subject) {
+            if (subject) {
+                UIViewController *topViewController = self.navigationController.topViewController;
+                
+                if (topViewController.presentedViewController) {
+                    [topViewController.presentedViewController dismissViewControllerAnimated:NO completion:^{
+                    }];
+                }
 
-            [ConversationsViewController showViewWithSubject:subject navigationController:self.selectedViewController];
-            return;
-        }
-        [self.mainService parseUriWithUri:url withBlock:^(TLBaseServiceErrorCode errorCode, TLTwincodeURI *uri) {
-            if (errorCode != TLBaseServiceErrorCodeSuccess) {
-                [self incorrectQRCode:errorCode];
+                [ConversationsViewController showViewWithSubject:subject navigationController:self.selectedViewController];
                 return;
             }
-            [self didCaptureUrl:url twincodeUri:uri];
+            [self.mainService parseUriWithUri:url withBlock:^(TLBaseServiceErrorCode errorCode, TLTwincodeURI *uri) {
+                if (errorCode != TLBaseServiceErrorCodeSuccess) {
+                    [self incorrectQRCode:errorCode];
+                    return;
+                }
+                [self didCaptureUrl:url twincodeUri:uri];
+            }];
         }];
     }
 }
@@ -1373,9 +1381,7 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
 - (void)handleDeferredCall {
     DDLogVerbose(@"%@ handleDeferredCall", LOG_TAG);
     
-    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(DELAY_DEFERRED_CALL * NSEC_PER_SEC));
-    dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-        id<TLOriginator> subject = [self.twinmeContext findSubjectWithHandle:self.inPersonToCall.personHandle.value];
+    [self.mainService findSubjectWithHandle:self.inPersonToCall.personHandle.value withBlock:^(TLBaseServiceErrorCode errorCode, id<TLOriginator> subject) {
         if (subject) {
 
             // If there is an active call and it corresponds to the INStartVideoCallIntent, this means
@@ -1386,6 +1392,7 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
                 if (self.startVideoCall) {
                     [delegate.callService setCameraMute:NO];
                 }
+                self.inPersonToCall = nil;
                 return;
             }
             
@@ -1412,10 +1419,9 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
                 [callViewController startCallWithOriginator:subject videoBell:NO isVideoCall:self.startVideoCall isCertifyCall:NO];
                 [self.selectedViewController pushViewController:callViewController animated:YES];
             }
-            
-            self.inPersonToCall = nil;
         }
-    });
+        self.inPersonToCall = nil;
+    }];
 }
 
 - (void)handleShareContentURL {
@@ -1431,7 +1437,7 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
             [menuBackupView openMenu:shareContentURL];
             [self.view addSubview:menuBackupView];
         } else if (shareContentURL && [CONVERSATION_ACTION isEqualToString:shareContentURL.host]) {
-            [self handleExtensionShareContentURL:shareContentURL];
+            [self handleExtensionShareContentURL:shareContentURL startPreview:NO];
         } else {
             ShareViewController *shareViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"ShareViewController"];
             shareViewController.fileURL = shareContentURL;
@@ -1441,7 +1447,7 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
     }
 }
 
-- (BOOL)handleExtensionShareContentURL:(NSURL *)url {
+- (BOOL)handleExtensionShareContentURL:(NSURL *)url startPreview:(BOOL)startPreview {
     DDLogVerbose(@"%@ handleExtensionShareContentURL %@", LOG_TAG, url);
     
     NSArray *queryItems = [[[NSURLComponents alloc] initWithURL:url resolvingAgainstBaseURL:false] queryItems];
@@ -1469,6 +1475,11 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
     UIViewController *topViewController = [UIViewController topViewController];
     if ([topViewController isKindOfClass:[ConversationViewController class]]) {
         ConversationViewController *viewController = (ConversationViewController *)topViewController;
+        
+        if (startPreview) {
+            [viewController startFromShareExtension];
+        }
+        
         id<TLOriginator> originator = [viewController getOriginator];
         if ([originator.uuid isEqual:contactId]) {
             return NO;
@@ -1482,6 +1493,9 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
                 ConversationViewController *conversationViewController = (ConversationViewController *)[self.storyboard instantiateViewControllerWithIdentifier:@"ConversationViewController"];
                 
                 [conversationViewController initWithContact:group];
+                if (startPreview) {
+                    [conversationViewController startFromShareExtension];
+                }
                 [selectedNavigationController pushViewController:conversationViewController animated:YES];
             });
         }];
@@ -1492,6 +1506,11 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
                 ConversationViewController *conversationViewController = (ConversationViewController *)[self.storyboard instantiateViewControllerWithIdentifier:@"ConversationViewController"];
                 
                 [conversationViewController initWithContact:contact];
+                
+                if (startPreview) {
+                    [conversationViewController startFromShareExtension];
+                }
+                
                 [selectedNavigationController pushViewController:conversationViewController animated:YES];
             });
         }];

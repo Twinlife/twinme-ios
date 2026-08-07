@@ -20,7 +20,6 @@
 #import "MessageSettingsViewController.h"
 
 #import "SettingsInformationCell.h"
-#import "SettingsSectionHeaderCell.h"
 #import "ExportActionCell.h"
 #import "ExportContentCell.h"
 #import "SettingsItemCell.h"
@@ -34,10 +33,11 @@
 #import "SwitchView.h"
 
 #import <TwinmeCommon/CleanUpService.h>
+#import <TwinmeCommon/Design.h>
+#import <TwinmeCommon/SettingsSectionHeaderCell.h>
 
 #import <Utils/NSString+Utils.h>
 
-#import <TwinmeCommon/Design.h>
 #import "UIView+Toast.h"
 
 #import "UIStorage.h"

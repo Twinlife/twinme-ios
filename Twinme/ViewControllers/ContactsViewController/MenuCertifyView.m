@@ -115,7 +115,7 @@ static NSString *MENU_ICON_CELL_IDENTIFIER = @"MenuIconCellIdentifier";
         hideSeparator = YES;
     }
     
-    [cell bindWithTitle:title icon:icon hideSeparator:hideSeparator];
+    [cell bindWithTitle:title icon:icon iconColor:Design.BLACK_COLOR hideSeparator:hideSeparator];
         
     return cell;
 }

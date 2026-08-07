@@ -20,7 +20,6 @@
 
 #import <TwinmeCommon/SpaceAppearanceService.h>
 
-#import "SettingsSectionHeaderCell.h"
 #import "AppearanceColorCell.h"
 #import "PreviewAppearanceCell.h"
 #import "SubSectionCell.h"
@@ -34,6 +33,9 @@
 
 #import <Utils/NSString+Utils.h>
 #import "UIColor+Hex.h"
+
+#import <TwinmeCommon/SettingsSectionHeaderCell.h>
+
 
 #if 0
 static const int ddLogLevel = DDLogLevelVerbose;

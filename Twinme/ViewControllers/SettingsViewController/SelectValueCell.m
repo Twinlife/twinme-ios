@@ -18,6 +18,11 @@ static const int ddLogLevel = DDLogLevelVerbose;
 static const int ddLogLevel = DDLogLevelWarning;
 #endif
 
+#define CHECKMARK_SIZE 44.0
+#define CHECKMARK_MARGIN 32.0
+#define VALUE_MARGIN 32.0
+#define VALUE_VERTICAL_MARGIN 16
+
 //
 // Interface: SalectValueCell
 //
@@ -57,16 +62,16 @@ static const int ddLogLevel = DDLogLevelWarning;
     self.selectionStyle = UITableViewCellSelectionStyleNone;
     self.contentView.backgroundColor = [UIColor clearColor];
     
-    self.valueLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
-    self.valueLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
-    self.valueLabelTopConstraint.constant *= Design.HEIGHT_RATIO;
-    self.valueLabelBottomConstraint.constant *= Design.HEIGHT_RATIO;
+    self.valueLabelLeadingConstraint.constant = VALUE_MARGIN * Design.WIDTH_RATIO;
+    self.valueLabelTrailingConstraint.constant = VALUE_MARGIN * Design.WIDTH_RATIO;
+    self.valueLabelTopConstraint.constant = VALUE_VERTICAL_MARGIN * Design.HEIGHT_RATIO;
+    self.valueLabelBottomConstraint.constant = VALUE_VERTICAL_MARGIN * Design.HEIGHT_RATIO;
     
     self.valueLabel.textColor = Design.FONT_COLOR_DEFAULT;
     self.valueLabel.font = Design.FONT_REGULAR34;
     
-    self.checkMarkViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
-    self.checkMarkViewTrailingConstraint.constant *= Design.WIDTH_RATIO;
+    self.checkMarkViewHeightConstraint.constant = CHECKMARK_SIZE * Design.HEIGHT_RATIO;
+    self.checkMarkViewTrailingConstraint.constant = CHECKMARK_MARGIN * Design.WIDTH_RATIO;
     
     CALayer *checkMarkViewLayer = self.checkMarkView.layer;
     checkMarkViewLayer.cornerRadius = self.checkMarkViewHeightConstraint.constant * 0.5;
@@ -93,7 +98,7 @@ static const int ddLogLevel = DDLogLevelWarning;
     
     NSMutableAttributedString *valueAttributedString = [[NSMutableAttributedString alloc] initWithString:title attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_REGULAR34, NSFontAttributeName, titleColor, NSForegroundColorAttributeName, nil]];
     
-    if (![subtitle isEqualToString:@""]) {
+    if (subtitle && ![subtitle isEqualToString:@""]) {
         [valueAttributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:@"\n"]];
         [valueAttributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:subtitle attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_REGULAR30, NSFontAttributeName, Design.FONT_COLOR_GREY, NSForegroundColorAttributeName, nil]]];
     }
@@ -131,6 +136,16 @@ static const int ddLogLevel = DDLogLevelWarning;
     
     self.checkMarkImageView.tintColor = Design.MAIN_COLOR;
 
+}
+
++ (CGFloat)minMargin {
+    
+    return ceil(VALUE_VERTICAL_MARGIN * Design.HEIGHT_RATIO * 2);
+}
+
++ (CGFloat)maxValueWidth {
+        
+    return round(Design.DISPLAY_WIDTH - (2 * VALUE_MARGIN * Design.WIDTH_RATIO) - (CHECKMARK_SIZE * Design.HEIGHT_RATIO) - (CHECKMARK_MARGIN * Design.WIDTH_RATIO));
 }
 
 @end

@@ -77,6 +77,9 @@ static const int ddLogLevel = DDLogLevelWarning;
     self.iconView.backgroundColor = Design.WHITE_COLOR;
     
     self.iconViewImageHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    
+    self.iconImageView.clipsToBounds = YES;
+    self.iconImageView.layer.cornerRadius = Design.CONTAINER_RADIUS;
         
     self.infoLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
     

@@ -157,6 +157,7 @@ static const int ddLogLevel = DDLogLevelWarning;
 
 - (void)updateColor {
     
+    self.backgroundColor = Design.WHITE_COLOR;
     self.separatorView.backgroundColor = Design.SEPARATOR_COLOR_GREY;
     self.dateInfoLabel.textColor = Design.FONT_COLOR_DEFAULT;
 }

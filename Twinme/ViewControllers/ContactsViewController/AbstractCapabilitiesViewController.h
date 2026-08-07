@@ -17,7 +17,6 @@
 @property (nonatomic) BOOL allowAudioCall;
 @property (nonatomic) BOOL allowVideoCall;
 @property (nonatomic) TLVideoZoomable zoomable;
-@property (nonatomic) BOOL discreetRelation;
 @property (nonatomic) BOOL scheduleEnable;
 @property (nonatomic) BOOL canSave;
 

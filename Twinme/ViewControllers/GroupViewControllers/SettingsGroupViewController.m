@@ -15,10 +15,10 @@
 #import "MessageSettingsViewController.h"
 #import "SettingsGroupViewController.h"
 #import "SettingsItemCell.h"
-#import "SettingsSectionHeaderCell.h"
 #import "SettingsInformationCell.h"
 
 #import <TwinmeCommon/Design.h>
+#import <TwinmeCommon/SettingsSectionHeaderCell.h>
 
 #import "SwitchView.h"
 

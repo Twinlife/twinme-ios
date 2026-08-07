@@ -111,6 +111,7 @@ static const int ddLogLevel = DDLogLevelWarning;
 - (void)updateColor {
     DDLogVerbose(@"%@ updateColor", LOG_TAG);
     
+    self.contentView.backgroundColor = Design.WHITE_COLOR;
     self.fileInfoLabel.textColor = Design.FONT_COLOR_DEFAULT;
     self.iconView.tintColor = Design.BLACK_COLOR;
 }

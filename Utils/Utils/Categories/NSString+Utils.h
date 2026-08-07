@@ -40,6 +40,8 @@
 
 + (nonnull NSString *)firstCharacter:(nonnull NSString *)string;
 
++ (nonnull NSString *)formatTimeout:(int64_t)timeout;
+
 + (nonnull NSString *)capitalizeFirstCharacter:(nonnull NSString *)string;
 
 + (nonnull NSString *)convertEmoji:(nonnull NSString *)string;

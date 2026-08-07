@@ -49,7 +49,6 @@ static NSString *WELCOME_CELL_IDENTIFIER = @"WelcomeCellIdentifier";
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *slideMarkViewWidthConstraint;
 @property (weak, nonatomic) IBOutlet UIView *slideMarkView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *logoViewTopConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *logoViewWidthConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *logoViewHeightConstraint;
 @property (weak, nonatomic) IBOutlet UIImageView *logoView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *welcomeCollectionViewTopConstraint;
@@ -203,9 +202,11 @@ static NSString *WELCOME_CELL_IDENTIFIER = @"WelcomeCellIdentifier";
     self.slideMarkView.layer.cornerRadius = self.slideMarkViewHeightConstraint.constant * 0.5;
     self.slideMarkView.clipsToBounds = YES;
     
-    self.logoViewWidthConstraint.constant *= Design.WIDTH_RATIO;
     self.logoViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     self.logoViewTopConstraint.constant *= Design.HEIGHT_RATIO;
+    
+    self.logoView.clipsToBounds = YES;
+    self.logoView.layer.cornerRadius = Design.SPACE_RADIUS_RATIO * self.logoViewHeightConstraint.constant;
     
     self.welcomeCollectionViewTopConstraint.constant *= Design.HEIGHT_RATIO;
     self.welcomeCollectionViewBottomConstraint.constant *= Design.HEIGHT_RATIO;

@@ -209,7 +209,9 @@ static int BOLD_VALUE = -2;
     int64_t oneWeek = oneDay * 7;
     int64_t oneMonth = oneDay * 30;
     
-    if (timeout == 0) {
+    if (timeout == -1) {
+        return TwinmeLocalizedString(@"contact_capabilities_view_camera_control_allow", nil);
+    } else if (timeout == 0) {
         return TwinmeLocalizedString(@"privacy_view_lock_screen_timeout_instant", nil);
     } else if (timeout < oneMinute) {
         return [NSString stringWithFormat:TwinmeLocalizedString(@"application_timeout_seconds", nil),[NSString convertWithLocale:[NSString stringWithFormat:@"%lld",timeout]]];

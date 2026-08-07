@@ -26,9 +26,9 @@
 #import <TwinmeCommon/CreateProfileService.h>
 #import <TwinmeCommon/Design.h>
 #import <TwinmeCommon/MainViewController.h>
+#import <TwinmeCommon/OnboardingConfirmView.h>
 #import <TwinmeCommon/TwinmeNavigationController.h>
 
-#import "OnboardingConfirmView.h"
 #import "MenuPhotoView.h"
 #import "DefaultConfirmView.h"
 

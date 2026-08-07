@@ -19,7 +19,10 @@ typedef enum {
     MenuSelectValueTypeTimeoutLockScreen,
     MenuSelectValueTypeCallZoomable,
     MenuSelectValueTypeExternalCallExpiration,
-    MenuSelectValueTypeExternalCallType
+    MenuSelectValueTypeExternalCallType,
+    MenuSelectValueTypeSecurityLevel,
+    MenuSelectValueTypeSilentModeDuration,
+    MenuSelectValueTypeShareInvitation
 } MenuSelectValueType;
 
 //

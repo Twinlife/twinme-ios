@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2017-2024 twinlife SA.
+ *  Copyright (c) 2017-2026 twinlife SA.
  *  SPDX-License-Identifier: AGPL-3.0-only
  *
  *  Contributors:
@@ -49,6 +49,7 @@ static const int GET_SPACE_NOTIFICATIONS = 1 << 21;
 static const int GET_SPACE_NOTIFICATIONS_DONE = 1 << 22;
 static const int GET_TRANSFER_CALL = 1 << 12;
 static const int GET_TRANSFER_CALL_DONE = 1 << 13;
+static const int FIND_SUBJECT = 1 << 16;
 static const int SET_LEVEL = 1 << 23;
 static const int CREATE_LEVEL = 1 << 24;
 static const int DELETE_LEVEL = 1 << 25;
@@ -64,6 +65,8 @@ static const int DELETE_LEVEL = 1 << 25;
 
 @property (nonatomic) int work;
 @property (nonatomic, nullable) TLSpace *space;
+@property (nonatomic, nullable) NSString *handle;
+@property (nonatomic, nullable) void (^onFindSubject) (TLBaseServiceErrorCode errorCode, id<TLOriginator> subject);
 
 @property (nonatomic, nonnull) NSString *productId;
 @property (nonatomic, nonnull) NSString *purchaseToken;
@@ -358,6 +361,17 @@ static const int DELETE_LEVEL = 1 << 25;
     }
 }
 
+- (void)findSubjectWithHandle:(nonnull NSString *)handle withBlock:(nonnull void (^)(TLBaseServiceErrorCode errorCode, id<TLOriginator> _Nullable subject))block {
+    DDLogError(@"%@ findSubjectWithHandle: %@ isReady: %d", LOG_TAG, handle, self.isTwinlifeReady);
+
+    // We have to wait for the SQLCipher database to be opened again (that is wait for the isTwinlifeReady).
+    self.handle = handle;
+    self.work = FIND_SUBJECT;
+    self.state &= ~(FIND_SUBJECT);
+    self.onFindSubject = block;
+    [self startOperation];
+}
+
 - (void)createLevelWithName:(NSString *)name {
     DDLogVerbose(@"%@ createLevelWithName: %@", LOG_TAG, name);
     
@@ -565,6 +579,20 @@ static const int DELETE_LEVEL = 1 << 25;
         }
     }
     
+    // Resolve the subject from the handle asynchronously because we have to wait for the SQLcipher database to be opened.
+    if (self.handle && (self.work & FIND_SUBJECT) != 0) {
+        if ((self.state & FIND_SUBJECT) == 0) {
+            self.state |= FIND_SUBJECT;
+            id<TLOriginator> subject = [self.twinmeContext findSubjectWithHandle:self.handle];
+
+            dispatch_async(dispatch_get_main_queue(), ^{
+                self.onFindSubject(subject ? TLBaseServiceErrorCodeSuccess : TLBaseServiceErrorCodeItemNotFound, subject);
+                self.onFindSubject = nil;
+                self.handle = nil;
+            });
+        }
+    }
+
     //
     // Last Step
     //

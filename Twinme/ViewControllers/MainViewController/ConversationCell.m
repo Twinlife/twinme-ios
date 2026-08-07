@@ -74,6 +74,9 @@ static const CGFloat DESIGN_NAME_TRAILING = 20;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *certifiedRelationImageViewHeightConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *certifiedRelationImageViewLeadingConstraint;
 @property (weak, nonatomic) IBOutlet UIImageView *certifiedRelationImageView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *iconViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *iconViewTrailingConstraint;
+@property (weak, nonatomic) IBOutlet UIImageView *iconView;
 
 @property (nonatomic) UIConversation *uiConversation;
 
@@ -94,11 +97,6 @@ static const CGFloat DESIGN_NAME_TRAILING = 20;
     UILongPressGestureRecognizer *longPressGesture = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(onLongPressInsideContent:)];
     longPressGesture.delegate = self;
     [self addGestureRecognizer:longPressGesture];
-    
-    UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onTapInsideContent:)];
-    tapGesture.delegate = self;
-    [self addGestureRecognizer:tapGesture];
-    [tapGesture requireGestureRecognizerToFail:longPressGesture];
     
     self.avatarViewHeightConstraint.constant = Design.AVATAR_HEIGHT;
     self.avatarViewLeadingConstraint.constant = Design.AVATAR_LEADING;
@@ -184,6 +182,11 @@ static const CGFloat DESIGN_NAME_TRAILING = 20;
     
     self.certifiedRelationImageViewHeightConstraint.constant = Design.CERTIFIED_HEIGHT;
     self.certifiedRelationImageViewLeadingConstraint.constant *= Design.WIDTH_RATIO;
+    
+    self.iconViewTrailingConstraint.constant *= Design.WIDTH_RATIO;
+    self.iconViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    self.iconView.tintColor = [UIColor colorWithRed:115./255. green:138./255. blue:161./255. alpha:1.0];
+    self.iconView.hidden = YES;
 }
 
 - (void)prepareForReuse {
@@ -305,12 +308,19 @@ static const CGFloat DESIGN_NAME_TRAILING = 20;
         }
     }
     
+    if (uiConversation.isSilentMode) {
+        self.messageLabelTrailingConstraint.constant = (self.iconViewTrailingConstraint.constant * 2) + self.iconViewHeightConstraint.constant;
+    } else {
+        self.messageLabelTrailingConstraint.constant = self.iconViewTrailingConstraint.constant;
+    }
+    
     self.nameLabelTopConstraint.constant = topMargin;
     self.nameLabel.text = uiConversation.uiContact.name;
     self.messageLabel.attributedText = [uiConversation getLastMessage];
     self.dateLabel.text = [uiConversation getLastMessageDate];
     
     self.unreadView.hidden = ![uiConversation isLastDescriptorUnread];
+    self.iconView.hidden = ![uiConversation isSilentMode];
     self.separatorView.hidden = hideSeparator;
     
     [self updateFont];
@@ -322,13 +332,6 @@ static const CGFloat DESIGN_NAME_TRAILING = 20;
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
     
     return YES;
-}
-
-- (void)onTapInsideContent:(UITapGestureRecognizer *)tapGesture {
-    
-    if ([self.conversationsActionDelegate respondsToSelector:@selector(didTapConversation:)]) {
-        [self.conversationsActionDelegate didTapConversation:self.uiConversation];
-    }
 }
 
 - (void)onLongPressInsideContent:(UILongPressGestureRecognizer *)longPressGesture {

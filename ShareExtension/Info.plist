@@ -20,6 +20,8 @@
 	<string>$(VERSION_NUMBER)</string>
 	<key>CFBundleVersion</key>
 	<string>$(BUILD_NUMBER)</string>
+	<key>UIDesignRequiresCompatibility</key>
+	<true/>
 	<key>NSExtension</key>
 	<dict>
 		<key>NSExtensionAttributes</key>

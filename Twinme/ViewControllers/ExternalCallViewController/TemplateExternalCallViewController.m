@@ -18,17 +18,17 @@
 #import "CreateExternalCallViewController.h"
 
 #import "TemplateExternalCallCell.h"
-#import "SettingsSectionHeaderCell.h"
 
 #import "UITemplateExternalCall.h"
 
 #import <TwinmeCommon/AbstractTwinmeService.h>
 #import <TwinmeCommon/Design.h>
 #import <TwinmeCommon/MainViewController.h>
+#import <TwinmeCommon/SettingsSectionHeaderCell.h>
 #import <TwinmeCommon/TwinmeNavigationController.h>
 
 
-#import "OnboardingConfirmView.h"
+#import <TwinmeCommon/OnboardingConfirmView.h>
 
 #if 0
 static const int ddLogLevel = DDLogLevelVerbose;

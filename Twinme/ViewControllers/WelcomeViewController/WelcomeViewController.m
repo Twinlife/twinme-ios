@@ -21,9 +21,13 @@
 #import "UIWelcome.h"
 
 #import <TwinmeCommon/Design.h>
+#import <TwinmeCommon/MainViewController.h>
+#import <TwinmeCommon/TwinmeNavigationController.h>
+
 #import "TTTAttributedLabel.h"
 #import "WebViewController.h"
 #import "SpaceSetting.h"
+#import "AccountMigrationScannerViewController.h"
 
 #if 0
 static const int ddLogLevel = DDLogLevelVerbose;
@@ -46,9 +50,32 @@ static const int WELCOME_STEP_COUNT = 3;
 
 @interface WelcomeViewController () <TTTAttributedLabelDelegate, UICollectionViewDataSource, UICollectionViewDelegate, UIScrollViewDelegate>
 
+@property (weak, nonatomic) IBOutlet UIImageView *backgroundImageView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *splashScreenLogoViewWidthConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *splashScreenLogoViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet UIView *splashScreenLogoView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *splashScreenLogoImageWidthConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *splashScreenLogoImageHeightConstraint;
+@property (weak, nonatomic) IBOutlet UIImageView *splashScreenLogoImage;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *splashScreenTwinmeImageWidthConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *splashScreenTwinmeImageHeightConstraint;
+@property (weak, nonatomic) IBOutlet UIImageView *splashScreenTwinmeImage;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *startViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *startViewWidthConstraint;
+@property (weak, nonatomic) IBOutlet UIView *startView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *startLabelWidthConstraint;
+@property (weak, nonatomic) IBOutlet UILabel *startLabel;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *restoreViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *restoreViewBottomConstraint;
+@property (weak, nonatomic) IBOutlet UIView *restoreView;
+@property (weak, nonatomic) IBOutlet UILabel *restoreLabel;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *messageLabelLeadingConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *messageLabelTrailingConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *messageLabelTopConstraint;
+@property (weak, nonatomic) IBOutlet UILabel *messageLabel;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *logoViewTopConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *logoViewWidthConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *logoViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet UIView *logoView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *welcomeCollectionViewTopConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *welcomeCollectionViewHeightConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *welcomeCollectionViewBottomConstraint;
@@ -239,15 +266,75 @@ static const int WELCOME_STEP_COUNT = 3;
     
     self.view.backgroundColor = Design.WHITE_COLOR;
     
-    self.logoViewWidthConstraint.constant *= Design.WIDTH_RATIO;
+    self.splashScreenLogoViewWidthConstraint.constant *= Design.WIDTH_RATIO;
+    self.splashScreenLogoViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    
+    self.splashScreenLogoImageWidthConstraint.constant *= Design.WIDTH_RATIO;
+    self.splashScreenLogoImageHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    self.splashScreenLogoImage.alpha = 1.0;
+        
+    self.splashScreenTwinmeImage.backgroundColor = [UIColor clearColor];
+    self.splashScreenTwinmeImage.alpha = 1.0;
+    
+    self.splashScreenTwinmeImageWidthConstraint.constant *= Design.WIDTH_RATIO;
+    self.splashScreenTwinmeImageHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    
     self.logoViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     self.logoViewTopConstraint.constant *= Design.HEIGHT_RATIO;
+    self.logoView.hidden = YES;
+    
+    self.logoView.clipsToBounds = YES;
+    self.logoView.layer.cornerRadius = Design.SPACE_RADIUS_RATIO * self.logoViewHeightConstraint.constant;
+
+    self.messageLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
+    self.messageLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
+    self.messageLabelTopConstraint.constant *= Design.HEIGHT_RATIO;
+    
+    self.messageLabel.font = Design.FONT_REGULAR32;
+    self.messageLabel.textColor = [UIColor whiteColor];
+    self.messageLabel.text = TwinmeLocalizedString(@"add_contact_view_share_message_part_2", nil);
+    
+    self.startViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    self.startViewWidthConstraint.constant *= Design.WIDTH_RATIO;
+    
+    self.startView.backgroundColor = [UIColor whiteColor];
+    self.startView.userInteractionEnabled = YES;
+    self.startView.layer.cornerRadius = Design.CONTAINER_RADIUS;
+    self.startView.clipsToBounds = YES;
+    self.startView.isAccessibilityElement = YES;
+    [self.startView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleStartTapGesture:)]];
+    
+    self.startLabelWidthConstraint.constant *= Design.WIDTH_RATIO;
+
+    self.startLabel.font = Design.FONT_BOLD36;
+    self.startLabel.textColor = [UIColor blackColor];
+    self.startLabel.text = TwinmeLocalizedString(@"application_start", nil);
+    
+    self.restoreViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    self.restoreViewBottomConstraint.constant *= Design.HEIGHT_RATIO;
+    
+    self.restoreView.userInteractionEnabled = YES;
+    
+    UITapGestureRecognizer *restoreViewGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleRestoreTapGesture:)];
+    [self.restoreView addGestureRecognizer:restoreViewGestureRecognizer];
+        
+    UIWindow *window = [self currentWindow];
+    if (window) {
+        self.restoreViewBottomConstraint.constant = window.safeAreaInsets.bottom;
+    } else {
+        self.restoreViewBottomConstraint.constant = self.view.safeAreaInsets.bottom;
+    }
+    
+    self.restoreLabel.font = Design.FONT_MEDIUM38;
+    self.restoreLabel.textColor = [UIColor whiteColor];
+    self.restoreLabel.text = TwinmeLocalizedString(@"application_transfer_restore", nil);
     
     self.welcomeCollectionViewTopConstraint.constant *= Design.HEIGHT_RATIO;
     self.welcomeCollectionViewBottomConstraint.constant *= Design.HEIGHT_RATIO;
     self.welcomeCollectionViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     self.welcomeCollectionView.dataSource = self;
     self.welcomeCollectionView.delegate = self;
+    self.welcomeCollectionView.hidden = YES;
     
     self.welcomeCollectionView.backgroundColor = Design.WHITE_COLOR;
     [self.welcomeCollectionView registerNib:[UINib nibWithNibName:@"WelcomeCell" bundle:nil] forCellWithReuseIdentifier:WELCOME_CELL_IDENTIFIER];
@@ -271,6 +358,7 @@ static const int WELCOME_STEP_COUNT = 3;
     self.nextClickableView.clipsToBounds = YES;
     self.nextClickableView.backgroundColor = Design.MAIN_COLOR;
     self.nextClickableView.layer.cornerRadius = self.nextClickableViewHeightConstraint.constant * 0.5;
+    self.nextClickableView.hidden = YES;
     
     UITapGestureRecognizer *nextClickableViewGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleNextTapGesture:)];
     [self.nextClickableView addGestureRecognizer:nextClickableViewGestureRecognizer];
@@ -288,6 +376,7 @@ static const int WELCOME_STEP_COUNT = 3;
     self.welcomePageControl.pageIndicatorTintColor = [UIColor colorWithRed:244./255. green:244./255. blue:244./255. alpha:1.0];
     self.welcomePageControl.currentPageIndicatorTintColor = Design.MAIN_COLOR;
     self.welcomePageControl.transform = CGAffineTransformMakeScale(1.2, 1.2);
+    self.welcomePageControl.hidden = YES;
     
     self.termsOfUseWidthConstraint.constant *= Design.WIDTH_RATIO;
     self.termsOfUseBottomConstraint.constant *= Design.HEIGHT_RATIO;
@@ -370,6 +459,32 @@ static const int WELCOME_STEP_COUNT = 3;
     } else {
         [self.twinmeApplication hideWelcomeScreen];
         [self askNotification];
+    }
+}
+
+- (void)handleStartTapGesture:(UITapGestureRecognizer *)sender {
+    DDLogVerbose(@"%@ handleStartTapGesture: %@", LOG_TAG, sender);
+    
+    if (sender.state == UIGestureRecognizerStateEnded) {
+        self.backgroundImageView.hidden = YES;
+        self.splashScreenLogoView.hidden = YES;
+        self.startView.hidden = YES;
+        self.restoreView.hidden = YES;
+        self.messageLabel.hidden = YES;
+        self.logoView.hidden = NO;
+        self.welcomeCollectionView.hidden = NO;
+        self.nextClickableView.hidden = NO;
+        self.welcomePageControl.hidden = NO;
+    }
+}
+
+- (void)handleRestoreTapGesture:(UITapGestureRecognizer *)sender {
+    DDLogVerbose(@"%@ handleRestoreTapGesture: %@", LOG_TAG, sender);
+    
+    if (sender.state == UIGestureRecognizerStateEnded) {
+        AccountMigrationScannerViewController *accountMigrationScannerViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"AccountMigrationScannerViewController"];
+        accountMigrationScannerViewController.fromCurrentDevice = NO;
+        [self.navigationController pushViewController:accountMigrationScannerViewController animated:YES];
     }
 }
 

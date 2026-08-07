@@ -6,7 +6,7 @@
  *   Fabrice Trescartes (Fabrice.Trescartes@twin.life)
  */
 
-#import "AbstractBottomSheetView.h"
+#import <TwinmeCommon/AbstractBottomSheetView.h>
 
 //
 // Interface: BackupContentConfirmView

@@ -74,13 +74,15 @@ static CGFloat DESIGN_HEIGHT_INSET = 24;
     self.cameraViewHeightConstraint.constant = sendViewHeight;
         
     self.cameraView.backgroundColor = [UIColor clearColor];
+    self.cameraView.isAccessibilityElement = YES;
     
     self.cameraImageViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     
     self.recordViewHeightConstraint.constant = sendViewHeight;
         
     self.microView.backgroundColor = [UIColor clearColor];
-
+    self.microView.isAccessibilityElement = YES;
+    
     self.recordImageViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     
     [self updateColor];

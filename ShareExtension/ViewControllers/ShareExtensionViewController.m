@@ -56,6 +56,10 @@ static const int ddLogLevel = DDLogLevelWarning;
 #define PROPERTY_DEFAULT_MESSAGE_SETTINGS @"DefaultMessageSettings"
 #define SCREEN_LOCK @"ScreenLock"
 
+static CGFloat DESIGN_RIGHT_BUTTON_WIDTH = 70.0;
+static CGFloat DESIGN_RIGHT_BUTTON_HEIGHT = 44.0;
+static CGFloat DESIGN_AVATAR_HEIGHT = 36.0;
+
 @interface UIContact : NSObject
 
 @property (nonatomic, nonnull) id<TLOriginator> contact;
@@ -130,26 +134,12 @@ static const int GROUPS_VIEW_SECTION = 1;
 
 @interface ShareExtensionViewController () <UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate, ShareExtensionServiceDelegate, ShareExtensionSpaceDelegate>
 
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *spaceViewHeightConstraint;
-@property (weak, nonatomic) IBOutlet UIView *spaceView;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *spaceImageViewHeightConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *spaceImageViewLeadingConstraint;
-@property (weak, nonatomic) IBOutlet UIImageView *spaceImageView;
-@property (weak, nonatomic) IBOutlet UILabel *spaceAvatarLabel;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *spaceLabelLeadingConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *spaceLabelTrailingConstraint;
-@property (weak, nonatomic) IBOutlet UILabel *spaceLabel;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *colorSpaceViewHeightConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *colorSpaceViewTrailingConstraint;
-@property (weak, nonatomic) IBOutlet UIView *colorSpaceView;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *currentSpaceViewHeightConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *currentSpaceViewWidthConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *currentSpaceViewLeadingConstraint;
-@property (weak, nonatomic) IBOutlet UIView *currentSpaceView;
 @property (weak, nonatomic) IBOutlet UITableView *contactsTableView;
 @property (nonatomic) UIActivityIndicatorView *activityIndicatorView;
 @property (nonatomic) UIBarButtonItem *cancelBarButtonItem;
 @property (nonatomic) UISearchController *searchController;
+@property (nonatomic) UIImageView *avatarImageView;
+@property (nonatomic) UILabel *avatarLabel;
 
 @property (nonatomic) BOOL uiInitialized;
 @property (nonatomic) NSMutableArray *uiContacts;
@@ -168,6 +158,10 @@ static const int GROUPS_VIEW_SECTION = 1;
 @property (nonatomic) TLSpace *currentSpace;
 @property (nonatomic) int currentItem;
 @property (nonatomic) BOOL unlockScreen;
+@property (nonatomic) BOOL finsihWithAction;
+@property (nonatomic) BOOL startSelectSpace;
+
+@property (nonatomic) NSString *previewPath;
 
 @end
 
@@ -196,6 +190,7 @@ static const int GROUPS_VIEW_SECTION = 1;
         _refreshTableScheduled = NO;
         _currentItem = 0;
         _unlockScreen = NO;
+        _finsihWithAction = NO;
         _contents = [[NSMutableArray alloc]init];
         _shareService = [ShareExtensionService instance];
         _shareService.shareExtensionServiceDelegate = self;
@@ -208,6 +203,7 @@ static const int GROUPS_VIEW_SECTION = 1;
     
     [super viewDidLoad];
     
+    [self setupDirectory];
     [self initViews];
 }
 
@@ -215,6 +211,8 @@ static const int GROUPS_VIEW_SECTION = 1;
     DDLogVerbose(@"%@ viewWillAppear: %@", LOG_TAG, animated ? @"YES":@"NO");
     
     [super viewWillAppear:animated];
+    
+    self.startSelectSpace = NO;
     
     if ([self showLockScreen] && !self.unlockScreen) {
         LAContext *context = [[LAContext alloc] init];
@@ -252,6 +250,25 @@ static const int GROUPS_VIEW_SECTION = 1;
         }
     } else {
         [self.shareService start];
+    }
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    DDLogVerbose(@"%@ viewWillDisappear: %@", LOG_TAG, animated ? @"YES":@"NO");
+    
+    [super viewWillDisappear:animated];
+    
+    if (!self.finsihWithAction && !self.startSelectSpace) {
+        [self.uiContacts removeAllObjects];
+        [self.uiGroups removeAllObjects];
+        [self refreshTable];
+        self.contact = nil;
+
+        // Stop the twinlife framework and acknowledge the shared content only when we are ready to suspend.
+        [self.shareService stopWithCompletionHandler:^(TLBaseServiceErrorCode errorCode) {
+            NSError *error = [[NSError alloc]initWithDomain:[[NSBundle mainBundle] bundleIdentifier] code:0 userInfo:nil];
+            [self.extensionContext cancelRequestWithError:error];
+        }];
     }
 }
 
@@ -327,24 +344,18 @@ static const int GROUPS_VIEW_SECTION = 1;
     DDLogVerbose(@"%@ onGetConversation: %@", LOG_TAG, conversation);
     
     if (self.contents.count > 0) {
-        
+          
+        BOOL sendMessage = NO;
         for (id object in self.contents) {
             if ([object isKindOfClass:[NSString class]]) {
+                sendMessage = YES;
                 NSString *message = (NSString *)object;
                 [self.shareService pushMessage:message copyAllowed:self.messageCopyAllowed];
-            } else if ([object isKindOfClass:[NSURL class]]) {
-                NSURL *url = (NSURL *)object;
-                
-                if ([self isImageFile:url.path]) {
-                    [self.shareService pushFileWithPath:url.path type:TLDescriptorTypeImageDescriptor toBeDeleted:YES copyAllowed:self.fileCopyAllowed];
-                } else  if ([self isVideoFile:url.path]) {
-                    [self.shareService pushFileWithPath:url.path type:TLDescriptorTypeVideoDescriptor toBeDeleted:YES copyAllowed:self.fileCopyAllowed];
-                } else  if ([self isAudioFile:url.path]) {
-                    [self.shareService pushFileWithPath:url.path type:TLDescriptorTypeAudioDescriptor toBeDeleted:YES copyAllowed:self.fileCopyAllowed];
-                } else {
-                    [self.shareService pushFileWithPath:url.path type:TLDescriptorTypeNamedFileDescriptor toBeDeleted:YES copyAllowed:self.messageCopyAllowed];
-                }
             }
+        }
+        
+        if (!sendMessage) {
+            [self onShareCompleted];
         }
     }
 }
@@ -371,7 +382,20 @@ static const int GROUPS_VIEW_SECTION = 1;
     DDLogVerbose(@"%@ onShareCompleted", LOG_TAG);
     
     [self.activityIndicatorView stopAnimating];
-    [self openURL:[self.shareService getConversationURLWithOriginator:self.contact]];
+    
+    BOOL fileToSend = NO;
+    if (self.contents.count > 0) {
+        for (id object in self.contents) {
+            if ([object isKindOfClass:[NSURL class]]) {
+                fileToSend = YES;
+                break;
+            }
+        }
+    }
+    
+    [self openURL:[self.shareService getConversationURLWithOriginator:self.contact startPreviewFile:fileToSend]];
+    
+    self.finsihWithAction = YES;
     
     [self.uiContacts removeAllObjects];
     [self.uiGroups removeAllObjects];
@@ -393,6 +417,21 @@ static const int GROUPS_VIEW_SECTION = 1;
     self.currentSpace = space;
     
     [self updateSpace];
+}
+
+- (void)cancelSelectSpace {
+    DDLogVerbose(@"%@ cancelSelectSpace", LOG_TAG);
+    
+    [self.uiContacts removeAllObjects];
+    [self.uiGroups removeAllObjects];
+    [self refreshTable];
+    self.contact = nil;
+
+    // Stop the twinlife framework and acknowledge the shared content only when we are ready to suspend.
+    [self.shareService stopWithCompletionHandler:^(TLBaseServiceErrorCode errorCode) {
+        NSError *error = [[NSError alloc]initWithDomain:[[NSBundle mainBundle] bundleIdentifier] code:0 userInfo:nil];
+        [self.extensionContext cancelRequestWithError:error];
+    }];
 }
 
 #pragma mark - Private
@@ -714,6 +753,30 @@ static const int GROUPS_VIEW_SECTION = 1;
 - (void)initViews {
     DDLogVerbose(@"%@ initViews", LOG_TAG);
     
+    CGFloat customRightViewWidth = DESIGN_RIGHT_BUTTON_WIDTH * DesignExtension.WIDTH_RATIO;
+    UIView *customRightView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, customRightViewWidth, DESIGN_RIGHT_BUTTON_HEIGHT)];
+    customRightView.userInteractionEnabled = YES;
+    UITapGestureRecognizer *avatarGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSpaceTapGesture:)];
+    [customRightView addGestureRecognizer:avatarGestureRecognizer];
+    customRightView.isAccessibilityElement = YES;
+    
+    self.avatarImageView = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, DESIGN_AVATAR_HEIGHT, DESIGN_AVATAR_HEIGHT)];
+    self.avatarImageView.clipsToBounds = YES;
+    self.avatarImageView.userInteractionEnabled = YES;
+    self.avatarImageView.layer.cornerRadius = DesignExtension.SPACE_RADIUS_RATIO * DESIGN_AVATAR_HEIGHT;
+    [customRightView addSubview:self.avatarImageView];
+    self.avatarImageView.center = CGPointMake(customRightView.frame.size.width * 0.5, customRightView.frame.size.height * 0.5);
+    
+    self.avatarLabel = [[UILabel alloc]initWithFrame:CGRectMake(0, 0, DESIGN_AVATAR_HEIGHT, DESIGN_AVATAR_HEIGHT)];
+    self.avatarLabel.textColor = [UIColor whiteColor];
+    self.avatarLabel.font = DesignExtension.FONT_BOLD36;
+    self.avatarLabel.textAlignment = NSTextAlignmentCenter;
+    [customRightView addSubview:self.avatarLabel];
+    self.avatarLabel.center = CGPointMake(customRightView.frame.size.width * 0.5, customRightView.frame.size.height * 0.5);
+        
+    UIBarButtonItem *rightBarButtonItem = [[UIBarButtonItem alloc]initWithCustomView:customRightView];
+    self.navigationItem.rightBarButtonItem = rightBarButtonItem;
+    
     UIColor *backgroundColor = DesignExtension.NAVIGATION_BACKGROUND_COLOR;
     
     UINavigationBarAppearance *navBarAppearance = [self.navigationController.navigationBar standardAppearance];
@@ -735,40 +798,6 @@ static const int GROUPS_VIEW_SECTION = 1;
     [self.cancelBarButtonItem setTitleTextAttributes: @{NSFontAttributeName: DesignExtension.FONT_REGULAR34, NSForegroundColorAttributeName: [UIColor colorWithWhite:1.0 alpha:0.5]} forState:UIControlStateDisabled];
     self.navigationItem.leftBarButtonItem = self.cancelBarButtonItem;
     self.navigationItem.hidesSearchBarWhenScrolling = NO;
-    
-    self.spaceViewHeightConstraint.constant *= DesignExtension.HEIGHT_RATIO;
-    
-    self.spaceView.backgroundColor = DesignExtension.WHITE_COLOR;
-    self.spaceView.userInteractionEnabled = YES;
-    UITapGestureRecognizer *spaceGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSpaceTapGesture:)];
-    [self.spaceView addGestureRecognizer:spaceGestureRecognizer];
-    
-    self.spaceImageViewHeightConstraint.constant *= DesignExtension.HEIGHT_RATIO;
-    self.spaceImageViewLeadingConstraint.constant *= DesignExtension.WIDTH_RATIO;
-    
-    self.spaceImageView.clipsToBounds = YES;
-    self.spaceImageView.layer.cornerRadius = DesignExtension.SPACE_RADIUS_RATIO * self.spaceImageViewHeightConstraint.constant;
-    
-    self.spaceLabelLeadingConstraint.constant *= DesignExtension.WIDTH_RATIO;
-    self.spaceLabelTrailingConstraint.constant *= DesignExtension.WIDTH_RATIO;
-    
-    self.spaceLabel.font = DesignExtension.FONT_BOLD36;
-    self.spaceLabel.textColor = DesignExtension.FONT_COLOR_DEFAULT;
-    
-    self.spaceAvatarLabel.font = DesignExtension.FONT_BOLD44;
-    self.spaceAvatarLabel.textColor = [UIColor whiteColor];
-    
-    self.colorSpaceViewHeightConstraint.constant *= DesignExtension.HEIGHT_RATIO;
-    self.colorSpaceViewTrailingConstraint.constant *= DesignExtension.WIDTH_RATIO;
-    
-    self.colorSpaceView.layer.cornerRadius = self.colorSpaceViewHeightConstraint.constant / 2.0;
-    
-    self.currentSpaceViewHeightConstraint.constant *= DesignExtension.HEIGHT_RATIO;
-    self.currentSpaceViewWidthConstraint.constant *= DesignExtension.WIDTH_RATIO;
-    self.currentSpaceViewLeadingConstraint.constant *= DesignExtension.WIDTH_RATIO;
-    
-    self.currentSpaceView.clipsToBounds = YES;
-    self.currentSpaceView.layer.cornerRadius = DesignExtension.SPACE_RADIUS_RATIO * self.currentSpaceViewHeightConstraint.constant;
     
     self.searchController = [[UISearchController alloc]initWithSearchResultsController:nil];
     self.searchController.searchBar.placeholder = TwinmeLocalizedString(@"application_search_hint", nil);
@@ -809,9 +838,25 @@ static const int GROUPS_VIEW_SECTION = 1;
     [self.view addSubview:self.activityIndicatorView];
 }
 
+- (void)setupDirectory {
+    DDLogVerbose(@"%@ setupDirectory", LOG_TAG);
+    
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSURL *groupURL = [fileManager containerURLForSecurityApplicationGroupIdentifier:[TLTwinlife APP_GROUP_NAME]];
+    self.previewPath = [groupURL URLByAppendingPathComponent:@"preview" isDirectory:YES].path;
+        
+    [fileManager removeItemAtPath:self.previewPath error:nil];
+
+    [fileManager createDirectoryAtPath:self.previewPath
+           withIntermediateDirectories:YES
+                            attributes:nil
+                                 error:nil];
+}
+
 - (void)handleCancelTapGesture:(UIButton *)sender {
     DDLogVerbose(@"%@ handlecancelTapGesture: %@", LOG_TAG, sender);
 
+    self.finsihWithAction = YES;
     [self.uiContacts removeAllObjects];
     [self.uiGroups removeAllObjects];
     [self refreshTable];
@@ -828,6 +873,7 @@ static const int GROUPS_VIEW_SECTION = 1;
     DDLogVerbose(@"%@ handleSpaceTapGesture: %@", LOG_TAG, sender);
     
     if (sender.state == UIGestureRecognizerStateEnded) {
+        self.startSelectSpace = YES;
         ShareExtensionSpaceViewController *spacesViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"SelectSpaceViewController"];
         spacesViewController.shareExtensionSpaceDelegate = self;
         [spacesViewController initWithSpaces:self.uiSpaces];
@@ -874,11 +920,11 @@ static const int GROUPS_VIEW_SECTION = 1;
                         }
                         
                         NSString *fileName = [NSString stringWithFormat:@"%@_%@", [[NSProcessInfo processInfo] globallyUniqueString], extension];
-                        NSURL *url = [NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingPathComponent:fileName]];
+                        NSURL *url = [NSURL fileURLWithPath:[self.previewPath stringByAppendingPathComponent:fileName]];
                         if ([data writeToURL:url options:NSDataWritingAtomic error:nil]) {
                             [self.contents addObject:url];
                         }
-                        
+                       
                         self.currentItem++;
                         [self loadItem];
                     });
@@ -895,7 +941,7 @@ static const int GROUPS_VIEW_SECTION = 1;
                                 }
                                 if (image) {
                                     NSString *fileName = [NSString stringWithFormat:@"%@.jpg", [[NSProcessInfo processInfo] globallyUniqueString]];
-                                    NSURL *fileURL = [NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingPathComponent:fileName]];
+                                    NSURL *fileURL = [NSURL fileURLWithPath:[self.previewPath stringByAppendingPathComponent:fileName]];
                                     NSData *imageData = UIImageJPEGRepresentation(image, 1.0);
                                     if ([imageData writeToURL:fileURL options:NSDataWritingAtomic error:nil]) {
                                         [self.contents addObject:fileURL];
@@ -914,9 +960,8 @@ static const int GROUPS_VIEW_SECTION = 1;
                                             options:nil
                                   completionHandler:^(NSURL *url, NSError *error) {
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    
                     NSString *fileName = url.lastPathComponent;
-                    NSURL *fileURL = [NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingPathComponent:fileName]];
+                    NSURL *fileURL = [NSURL fileURLWithPath:[self.previewPath stringByAppendingPathComponent:fileName]];
                     NSFileManager *fileManager = [NSFileManager defaultManager];
                     
                     if (![fileManager createFileAtPath:fileURL.path contents:nil attributes:nil]) {
@@ -1051,51 +1096,22 @@ static const int GROUPS_VIEW_SECTION = 1;
     if (!self.currentSpace) {
         return;
     }
-    
-    NSString *spaceName = @"";
-    NSString *profileName = @"";
-    if (self.currentSpace.settings.name) {
-        spaceName = self.currentSpace.settings.name;
-    }
-    
-    if (self.currentSpace.profile.name) {
-        profileName = self.currentSpace.profile.name;
-    }
-    
-    NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:@""];
-    [attributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:spaceName attributes:[NSDictionary dictionaryWithObjectsAndKeys:DesignExtension.FONT_BOLD36, NSFontAttributeName, DesignExtension.FONT_COLOR_DEFAULT, NSForegroundColorAttributeName, nil]]];
-    
-    [attributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:@"\n"]];
-    [attributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:profileName attributes:[NSDictionary dictionaryWithObjectsAndKeys:DesignExtension.FONT_REGULAR28, NSFontAttributeName, DesignExtension.FONT_COLOR_PROFILE_GREY, NSForegroundColorAttributeName, nil]]];
-    
-    self.spaceLabel.attributedText = attributedString;
-    
+            
     if (self.currentSpace.avatarId) {
-        self.spaceAvatarLabel.hidden = YES;
+        self.avatarLabel.hidden = YES;
         [self.shareService getImageWithSpace:self.currentSpace withBlock:^(UIImage *image) {
-            self.spaceImageView.image = image;
+            self.avatarImageView.image = image;
         }];
     } else {
-        self.spaceImageView.image = nil;
-        self.spaceAvatarLabel.hidden = NO;
+        self.avatarImageView.image = nil;
+        self.avatarLabel.hidden = NO;
         if (self.currentSpace.settings.style) {
-            self.spaceImageView.backgroundColor = [UIColor colorWithHexString:self.currentSpace.settings.style alpha:1.0];
+            self.avatarImageView.backgroundColor = [UIColor colorWithHexString:self.currentSpace.settings.style alpha:1.0];
         } else {
-            self.spaceImageView.backgroundColor = DesignExtension.MAIN_COLOR;
+            self.avatarImageView.backgroundColor = DesignExtension.MAIN_COLOR;
         }
         
-        self.spaceAvatarLabel.text = [NSString firstCharacter:self.currentSpace.settings.name];
-    }
-    
-    self.currentSpaceView.hidden = NO;
-    
-    if (self.currentSpace.settings.style) {
-        self.colorSpaceView.hidden = NO;
-        self.colorSpaceView.backgroundColor = [UIColor colorWithHexString:self.currentSpace.settings.style alpha:1.0];
-        self.currentSpaceView.backgroundColor = [UIColor colorWithHexString:self.currentSpace.settings.style alpha:1.0];
-    } else {
-        self.colorSpaceView.hidden = YES;
-        self.currentSpaceView.backgroundColor = DesignExtension.BACKGROUND_COLOR_GREY;
+        self.avatarLabel.text = [NSString firstCharacter:self.currentSpace.settings.name];
     }
 }
 

@@ -27,7 +27,6 @@ static float DESIGN_BORDER_SIZE = 2;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *containerViewBottomConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *containerViewWidthConstraint;
 @property (weak, nonatomic) IBOutlet UIView *containerView;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *logoViewWidthConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *logoViewHeightConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *logoViewTopConstraint;
 @property (weak, nonatomic) IBOutlet UIView *logoView;
@@ -84,9 +83,11 @@ static float DESIGN_BORDER_SIZE = 2;
     self.containerView.layer.borderWidth = 2;
     self.containerView.layer.cornerRadius = DESIGN_CONTAINER_RADIUS;
     
-    self.logoViewWidthConstraint.constant *= Design.WIDTH_RATIO;
     self.logoViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     self.logoViewTopConstraint.constant *= Design.HEIGHT_RATIO;
+    
+    self.logoView.clipsToBounds = YES;
+    self.logoView.layer.cornerRadius = Design.SPACE_RADIUS_RATIO * self.logoViewHeightConstraint.constant;
     
     self.titleLabelTopConstraint.constant *= Design.HEIGHT_RATIO;
     self.titleLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;

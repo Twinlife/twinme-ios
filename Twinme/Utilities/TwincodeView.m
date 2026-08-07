@@ -112,6 +112,9 @@ static CGFloat DESIGN_AVATAR_BORDER_WIDTH = 6;
     self.logoViewTopConstraint.constant *= Design.HEIGHT_RATIO;
     self.logoViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     
+    self.logoView.clipsToBounds = YES;
+    self.logoView.layer.cornerRadius = Design.CONTAINER_RADIUS;
+    
     self.profileViewTopConstraint.constant *= Design.HEIGHT_RATIO;
     self.profileViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     self.profileViewWidthConstraint.constant *= Design.WIDTH_RATIO;

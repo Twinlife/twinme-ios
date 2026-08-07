@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="24765" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24743"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -18,6 +18,13 @@
                 <rect key="frame" x="0.0" y="0.0" width="750" height="120"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="iul-M3-IB7">
+                        <rect key="frame" x="34" y="39" width="42" height="42"/>
+                        <constraints>
+                            <constraint firstAttribute="width" secondItem="iul-M3-IB7" secondAttribute="height" multiplier="1:1" id="Vuc-ch-gaa"/>
+                            <constraint firstAttribute="height" constant="42" id="ecD-eu-llf"/>
+                        </constraints>
+                    </imageView>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="251" text=".title" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="nWh-rA-1tr">
                         <rect key="frame" x="34" y="45.5" width="420" height="29"/>
                         <constraints>
@@ -66,8 +73,10 @@
                     <constraint firstItem="gTF-TJ-of9" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="VhQ-0e-cK1"/>
                     <constraint firstItem="OSz-gW-cjW" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="Yng-rv-DUL"/>
                     <constraint firstAttribute="trailing" secondItem="pwY-VB-NUQ" secondAttribute="trailing" constant="32" id="ZOH-tV-CjT"/>
+                    <constraint firstItem="iul-M3-IB7" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="b8Y-Qn-kuN"/>
                     <constraint firstAttribute="trailing" secondItem="OSz-gW-cjW" secondAttribute="trailing" constant="32" id="jYM-xT-4vg"/>
                     <constraint firstItem="OSz-gW-cjW" firstAttribute="leading" secondItem="nWh-rA-1tr" secondAttribute="trailing" constant="10" id="kQt-eV-JQi"/>
+                    <constraint firstItem="iul-M3-IB7" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="34" id="n2H-iP-nRL"/>
                     <constraint firstAttribute="bottom" secondItem="y9h-GZ-UPm" secondAttribute="bottom" id="zpN-fr-aOb"/>
                 </constraints>
             </tableViewCellContentView>
@@ -77,6 +86,9 @@
                 <outlet property="accessoryImageView" destination="gTF-TJ-of9" id="RDo-jP-isG"/>
                 <outlet property="accessoryImageViewHeightConstraint" destination="Y9f-79-pal" id="El1-LA-Pr5"/>
                 <outlet property="accessoryImageViewTrailingConstraint" destination="ObU-m6-r4n" id="WNl-7x-kco"/>
+                <outlet property="iconView" destination="iul-M3-IB7" id="K6y-Lc-n5V"/>
+                <outlet property="iconViewHeightConstraint" destination="ecD-eu-llf" id="3hr-wi-v38"/>
+                <outlet property="iconViewLeadingConstraint" destination="n2H-iP-nRL" id="CIe-ge-RYN"/>
                 <outlet property="selectImageView" destination="pwY-VB-NUQ" id="xrS-oU-YNh"/>
                 <outlet property="selectImageViewHeightConstraint" destination="D4N-Wu-Pbr" id="t5Z-ZL-OCh"/>
                 <outlet property="selectImageViewTrailingConstraint" destination="ZOH-tV-CjT" id="ns0-50-zEg"/>

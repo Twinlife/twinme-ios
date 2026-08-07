@@ -209,7 +209,7 @@ typedef enum {
         }
         
         cell.forceDarkMode = self.forceDarkMode;
-        [cell bindWithTitle:TwinmeLocalizedString(@"application_timeout", nil) value:[NSString formatTimeout:self.timeout] backgroundColor:Design.POPUP_BACKGROUND_COLOR];
+        [cell bindWithTitle:TwinmeLocalizedString(@"application_timeout", nil) value:[NSString formatTimeout:self.timeout] icon:[UIImage imageNamed:@"SendOptionEphemeralIcon"] backgroundColor:Design.POPUP_BACKGROUND_COLOR];
         
         return cell;
     } else {

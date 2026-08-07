@@ -75,7 +75,6 @@ static const int ddLogLevel = DDLogLevelWarning;
     self.allowAudioCall = self.contact.identityCapabilities.hasAudio;
     self.allowVideoCall = self.contact.identityCapabilities.hasVideo;
     self.zoomable = self.contact.identityCapabilities.zoomable;
-    self.discreetRelation = self.contact.identityCapabilities.hasDiscreet;
     self.scheduleEnable = self.contact.identityCapabilities.schedule.enabled;
     
     if (self.contact.identityCapabilities.schedule.timeRanges.count > 0) {
@@ -163,7 +162,6 @@ static const int ddLogLevel = DDLogLevelWarning;
     
     [self.identityCapabilities setCapAudioWithValue:self.allowAudioCall];
     [self.identityCapabilities setCapVideoWithValue:self.allowVideoCall];
-    [self.identityCapabilities setCapDiscreetWithValue:self.discreetRelation];
     [self.identityCapabilities setZoomableWithValue:self.zoomable];
     
     if (self.scheduleStartDate) {
@@ -193,7 +191,7 @@ static const int ddLogLevel = DDLogLevelWarning;
 - (void)setUpdated {
     DDLogVerbose(@"%@ setUpdated", LOG_TAG);
     
-    if (self.contact && self.contact.identityCapabilities.hasAudio == self.allowAudioCall && self.contact.identityCapabilities.hasVideo == self.allowVideoCall && self.contact.identityCapabilities.hasDiscreet == self.discreetRelation && self.contact.identityCapabilities.zoomable == self.zoomable && self.contact.identityCapabilities.schedule.enabled == self.scheduleEnable) {
+    if (self.contact && self.contact.identityCapabilities.hasAudio == self.allowAudioCall && self.contact.identityCapabilities.hasVideo == self.allowVideoCall && self.contact.identityCapabilities.zoomable == self.zoomable && self.contact.identityCapabilities.schedule.enabled == self.scheduleEnable) {
         if (!self.canSave) {
             return;
         }

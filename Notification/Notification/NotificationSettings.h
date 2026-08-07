@@ -10,6 +10,10 @@
 
 #import <AudioToolbox/AudioToolbox.h>
 
+#define PROPERTY_CONVERSATION_NOTIFICATION_REACTION @"ConversationNotificationReaction"
+#define PROPERTY_CONVERSATION_SILENT_MODE @"ConversationSilentMode"
+#define PROPERTY_CONVERSATION_SILENT_MODE_EXPIRATION @"ConversationSilentModeExpiration"
+
 @class UNNotificationSound;
 
 typedef enum {

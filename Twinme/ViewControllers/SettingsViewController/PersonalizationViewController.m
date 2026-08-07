@@ -14,9 +14,10 @@
 
 #import "PersonalizationViewController.h"
 #import "PersonalizationCell.h"
+#import "ColorsCell.h"
+#import "DefaultTabCell.h"
 #import "SettingsItemCell.h"
 #import "DefaultTabCell.h"
-#import "SettingsSectionHeaderCell.h"
 #import "SettingsInformationCell.h"
 #import "MessageSettingsViewController.h"
 #import "ConversationAppearanceViewController.h"
@@ -37,6 +38,7 @@
 
 #import <TwinmeCommon/Design.h>
 #import <TwinmeCommon/MainViewController.h>
+#import <TwinmeCommon/SettingsSectionHeaderCell.h>
 #import <TwinmeCommon/TwinmeNavigationController.h>
 
 #if 0
@@ -54,7 +56,11 @@ static const int DEFAULT_TAB_SECTION = 1;
 static const int MODE_SECTION = 2;
 static const int APPEARANCE_SECTION = 3;
 static const int FONT_SECTION = 4;
-static const int HAPTIC_FEEDBACK_SECTION = 5;
+static const int SOUND_VIBRATION_SECTION = 5;
+
+static const int DISPLAY_MODE_SWITCH_TAG = 0;
+static const int HAPTIC_FEEDBACK_SWITCH_TAG = 1;
+static const int SOUND_EFFECTS_SWITCH_TAG = 2;
 
 static NSString *PERSONALIZATION_CELL_IDENTIFIER = @"PersonalizationCellIdentifier";
 static NSString *SETTINGS_INFORMATION_CELL_IDENTIFIER = @"SettingsInformationCellIdentifier";
@@ -176,7 +182,6 @@ static NSString *TWINME_SETTINGS_CELL_IDENTIFIER = @"TwinmeSettingsCellIdentifie
     [self.tableView reloadData];
 }
 
-
 #pragma mark - UITableViewDataSource
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -234,10 +239,9 @@ static NSString *TWINME_SETTINGS_CELL_IDENTIFIER = @"TwinmeSettingsCellIdentifie
         case APPEARANCE_SECTION:
             sectionName = TwinmeLocalizedString(@"application_appearance", nil);
             break;
-            
-        case HAPTIC_FEEDBACK_SECTION:
-            sectionName = TwinmeLocalizedString(@"personalization_view_haptic_feedback", nil);
-            hideSeparator = YES;
+
+        case SOUND_VIBRATION_SECTION:
+            sectionName = TwinmeLocalizedString(@"settings_view_sound_vibrations_title", nil);
             break;
             
         case FONT_SECTION:
@@ -269,8 +273,8 @@ static NSString *TWINME_SETTINGS_CELL_IDENTIFIER = @"TwinmeSettingsCellIdentifie
             numberOfRowsInSection = 2;
             break;
             
-        case HAPTIC_FEEDBACK_SECTION:
-            numberOfRowsInSection = 1;
+        case SOUND_VIBRATION_SECTION:
+            numberOfRowsInSection = 2;
             break;
             
         case FONT_SECTION:
@@ -375,8 +379,7 @@ static NSString *TWINME_SETTINGS_CELL_IDENTIFIER = @"TwinmeSettingsCellIdentifie
             
             DisplayMode displayMode = [[self.defaultSpaceSettings getStringWithName:PROPERTY_DISPLAY_MODE defaultValue:[NSString stringWithFormat:@"%d",DisplayModeSystem]] intValue];
             
-            [cell bindWithTitle:TwinmeLocalizedString(@"personalization_view_system", nil) subTitle:nil icon:nil stateSwitch:displayMode == DisplayModeSystem tagSwitch:MODE_SECTION hiddenSwitch:NO disableSwitch:NO backgroundColor:Design.WHITE_COLOR hiddenSeparator:NO];
-            
+            [cell bindWithTitle:TwinmeLocalizedString(@"personalization_view_system", nil) subTitle:nil icon:nil stateSwitch:displayMode == DisplayModeSystem tagSwitch:DISPLAY_MODE_SWITCH_TAG hiddenSwitch:NO disableSwitch:NO backgroundColor:Design.WHITE_COLOR hiddenSeparator:NO];
             return cell;
         }
     } else if (indexPath.section == APPEARANCE_SECTION) {
@@ -408,8 +411,25 @@ static NSString *TWINME_SETTINGS_CELL_IDENTIFIER = @"TwinmeSettingsCellIdentifie
         }
         
         cell.settingsActionDelegate = self;
+
+        NSString *title = @"";
+        NSString *subTitle = @"";
+        BOOL state = NO;
+        int tag = 0;
         
-        [cell bindWithTitle:TwinmeLocalizedString(@"personalization_view_haptic_feedback_message", nil) subTitle:nil icon:nil stateSwitch:[self.twinmeApplication allowHapticFeedback] tagSwitch:HAPTIC_FEEDBACK_SECTION hiddenSwitch:NO disableSwitch:NO backgroundColor:Design.WHITE_COLOR hiddenSeparator:NO];
+        if (indexPath.row == 0) {
+            title = TwinmeLocalizedString(@"personalization_view_haptic_feedback", nil);
+            subTitle = TwinmeLocalizedString(@"personalization_view_haptic_feedback_message", nil);
+            state = [self.twinmeApplication allowHapticFeedback];
+            tag = HAPTIC_FEEDBACK_SWITCH_TAG;
+        } else {
+            title = TwinmeLocalizedString(@"settings_view_sound_effects_title", nil);
+            subTitle = TwinmeLocalizedString(@"settings_view_sound_effects_info", nil);
+            state = [self.twinmeApplication allowSoundEffects];
+            tag = SOUND_EFFECTS_SWITCH_TAG;
+        }
+        
+        [cell bindWithTitle:title subTitle:subTitle icon:nil stateSwitch:state tagSwitch:tag hiddenSwitch:NO disableSwitch:NO backgroundColor:Design.WHITE_COLOR hiddenSeparator:NO];
         return cell;
     }
 }
@@ -454,7 +474,7 @@ static NSString *TWINME_SETTINGS_CELL_IDENTIFIER = @"TwinmeSettingsCellIdentifie
 - (void)switchChangeValue:(SwitchView *)updatedSwitch {
     DDLogVerbose(@"%@ switchChangeValue: %@", LOG_TAG, updatedSwitch);
         
-    if (updatedSwitch.tag == MODE_SECTION) {
+    if (updatedSwitch.tag == DISPLAY_MODE_SWITCH_TAG) {
         DisplayMode displayMode;
         if (updatedSwitch.isOn) {
             displayMode = DisplayModeSystem;
@@ -474,12 +494,18 @@ static NSString *TWINME_SETTINGS_CELL_IDENTIFIER = @"TwinmeSettingsCellIdentifie
         
         [self updateColor];
         [self saveDefaultSpaceSettings];
-    } else if (updatedSwitch.tag == HAPTIC_FEEDBACK_SECTION) {
+    } else if (updatedSwitch.tag == HAPTIC_FEEDBACK_SWITCH_TAG) {
         [self.twinmeApplication setHapticFeedbackEnableWithState:updatedSwitch.isOn];
+    } else if (updatedSwitch.tag == SOUND_EFFECTS_SWITCH_TAG) {
+        [self.twinmeApplication setSoundEffectsEnableWithState:updatedSwitch.isOn];
     }
     
-    
     [self.tableView reloadData];
+}
+
+- (void)switchLongPress:(SwitchView *)switchView {
+    DDLogVerbose(@"%@ switchLongPress: %@", LOG_TAG, switchView);
+    
 }
 
 #pragma mark - DisplayModeDelegate
@@ -603,7 +629,7 @@ static NSString *TWINME_SETTINGS_CELL_IDENTIFIER = @"TwinmeSettingsCellIdentifie
 
 - (BOOL)isInformationPath:(NSIndexPath *)indexPath {
     
-    if (indexPath.section == INFO_SECTION || (indexPath.section == DEFAULT_TAB_SECTION && indexPath.row == 0)) {
+    if (indexPath.section == INFO_SECTION || ((indexPath.section == DEFAULT_TAB_SECTION) && indexPath.row == 0)) {
         return YES;
     }
     

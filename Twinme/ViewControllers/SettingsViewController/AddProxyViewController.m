@@ -16,7 +16,7 @@
 #import "AddProxyViewController.h"
 #import <TwinmeCommon/Design.h>
 
-#import "OnboardingConfirmView.h"
+#import <TwinmeCommon/OnboardingConfirmView.h>
 #import "DefaultConfirmView.h"
 #import "AlertMessageView.h"
 #import "TwinmeTextField.h"

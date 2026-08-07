@@ -37,6 +37,7 @@
 #import <Twinlife/TLPeerCallService.h>
 #import <Twinlife/TLCryptoService.h>
 #import <Twinlife/TLSecureRosterService.h>
+#import <Twinlife/TLConfigIdentifier.h>
 
 #import <Twinme/TLPushNotificationContent.h>
 #import <Twinme/TLNotificationCenter.h>
@@ -123,6 +124,15 @@ typedef enum {
     SilentNotificationTypeMessageJoinGroup,
     SilentNotificationTypeMessageLeaveGroup
 } SilentNotificationType;
+
+#define ICE_TRANSPORT_MODE @"IceTransportMode"
+#define SHARE_INVITATION_MODE @"ShareInvitationMode"
+
+// Security Level
+static TLEnumSharedConfigIdentifier *iceTransportModeConfig;
+
+// Share Invitation
+static TLEnumSharedConfigIdentifier *shareInvitationModeConfig;
 
 //
 // Interface: NotificationService
@@ -395,6 +405,11 @@ static NotificationService *INSTANCE;
         [NotificationSettings initializeSettings];
         RTCInitializeSSL();
         
+        
+        iceTransportModeConfig = [TLEnumSharedConfigIdentifier defineWithName:ICE_TRANSPORT_MODE uuid:@"4B83AA59-303A-4585-9A5E-DF55CE5CC7F5" defaultValue:TLPeerConnectionServiceIceTransportModeAll];
+        
+        shareInvitationModeConfig = [TLEnumSharedConfigIdentifier defineWithName:SHARE_INVITATION_MODE uuid:@"84214DEC-3392-4880-BC3A-7F8203C2BD2E" defaultValue:ShareInvitationModeAsk];
+        
 #if defined(NDEBUG)
         RTCSetMinDebugLogLevel(RTCLoggingSeverityWarning);
 #endif
@@ -425,6 +440,9 @@ static NotificationService *INSTANCE;
         self.resetConversationCount = 0;
         [self.originators removeAllObjects];
     }
+
+    [[self.twinmeContext getPeerConnectionService] setIceTransportModeWithMode:iceTransportModeConfig.enumValue];
+
     [self reloadBadgeNumber];
 }
 
@@ -686,6 +704,17 @@ static NotificationService *INSTANCE;
     DDLogVerbose(@"%@ activeSessionCount", LOG_TAG);
 
     return [[self.twinmeContext getPeerConnectionService] sessionCount];
+}
+
+#pragma mark - TLTwinmeApplication
+
+//
+// Share Invitation Mode
+//
+
+- (ShareInvitationMode)shareInvitationMode {
+    
+    return shareInvitationModeConfig.enumValue;
 }
 
 #pragma mark - TLNotificationCenter

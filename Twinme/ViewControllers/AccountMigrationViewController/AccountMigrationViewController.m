@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2020-2024 twinlife SA.
+ *  Copyright (c) 2020-2026 twinlife SA.
  *  SPDX-License-Identifier: AGPL-3.0-only
  *
  *  Contributors:
@@ -21,6 +21,7 @@
 #import "AlertMessageView.h"
 #import "InfoFloatingView.h"
 #import "DefaultConfirmView.h"
+#import "ApplicationAssertion.h"
 
 #if 0
 static const int ddLogLevel = DDLogLevelVerbose;
@@ -243,6 +244,10 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
         self.stateLabel.text = [self stateToLabelWithState:self.state];
     }
     
+    if (self.state == TLAccountMigrationStateTerminated) {
+        [self.twinmeApplication hideWelcomeScreen];
+    }
+    
     if (self.startTime == 0 && startTime != 0) {
         self.startTime = startTime;
         self.startView.hidden = YES;
@@ -313,8 +318,11 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
 
 - (void)onErrorWithErrorCode:(TLAccountMigrationErrorCode)errorCode {
     DDLogVerbose(@"%@ onErrorWithErrorCode: %ld", LOG_TAG, errorCode);
-    
+
+    TL_ASSERTION(self.twinmeContext, [ApplicationAssertPoint MIGRATION_ERROR], [TLAssertValue initWithNumber:(int)errorCode], [TLAssertValue initWithResourceId:self.accountMigrationId], [TLAssertValue initWithNumber:(int)self.state]);
+
     //TODO: handle error, for now the only possible value for errorCode is TLAccountMigrationErrorCodeInternalError
+    [self finish];
 }
 
 #pragma mark - AlertMessageViewDelegate
@@ -618,7 +626,8 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
     [[UIApplication sharedApplication] setIdleTimerDisabled:NO];
     
     if (self.accountMigrationService) {
-        [self.accountMigrationService dispose];
+        // Important note: we must not dispose the account migration service but instead inform the service to stop.
+        [self.accountMigrationService stopService];
     }
     
     [self.navigationController dismissViewControllerAnimated:YES completion:nil];

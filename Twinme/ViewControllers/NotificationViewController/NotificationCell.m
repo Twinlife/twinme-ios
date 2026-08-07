@@ -283,6 +283,11 @@ static UIColor *DESIGN_TIME_COLOR;
             self.typeView.image = [UIImage imageNamed:@"NotificationInvitationGroup"];
             break;
             
+        case TLNotificationTypeNewContactShare:
+            messageType = TwinmeLocalizedString(@"notifications_view_item_invitation", nil);
+            self.typeView.image = [UIImage imageNamed:@"NotificationInvitationGroup"];
+            break;
+            
         case TLNotificationTypeUpdatedAnnotation:
             if (notification.annotationType == TLDescriptorAnnotationTypeLike) {
                 messageType = TwinmeLocalizedString(@"notification_center_reaction_message", nil);

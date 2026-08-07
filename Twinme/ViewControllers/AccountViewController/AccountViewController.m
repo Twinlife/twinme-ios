@@ -23,15 +23,15 @@
 #import "BackupViewController.h"
 #import "BackupsViewController.h"
 
-#import "SettingsSectionHeaderCell.h"
 #import "SettingsIconCell.h"
 #import "SettingsInformationCell.h"
 
 #import "AlertMessageView.h"
 #import "DefaultConfirmView.h"
-#import "OnboardingConfirmView.h"
+#import <TwinmeCommon/OnboardingConfirmView.h>
 
 #import <TwinmeCommon/Design.h>
+#import <TwinmeCommon/SettingsSectionHeaderCell.h>
 #import <TwinmeCommon/TwinmeNavigationController.h>
 
 #if 0
@@ -199,7 +199,7 @@ typedef enum {
             
         case SECTION_BACKUP:
             sectionName = TwinmeLocalizedStringFromTable(@"account_view_backup_restore", @"LocalizableBackup", nil);
-            badgeTitle = TwinmeLocalizedString(@"application_beta", nil);
+            badgeTitle = TwinmeLocalizedString(@"application_new", nil);
             break;
             
         case SECTION_CONVERSATIONS:
@@ -475,13 +475,7 @@ typedef enum {
     
     NSString *title = TwinmeLocalizedStringFromTable(@"account_view_backup_restore", @"LocalizableBackup", nil);
     
-    NSMutableString *message = [[NSMutableString alloc] initWithString:@""];
-    [message appendString:TwinmeLocalizedStringFromTable(@"backup_view_beta_message_part_1", @"LocalizableBackup", nil)];
-    [message appendString:@"\n\n"];
-    [message appendString:TwinmeLocalizedStringFromTable(@"backup_view_beta_message_part_2", @"LocalizableBackup", nil)];
-    [message appendString:@"\n\n"];
-    [message appendString:TwinmeLocalizedStringFromTable(@"backup_view_beta_message_part_3", @"LocalizableBackup", nil)];
-    
+    NSString *message = TwinmeLocalizedStringFromTable(@"backup_view_onboarding", @"LocalizableBackup", nil);
     NSString *action = TwinmeLocalizedString(@"application_ok", nil);
     
     [onboardingConfirmView initWithTitle:title message:message image:image action:action actionColor:nil cancel:TwinmeLocalizedString(@"application_do_not_display", nil)];

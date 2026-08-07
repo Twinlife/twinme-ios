@@ -37,6 +37,8 @@
 #import "PeerPollItem.h"
 #import "InvitationItem.h"
 #import "PeerInvitationItem.h"
+#import "ShareContactItem.h"
+#import "PeerShareContactItem.h"
 #import "CallItem.h"
 #import "PeerCallItem.h"
 #import "LocationItem.h"
@@ -86,8 +88,9 @@
 #import "PeerClearItemCell.h"
 #import "InvitationContactItemCell.h"
 #import "PeerInvitationContactItemCell.h"
+#import "ShareContactItemCell.h"
+#import "PeerShareContactItemCell.h"
 #import "AnnotationInfoCell.h"
-#import "SettingsSectionHeaderCell.h"
 #import "SettingsItemCell.h"
 
 #import "SwitchView.h"
@@ -97,6 +100,7 @@
 #import <TwinmeCommon/AsyncManager.h>
 #import <TwinmeCommon/Design.h>
 #import <TwinmeCommon/InfoItemService.h>
+#import <TwinmeCommon/SettingsSectionHeaderCell.h>
 
 #if 0
 static const int ddLogLevel = DDLogLevelVerbose;
@@ -121,6 +125,8 @@ static NSString *POLL_ITEM_CELL_IDENTIFIER = @"PollItemCellIdentifier";
 static NSString *PEER_POLL_ITEM_CELL_IDENTIFIER = @"PeerPollItemCellIdentifier";
 static NSString *INVITATION_ITEM_CELL_IDENTIFIER = @"InvitationItemCellIdentifier";
 static NSString *PEER_INVITATION_ITEM_CELL_IDENTIFIER = @"PeerInvitationItemCellIdentifier";
+static NSString *SHARE_CONTACT_ITEM_CELL_IDENTIFIER = @"ShareContactItemCellIdentifier";
+static NSString *PEER_SHARE_CONTACT_ITEM_CELL_IDENTIFIER = @"PeerShareContactItemCellIdentifier";
 static NSString *NAME_ITEM_CELL_IDENTIFIER = @"NameItemCellIdentifier";
 static NSString *INFO_DATE_ITEM_CELL_IDENTIFIER = @"InfoDateItemCellIdentifier";
 static NSString *COPY_ITEM_CELL_IDENTIFIER = @"CopyItemCellIdentifier";
@@ -579,6 +585,22 @@ static CGFloat DESIGN_LEADING_DEFAULT_VALUE = 26.f;
             return peerInvitationItemCell;
         }
             
+        case ItemTypeShareContact: {
+            ShareContactItem *shareContactItem = (ShareContactItem *)item;
+            ShareContactItemCell *shareContactItemCell = (ShareContactItemCell *)[self.infoTableView dequeueReusableCellWithIdentifier:SHARE_CONTACT_ITEM_CELL_IDENTIFIER forIndexPath:indexPath];
+            [shareContactItemCell bindWithItem:shareContactItem conversationViewController:self.conversationViewController];
+            shareContactItemCell.contentView.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
+            return shareContactItemCell;
+        }
+            
+        case ItemTypePeerShareContact: {
+            PeerShareContactItem *peerShareContactItem = (PeerShareContactItem *)item;
+            PeerShareContactItemCell *peerShareContactItemCell = (PeerShareContactItemCell *)[self.infoTableView dequeueReusableCellWithIdentifier:PEER_SHARE_CONTACT_ITEM_CELL_IDENTIFIER forIndexPath:indexPath];
+            [peerShareContactItemCell bindWithItem:peerShareContactItem conversationViewController:self.conversationViewController];
+            peerShareContactItemCell.contentView.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
+            return peerShareContactItemCell;
+        }
+            
         case ItemTypeCall: {
             CallItem *callItem = (CallItem *)item;
             CallItemCell *callItemCell = (CallItemCell *)[self.infoTableView dequeueReusableCellWithIdentifier:CALL_ITEM_CELL_IDENTIFIER forIndexPath:indexPath];
@@ -738,6 +760,8 @@ static CGFloat DESIGN_LEADING_DEFAULT_VALUE = 26.f;
     [self.infoTableView registerNib:[UINib nibWithNibName:@"PeerFileItemCell" bundle:nil] forCellReuseIdentifier:PEER_FILE_ITEM_CELL_IDENTIFIER];
     [self.infoTableView registerNib:[UINib nibWithNibName:@"InvitationItemCell" bundle:nil] forCellReuseIdentifier:INVITATION_ITEM_CELL_IDENTIFIER];
     [self.infoTableView registerNib:[UINib nibWithNibName:@"PeerInvitationItemCell" bundle:nil] forCellReuseIdentifier:PEER_INVITATION_ITEM_CELL_IDENTIFIER];
+    [self.infoTableView registerNib:[UINib nibWithNibName:@"ShareContactItemCell" bundle:nil] forCellReuseIdentifier:SHARE_CONTACT_ITEM_CELL_IDENTIFIER];
+    [self.infoTableView registerNib:[UINib nibWithNibName:@"PeerShareContactItemCell" bundle:nil] forCellReuseIdentifier:PEER_SHARE_CONTACT_ITEM_CELL_IDENTIFIER];
     [self.infoTableView registerNib:[UINib nibWithNibName:@"PollItemCell" bundle:nil] forCellReuseIdentifier:POLL_ITEM_CELL_IDENTIFIER];
     [self.infoTableView registerNib:[UINib nibWithNibName:@"PeerPollItemCell" bundle:nil] forCellReuseIdentifier:PEER_POLL_ITEM_CELL_IDENTIFIER];
     [self.infoTableView registerNib:[UINib nibWithNibName:@"CallItemCell" bundle:nil] forCellReuseIdentifier:CALL_ITEM_CELL_IDENTIFIER];
@@ -859,7 +883,9 @@ static CGFloat DESIGN_LEADING_DEFAULT_VALUE = 26.f;
                 if (self.item.readTimestamp > 0) {
                     [self.items addObject:[[InfoSectionItem alloc] initWithTitle:TwinmeLocalizedString(@"info_item_view_seen", nil)]];
                     [self.items addObject:[[InfoDateItem alloc] initWithType:InfoItemTypeSeen name:self.item.isPeerItem ? self.contact.identityName : self.contact.name image:self.item.isPeerItem ? self.identityAvatar : self.contactAvatar]];
-                } else if (self.item.receivedTimestamp > 0) {
+                }
+                
+                if (self.item.receivedTimestamp > 0) {
                     [self.items addObject:[[InfoSectionItem alloc] initWithTitle:TwinmeLocalizedString(@"info_item_view_received", nil)]];
                     [self.items addObject:[[InfoDateItem alloc] initWithType:InfoItemTypeReceived name:self.item.isPeerItem ? self.contact.identityName : self.contact.name image:self.item.isPeerItem ? self.identityAvatar : self.contactAvatar]];
                 }
@@ -876,7 +902,9 @@ static CGFloat DESIGN_LEADING_DEFAULT_VALUE = 26.f;
                     if (self.item.readTimestamp > 0) {
                         [self.items addObject:[[InfoSectionItem alloc] initWithTitle:TwinmeLocalizedString(@"info_item_view_seen", nil)]];
                         [self.items addObject:[[InfoDateItem alloc] initWithType:InfoItemTypeSeen name:self.group.identityName image:self.identityAvatar]];
-                    } else {
+                    }
+                    
+                    if (self.item.receivedTimestamp > 0) {
                         [self.items addObject:[[InfoSectionItem alloc] initWithTitle:TwinmeLocalizedString(@"info_item_view_received", nil)]];
                         [self.items addObject:[[InfoDateItem alloc] initWithType:InfoItemTypeReceived name:self.group.identityName image:self.identityAvatar]];
                     }
@@ -978,6 +1006,13 @@ static CGFloat DESIGN_LEADING_DEFAULT_VALUE = 26.f;
             [self.infoTableView reloadData];
         });
     }];
+}
+
+- (void)updateColor {
+    DDLogVerbose(@"%@ updateColor", LOG_TAG);
+    
+    self.view.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
+    [self.infoTableView setBackgroundColor:Design.LIGHT_GREY_BACKGROUND_COLOR];
 }
 
 - (void)updateFont {

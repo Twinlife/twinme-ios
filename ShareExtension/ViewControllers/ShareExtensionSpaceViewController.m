@@ -43,6 +43,8 @@ static CGFloat DESIGN_CELL_HEIGHT = 144;
 
 @property (nonatomic) NSMutableArray *uiSpaces;
 
+@property (nonatomic) BOOL finsihWithAction;
+
 @end
 
 //
@@ -62,7 +64,7 @@ static CGFloat DESIGN_CELL_HEIGHT = 144;
     self = [super initWithCoder:coder];
     
     if (self) {
-        
+        _finsihWithAction = NO;
     }
     return self;
 }
@@ -73,6 +75,14 @@ static CGFloat DESIGN_CELL_HEIGHT = 144;
     [super viewDidLoad];
     
     [self initViews];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    DDLogVerbose(@"%@ viewWillDisappear", LOG_TAG);
+    
+    if (!self.finsihWithAction) {
+        [self.shareExtensionSpaceDelegate cancelSelectSpace];
+    }
 }
 
 - (void)initWithSpaces:(NSMutableArray *)spaces {
@@ -137,6 +147,7 @@ static CGFloat DESIGN_CELL_HEIGHT = 144;
     DDLogVerbose(@"%@ tableView: %@ didSelectRowAtIndexPath: %@", LOG_TAG, tableView, indexPath);
     
     ShareExtensionSpace *shareExtensionSpace = [self.uiSpaces objectAtIndex:indexPath.row];
+    self.finsihWithAction = YES;
     [self.shareExtensionSpaceDelegate didSelectSpace:shareExtensionSpace.space];
     [self.navigationController popViewControllerAnimated:YES];
 }
@@ -163,6 +174,9 @@ static CGFloat DESIGN_CELL_HEIGHT = 144;
     self.view.backgroundColor = [UIColor whiteColor];
     self.navigationItem.hidesSearchBarWhenScrolling = NO;
     
+    self.navigationItem.hidesBackButton = YES;
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage systemImageNamed:@"chevron.backward"] style:UIBarButtonItemStylePlain target:self action:@selector(handleBackPressed:)];
+    
     self.spacesTableView.backgroundColor = DesignExtension.LIGHT_GREY_BACKGROUND_COLOR;
     self.spacesTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     self.spacesTableView.tableFooterView = nil;
@@ -172,6 +186,13 @@ static CGFloat DESIGN_CELL_HEIGHT = 144;
     self.spacesTableView.sectionFooterHeight = 0;
     
     [self.spacesTableView registerNib:[UINib nibWithNibName:@"ShareExtensionSpaceCell" bundle:nil] forCellReuseIdentifier:SPACE_CELL_IDENTIFIER];
+}
+
+- (IBAction)handleBackPressed:(id)sender {
+    DDLogVerbose(@"%@ handleBackPressed", LOG_TAG);
+    
+    self.finsihWithAction = YES;
+    [self.navigationController popViewControllerAnimated:YES];
 }
 
 @end

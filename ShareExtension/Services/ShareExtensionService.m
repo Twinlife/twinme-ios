@@ -77,6 +77,7 @@ static NSString *APPLICATION_NAME = @"skred";
 static NSString *APPLICATION_SCHEME = @"skred";
 
 #define CONVERSATION_ACTION [NSString stringWithFormat:@"conversation.%@",[TLTwinlife TWINLIFE_DOMAIN]]
+#define PREVIEW_ACTION [NSString stringWithFormat:@"preview.%@",[TLTwinlife TWINLIFE_DOMAIN]]
 
 //
 // Interface: Configuration
@@ -540,14 +541,14 @@ static ShareExtensionService *INSTANCE;
     });
 }
 
-- (nonnull NSURL *)getConversationURLWithOriginator:(nonnull id<TLOriginator>)originator {
+- (nonnull NSURL *)getConversationURLWithOriginator:(nonnull id<TLOriginator>)originator startPreviewFile:(BOOL)startPreviewFile {
     DDLogVerbose(@"%@ getConversationURLWithOriginator: %@", LOG_TAG, originator);
     
     NSString *url;
     if (originator.isGroup) {
-        url = [NSString stringWithFormat:@"%@://%@?group=%@", APPLICATION_SCHEME, CONVERSATION_ACTION, originator.uuid.UUIDString];
+        url = [NSString stringWithFormat:@"%@://%@?group=%@", APPLICATION_SCHEME, startPreviewFile ? PREVIEW_ACTION : CONVERSATION_ACTION, originator.uuid.UUIDString];
     } else {
-        url = [NSString stringWithFormat:@"%@://%@?contact=%@", APPLICATION_SCHEME, CONVERSATION_ACTION, originator.uuid.UUIDString];
+        url = [NSString stringWithFormat:@"%@://%@?contact=%@", APPLICATION_SCHEME, startPreviewFile ? PREVIEW_ACTION : CONVERSATION_ACTION, originator.uuid.UUIDString];
     }
     
     return [[NSURL alloc] initWithString:url];

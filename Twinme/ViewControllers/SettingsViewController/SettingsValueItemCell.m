@@ -27,6 +27,9 @@ static CGFloat DESIGN_TITLE_LARGE_WIDTH = 620;
 
 @interface SettingsValueItemCell()
 
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *iconViewLeadingConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *iconViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet UIImageView *iconView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *titleLabelLeadingConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *titleLabelWidthConstraint;
 @property (weak, nonatomic) IBOutlet UILabel *titleLabel;
@@ -62,6 +65,12 @@ static CGFloat DESIGN_TITLE_LARGE_WIDTH = 620;
     
     self.selectionStyle = UITableViewCellSelectionStyleNone;
     self.contentView.backgroundColor = Design.WHITE_COLOR;
+    
+    self.iconViewLeadingConstraint.constant *= Design.WIDTH_RATIO;
+    self.iconViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    
+    self.iconView.tintColor = Design.BLACK_COLOR;
+    
     self.titleLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
     self.titleLabelWidthConstraint.constant *= Design.WIDTH_RATIO;
     self.titleLabel.font = Design.FONT_REGULAR32;
@@ -119,9 +128,9 @@ static CGFloat DESIGN_TITLE_LARGE_WIDTH = 620;
     [self updateColor];
 }
 
-- (void)bindWithTitle:(nullable NSString *)title value:(nonnull NSString *)value backgroundColor:(nonnull UIColor *)backgroundColor {
+- (void)bindWithTitle:(nullable NSString *)title value:(nonnull NSString *)value icon:(nullable UIImage *)icon backgroundColor:(nonnull UIColor *)backgroundColor {
     DDLogVerbose(@"%@ bindWithTitle: %@ value: %@ backgroundColor: %@", LOG_TAG, title, value, backgroundColor);
-    
+
     self.contentView.backgroundColor = backgroundColor;
   
     self.valueLabel.hidden = YES;
@@ -143,6 +152,15 @@ static CGFloat DESIGN_TITLE_LARGE_WIDTH = 620;
         self.titleLabel.attributedText = valueAttributedString;
     }
     
+    if (icon) {
+        self.iconView.hidden = NO;
+        self.iconView.image = icon;
+        self.titleLabelLeadingConstraint.constant = self.iconViewLeadingConstraint.constant * 2 + self.iconViewHeightConstraint.constant;
+    } else {
+        self.iconView.hidden = YES;
+        self.titleLabelLeadingConstraint.constant = self.iconViewLeadingConstraint.constant;
+    }
+    
     [self updateColor];
 }
 
@@ -157,6 +175,8 @@ static CGFloat DESIGN_TITLE_LARGE_WIDTH = 620;
         if (self.selectImageView.hidden) {
             self.titleLabel.textColor = [UIColor whiteColor];
         }
+        
+        self.iconView.tintColor = [UIColor whiteColor];
     } else {
         self.separatorView.backgroundColor = Design.SEPARATOR_COLOR_GREY;
         self.valueLabel.textColor = Design.FONT_COLOR_DEFAULT;
@@ -164,6 +184,8 @@ static CGFloat DESIGN_TITLE_LARGE_WIDTH = 620;
         if (self.selectImageView.hidden) {
             self.titleLabel.textColor = Design.FONT_COLOR_DEFAULT;
         }
+        
+        self.iconView.tintColor = Design.BLACK_COLOR;
     }
     
 }

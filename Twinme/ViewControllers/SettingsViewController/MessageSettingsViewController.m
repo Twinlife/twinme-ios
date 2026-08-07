@@ -18,15 +18,16 @@
 
 #import "SettingsItemCell.h"
 #import "SettingsInformationCell.h"
-#import "SettingsSectionHeaderCell.h"
 #import "SettingsValueItemCell.h"
 #import "TwinmeSettingsItemCell.h"
 
 #import <TwinmeCommon/SpaceSettingsService.h>
 
 #import "SpaceSetting.h"
+
 #import <TwinmeCommon/Design.h>
 #import <TwinmeCommon/NotificationSound.h>
+#import <TwinmeCommon/SettingsSectionHeaderCell.h>
 
 #import "SelectNotificationSoundViewController.h"
 #import "SwitchView.h"
@@ -66,8 +67,6 @@ typedef enum {
     SECTION_CALLS,
     SECTION_EPHEMERAL,
     SECTION_CONTENT,
-    SECTION_LINK,
-    SECTION_MAP,
     SECTION_COUNT
 } TLTSettingSection;
 
@@ -80,8 +79,7 @@ typedef enum {
     TAG_ALLOW_COPY_INFORMATION,
     TAG_EPHEMERAL_MESSAGE,
     TAG_EPHEMERAL_MESSAGE_INFORMATION,
-    TAG_LINK_PREVIEW,
-    TAG_MAP_PREVIEW
+    TAG_ALLOW_EPHEMERAL
 } TLTSettingTag;
 
 //
@@ -151,14 +149,6 @@ typedef enum {
             [self.defaultSpaceSettings setBooleanWithName:PROPERTY_ALLOW_EPHEMERAL_MESSAGE value:updatedSwitch.isOn];
             break;
             
-        case TAG_LINK_PREVIEW:
-            [self.twinmeApplication setVisualizationLinkWithState:updatedSwitch.isOn];
-            break;
-            
-        case TAG_MAP_PREVIEW:
-            [self.twinmeApplication setVisualizationMapWithState:updatedSwitch.isOn];
-            break;
-            
         default:
             break;
     }
@@ -188,10 +178,8 @@ typedef enum {
     
     if (section == SECTION_INFO) {
         return CGFLOAT_MIN;
-    } else if (section == SECTION_LINK) {
-        return Design.SETTING_SECTION_HEIGHT;
     }
-    
+
     return Design.SETTING_SECTION_HEIGHT;
 }
 
@@ -236,16 +224,6 @@ typedef enum {
             hideSeparator = YES;
             break;
             
-        case SECTION_LINK:
-            sectionName = TwinmeLocalizedString(@"conversation_settings_view_link_title", nil).uppercaseString;;
-            hideSeparator = YES;
-            break;
-            
-        case SECTION_MAP:
-            sectionName = TwinmeLocalizedString(@"info_item_view_location", nil).uppercaseString;;
-            hideSeparator = YES;
-            break;
-            
         default:
             sectionName = @"";
             break;
@@ -282,11 +260,9 @@ typedef enum {
             
         case SECTION_CALLS:
         case SECTION_CONTENT:
-        case SECTION_LINK:
-        case SECTION_MAP:
             numberOfRowsInSection = 2;
             break;
-            
+
         default:
             numberOfRowsInSection = 0;
             break;
@@ -312,10 +288,6 @@ typedef enum {
             text = TwinmeLocalizedString(@"settings_view_display_call_title", nil);
         } else if (indexPath.section == SECTION_CONTENT) {
             text = TwinmeLocalizedString(@"settings_view_content_information", nil);
-        } else if (indexPath.section == SECTION_LINK) {
-            text = TwinmeLocalizedString(@"conversation_settings_view_link_preview_message", nil);
-        } else if (indexPath.section == SECTION_MAP) {
-            text = TwinmeLocalizedString(@"settings_view_show_location_on_map", nil);
         } else {
             text = TwinmeLocalizedString(@"settings_view_ephemeral_message", nil);
         }
@@ -340,7 +312,7 @@ typedef enum {
                 title = TwinmeLocalizedString(@"conversation_view_media_quality_original", nil);
                 value = TwinmeLocalizedString(@"conversation_view_media_quality_original_subtitle", nil);
             }
-            [cell bindWithTitle:title value:value backgroundColor:Design.WHITE_COLOR];
+            [cell bindWithTitle:title value:value icon:nil backgroundColor:Design.WHITE_COLOR];
         } else if (indexPath.section == SECTION_CALLS) {
             if ([self.twinmeApplication displayCallsMode] == TLDisplayCallsModeNone) {
                 value = TwinmeLocalizedString(@"settings_view_display_call_none", nil);;
@@ -349,12 +321,13 @@ typedef enum {
             } else {
                 value = TwinmeLocalizedString(@"calls_view_all_call_segmented_control", nil);;
             }
-            [cell bindWithTitle:nil value:value backgroundColor:Design.WHITE_COLOR];
+            [cell bindWithTitle:nil value:value icon:nil backgroundColor:Design.WHITE_COLOR];
         } else {
             NSString *expireTimeoutStringValue = [self.defaultSpaceSettings getStringWithName:PROPERTY_TIMEOUT_EPHEMERAL_MESSAGE defaultValue:[NSString stringWithFormat:@"%d", DEFAULT_TIMEOUT_MESSAGE]];
             NSInteger expireTimeout = [expireTimeoutStringValue integerValue];
             [cell bindWithTitle:TwinmeLocalizedString(@"application_timeout", nil) value:[NSString formatTimeout:expireTimeout] hiddenAccessory:YES];
         }
+
         return cell;
     } else {
         SettingsItemCell *cell = [tableView dequeueReusableCellWithIdentifier:SETTINGS_CELL_IDENTIFIER];
@@ -430,20 +403,6 @@ typedef enum {
                     tag = TAG_EPHEMERAL_MESSAGE;
                     title = TwinmeLocalizedString(@"settings_view_ephemeral_title", nil);
                 }
-                break;
-                
-            case SECTION_LINK:
-                switchState =  self.twinmeApplication.visualizationLink;
-                hiddenSwitch = NO;
-                tag = TAG_LINK_PREVIEW;
-                title = TwinmeLocalizedString(@"conversation_settings_view_link_preview", nil);
-                break;
-                
-            case SECTION_MAP:
-                switchState =  self.twinmeApplication.visualizationMap;
-                hiddenSwitch = NO;
-                tag = TAG_MAP_PREVIEW;
-                title = TwinmeLocalizedString(@"settings_view_show_maps", nil);
                 break;
                 
             default:
@@ -567,7 +526,7 @@ typedef enum {
 
 - (BOOL)isInformationPath:(NSIndexPath *)indexPath {
     
-    if ((indexPath.section == SECTION_INFO || indexPath.section == SECTION_ALLOW_COPY || indexPath.section == SECTION_EPHEMERAL || indexPath.section == SECTION_CONTENT || indexPath.section == SECTION_LINK || indexPath.section == SECTION_MAP || indexPath.section == SECTION_CALLS) && indexPath.row == 0) {
+    if ((indexPath.section == SECTION_INFO || indexPath.section == SECTION_ALLOW_COPY || indexPath.section == SECTION_EPHEMERAL || indexPath.section == SECTION_CONTENT || indexPath.section == SECTION_CALLS) && indexPath.row == 0) {
         return YES;
     }
     
