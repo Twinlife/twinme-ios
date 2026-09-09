@@ -205,6 +205,8 @@ static int MAX_GROUP_MEMBER = 5;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *fallbackLabelWidthConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *fallbackLabelTopConstraint;
 @property (weak, nonatomic) IBOutlet UILabel *fallbackLabel;
+@property (nonatomic) UIView *overlayView;
+@property (nonatomic) UIActivityIndicatorView *activityIndicatorView;
 
 @property (nonatomic) NSMutableArray *uiMembers;
 @property (nonatomic) CALayer *avatarContainerViewLayer;
@@ -213,6 +215,7 @@ static int MAX_GROUP_MEMBER = 5;
 @property (nonatomic) BOOL toRootView;
 @property (nonatomic) BOOL canInvite;
 @property (nonatomic) BOOL refreshTableScheduled;
+@property (nonatomic) BOOL updatePermissionsInProgress;
 
 @property (nonatomic) ShowGroupService *showGroupService;
 
@@ -235,6 +238,7 @@ static int MAX_GROUP_MEMBER = 5;
     if (self) {
         _toRootView = NO;
         _canInvite = NO;
+        _updatePermissionsInProgress = NO;
         _uiMembers = [[NSMutableArray alloc] init];
         
         _showGroupService = [[ShowGroupService alloc] initWithTwinmeContext:self.twinmeContext delegate:self];
@@ -258,7 +262,9 @@ static int MAX_GROUP_MEMBER = 5;
         
     // Ask the group service to get the group and its members.
     // Do this here so that we get fresh information if we are restored.
-    [self.showGroupService getGroupWithGroupId:self.group.uuid];
+    if (!self.updatePermissionsInProgress) {
+        [self.showGroupService getGroupWithGroupId:self.group.uuid];
+    }
 }
 
 #pragma mark - GroupServiceDelegate
@@ -297,6 +303,12 @@ static int MAX_GROUP_MEMBER = 5;
     self.group = group;
     self.avatar = avatar;
     
+    if (self.updatePermissionsInProgress) {
+        self.updatePermissionsInProgress = NO;
+        self.overlayView.hidden = YES;
+        [self.activityIndicatorView stopAnimating];
+    }
+    
     [self updateGroup];
 }
 
@@ -317,6 +329,32 @@ static int MAX_GROUP_MEMBER = 5;
         [self finish];
     } else {
         [self.showGroupService getGroupWithGroupId:self.group.uuid];
+    }
+}
+
+- (void)onUpdatePermissionsError:(TLBaseServiceErrorCode)errorCode {
+    DDLogVerbose(@"%@ onUpdatePermissionsError:  %d", LOG_TAG, errorCode);
+    
+    if (self.updatePermissionsInProgress) {
+        self.updatePermissionsInProgress = NO;
+        self.overlayView.hidden = YES;
+        [self.activityIndicatorView stopAnimating];
+        
+        NSString *message;
+        
+        if (errorCode == TLBaseServiceErrorCodeTimeoutError) {
+            message = TwinmeLocalizedString(@"application_connection_status_no_network_message", nil);
+        } else if (errorCode == TLBaseServiceErrorCodeNoPermission) {
+            message = TwinmeLocalizedString(@"application_not_authorized_operation", nil);
+        }
+        
+        if (message) {
+            AlertMessageView *alertMessageView = [[AlertMessageView alloc] init];
+            alertMessageView.alertMessageViewDelegate = self;
+            [alertMessageView initWithTitle:TwinmeLocalizedString(@"deleted_account_view_warning", nil) message:message];
+            [self.view addSubview:alertMessageView];
+            [alertMessageView showAlertView];
+        }
     }
 }
 
@@ -478,6 +516,10 @@ static int MAX_GROUP_MEMBER = 5;
 
 - (void)updatePermissions:(BOOL)allowInvitation allowMessage:(BOOL)allowMessage allowInviteMemberAsContact:(BOOL)allowInviteMemberAsContact {
     DDLogVerbose(@"%@ updatePermissions: %@ allowMessage: %@ allowInviteMemberAsContact: %@", LOG_TAG, allowInvitation ? @"YES":@"NO", allowMessage ? @"YES":@"NO", allowInviteMemberAsContact ? @"YES":@"NO");
+    
+    self.updatePermissionsInProgress = YES;
+    self.overlayView.hidden = NO;
+    [self.activityIndicatorView startAnimating];
     
     [self.showGroupService updatePermissions:allowInvitation allowMessage:allowMessage allowInviteMemberAsContact:allowInviteMemberAsContact];
 }
@@ -839,6 +881,19 @@ static int MAX_GROUP_MEMBER = 5;
         self.fallbackView.hidden = NO;
         self.backClickableView.hidden = YES;
     }
+    
+    self.overlayView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, Design.DISPLAY_WIDTH, Design.DISPLAY_HEIGHT)];
+    self.overlayView.backgroundColor = Design.OVERLAY_COLOR;
+    self.overlayView.hidden = YES;
+    
+    self.activityIndicatorView = [[UIActivityIndicatorView alloc]initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleMedium];
+    self.activityIndicatorView.color = [UIColor whiteColor];
+    self.activityIndicatorView.hidesWhenStopped = YES;
+    
+    [self.overlayView addSubview:self.activityIndicatorView];
+    
+    [self.activityIndicatorView setCenter:CGPointMake(Design.DISPLAY_WIDTH * 0.5, Design.DISPLAY_HEIGHT * 0.5)];
+    [self.navigationController.view addSubview:self.overlayView];
 }
 
 - (void)finish {

@@ -19,4 +19,8 @@
 
 @property (weak, nonatomic) id<AudioActionDelegate> audioActionDelegate;
 
+- (void)playAutomatically;
+
+- (void)resetAudioTrack;
+
 @end

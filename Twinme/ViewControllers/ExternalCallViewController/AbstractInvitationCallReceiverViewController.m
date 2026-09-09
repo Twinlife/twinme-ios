@@ -892,10 +892,11 @@ static UIColor *DESIGN_GREEN_VIEW_COLOR;
     
     ShareItemSource *shareItem = [[ShareItemSource alloc] initWithMessage:message subject:self.callReceiver.name];
     NSArray *shareItems;
+    UIImage *qrcode = self.qrcodeImageView.image;
     if (scheduleUrl) {
-        shareItems = @[shareItem, scheduleUrl];
+        shareItems = @[shareItem, scheduleUrl, qrcode];
     } else {
-        shareItems = @[shareItem];
+        shareItems = @[shareItem, qrcode];
     }
     
     UIActivityViewController *activityViewController = [[UIActivityViewController alloc] initWithActivityItems:shareItems applicationActivities:nil];

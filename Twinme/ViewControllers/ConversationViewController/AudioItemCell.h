@@ -13,6 +13,14 @@
 // Interface: AudioItemCell
 //
 
+@protocol AudioActionDelegate;
+
 @interface AudioItemCell : ItemCell
+
+@property (weak, nonatomic) id<AudioActionDelegate> audioActionDelegate;
+
+- (void)playAutomatically;
+
+- (void)resetAudioTrack;
 
 @end

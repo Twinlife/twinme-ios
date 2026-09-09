@@ -443,7 +443,8 @@ typedef enum {
     if (self.inBackground) {
         [self postNotificationWithNotificationInfo:notificationInfo];
         
-    } else {
+    } else if (notificationInfo.alertPrivateTitle && notificationInfo.alertBody) {
+        // Ignore silent notifications.
         dispatch_async(dispatch_get_main_queue(), ^{
             UIImage *avatar = [self getAvatarWithOriginator:notificationInfo.originator];
             
@@ -452,18 +453,14 @@ typedef enum {
                 notificationSound = [[NotificationSound alloc] initWithSettings:notificationInfo.soundSettings];
             }
             
-            if (notificationInfo.alertPrivateTitle && notificationInfo.alertBody) {
-                NotificationView *notificationView = [[NotificationView alloc] initWithNotificationId:notificationInfo.identifier title:notificationInfo.alertPrivateTitle message:notificationInfo.alertBody avatar:avatar notificationSound:notificationSound actionButtons:NO notificationViewDelegate:self];
+            NotificationView *notificationView = [[NotificationView alloc] initWithNotificationId:notificationInfo.identifier title:notificationInfo.alertPrivateTitle message:notificationInfo.alertBody avatar:avatar notificationSound:notificationSound actionButtons:NO notificationViewDelegate:self];
                 notification.notificationView = notificationView;
                 
-                // Vibrate only in the foreground and when sounds and vibration is enabled.
-                if (notificationInfo.vibrate) {
-                    AudioServicesPlayAlertSound(kSystemSoundID_Vibrate);
-                }
-                [notificationView showInView:[[[UIApplication sharedApplication] delegate]window]];
-            } else {
-                [self.twinmeContext assertionWithAssertPoint:[ApplicationAssertPoint INVALID_TITLE], [TLAssertValue initWithSubject:contact], nil];
+            // Vibrate only in the foreground and when sounds and vibration is enabled.
+            if (notificationInfo.vibrate) {
+                AudioServicesPlayAlertSound(kSystemSoundID_Vibrate);
             }
+            [notificationView showInView:[[[UIApplication sharedApplication] delegate]window]];
         });
     }
 }

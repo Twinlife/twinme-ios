@@ -33,6 +33,7 @@ NSString * const VIDEO_PRESENTATION_LINK = @"https://youtu.be/uj2bFKQ_L60";
 NSString * const KURIO_LINK = @"https://www.youtube.com/embed/BZCIT-g5tBo/";
 NSString * const DONT_KILL_MY_APP_LINK = @"https://dontkillmyapp.com/";
 NSString * const CONNECT_PEOPLE_LINK = @"https://twin.me/support/connect-people";
+NSString * const OPEN_SOURCE_LINK = @"https://github.com/twinlife";
 
 // Image
 NSString * const ADD_CONTACT_IMAGE = @"AddContact";
@@ -51,6 +52,7 @@ NSString * const VIDEO_CALL_IMAGE = @"VideoCall";
 NSString * const SWITCH_CAMERA_IMAGE = @"SwitchCamera";
 NSString * const VIDEO_MUTE_IMAGE = @"VideoMute";
 NSString * const MENU_IMAGE = @"Menu";
+NSString * const CHECK_IMAGE = @"Check";
 
 //
 // Interface: FAQArticleView ()
@@ -270,7 +272,7 @@ NSString * const MENU_IMAGE = @"Menu";
     DDLogVerbose(@"%@ interactWithURL: %@", LOG_TAG, url);
     
     NSString *path = [url absoluteString];
-    if ([path isEqual:VIDEO_PRESENTATION_LINK] || [path isEqual:KURIO_LINK] || [path isEqual:DONT_KILL_MY_APP_LINK]) {
+    if ([path isEqual:VIDEO_PRESENTATION_LINK] || [path isEqual:KURIO_LINK] || [path isEqual:DONT_KILL_MY_APP_LINK] || [path isEqual:OPEN_SOURCE_LINK]) {
         [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:nil];
     } else {
         if ([self.faqArticleViewDelegate respondsToSelector:@selector(didTapOnFAQLink:faqArticleView:)]) {
@@ -322,6 +324,7 @@ NSString * const MENU_IMAGE = @"Menu";
     self.images[SWITCH_CAMERA_IMAGE] = @"TurnActionCall";
     self.images[VIDEO_MUTE_IMAGE] = @"VideoMuteActionCallOn";
     self.images[MENU_IMAGE] = @"SideMenu";
+    self.images[CHECK_IMAGE] = @"CheckMarkGrey";
 }
 
 - (void)updateColor {

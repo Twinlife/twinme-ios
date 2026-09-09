@@ -526,6 +526,7 @@ typedef enum {
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadData) name:UIApplicationDidBecomeActiveNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didSelectLinkWithInvitationURL:) name:SelectInvitationLink object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidEnterBackground:) name:UIApplicationDidEnterBackgroundNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onAudioPlayerDidFinishPlaying:) name:@"audioPlayerDidFinishPlaying" object:nil];
     
     [self setupTitleView];
     [self setupTextRightView];
@@ -598,6 +599,7 @@ typedef enum {
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillChangeFrameNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationDidBecomeActiveNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:SelectInvitationLink object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"audioPlayerDidFinishPlaying" object:nil];
     
     if ([UIDevice currentDevice].proximityMonitoringEnabled) {
         [UIDevice currentDevice].proximityMonitoringEnabled = NO;
@@ -975,7 +977,9 @@ typedef enum {
     
     self.replyItem = nil;
     
-    [SoundEffect playSoundWithType:SoundEffectTypeSendMessage];
+    if (![self isSilentModeEnable]) {
+        [SoundEffect playSoundWithType:SoundEffectTypeSendMessage];
+    }
     
     if (self.replyView) {
         self.replyView.hidden = YES;
@@ -1390,7 +1394,7 @@ typedef enum {
             break;
     }
     
-    if (playSound) {
+    if (playSound && ![self isSilentModeEnable]) {
         [SoundEffect playSoundWithType:SoundEffectTypeNewMessage];
     }
     
@@ -1476,7 +1480,9 @@ typedef enum {
                 case TLDescriptorTypeAudioDescriptor: {
                     TLAudioDescriptor *audioDescriptor = (TLAudioDescriptor *)descriptor;
                     if (audioDescriptor.isAvailable) {
-                        [SoundEffect playSoundWithType:SoundEffectTypeNewMessage];
+                        if (![self isSilentModeEnable]) {
+                            [SoundEffect playSoundWithType:SoundEffectTypeNewMessage];
+                        }
                         [self addAudioDescriptor:audioDescriptor];
                     }
                     break;
@@ -1802,7 +1808,9 @@ typedef enum {
             }
             
             if (updateType == TLConversationServiceUpdateTypePeerAnnotations && ![updatedItem isPeerItem]) {
-                [SoundEffect playSoundWithType:SoundEffectTypeEmoji];
+                if (![self isSilentModeEnable]) {
+                    [SoundEffect playSoundWithType:SoundEffectTypeEmoji];
+                }
             }
             
             ItemCell *itemCell = (ItemCell *)[self.tableView cellForRowAtIndexPath:[self itemIndexToIndexPath:updatedItemIndex]];
@@ -2237,6 +2245,7 @@ typedef enum {
             audioItemCell.selectItemDelegate = self;
             audioItemCell.reactionViewDelegate = self;
             audioItemCell.infoItemDelegate = self;
+            audioItemCell.audioActionDelegate = self;
             return audioItemCell;
         }
             
@@ -2746,7 +2755,10 @@ typedef enum {
     
     [self updateSendButton:NO];
     [self closeMenu];
-    [SoundEffect playSoundWithType:SoundEffectTypeSendMessage];
+    
+    if (![self isSilentModeEnable]) {
+        [SoundEffect playSoundWithType:SoundEffectTypeSendMessage];
+    }
     
     self.replyItem = nil;
     
@@ -3492,7 +3504,11 @@ typedef enum {
                 }
             });
         }
-        [SoundEffect playSoundWithType:SoundEffectTypeDeleteMessage];
+        
+        if (![self isSilentModeEnable]) {
+            [SoundEffect playSoundWithType:SoundEffectTypeDeleteMessage];
+        }
+        
         [self deleteItemInternal:item];
         
         if (self.selectedItem.descriptorId == item.descriptorId && self.isMenuOpen) {
@@ -3527,6 +3543,64 @@ typedef enum {
                 [self.conversationService markDescriptorReadWithDescriptorId:item.descriptorId];
             }
             break;
+        }
+    }
+}
+
+- (void)onAudioPlayerDidFinishPlaying:(NSNotification *)notification {
+    DDLogVerbose(@"%@ onAudioPlayerDidFinishPlaying: %@", LOG_TAG, notification);
+    
+    if (notification.userInfo && [notification.userInfo objectForKey:AudioPlayerDidFinishPlayingDescriptorId]) {
+        TLDescriptorId *descriptorId = notification.userInfo[AudioPlayerDidFinishPlayingDescriptorId];
+        Item *currentItem = nil;
+        NSInteger itemIndex = -1;
+        for (Item *lItem in self.items) {
+            itemIndex ++;
+            if ([descriptorId isEqual:lItem.descriptorId]) {
+                currentItem = lItem;
+                break;
+            }
+        }
+        if (itemIndex < 0 || !currentItem) {
+            return;
+        }
+        
+        if (currentItem.type == ItemTypeAudio) {
+            ItemCell *itemCell = [self.tableView cellForRowAtIndexPath:[self itemIndexToIndexPath:itemIndex]];
+            if ([itemCell isKindOfClass:[AudioItemCell class]]) {
+                AudioItemCell *audioItemCell = (AudioItemCell *)itemCell;
+                [audioItemCell resetAudioTrack];
+            }
+        } else if (currentItem.type == ItemTypePeerAudio) {
+            ItemCell *itemCell = [self.tableView cellForRowAtIndexPath:[self itemIndexToIndexPath:itemIndex]];
+            if ([itemCell isKindOfClass:[PeerAudioItemCell class]]) {
+                PeerAudioItemCell *peerAudioItemCell = (PeerAudioItemCell *)itemCell;
+                [peerAudioItemCell resetAudioTrack];
+            }
+        }
+            
+        NSInteger nextItemIndex = - 1;
+        Item *nextItem = nil;
+        if (itemIndex + 1 < self.items.count) {
+            nextItemIndex = itemIndex + 1;
+            nextItem = [self.items objectAtIndex:nextItemIndex];
+        }
+            
+
+        if (nextItem) {
+            if (nextItem.type == ItemTypeAudio) {
+                ItemCell *itemCell = [self.tableView cellForRowAtIndexPath:[self itemIndexToIndexPath:nextItemIndex]];
+                if ([itemCell isKindOfClass:[AudioItemCell class]]) {
+                    AudioItemCell *audioItemCell = (AudioItemCell *)itemCell;
+                    [audioItemCell playAutomatically];
+                }
+            } else if (nextItem.type == ItemTypePeerAudio) {
+                ItemCell *itemCell = [self.tableView cellForRowAtIndexPath:[self itemIndexToIndexPath:nextItemIndex]];
+                if ([itemCell isKindOfClass:[PeerAudioItemCell class]]) {
+                    PeerAudioItemCell *peerAudioItemCell = (PeerAudioItemCell *)itemCell;
+                    [peerAudioItemCell playAutomatically];
+                }
+            }
         }
     }
 }
@@ -7315,6 +7389,29 @@ typedef enum {
    }
    
    return window;
+}
+
+- (BOOL)isSilentModeEnable {
+    DDLogVerbose(@"%@ isSilentModeEnable", LOG_TAG);
+    
+    BOOL silentMode = NO;
+    int64_t silentExpiration;
+    
+    if (self.group) {
+        silentMode = [self.group getBooleanWithName:PROPERTY_CONVERSATION_SILENT_MODE defaultValue:NO];
+        silentExpiration = [self.group getNumberWithName:PROPERTY_CONVERSATION_SILENT_MODE_EXPIRATION defaultValue:0];
+    } else {
+        TLContact *contact = (TLContact *)self.contact;
+        silentMode = [contact getBooleanWithName:PROPERTY_CONVERSATION_SILENT_MODE defaultValue:NO];
+        silentExpiration = [contact getNumberWithName:PROPERTY_CONVERSATION_SILENT_MODE_EXPIRATION defaultValue:0];
+    }
+    
+    NSTimeInterval timeInterval = [[NSDate date] timeIntervalSince1970];
+    if (silentExpiration > 0 && silentExpiration < timeInterval) {
+        silentMode = NO;
+    }
+    
+    return silentMode;
 }
 
 - (void)updateNavigationBarAvatar {

@@ -101,6 +101,16 @@ typedef enum {
     [self.tableView reloadData];
 }
 
+- (void)viewWillDisappear:(BOOL)animated {
+    DDLogVerbose(@"%@ viewWillDisappear: %@", LOG_TAG, animated ? @"YES" : @"NO");
+    
+    if (self.isMovingFromParentViewController) {
+        if ([self.delegate respondsToSelector:@selector(updatePermissions:allowMessage:allowInviteMemberAsContact:)]) {
+            [self.delegate updatePermissions:self.allowInvitation allowMessage:self.allowMessage allowInviteMemberAsContact:self.allowInviteMemberAsContact];
+        }
+    }
+}
+
 - (void)initWithGroup:(TLGroup *)group {
     DDLogVerbose(@"%@ initWithGroup: %@", LOG_TAG, group);
     
@@ -300,21 +310,9 @@ typedef enum {
     self.tableView.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
 }
 
-- (void)handleBackTapGesture:(UITapGestureRecognizer *)sender {
-    DDLogVerbose(@"%@ handleBackTapGesture: %@", LOG_TAG, sender);
-    
-    if (sender.state == UIGestureRecognizerStateEnded) {
-        [self finish];
-    }
-}
-
 - (void)finish {
     DDLogVerbose(@"%@ finish", LOG_TAG);
 
-    if ([self.delegate respondsToSelector:@selector(updatePermissions:allowMessage:allowInviteMemberAsContact:)]) {
-        [self.delegate updatePermissions:self.allowInvitation allowMessage:self.allowMessage allowInviteMemberAsContact:self.allowInviteMemberAsContact];
-    }
-    
     [self.navigationController popViewControllerAnimated:YES];
 }
 

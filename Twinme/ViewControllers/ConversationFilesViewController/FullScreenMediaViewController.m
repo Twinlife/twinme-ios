@@ -221,36 +221,35 @@ static NSString *FULL_SCREEN_VIDEO_CELL_IDENTIFIER = @"FullScreenVideoCellIdenti
 
 - (void)onMarkDescriptorDeleted:(TLDescriptor *)descriptor {
     DDLogVerbose(@"%@ onMarkDescriptorDeleted: %@", LOG_TAG, descriptor);
-        
-    BOOL needsUpdate = NO;
-    TLDescriptorId *descriptorId = descriptor.descriptorId;
-    int indexMedia = 0;
-    for (Item *item in self.items) {
-        if ([item.descriptorId isEqual:descriptorId]) {
-            needsUpdate = YES;
-            [self.items removeObject:item];
             
-            [self.mediaCollectionView performBatchUpdates:^{
-                NSIndexPath *deletedIndexPath = [NSIndexPath indexPathForItem:indexMedia inSection:0];
-                [self.mediaCollectionView deleteItemsAtIndexPaths:@[deletedIndexPath]];
-            } completion:nil];
-            
-            break;
-        }
-        indexMedia++;
+    NSUInteger indexMedia = [self.items indexOfObjectPassingTest:^BOOL(Item *item, NSUInteger index, BOOL *stop) {
+        return [item.descriptorId isEqual:descriptor.descriptorId];
+    }];
+
+    if (indexMedia == NSNotFound) {
+        return;
     }
-    
-    if (self.items.count == 0) {
-        [self finish];
-    } else if (needsUpdate) {
-        if (self.currentItemIndex >= self.items.count) {
-            self.currentItemIndex = self.items.count - 1;
-        } else if (self.currentItemIndex > 0) {
+
+    NSIndexPath *deletedIndexPath = [NSIndexPath indexPathForItem:indexMedia inSection:0];
+    [self.mediaCollectionView performBatchUpdates:^{
+        [self.items removeObjectAtIndex:indexMedia];
+        [self.mediaCollectionView deleteItemsAtIndexPaths:@[deletedIndexPath]];
+    } completion:^(BOOL finished) {
+        if (self.items.count == 0) {
+            [self finish];
+            return;
+        }
+
+        if (self.currentItemIndex > indexMedia) {
             self.currentItemIndex--;
+        } else if (self.currentItemIndex >= self.items.count) {
+            self.currentItemIndex = self.items.count - 1;
         }
-        [self.mediaCollectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:self.currentItemIndex inSection:0] atScrollPosition:UICollectionViewScrollPositionNone animated:NO];
+
+        NSIndexPath *currentIndexPath = [NSIndexPath indexPathForItem:self.currentItemIndex inSection:0];
+        [self.mediaCollectionView scrollToItemAtIndexPath:currentIndexPath atScrollPosition:UICollectionViewScrollPositionNone  animated:NO];
         [self updateCurrentItem:YES];
-    }
+    }];
 }
 
 - (void)onDeleteDescriptors:(NSSet<TLDescriptorId *> *)descriptors {
@@ -326,6 +325,10 @@ static NSString *FULL_SCREEN_VIDEO_CELL_IDENTIFIER = @"FullScreenVideoCellIdenti
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(nonnull NSIndexPath *)indexPath {
     DDLogVerbose(@"%@ collectionView: %@ cellForItemAtIndexPath: %@", LOG_TAG, collectionView, indexPath);
             
+    if (indexPath.row >= self.items.count) {
+        return [[UICollectionViewCell alloc]init];
+    }
+    
     Item *item = [self.items objectAtIndex:indexPath.row];
     
     if (item.type == ItemTypeImage || item.type == ItemTypePeerImage) {

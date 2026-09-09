@@ -35,6 +35,7 @@
 #import "AboutViewController.h"
 #import "PremiumServicesViewController.h"
 #import "PrivacyViewController.h"
+#import "DiagnosticsViewController.h"
 #import "CoachMarkViewController.h"
 
 #import <TwinmeCommon/ApplicationDelegate.h>
@@ -300,7 +301,7 @@ static NSString *HEADER_SETTINGS_CELL_IDENTIFIER = @"HeaderSettingsCellIdentifie
             break;
             
         case SUPPORT_VIEW_SECTION:
-            numberOfRowsInSection = 4;
+            numberOfRowsInSection = 5;
             break;
             
         case LOGOUT_VIEW_SECTION:
@@ -369,11 +370,14 @@ static NSString *HEADER_SETTINGS_CELL_IDENTIFIER = @"HeaderSettingsCellIdentifie
                     title = TwinmeLocalizedString(@"navigation_view_help", nil);
                 } else if (indexPath.row == 1) {
                     hiddenAccessory = NO;
-                    title = TwinmeLocalizedString(@"navigation_view_about_twinme", nil);
+                    title = TwinmeLocalizedString(@"account_view_title", nil);
                 } else if (indexPath.row == 2) {
                     hiddenAccessory = NO;
-                    title = TwinmeLocalizedString(@"account_view_title", nil);
+                    title = TwinmeLocalizedString(@"diagnostics_view_title", nil);
                 } else if (indexPath.row == 3) {
+                    hiddenAccessory = NO;
+                    title = TwinmeLocalizedString(@"navigation_view_about_twinme", nil);
+                } else if (indexPath.row == 4) {
                     hiddenAccessory = NO;
                     title = TwinmeLocalizedString(@"migration_twinme_plus_view_premium_title", nil);
                 }
@@ -388,11 +392,11 @@ static NSString *HEADER_SETTINGS_CELL_IDENTIFIER = @"HeaderSettingsCellIdentifie
                 break;
         }
         
-        if (indexPath.section == SUPPORT_VIEW_SECTION && indexPath.row == 1) {
-            [cell bindWithTitle:title hiddenAccessory:hiddenAccessory disableSetting:NO updateAvailable:[self.twinmeApplication.lastVersionManager isNewVersionAvailable] color:Design.FONT_COLOR_DEFAULT];
-        } else if (indexPath.section == SUPPORT_VIEW_SECTION && indexPath.row == 2) {
+       if (indexPath.section == SUPPORT_VIEW_SECTION && indexPath.row == 1) {
             cell.delegate = self;
             [cell bindWithTitle:title hiddenAccessory:hiddenAccessory disableSetting:NO color:Design.FONT_COLOR_DEFAULT badgeTitle:TwinmeLocalizedString(@"application_new", nil) showNotification:[self.twinmeApplication showBackupWarning]];
+        } else if (indexPath.section == SUPPORT_VIEW_SECTION && indexPath.row == 4) {
+            [cell bindWithTitle:title hiddenAccessory:hiddenAccessory disableSetting:NO updateAvailable:[self.twinmeApplication.lastVersionManager isNewVersionAvailable] color:Design.FONT_COLOR_DEFAULT];
         } else {
             [cell bindWithTitle:title hiddenAccessory:hiddenAccessory disableSetting:NO color:Design.FONT_COLOR_DEFAULT];
         }
@@ -437,12 +441,15 @@ static NSString *HEADER_SETTINGS_CELL_IDENTIFIER = @"HeaderSettingsCellIdentifie
                 HelpViewController *helpViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"HelpViewController"];
                 [twinmeNavigationController pushViewController:helpViewController animated:YES];
             } else if (indexPath.row == 1) {
-                AboutViewController *aboutViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"AboutViewController"];
-                [twinmeNavigationController pushViewController:aboutViewController animated:YES];
-            }  else if (indexPath.row == 2) {
                 AccountViewController *accountViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"AccountViewController"];
                 [twinmeNavigationController pushViewController:accountViewController animated:YES];
+            } else if (indexPath.row == 2) {
+                DiagnosticsViewController *diagnosticsViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"DiagnosticsViewController"];
+                [twinmeNavigationController pushViewController:diagnosticsViewController animated:YES];
             } else if (indexPath.row == 3) {
+                AboutViewController *aboutViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"AboutViewController"];
+                [twinmeNavigationController pushViewController:aboutViewController animated:YES];
+            } else if (indexPath.row == 4) {
                 PremiumServicesViewController *premiumServicesViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"PremiumServicesViewController"];
                 premiumServicesViewController.hideDoNotShow = YES;
                 TwinmeNavigationController *upgradeNavigationController = [[TwinmeNavigationController alloc]initWithRootViewController:premiumServicesViewController];

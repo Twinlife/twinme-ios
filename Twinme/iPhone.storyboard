@@ -7392,6 +7392,42 @@
             </objects>
             <point key="canvasLocation" x="-15512" y="-2122.0389805097452"/>
         </scene>
+        <!--Diagnostics View Controller-->
+        <scene sceneID="GA9-7u-KqJ">
+            <objects>
+                <viewController storyboardIdentifier="DiagnosticsViewController" automaticallyAdjustsScrollViewInsets="NO" id="4Jd-VT-7Wq" customClass="DiagnosticsViewController" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="uSJ-dr-UfR">
+                        <rect key="frame" x="0.0" y="0.0" width="750" height="1334"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="default" rowHeight="50" sectionHeaderHeight="18" sectionFooterHeight="18" translatesAutoresizingMaskIntoConstraints="NO" id="NbB-ab-qJI">
+                                <rect key="frame" x="0.0" y="96" width="750" height="1238"/>
+                                <color key="backgroundColor" red="0.93725490199999995" green="0.93725490199999995" blue="0.95686274510000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <connections>
+                                    <outlet property="dataSource" destination="4Jd-VT-7Wq" id="2M9-rd-mTE"/>
+                                    <outlet property="delegate" destination="4Jd-VT-7Wq" id="RMA-Jc-wWW"/>
+                                </connections>
+                            </tableView>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="uFu-G5-E6w"/>
+                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstItem="NbB-ab-qJI" firstAttribute="bottom" secondItem="uSJ-dr-UfR" secondAttribute="bottom" id="Pvm-sh-mqN"/>
+                            <constraint firstItem="NbB-ab-qJI" firstAttribute="top" secondItem="uFu-G5-E6w" secondAttribute="top" id="TuL-1K-hkX"/>
+                            <constraint firstItem="NbB-ab-qJI" firstAttribute="leading" secondItem="uFu-G5-E6w" secondAttribute="leading" id="bId-po-kCe"/>
+                            <constraint firstItem="NbB-ab-qJI" firstAttribute="trailing" secondItem="uFu-G5-E6w" secondAttribute="trailing" id="iHW-HF-9sX"/>
+                        </constraints>
+                    </view>
+                    <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+                    <size key="freeformSize" width="750" height="1334"/>
+                    <connections>
+                        <outlet property="tableView" destination="NbB-ab-qJI" id="1T5-cW-0DE"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="LtO-Kr-rXj" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-2474" y="11745"/>
+        </scene>
     </scenes>
     <resources>
         <image name="ActionBarAddContact" width="28" height="28"/>
@@ -7440,7 +7476,7 @@
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
         <systemColor name="systemTealColor">
-            <color red="0.0" green="0.76470588240000004" blue="0.81568627449999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.0" green="0.76470588235294112" blue="0.81568627450980391" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

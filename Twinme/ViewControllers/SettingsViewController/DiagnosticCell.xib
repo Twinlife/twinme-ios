@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="24765" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24743"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="KGk-i7-Jjw" customClass="DiagnosticCell">
+            <rect key="frame" x="0.0" y="0.0" width="750" height="120"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
+                <rect key="frame" x="0.0" y="0.0" width="750" height="120"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="NotificationsIcon" translatesAutoresizingMaskIntoConstraints="NO" id="3jv-tX-kUy">
+                        <rect key="frame" x="32" y="39" width="42" height="42"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="42" id="gXl-8o-TAw"/>
+                        </constraints>
+                    </imageView>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text=".title" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="8h9-Ux-u9f">
+                        <rect key="frame" x="106" y="45.666666666666664" width="538" height="28.666666666666664"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="24"/>
+                        <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="DiagnosticOKIcon" translatesAutoresizingMaskIntoConstraints="NO" id="ket-yd-pY0">
+                        <rect key="frame" x="676" y="39" width="42" height="42"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="42" id="dx3-Wq-8yc"/>
+                        </constraints>
+                    </imageView>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="8dc-qg-ocY">
+                        <rect key="frame" x="0.0" y="119" width="750" height="1"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="1" id="32L-wc-sSw"/>
+                        </constraints>
+                    </view>
+                </subviews>
+                <constraints>
+                    <constraint firstItem="ket-yd-pY0" firstAttribute="width" secondItem="ket-yd-pY0" secondAttribute="height" multiplier="1:1" id="0NN-Ga-OPb"/>
+                    <constraint firstItem="3jv-tX-kUy" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="4lX-No-wc3"/>
+                    <constraint firstItem="8h9-Ux-u9f" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="A6o-Wd-YSF"/>
+                    <constraint firstAttribute="bottom" secondItem="8dc-qg-ocY" secondAttribute="bottom" id="B9B-Ps-qBM"/>
+                    <constraint firstItem="8dc-qg-ocY" firstAttribute="centerX" secondItem="H2p-sc-9uM" secondAttribute="centerX" id="Fk8-gM-jNB"/>
+                    <constraint firstAttribute="trailing" secondItem="ket-yd-pY0" secondAttribute="trailing" constant="32" id="TTG-OU-tCd"/>
+                    <constraint firstItem="3jv-tX-kUy" firstAttribute="width" secondItem="3jv-tX-kUy" secondAttribute="height" multiplier="1:1" id="Z7W-Mv-n3F"/>
+                    <constraint firstItem="ket-yd-pY0" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="aap-Nt-rac"/>
+                    <constraint firstItem="8h9-Ux-u9f" firstAttribute="leading" secondItem="3jv-tX-kUy" secondAttribute="trailing" constant="32" id="dwm-GN-7Lp"/>
+                    <constraint firstItem="3jv-tX-kUy" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="32" id="su8-Cg-u6O"/>
+                    <constraint firstItem="ket-yd-pY0" firstAttribute="leading" secondItem="8h9-Ux-u9f" secondAttribute="trailing" constant="32" id="vCR-lW-7AP"/>
+                    <constraint firstItem="8dc-qg-ocY" firstAttribute="width" secondItem="H2p-sc-9uM" secondAttribute="width" id="yxO-4j-TeF"/>
+                </constraints>
+            </tableViewCellContentView>
+            <viewLayoutGuide key="safeArea" id="aW0-zy-SZf"/>
+            <connections>
+                <outlet property="iconView" destination="3jv-tX-kUy" id="WkV-g2-oqZ"/>
+                <outlet property="iconViewHeightConstraint" destination="gXl-8o-TAw" id="Sdv-uu-2SK"/>
+                <outlet property="iconViewLeadingConstraint" destination="su8-Cg-u6O" id="wUs-EE-K1t"/>
+                <outlet property="separatorView" destination="8dc-qg-ocY" id="4Zg-wM-BOD"/>
+                <outlet property="separatorViewHeightConstraint" destination="32L-wc-sSw" id="ZJ8-5p-8Dt"/>
+                <outlet property="stateImageView" destination="ket-yd-pY0" id="IvX-0f-VGO"/>
+                <outlet property="stateImageViewHeightConstraint" destination="dx3-Wq-8yc" id="WSm-Kt-aFV"/>
+                <outlet property="stateImageViewTrailingConstraint" destination="TTG-OU-tCd" id="mY8-Py-Y4M"/>
+                <outlet property="titleLabel" destination="8h9-Ux-u9f" id="CBx-VY-69D"/>
+                <outlet property="titleLabelLeadingConstraint" destination="dwm-GN-7Lp" id="uJm-Ov-EYj"/>
+                <outlet property="titleLabelTrailingConstraint" destination="vCR-lW-7AP" id="6p4-by-sEC"/>
+            </connections>
+            <point key="canvasLocation" x="-276" y="86"/>
+        </tableViewCell>
+    </objects>
+    <resources>
+        <image name="DiagnosticOKIcon" width="24" height="24"/>
+        <image name="NotificationsIcon" width="20" height="22"/>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+    </resources>
+</document>

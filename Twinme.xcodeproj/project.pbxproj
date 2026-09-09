@@ -1275,6 +1275,16 @@
 		579139962D845E4500C4058D /* AddContactCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 579139942D845E4500C4058D /* AddContactCell.m */; };
 		579139972D845E4500C4058D /* AddContactCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 579139952D845E4500C4058D /* AddContactCell.xib */; };
 		579280D22D2BF31B009F733D /* DeleteAccountConfirmView.m in Sources */ = {isa = PBXBuildFile; fileRef = 579280D12D2BF31B009F733D /* DeleteAccountConfirmView.m */; };
+		579693C03041F14100C149F7 /* DiagnosticCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 579693BF3041F14100C149F7 /* DiagnosticCell.xib */; };
+		579693C13041F14100C149F7 /* DiagnosticCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 579693BE3041F14100C149F7 /* DiagnosticCell.m */; };
+		579693C23041F14100C149F7 /* DiagnosticCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 579693BF3041F14100C149F7 /* DiagnosticCell.xib */; };
+		579693C33041F14100C149F7 /* DiagnosticCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 579693BE3041F14100C149F7 /* DiagnosticCell.m */; };
+		579693D83041F16A00C149F7 /* DiagnosticsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 579693D73041F16A00C149F7 /* DiagnosticsViewController.m */; };
+		579693D93041F16A00C149F7 /* DiagnosticsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 579693D73041F16A00C149F7 /* DiagnosticsViewController.m */; };
+		579693DC3041F18C00C149F7 /* UIDiagnosticItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 579693DB3041F18C00C149F7 /* UIDiagnosticItem.m */; };
+		579693DD3041F18C00C149F7 /* UIDiagnosticItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 579693DB3041F18C00C149F7 /* UIDiagnosticItem.m */; };
+		579693E03045528800C149F7 /* UIDiagnosticSection.m in Sources */ = {isa = PBXBuildFile; fileRef = 579693DF3045528800C149F7 /* UIDiagnosticSection.m */; };
+		579693E13045528800C149F7 /* UIDiagnosticSection.m in Sources */ = {isa = PBXBuildFile; fileRef = 579693DF3045528800C149F7 /* UIDiagnosticSection.m */; };
 		579F818C2F9FA0410032EA27 /* UIPollResult.m in Sources */ = {isa = PBXBuildFile; fileRef = 579F818B2F9FA0410032EA27 /* UIPollResult.m */; };
 		579F818D2F9FA0410032EA27 /* UIPollResult.m in Sources */ = {isa = PBXBuildFile; fileRef = 579F818B2F9FA0410032EA27 /* UIPollResult.m */; };
 		57A1D7352EA652EA00EE0071 /* DebugSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 57A1D7342EA652EA00EE0071 /* DebugSettingsViewController.m */; };
@@ -2675,6 +2685,15 @@
 		579139952D845E4500C4058D /* AddContactCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AddContactCell.xib; sourceTree = "<group>"; };
 		579280D02D2BF31B009F733D /* DeleteAccountConfirmView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = DeleteAccountConfirmView.h; path = Twinme/ViewControllers/AccountViewController/DeleteAccountConfirmView.h; sourceTree = SOURCE_ROOT; };
 		579280D12D2BF31B009F733D /* DeleteAccountConfirmView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = DeleteAccountConfirmView.m; path = Twinme/ViewControllers/AccountViewController/DeleteAccountConfirmView.m; sourceTree = SOURCE_ROOT; };
+		579693BD3041F14100C149F7 /* DiagnosticCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DiagnosticCell.h; sourceTree = "<group>"; };
+		579693BE3041F14100C149F7 /* DiagnosticCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DiagnosticCell.m; sourceTree = "<group>"; };
+		579693BF3041F14100C149F7 /* DiagnosticCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = DiagnosticCell.xib; sourceTree = "<group>"; };
+		579693D63041F16A00C149F7 /* DiagnosticsViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DiagnosticsViewController.h; sourceTree = "<group>"; };
+		579693D73041F16A00C149F7 /* DiagnosticsViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DiagnosticsViewController.m; sourceTree = "<group>"; };
+		579693DA3041F18C00C149F7 /* UIDiagnosticItem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UIDiagnosticItem.h; sourceTree = "<group>"; };
+		579693DB3041F18C00C149F7 /* UIDiagnosticItem.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UIDiagnosticItem.m; sourceTree = "<group>"; };
+		579693DE3045528800C149F7 /* UIDiagnosticSection.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UIDiagnosticSection.h; sourceTree = "<group>"; };
+		579693DF3045528800C149F7 /* UIDiagnosticSection.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UIDiagnosticSection.m; sourceTree = "<group>"; };
 		579F818A2F9FA0410032EA27 /* UIPollResult.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = UIPollResult.h; path = ViewControllers/ConversationViewController/UIPollResult.h; sourceTree = "<group>"; };
 		579F818B2F9FA0410032EA27 /* UIPollResult.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = UIPollResult.m; path = ViewControllers/ConversationViewController/UIPollResult.m; sourceTree = "<group>"; };
 		57A1D7332EA652EA00EE0071 /* DebugSettingsViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DebugSettingsViewController.h; sourceTree = "<group>"; };
@@ -5176,6 +5195,11 @@
 				83A6C52F26C6598700997FE0 /* DefaultTabCell.h */,
 				83A6C53026C6598700997FE0 /* DefaultTabCell.m */,
 				83A6C52E26C6598700997FE0 /* DefaultTabCell.xib */,
+				579693BD3041F14100C149F7 /* DiagnosticCell.h */,
+				579693BE3041F14100C149F7 /* DiagnosticCell.m */,
+				579693BF3041F14100C149F7 /* DiagnosticCell.xib */,
+				579693D63041F16A00C149F7 /* DiagnosticsViewController.h */,
+				579693D73041F16A00C149F7 /* DiagnosticsViewController.m */,
 				01A0587A28227E260068B387 /* DisplayModeCell.h */,
 				01A0587B28227E260068B387 /* DisplayModeCell.m */,
 				01A0587928227E260068B387 /* DisplayModeCell.xib */,
@@ -5189,10 +5213,6 @@
 				573297BF2ED9F27800C4C0BE /* FAQViewController.m */,
 				839B5BF62702ED6800FCF22F /* HelpViewController.h */,
 				839B5BEF2702ED6800FCF22F /* HelpViewController.m */,
-				57F20E202FA35B6600FB4246 /* UIHelpItem.h */,
-				57F20E212FA35B6600FB4246 /* UIHelpItem.m */,
-				57F20E362FA35EAB00FB4246 /* UIHelpSection.h */,
-				57F20E372FA35EAB00FB4246 /* UIHelpSection.m */,
 				01A4E76E2834432C00E75899 /* MenuSelectColorView.h */,
 				01A4E76D2834432C00E75899 /* MenuSelectColorView.m */,
 				01A4E76F2834432C00E75899 /* MenuSelectColorView.xib */,
@@ -5246,13 +5266,21 @@
 				83C7E74A240161EA005735DD /* TwinmeSettingsItemCell.xib */,
 				839408B224B2F5C200451E51 /* UICustomColor.h */,
 				839408B524B2F5C200451E51 /* UICustomColor.m */,
+				579693DA3041F18C00C149F7 /* UIDiagnosticItem.h */,
+				579693DB3041F18C00C149F7 /* UIDiagnosticItem.m */,
+				579693DE3045528800C149F7 /* UIDiagnosticSection.h */,
+				579693DF3045528800C149F7 /* UIDiagnosticSection.m */,
+				57F20E202FA35B6600FB4246 /* UIHelpItem.h */,
+				57F20E212FA35B6600FB4246 /* UIHelpItem.m */,
+				57F20E362FA35EAB00FB4246 /* UIHelpSection.h */,
+				57F20E372FA35EAB00FB4246 /* UIHelpSection.m */,
+				571B1BAE2FFE94480007F16B /* UIMenuSelectValueItem.h */,
+				571B1BAF2FFE94480007F16B /* UIMenuSelectValueItem.m */,
 				5703BA1D2BC677DF001E3C65 /* UIQuality.h */,
 				5703BA1E2BC677DF001E3C65 /* UIQuality.m */,
 				011EB9D027B5AC4F00B01B3E /* UpdateAvailableCell.h */,
 				011EB9D127B5AC4F00B01B3E /* UpdateAvailableCell.m */,
 				011EB9D227B5AC4F00B01B3E /* UpdateAvailableCell.xib */,
-				571B1BAE2FFE94480007F16B /* UIMenuSelectValueItem.h */,
-				571B1BAF2FFE94480007F16B /* UIMenuSelectValueItem.m */,
 			);
 			name = SettingsViewController;
 			path = ViewControllers/SettingsViewController;
@@ -6025,6 +6053,7 @@
 				83C7E6F324015EFC005735DD /* WelcomeCell.xib in Resources */,
 				576F555D2F5B1CB0000BC47B /* InfoIconItemCell.xib in Resources */,
 				01131B6D2859C18B004F4D49 /* StreamingMusicCell.xib in Resources */,
+				579693C03041F14100C149F7 /* DiagnosticCell.xib in Resources */,
 				57002A032DEF48F5003EDDC3 /* SearchSectionFooterCell.xib in Resources */,
 				83BCAF7B2285AF0E002D955C /* CopyItemCell.xib in Resources */,
 				836C6BD4231918A100CD3AF1 /* privacy_policy_ru.html in Resources */,
@@ -6355,6 +6384,7 @@
 				47CD1A482E9CF7DB00F0E361 /* WelcomeCell.xib in Resources */,
 				576F55662F5B1CB0000BC47B /* InfoIconItemCell.xib in Resources */,
 				47CD1A492E9CF7DB00F0E361 /* StreamingMusicCell.xib in Resources */,
+				579693C23041F14100C149F7 /* DiagnosticCell.xib in Resources */,
 				47CD1A4A2E9CF7DB00F0E361 /* SearchSectionFooterCell.xib in Resources */,
 				47CD1A4B2E9CF7DB00F0E361 /* CopyItemCell.xib in Resources */,
 				47CD1A4C2E9CF7DB00F0E361 /* privacy_policy_ru.html in Resources */,
@@ -6586,6 +6616,7 @@
 				576F55602F5B1CB0000BC47B /* InfoDeletedItem.m in Sources */,
 				576F55612F5B1CB0000BC47B /* InfoEphemeralItem.m in Sources */,
 				8389C73B217FA74400516C05 /* AcceptGroupInvitationViewController.m in Sources */,
+				579693E13045528800C149F7 /* UIDiagnosticSection.m in Sources */,
 				839408C024B2F5C600451E51 /* MessageSettingsViewController.m in Sources */,
 				83C7E6F824015F1D005735DD /* ContactsViewController.m in Sources */,
 				836600F524782C3A008C3141 /* PeerInvitationContactItem.m in Sources */,
@@ -6773,6 +6804,7 @@
 				83750CB1214FA2CE0031D78D /* FileItemCell.m in Sources */,
 				83A3A8A02201A90D00DF840D /* DeviceAuthorization.m in Sources */,
 				01045B9329A4CD0F00769703 /* MenuCleanUpExpirationView.m in Sources */,
+				579693D93041F16A00C149F7 /* DiagnosticsViewController.m in Sources */,
 				01131B702859C1BA004F4D49 /* PlayerStreamingAudioView.m in Sources */,
 				83D88D2A1EBCB47E00AFD6F2 /* NotificationView.m in Sources */,
 				47BA61821923D3150008C131 /* main.m in Sources */,
@@ -6845,6 +6877,7 @@
 				83B8290B232CB1F0002F12BE /* RoundRectProgressView.m in Sources */,
 				5731852A2C905CFF001F484A /* SettingsIconCell.m in Sources */,
 				01CAD861296EE0C900555E43 /* RecentsMediaViewController.m in Sources */,
+				579693DC3041F18C00C149F7 /* UIDiagnosticItem.m in Sources */,
 				57DD46C72DBBE51E00F14087 /* InvitationCodeCell.m in Sources */,
 				57DD46C82DBBE51E00F14087 /* InvitationCodeViewController.m in Sources */,
 				57DD46C92DBBE51E00F14087 /* AddInvitationCodeCell.m in Sources */,
@@ -6957,6 +6990,7 @@
 				5703BB2E2BC958D9001E3C65 /* AnnotationInfoCell.m in Sources */,
 				5704E24E2ED7B209006A1B1E /* SuccessAuthentifiedRelationView.m in Sources */,
 				830400B41DE7384000A3CA39 /* SendButtonView.m in Sources */,
+				579693C13041F14100C149F7 /* DiagnosticCell.m in Sources */,
 				57B28B542B2AF28A000A8324 /* MenuDateTimeView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -7029,6 +7063,7 @@
 				576F55642F5B1CB0000BC47B /* InfoDeletedItem.m in Sources */,
 				576F55652F5B1CB0000BC47B /* InfoEphemeralItem.m in Sources */,
 				47CD182D2E9CF7DB00F0E361 /* AcceptGroupInvitationViewController.m in Sources */,
+				579693E03045528800C149F7 /* UIDiagnosticSection.m in Sources */,
 				47CD182E2E9CF7DB00F0E361 /* MessageSettingsViewController.m in Sources */,
 				47CD182F2E9CF7DB00F0E361 /* ContactsViewController.m in Sources */,
 				47CD18302E9CF7DB00F0E361 /* PeerInvitationContactItem.m in Sources */,
@@ -7216,6 +7251,7 @@
 				47CD18B92E9CF7DB00F0E361 /* FileItemCell.m in Sources */,
 				47CD18BA2E9CF7DB00F0E361 /* DeviceAuthorization.m in Sources */,
 				47CD18BB2E9CF7DB00F0E361 /* MenuCleanUpExpirationView.m in Sources */,
+				579693D83041F16A00C149F7 /* DiagnosticsViewController.m in Sources */,
 				47CD18BC2E9CF7DB00F0E361 /* PlayerStreamingAudioView.m in Sources */,
 				47CD18BD2E9CF7DB00F0E361 /* NotificationView.m in Sources */,
 				47CD18BE2E9CF7DB00F0E361 /* main.m in Sources */,
@@ -7288,6 +7324,7 @@
 				47CD18FD2E9CF7DB00F0E361 /* RoundRectProgressView.m in Sources */,
 				47CD18FE2E9CF7DB00F0E361 /* SettingsIconCell.m in Sources */,
 				47CD18FF2E9CF7DB00F0E361 /* RecentsMediaViewController.m in Sources */,
+				579693DD3041F18C00C149F7 /* UIDiagnosticItem.m in Sources */,
 				47CD19002E9CF7DB00F0E361 /* InvitationCodeCell.m in Sources */,
 				47CD19012E9CF7DB00F0E361 /* InvitationCodeViewController.m in Sources */,
 				47CD19022E9CF7DB00F0E361 /* AddInvitationCodeCell.m in Sources */,
@@ -7400,6 +7437,7 @@
 				47CD195B2E9CF7DB00F0E361 /* AnnotationInfoCell.m in Sources */,
 				5704E24F2ED7B209006A1B1E /* SuccessAuthentifiedRelationView.m in Sources */,
 				47CD195C2E9CF7DB00F0E361 /* SendButtonView.m in Sources */,
+				579693C33041F14100C149F7 /* DiagnosticCell.m in Sources */,
 				47CD195D2E9CF7DB00F0E361 /* MenuDateTimeView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
