@@ -403,6 +403,11 @@
 		579139C32D847D6300C4058D /* AddContactCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 579139C22D847D6300C4058D /* AddContactCell.xib */; };
 		579139C42D847D6300C4058D /* AddContactCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 579139C12D847D6300C4058D /* AddContactCell.m */; };
 		57960E362FB2370900F6D54A /* faq.json in Resources */ = {isa = PBXBuildFile; fileRef = 57960E352FB2370900F6D54A /* faq.json */; };
+		57969441304587E600C149F7 /* UIDiagnosticSection.m in Sources */ = {isa = PBXBuildFile; fileRef = 57969440304587E600C149F7 /* UIDiagnosticSection.m */; };
+		57969442304587E600C149F7 /* DiagnosticCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 57969439304587E600C149F7 /* DiagnosticCell.m */; };
+		57969443304587E600C149F7 /* DiagnosticsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5796943C304587E600C149F7 /* DiagnosticsViewController.m */; };
+		57969444304587E600C149F7 /* UIDiagnosticItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 5796943E304587E600C149F7 /* UIDiagnosticItem.m */; };
+		57969445304587E600C149F7 /* DiagnosticCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5796943A304587E600C149F7 /* DiagnosticCell.xib */; };
 		579FE80D2F460E5700933A17 /* LocalizableBackup.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 579FE80C2F460E5700933A17 /* LocalizableBackup.xcstrings */; };
 		579FE84D2F460E6900933A17 /* RestoreWordsCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 579FE83B2F460E6900933A17 /* RestoreWordsCell.xib */; };
 		579FE84E2F460E6900933A17 /* RestoreStateCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 579FE8332F460E6900933A17 /* RestoreStateCell.xib */; };
@@ -1688,6 +1693,15 @@
 		579139C12D847D6300C4058D /* AddContactCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AddContactCell.m; sourceTree = "<group>"; };
 		579139C22D847D6300C4058D /* AddContactCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AddContactCell.xib; sourceTree = "<group>"; };
 		57960E352FB2370900F6D54A /* faq.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = faq.json; sourceTree = "<group>"; };
+		57969438304587E600C149F7 /* DiagnosticCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = DiagnosticCell.h; path = ViewControllers/SettingsViewController/DiagnosticCell.h; sourceTree = "<group>"; };
+		57969439304587E600C149F7 /* DiagnosticCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = DiagnosticCell.m; path = ViewControllers/SettingsViewController/DiagnosticCell.m; sourceTree = "<group>"; };
+		5796943A304587E600C149F7 /* DiagnosticCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = DiagnosticCell.xib; path = ViewControllers/SettingsViewController/DiagnosticCell.xib; sourceTree = "<group>"; };
+		5796943B304587E600C149F7 /* DiagnosticsViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = DiagnosticsViewController.h; path = ViewControllers/SettingsViewController/DiagnosticsViewController.h; sourceTree = "<group>"; };
+		5796943C304587E600C149F7 /* DiagnosticsViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = DiagnosticsViewController.m; path = ViewControllers/SettingsViewController/DiagnosticsViewController.m; sourceTree = "<group>"; };
+		5796943D304587E600C149F7 /* UIDiagnosticItem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = UIDiagnosticItem.h; path = ViewControllers/SettingsViewController/UIDiagnosticItem.h; sourceTree = "<group>"; };
+		5796943E304587E600C149F7 /* UIDiagnosticItem.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = UIDiagnosticItem.m; path = ViewControllers/SettingsViewController/UIDiagnosticItem.m; sourceTree = "<group>"; };
+		5796943F304587E600C149F7 /* UIDiagnosticSection.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = UIDiagnosticSection.h; path = ViewControllers/SettingsViewController/UIDiagnosticSection.h; sourceTree = "<group>"; };
+		57969440304587E600C149F7 /* UIDiagnosticSection.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = UIDiagnosticSection.m; path = ViewControllers/SettingsViewController/UIDiagnosticSection.m; sourceTree = "<group>"; };
 		579FE80C2F460E5700933A17 /* LocalizableBackup.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = LocalizableBackup.xcstrings; sourceTree = "<group>"; };
 		579FE80E2F460E6900933A17 /* Backup.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Backup.storyboard; sourceTree = "<group>"; };
 		579FE80F2F460E6900933A17 /* BackupActionCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BackupActionCell.h; sourceTree = "<group>"; };
@@ -3522,6 +3536,11 @@
 				83A6C58226C6920C00997FE0 /* DefaultTabCell.h */,
 				83A6C58126C6920C00997FE0 /* DefaultTabCell.m */,
 				83A6C58326C6920C00997FE0 /* DefaultTabCell.xib */,
+				57969438304587E600C149F7 /* DiagnosticCell.h */,
+				57969439304587E600C149F7 /* DiagnosticCell.m */,
+				5796943A304587E600C149F7 /* DiagnosticCell.xib */,
+				5796943B304587E600C149F7 /* DiagnosticsViewController.h */,
+				5796943C304587E600C149F7 /* DiagnosticsViewController.m */,
 				01A058832822AD920068B387 /* DisplayModeCell.h */,
 				01A058842822AD920068B387 /* DisplayModeCell.m */,
 				01A058852822AD930068B387 /* DisplayModeCell.xib */,
@@ -3588,6 +3607,10 @@
 				83FEE380261749BE0007C1F1 /* TwinmeSettingsItemCell.xib */,
 				83FEE370261749BC0007C1F1 /* UICustomColor.h */,
 				83FEE385261749BE0007C1F1 /* UICustomColor.m */,
+				5796943D304587E600C149F7 /* UIDiagnosticItem.h */,
+				5796943E304587E600C149F7 /* UIDiagnosticItem.m */,
+				5796943F304587E600C149F7 /* UIDiagnosticSection.h */,
+				57969440304587E600C149F7 /* UIDiagnosticSection.m */,
 				57F20E782FA39B1700FB4246 /* UIHelpItem.h */,
 				57F20E792FA39B1700FB4246 /* UIHelpItem.m */,
 				57F20E7A2FA39B1700FB4246 /* UIHelpSection.h */,
@@ -4684,6 +4707,7 @@
 				572176672EC61CF4002DB76E /* ProxyView.xib in Resources */,
 				83FEE2B1261748300007C1F1 /* PeerAudioItemCell.xib in Resources */,
 				83FEE387261749BE0007C1F1 /* ColorCell.xib in Resources */,
+				57969445304587E600C149F7 /* DiagnosticCell.xib in Resources */,
 				579FE8852F460E9700933A17 /* DayCell.xib in Resources */,
 				83FEE2EF261748900007C1F1 /* GroupMemberCell.xib in Resources */,
 				0166CB8628D8B9D40095EDB8 /* product_ids.plist in Resources */,
@@ -5171,6 +5195,10 @@
 				47DE44F728B4C2A100B0D5AD /* MainService.m in Sources */,
 				83237C92278C377800FCE0E7 /* TwincodeView.m in Sources */,
 				5781FCEB2EB4D38F0057324F /* TwinmeSearchController.m in Sources */,
+				57969441304587E600C149F7 /* UIDiagnosticSection.m in Sources */,
+				57969442304587E600C149F7 /* DiagnosticCell.m in Sources */,
+				57969443304587E600C149F7 /* DiagnosticsViewController.m in Sources */,
+				57969444304587E600C149F7 /* UIDiagnosticItem.m in Sources */,
 				019610DF294B13920098481F /* CoachMarkViewController.m in Sources */,
 				01C6A60C2A5D8C7F00FE9202 /* UIContactTag.m in Sources */,
 				57A1D77D2EA671C400EE0071 /* DebugSettingsViewController.m in Sources */,

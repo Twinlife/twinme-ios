@@ -381,7 +381,9 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
         [self.lockScreenViewController.view removeFromSuperview];
         self.lockScreenViewController = nil;
         if (self.inPersonToCall) {
-            [self handleDeferredCall];
+            INPerson *personToCall = self.inPersonToCall;
+            self.inPersonToCall = nil;
+            [self handleDeferredCall:personToCall];
         }
     } else if ([self.twinmeApplication showLockScreen] && self.lockScreenViewController) {
         [self.lockScreenViewController.view setHidden:NO];
@@ -548,7 +550,9 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
     DDLogVerbose(@"%@ startCallFromRecents", LOG_TAG);
     
     if (self.inPersonToCall) {
-        [self handleDeferredCall];
+        INPerson *personToCall = self.inPersonToCall;
+        self.inPersonToCall = nil;
+        [self handleDeferredCall:personToCall];
     }
 }
 
@@ -633,7 +637,9 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
         self.lockScreenViewController = nil;
         
         if (self.inPersonToCall) {
-            [self handleDeferredCall];
+            INPerson *personToCall = self.inPersonToCall;
+            self.inPersonToCall = nil;
+            [self handleDeferredCall:personToCall];
         }
     }
 }
@@ -730,7 +736,9 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
     if (self.shareContentURL) {
         [self handleShareContentURL];
     } else if (self.inPersonToCall && ![self.twinmeApplication showLockScreen]) {
-        [self handleDeferredCall];
+        INPerson *personToCall = self.inPersonToCall;
+        self.inPersonToCall = nil;
+        [self handleDeferredCall:personToCall];
     }
 }
 
@@ -1378,10 +1386,10 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
     }
 }
 
-- (void)handleDeferredCall {
+- (void)handleDeferredCall:(INPerson *)inPersonToCall {
     DDLogVerbose(@"%@ handleDeferredCall", LOG_TAG);
     
-    [self.mainService findSubjectWithHandle:self.inPersonToCall.personHandle.value withBlock:^(TLBaseServiceErrorCode errorCode, id<TLOriginator> subject) {
+    [self.mainService findSubjectWithHandle:inPersonToCall.personHandle.value withBlock:^(TLBaseServiceErrorCode errorCode, id<TLOriginator> subject) {
         if (subject) {
 
             // If there is an active call and it corresponds to the INStartVideoCallIntent, this means
@@ -1392,7 +1400,6 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
                 if (self.startVideoCall) {
                     [delegate.callService setCameraMute:NO];
                 }
-                self.inPersonToCall = nil;
                 return;
             }
             
@@ -1420,7 +1427,6 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
                 [self.selectedViewController pushViewController:callViewController animated:YES];
             }
         }
-        self.inPersonToCall = nil;
     }];
 }
 
@@ -1430,7 +1436,7 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
     if (self.shareContentURL) {
         NSURL *shareContentURL = self.shareContentURL;
         self.shareContentURL = nil;
-        
+                
         if ([shareContentURL.pathExtension isEqualToString:[TLTwinlife BACKUP_EXTENSION]]) {
             MenuBackupView *menuBackupView = [[MenuBackupView alloc] init];
             menuBackupView.menuBackupViewDelegate = self;
@@ -1438,6 +1444,8 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
             [self.view addSubview:menuBackupView];
         } else if (shareContentURL && [CONVERSATION_ACTION isEqualToString:shareContentURL.host]) {
             [self handleExtensionShareContentURL:shareContentURL startPreview:NO];
+        } else if (shareContentURL && [PREVIEW_ACTION isEqualToString:shareContentURL.host]) {
+            [self handleExtensionShareContentURL:shareContentURL startPreview:YES];
         } else {
             ShareViewController *shareViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"ShareViewController"];
             shareViewController.fileURL = shareContentURL;
@@ -1489,6 +1497,7 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
     if (isGroup) {
         [self.twinmeContext getGroupWithGroupId:contactId withBlock:^(TLBaseServiceErrorCode errorCode, TLGroup *group) {
             dispatch_async(dispatch_get_main_queue(), ^{
+                [self dismissModalViewController];
                 TwinmeNavigationController *selectedNavigationController = self.selectedViewController;
                 ConversationViewController *conversationViewController = (ConversationViewController *)[self.storyboard instantiateViewControllerWithIdentifier:@"ConversationViewController"];
                 
@@ -1502,6 +1511,7 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
     } else {
         [self.twinmeContext getContactWithContactId:contactId withBlock:^(TLBaseServiceErrorCode errorCode, TLContact * contact) {
             dispatch_async(dispatch_get_main_queue(), ^{
+                [self dismissModalViewController];
                 TwinmeNavigationController *selectedNavigationController = self.selectedViewController;
                 ConversationViewController *conversationViewController = (ConversationViewController *)[self.storyboard instantiateViewControllerWithIdentifier:@"ConversationViewController"];
                 

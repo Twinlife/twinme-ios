@@ -214,7 +214,8 @@ static CGFloat DESIGN_COLLECTION_CELL_WIDTH = 70;
     
     self.createSpace = YES;
     self.templateSpace = templateSpace;
-    self.canEdit = YES;
+    
+    self.canEdit = self.templateSpace.templateType != TemplateTypeOther;
     
     if ([self.templateSpace getColor]) {
         self.selectedColor = [[UICustomColor alloc]initWithColor:[self.templateSpace getColor]];
@@ -446,7 +447,7 @@ static CGFloat DESIGN_COLLECTION_CELL_WIDTH = 70;
     return textField.text.length + (string.length - range.length) <= MAX_NAME_LENGTH;
 }
 
-- (void)textFieldDidChange:(UITextField *)textField{
+- (void)textFieldDidChange:(UITextField *)textField {
     DDLogVerbose(@"%@ textFieldDidChange: %@", LOG_TAG, textField);
     
     [self setUpdated];
@@ -589,16 +590,16 @@ static CGFloat DESIGN_COLLECTION_CELL_WIDTH = 70;
     DDLogVerbose(@"%@ setUpdated", LOG_TAG);
     
     self.nameSpace = self.nameTextField.text;
-    
+        
     if ([self.descriptionTextView.text isEqualToString:TwinmeLocalizedString(@"application_description", nil)]) {
         self.descriptionSpace = @"";
     } else {
         self.descriptionSpace = self.descriptionTextView.text;
     }
-    
-    if (([self.nameSpace isEqualToString:@""] || [self.nameSpace isEqualToString:self.space.settings.name])
-        && ([self.descriptionSpace isEqualToString:self.space.settings.objectDescription])
-        && !self.updatedSpaceAvatar) {
+
+    if ([self.nameSpace isEqualToString:@""] || ([self.nameSpace isEqualToString:self.space.settings.name]
+        && [self.descriptionSpace isEqualToString:self.space.settings.objectDescription]
+        && !self.updatedSpaceAvatar)) {
         self.canEdit = NO;
     } else {
         self.canEdit = YES;

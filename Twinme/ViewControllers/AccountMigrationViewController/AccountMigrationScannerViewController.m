@@ -296,14 +296,6 @@ static int RESTORE_ALERT_TAG = 10;
     return self;
 }
 
-#pragma mark - AcceptInvitationDelegate
-
-- (void)invitationDidFinish {
-    DDLogVerbose(@"%@ invitationDidFinish", LOG_TAG);
-    
-    [self.navigationController popToRootViewControllerAnimated:YES];
-}
-
 #pragma mark - AlertMessageViewDelegate
 
 - (void)didCloseAlertMessage:(nonnull AlertMessageView *)alertMessageView {
@@ -664,19 +656,18 @@ static int RESTORE_ALERT_TAG = 10;
     ApplicationDelegate *delegate = (ApplicationDelegate *)[[UIApplication sharedApplication] delegate];
     [delegate.accountMigrationService outgoingMigrationWithAccountMigrationId:accountMigrationId];
 
+    UINavigationController *navigationController = self.navigationController;
+    UIStoryboard *storyboard = self.storyboard;
+    TLAccountMigration *accountMigration = self.accountMigration;
     [CATransaction begin];
     [CATransaction setCompletionBlock:^{
-        ApplicationDelegate *delegate = (ApplicationDelegate *)[[UIApplication sharedApplication] delegate];
-        MainViewController *mainViewController = delegate.mainViewController;
-        TwinmeNavigationController *selectedNavigationController = mainViewController.selectedViewController;
-        AccountMigrationViewController *accountMigrationViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"AccountMigrationViewController"];
-        [accountMigrationViewController initWithAccountMigration:self.accountMigration];
-        
+        AccountMigrationViewController *accountMigrationViewController = [storyboard instantiateViewControllerWithIdentifier:@"AccountMigrationViewController"];
+        [accountMigrationViewController initWithAccountMigration:accountMigration];
         TwinmeNavigationController *migrationNavigationController = [[TwinmeNavigationController alloc]initWithRootViewController:accountMigrationViewController];
-        [selectedNavigationController presentViewController:migrationNavigationController animated:YES completion:nil];
+        [navigationController presentViewController:migrationNavigationController animated:YES completion:nil];
     }];
     
-    [self.navigationController popViewControllerAnimated:NO];
+    [self finish];
 
     [CATransaction commit];
 }

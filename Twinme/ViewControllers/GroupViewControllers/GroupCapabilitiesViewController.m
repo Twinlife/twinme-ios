@@ -150,7 +150,7 @@ static const int ddLogLevel = DDLogLevelWarning;
         [self.capabilities setSchedule:schedule];
     }
     
-    [self.editGroupService updateGroupWithCapabilities:self.group capabilities:self.capabilities];    
+    //[self.editGroupService updateGroupWithCapabilities:self.group capabilities:self.capabilities];    
 }
 
 - (void)finish {

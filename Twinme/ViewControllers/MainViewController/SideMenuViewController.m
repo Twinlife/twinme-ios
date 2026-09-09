@@ -45,6 +45,7 @@
 
 #import "SubscribeCell.h"
 #import "InAppSubscriptionViewController.h"
+#import "DiagnosticsViewController.h"
 
 #import <TwinmeCommon/ApplicationDelegate.h>
 #import <TwinmeCommon/Design.h>
@@ -347,7 +348,7 @@ static NSString *SIDE_SPACE_CELL_IDENTIFIER = @"SideSpaceCellIdentifier";
             break;
             
         case SUPPORT_VIEW_SECTION:
-            numberOfRowsInSection = 4;
+            numberOfRowsInSection = 5;
             break;
             
         default:
@@ -423,10 +424,13 @@ static NSString *SIDE_SPACE_CELL_IDENTIFIER = @"SideSpaceCellIdentifier";
                         title = TwinmeLocalizedString(@"navigation_view_help", nil);
                     } else if (indexPath.row == 2) {
                         hiddenAccessory = NO;
-                        title = TwinmeLocalizedString(@"navigation_view_about_twinme", nil);
+                        title = TwinmeLocalizedString(@"account_view_title", nil);
                     } else if (indexPath.row == 3) {
                         hiddenAccessory = NO;
-                        title = TwinmeLocalizedString(@"account_view_title", nil);
+                        title = TwinmeLocalizedString(@"diagnostics_view_title", nil);
+                    } else if (indexPath.row == 4) {
+                        hiddenAccessory = NO;
+                        title = TwinmeLocalizedString(@"navigation_view_about_twinme", nil);
                     }
                     break;
                     
@@ -439,9 +443,9 @@ static NSString *SIDE_SPACE_CELL_IDENTIFIER = @"SideSpaceCellIdentifier";
                     break;
             }
             
-            if (indexPath.section == SUPPORT_VIEW_SECTION && indexPath.row == 2) {
+            if (indexPath.section == SUPPORT_VIEW_SECTION && indexPath.row == 4) {
                 [cell bindWithTitle:title hiddenAccessory:hiddenAccessory disableSetting:NO updateAvailable:[self.twinmeApplication.lastVersionManager isNewVersionAvailable] color:Design.FONT_COLOR_DEFAULT];
-            } else if (indexPath.section == SUPPORT_VIEW_SECTION && indexPath.row == 3) {
+            } else if (indexPath.section == SUPPORT_VIEW_SECTION && indexPath.row == 2) {
                 cell.delegate = self;
                 [cell bindWithTitle:title hiddenAccessory:hiddenAccessory disableSetting:NO color:Design.FONT_COLOR_DEFAULT badgeTitle:TwinmeLocalizedString(@"application_new", nil) showNotification:[self.twinmeApplication showBackupWarning]];
             } else {
@@ -504,11 +508,14 @@ static NSString *SIDE_SPACE_CELL_IDENTIFIER = @"SideSpaceCellIdentifier";
                 HelpViewController *helpViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"HelpViewController"];
                 [twinmeNavigationController pushViewController:helpViewController animated:YES];
             } else if (indexPath.row == 2) {
-                AboutViewController *aboutViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"AboutViewController"];
-                [twinmeNavigationController pushViewController:aboutViewController animated:YES];
-            }  else if (indexPath.row == 3) {
                 AccountViewController *accountViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"AccountViewController"];
                 [twinmeNavigationController pushViewController:accountViewController animated:YES];
+            } else if (indexPath.row == 3) {
+                DiagnosticsViewController *diagnosticsViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"DiagnosticsViewController"];
+                [twinmeNavigationController pushViewController:diagnosticsViewController animated:YES];
+            } else if (indexPath.row == 4) {
+                AboutViewController *aboutViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"AboutViewController"];
+                [twinmeNavigationController pushViewController:aboutViewController animated:YES];
             }
         } else if (indexPath.section == LOGOUT_VIEW_SECTION) {
             [[self.twinmeContext getAccountService] signOut];

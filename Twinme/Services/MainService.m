@@ -586,7 +586,9 @@ static const int DELETE_LEVEL = 1 << 25;
             id<TLOriginator> subject = [self.twinmeContext findSubjectWithHandle:self.handle];
 
             dispatch_async(dispatch_get_main_queue(), ^{
-                self.onFindSubject(subject ? TLBaseServiceErrorCodeSuccess : TLBaseServiceErrorCodeItemNotFound, subject);
+                if (self.onFindSubject) {
+                    self.onFindSubject(subject ? TLBaseServiceErrorCodeSuccess : TLBaseServiceErrorCodeItemNotFound, subject);
+                }
                 self.onFindSubject = nil;
                 self.handle = nil;
             });

@@ -63,8 +63,6 @@ static const int ddLogLevel = DDLogLevelWarning;
 @property (nonatomic) BOOL inBackground;
 @property (nonatomic) PKPushRegistry *voipRegistry;
 @property (nonatomic) BOOL allowNotificationsStatus;
-@property (nonatomic) BOOL pushKitReady;
-@property (nonatomic) int pushKitInitCount;
 
 - (void)attachWindow:(nullable UIWindow *)window;
 - (void)sceneDidEnterBackground;
@@ -113,8 +111,6 @@ static const int ddLogLevel = DDLogLevelWarning;
         TLSpaceSettings *settings = [_twinmeApplication defaultSpaceSettings];
         [_twinmeContext setDefaultSpaceSettings:settings oldDefaultName:TwinmeLocalizedString(@"application_default", nil)];
         _inBackground = YES;
-        _pushKitReady = NO;
-        _pushKitInitCount = 0;
 
         // Start very early the twinlife library (executes asynchronously).
         [_twinmeContext start];
@@ -270,14 +266,14 @@ static const int ddLogLevel = DDLogLevelWarning;
 
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
     DDLogVerbose(@"%@ application: %@ didFailToRegisterForRemoteNotificationsWithError: %@", LOG_TAG, application, error);
-    
-    // Apple documentation recommend to disable the remote push notification when an error occurs.
+
+    // Apple documentation recommends to disable the remote push notification when an error occurs.
     // According to their documentation, the didRegisterForRemoteNotificationsWithDeviceToken will be
-    // called again if the error is recovered.
+    // called again automatically if the error is recovered (e.g., network becomes available).
     // See https://developer.apple.com/library/archive/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/HandlingRemoteNotifications.html
     [self.twinmeContext setPushNotificationWithVariant:TL_MANAGEMENT_SERVICE_PUSH_NOTIFICATION_REMOTE_VARIANT token:TL_MANAGEMENT_SERVICE_PUSH_NOTIFICATION_APNS_ERROR];
     
-    TL_ASSERTION(self.twinmeContext, [ApplicationAssertPoint REGISTER_FOR_REMOTE_FAILED], [TLAssertValue initWithNSError:error]);
+    TL_ASSERTION(self.twinmeContext, [ApplicationAssertPoint REGISTER_FOR_REMOTE_FAILED], [TLAssertValue initWithNSError:error], nil);
 }
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandler {
@@ -296,11 +292,6 @@ static const int ddLogLevel = DDLogLevelWarning;
 
 - (void)pushRegistry:(PKPushRegistry *)registry didUpdatePushCredentials:(PKPushCredentials *)credentials forType:(NSString *)type {
     DDLogVerbose(@"%@ pushRegistry: %@ didUpdatePushCredentials: %@ forType: %@", LOG_TAG, registry, credentials, type);
-
-    if (self.pushKitInitCount > 1) {
-        TL_ASSERTION(self.twinmeContext, [ApplicationAssertPoint PUSHKIT_LATE_REGISTER], [TLAssertValue initWithNumber:self.pushKitInitCount]);
-    }
-    self.pushKitReady = YES;
 
     // Callkit is disabled and we cannot use PushKit: invalidate the PushKit token but still set the VoIP variant.
     if (!self.enableCallkit) {
@@ -424,7 +415,7 @@ static const int ddLogLevel = DDLogLevelWarning;
 - (void)sceneWillResignActive {
     DDLogVerbose(@"%@ sceneWillResignActive", LOG_TAG);
     
-    [self.callService applicationDidEnterBackground:[UIApplication sharedApplication]];
+    [self.callService applicationWillResignActive:[UIApplication sharedApplication]];
 }
 
 - (void)sceneDidEnterBackground {
@@ -432,7 +423,6 @@ static const int ddLogLevel = DDLogLevelWarning;
     
     self.inBackground = YES;
     [self.twinmeContext applicationDidEnterBackground:self];
-    [self.callService applicationDidEnterBackground:[UIApplication sharedApplication]];
     [self.twinmeApplication.notificationCenter applicationDidEnterBackground:[UIApplication sharedApplication]];
 
     // Keep the existing visibility semantics for conversation screens when the scene goes offscreen.
@@ -445,14 +435,7 @@ static const int ddLogLevel = DDLogLevelWarning;
     
     [self checkAllowNotifications];
     [self.twinmeContext applicationDidBecomeActive:self];
-    [self.callService applicationWillEnterForeground:[UIApplication sharedApplication]];
     self.inBackground = NO;
-
-    if (!self.pushKitReady && self.pushKitInitCount < 5) {
-        self.pushKitInitCount++;
-        self.voipRegistry.desiredPushTypes = [[NSSet alloc] init];
-        self.voipRegistry.desiredPushTypes = [NSSet setWithObject:PKPushTypeVoIP];
-    }
 
     [self.window.rootViewController beginAppearanceTransition:YES animated:NO];
     [self.window.rootViewController endAppearanceTransition];
@@ -464,9 +447,8 @@ static const int ddLogLevel = DDLogLevelWarning;
     if (self.inBackground) {
         [self.twinmeContext applicationDidBecomeActive:self];
         self.inBackground = NO;
-    } else {
-        [self.callService applicationWillEnterForeground:[UIApplication sharedApplication]];
     }
+    [self.callService applicationDidBecomeActive:[UIApplication sharedApplication]];
 
     if (![[self.twinmeContext getAccountService] isReconnectable]) {
         UIViewController *splashScreenViewController = [self.mainViewController.storyboard instantiateViewControllerWithIdentifier:@"SplashScreenViewController"];

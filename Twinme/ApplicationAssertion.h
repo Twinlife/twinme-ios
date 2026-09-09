@@ -19,7 +19,6 @@
 +(nonnull TLAssertPoint *)INVALID_SUBJECT;
 +(nonnull TLAssertPoint *)INVALID_NAME;
 +(nonnull TLAssertPoint *)INVALID_DESCRIPTOR;
-+(nonnull TLAssertPoint *)PUSHKIT_LATE_REGISTER;
 +(nonnull TLAssertPoint *)MIGRATION_ERROR;
 
 @end

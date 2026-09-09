@@ -543,15 +543,15 @@ static CGFloat AVATAR_VIEW_HEIGHT;
         CGFloat customTitleViewWidth = ORIGINATOR_VIEW_WIDTH;
         CGFloat customTitleViewHeight = Design.STANDARD_NAVIGATION_BAR_HEIGHT;
         
-        CGFloat titleLabelX = (customTitleViewHeight - Design.FONT_BOLD34.lineHeight) * 0.5;
-        if (self.callOriginator.isGroup) {
-            titleLabelX = (customTitleViewHeight - Design.FONT_BOLD34.lineHeight - Design.FONT_REGULAR34.lineHeight) * 0.5;
+        CGFloat titleLabelY = (customTitleViewHeight - Design.FONT_BOLD34.lineHeight) * 0.5;
+        if (self.callOriginator.isGroup && !self.isCallReceiver) {
+            titleLabelY = (customTitleViewHeight - Design.FONT_BOLD34.lineHeight - Design.FONT_REGULAR34.lineHeight) * 0.5;
         }
         
         UIView *customTitleView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, customTitleViewWidth, customTitleViewHeight)];
         customTitleView.backgroundColor = [UIColor clearColor];
         
-        self.titleLabel = [[UILabel alloc]initWithFrame:CGRectMake(AVATAR_VIEW_HEIGHT + ORIGINATOR_MARGIN, titleLabelX, customTitleViewWidth - AVATAR_VIEW_HEIGHT - ORIGINATOR_MARGIN, Design.FONT_BOLD34.lineHeight)];
+        self.titleLabel = [[UILabel alloc]initWithFrame:CGRectMake(AVATAR_VIEW_HEIGHT + ORIGINATOR_MARGIN, titleLabelY, customTitleViewWidth - AVATAR_VIEW_HEIGHT - ORIGINATOR_MARGIN, Design.FONT_BOLD34.lineHeight)];
         self.titleLabel.semanticContentAttribute = UISemanticContentAttributeForceLeftToRight;
         
         self.titleLabel.textAlignment = NSTextAlignmentNatural;
@@ -562,7 +562,7 @@ static CGFloat AVATAR_VIEW_HEIGHT;
         self.titleLabel.numberOfLines = 1;
         self.titleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
         
-        self.subTitleLabel = [[UILabel alloc]initWithFrame:CGRectMake(AVATAR_VIEW_HEIGHT + ORIGINATOR_MARGIN, titleLabelX + Design.FONT_BOLD34.lineHeight, customTitleViewWidth - AVATAR_VIEW_HEIGHT - ORIGINATOR_MARGIN, Design.FONT_REGULAR34.lineHeight)];
+        self.subTitleLabel = [[UILabel alloc]initWithFrame:CGRectMake(AVATAR_VIEW_HEIGHT + ORIGINATOR_MARGIN, titleLabelY + Design.FONT_BOLD34.lineHeight, customTitleViewWidth - AVATAR_VIEW_HEIGHT - ORIGINATOR_MARGIN, Design.FONT_REGULAR34.lineHeight)];
         self.subTitleLabel.semanticContentAttribute = UISemanticContentAttributeForceLeftToRight;
         self.subTitleLabel.textAlignment = NSTextAlignmentNatural;
         self.subTitleLabel.font = Design.FONT_REGULAR24;
@@ -591,7 +591,7 @@ static CGFloat AVATAR_VIEW_HEIGHT;
         customTitleView.frame = CGRectMake(0, 0, profileViewWidth, customTitleViewHeight);
         [customTitleView addSubview:self.avatarView];
         [customTitleView addSubview:self.titleLabel];
-        if ([self.uiContact.contact isGroup]) {
+        if ([self.uiContact.contact isGroup] && !self.isCallReceiver) {
             [customTitleView addSubview:self.subTitleLabel];
         }
         

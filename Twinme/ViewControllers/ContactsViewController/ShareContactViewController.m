@@ -436,9 +436,11 @@ static NSString *SHARE_SECTION_HEADER_CELL_IDENTIFIER = @"ShareSectionHeaderCell
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     DDLogVerbose(@"%@ tableView: %@ didSelectRowAtIndexPath: %@", LOG_TAG, tableView, indexPath);
     
-    UIContact *uiContact = self.uiContacts[indexPath.row];
-    self.selectedContact = uiContact;
-    [self updateSelectedContact];
+    if (indexPath.section == 1 && self.uiContacts.count > indexPath.row) {
+        UIContact *uiContact = self.uiContacts[indexPath.row];
+        self.selectedContact = uiContact;
+        [self updateSelectedContact];
+    }
 }
 
 #pragma mark - BottomSheetViewDelegate

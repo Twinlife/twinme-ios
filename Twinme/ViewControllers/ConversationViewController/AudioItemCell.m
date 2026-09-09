@@ -362,8 +362,6 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
     UITapGestureRecognizer *infoTapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleInfoTapGestureRecognizer:)];
     [self.infoImageView addGestureRecognizer:infoTapGesture];
     [infoTapGesture requireGestureRecognizerToFail:longPressGesture];
-        
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(proximityChanged) name:UIDeviceProximityStateDidChangeNotification object:nil];
 }
 
 - (void)prepareForReuse {
@@ -389,11 +387,6 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
     self.replyLabel.text = nil;
     self.speedView.hidden = YES;
     self.infoImageView.hidden = YES;
-    
-    if ([UIDevice currentDevice].proximityMonitoringEnabled) {
-        [UIDevice currentDevice].proximityMonitoringEnabled = NO;
-        [[NSNotificationCenter defaultCenter] removeObserver:self name:UIDeviceProximityStateDidChangeNotification object:nil];
-    }
 }
 
 #pragma mark - ItemCell
@@ -820,6 +813,19 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
     }
 }
 
+- (void)playAutomatically {
+    DDLogVerbose(@"%@ playAutomatically", LOG_TAG);
+
+    [self handlePlayerButtonViewTapGestureRecognizer:nil];
+}
+
+- (void)resetAudioTrack {
+    DDLogVerbose(@"%@ resetTrack", LOG_TAG);
+    
+    self.isPaused = NO;
+    [self.audioTrackView updateProgressView:0];
+}
+
 #pragma mark - IBActions
 
 - (void)onLongPressInsideContent:(UILongPressGestureRecognizer *)longPressGesture {
@@ -1039,7 +1045,6 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
         self.pauseImageView.hidden = NO;
         self.playerImageView.hidden = YES;
         self.speedView.hidden = NO;
-        [UIDevice currentDevice].proximityMonitoringEnabled = YES;
         [audioPlayerManager playWithURL:self.url currentTime:self.currentTime startPlayingBlock:^{
             self.timer = [NSTimer scheduledTimerWithTimeInterval:0.05 target:self selector:@selector(updateTime:) userInfo:nil repeats:YES];
         }];
@@ -1048,7 +1053,6 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
         self.pauseImageView.hidden = YES;
         self.playerImageView.hidden = NO;
         self.speedView.hidden = YES;
-        [UIDevice currentDevice].proximityMonitoringEnabled = NO;
         [audioPlayerManager pause];
         self.isPaused = NO;
         self.currentTime = [audioPlayerManager currentPlaybackTime];
@@ -1063,13 +1067,6 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
         [audioPlayerManager updateRate];
         [self updateRate];
     }
-}
-
-- (void)proximityChanged {
-    DDLogVerbose(@"%@ proximityChanged", LOG_TAG);
-
-    AudioPlayerManager *audioPlayerManager = [AudioPlayerManager sharedInstance];
-    [audioPlayerManager proximityChanged];
 }
 
 - (void)updateTime:(NSTimer *)timer {
@@ -1096,11 +1093,6 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
             self.isPaused = NO;
             [self.timer invalidate];
             self.currentTime = 0;
-            
-            if ([UIDevice currentDevice].proximityMonitoringEnabled) {
-                [UIDevice currentDevice].proximityMonitoringEnabled = NO;
-                [[NSNotificationCenter defaultCenter] removeObserver:self name:UIDeviceProximityStateDidChangeNotification object:nil];
-            }
         }
     } else {
         self.currentTime = 0;

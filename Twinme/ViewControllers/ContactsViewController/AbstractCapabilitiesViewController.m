@@ -501,8 +501,8 @@ typedef enum {
         self.scheduleEndDate = [[TLDate alloc]initWithYear:(int)dateComponents.year month:(int)dateComponents.month day:(int)dateComponents.day];
         self.scheduleEndTime = [[TLTime alloc]initWithHour:(int)dateComponents.hour minute:(int)dateComponents.minute];
     }
-    
-    if ([self.scheduleStartDate compare:self.scheduleEndDate] ==  NSOrderedDescending) {
+        
+    if ([self.scheduleStartDate compare:self.scheduleEndDate] ==  NSOrderedDescending || ([self.scheduleStartDate compare:self.scheduleEndDate] ==  NSOrderedSame && [self.scheduleStartTime compare:self.scheduleEndTime] != NSOrderedAscending)) {
         NSDateComponents *startDateComponents = [[NSDateComponents alloc] init];
         startDateComponents.day = self.scheduleStartDate.day;
         startDateComponents.month = self.scheduleStartDate.month;
@@ -511,7 +511,7 @@ typedef enum {
         startDateComponents.minute = self.scheduleStartTime.minute;
         
         NSDate *startDate = [calendar dateFromComponents:startDateComponents];
-        NSDate *endDate = [calendar dateByAddingUnit:NSCalendarUnitHour value:1 toDate:startDate options:NSCalendarWrapComponents];
+        NSDate *endDate = [calendar dateByAddingUnit:NSCalendarUnitHour value:1 toDate:startDate options:0];
         dateComponents = [calendar components:calendarUnit fromDate:endDate];
         self.scheduleEndDate = [[TLDate alloc]initWithYear:(int)dateComponents.year month:(int)dateComponents.month day:(int)dateComponents.day];
         self.scheduleEndTime = [[TLTime alloc]initWithHour:(int)dateComponents.hour minute:(int)dateComponents.minute];

@@ -28,6 +28,7 @@ static const int ddLogLevel = DDLogLevelWarning;
 
 static const CGFloat DESIGN_LARGE_ROUND_CORNER_RADIUS = 38;
 static const CGFloat DESIGN_SMALL_ROUND_CORNER_RADIUS = 8;
+static const CGFloat DESIGN_MESSAGE_CELL_MAX_WIDTH = 410;
 
 //
 // Interface: SearchContentMessageCell ()
@@ -42,8 +43,8 @@ static const CGFloat DESIGN_SMALL_ROUND_CORNER_RADIUS = 8;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *nameLabelTrailingConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *nameLabelBottomConstraint;
 @property (weak, nonatomic) IBOutlet UILabel *nameLabel;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *dateLabelLeadingConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *dateLabelTrailingConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *dateLabelWidthConstraint;
 @property (weak, nonatomic) IBOutlet UILabel *dateLabel;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *contentLabelLeadingConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *contentLabelTopConstraint;
@@ -83,7 +84,7 @@ static const CGFloat DESIGN_SMALL_ROUND_CORNER_RADIUS = 8;
     self.nameLabel.textColor = Design.FONT_COLOR_DEFAULT;
     
     self.dateLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
-    self.dateLabelWidthConstraint.constant *= Design.WIDTH_RATIO;
+    self.dateLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
         
     self.dateLabel.font = Design.FONT_REGULAR28;
     self.dateLabel.textColor = Design.FONT_COLOR_GREY;
@@ -104,9 +105,12 @@ static const CGFloat DESIGN_SMALL_ROUND_CORNER_RADIUS = 8;
     
     self.contentLabel.numberOfLines = 0;
     self.contentLabel.translatesAutoresizingMaskIntoConstraints = NO;
-    self.contentLabel.preferredMaxLayoutWidth = Design.PEER_MESSAGE_CELL_MAX_WIDTH;
+    self.contentLabel.preferredMaxLayoutWidth = ceil(DESIGN_MESSAGE_CELL_MAX_WIDTH * Design.WIDTH_RATIO);
     self.contentLabel.textColor = [UIColor whiteColor];
     [self.contentLabel setCornerRadiusWithTopLeft:smallRadius topRight:largeRadius bottomRight:largeRadius bottomLeft:largeRadius];
+    self.contentLabel.lineBreakMode = NSLineBreakByWordWrapping;
+    [self.contentLabel setContentCompressionResistancePriority:UILayoutPriorityRequired
+                                                       forAxis:UILayoutConstraintAxisVertical];
     
     CGFloat heightPadding = Design.TEXT_HEIGHT_PADDING;
     CGFloat widthPadding = Design.TEXT_WIDTH_PADDING;
