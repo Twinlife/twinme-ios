@@ -35,6 +35,7 @@
 #import "DeviceAuthorization.h"
 #import "UIContact.h"
 #import "UICall.h"
+#import "UIColor+Hex.h"
 #import "UIPremiumFeature.h"
 #import "UIViewController+ProgressIndicator.h"
 
@@ -579,9 +580,11 @@ static CGFloat AVATAR_VIEW_HEIGHT;
         self.avatarView.clipsToBounds = YES;
         
         if ([self.uiContact.avatar isEqual:[TLTwinmeAttributes DEFAULT_GROUP_AVATAR]]) {
-            self.avatarView.backgroundColor = Design.GREY_ITEM;
+            self.avatarView.backgroundColor = [UIColor whiteColor];
+            self.avatarView.tintColor = [UIColor colorWithHexString:Design.DEFAULT_COLOR alpha:1.0];
         } else {
             self.avatarView.backgroundColor = [UIColor clearColor];
+            self.avatarView.tintColor = [UIColor clearColor];
         }
         
         CGFloat profileViewWidth = AVATAR_VIEW_HEIGHT + ORIGINATOR_MARGIN + self.titleLabel.intrinsicContentSize.width;
@@ -613,9 +616,11 @@ static CGFloat AVATAR_VIEW_HEIGHT;
     } else {
 
         if ([self.uiContact.avatar isEqual:[TLTwinmeAttributes DEFAULT_GROUP_AVATAR]]) {
-            self.avatarView.backgroundColor = Design.GREY_ITEM;
+            self.avatarView.backgroundColor = [UIColor whiteColor];
+            self.avatarView.tintColor = [UIColor colorWithHexString:Design.DEFAULT_COLOR alpha:1.0];
         } else {
             self.avatarView.backgroundColor = [UIColor clearColor];
+            self.avatarView.tintColor = [UIColor clearColor];
         }
         
         self.titleLabel.text = self.uiContact.name;

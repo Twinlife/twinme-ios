@@ -58,7 +58,7 @@ static NSString *BACKUP_WORDS_CELL_IDENTIFIER = @"BackupWordsCellIdentifier";
 // Interface: BackupViewController ()
 //
 
-@interface BackupViewController ()<BackupServiceDelegate, UITableViewDelegate, UITableViewDataSource, BackupActionDelegate, BackupFooterDelegate, BackupConfirmDelegate, BottomSheetViewDelegate, UINavigationControllerDelegate, AlertMessageViewDelegate>
+@interface BackupViewController ()<BackupServiceDelegate, UITableViewDelegate, UITableViewDataSource, BackupActionDelegate, BackupFooterDelegate, BackupConfirmDelegate, BottomSheetViewDelegate, AlertMessageViewDelegate>
 
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 
@@ -105,9 +105,16 @@ static NSString *BACKUP_WORDS_CELL_IDENTIFIER = @"BackupWordsCellIdentifier";
     
     [[UIApplication sharedApplication] setIdleTimerDisabled:YES];
     
-    self.navigationController.delegate = self;
     [self initViews];
     [self.backupService generateWords];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    DDLogVerbose(@"%@ viewWillDisappear: %@", LOG_TAG, animated ? @"YES" : @"NO");
+    
+    if (self.isMovingFromParentViewController) {
+        [self resetViews];
+    }
 }
 
 #pragma mark -BackupServiceDelegate
@@ -368,7 +375,7 @@ static NSString *BACKUP_WORDS_CELL_IDENTIFIER = @"BackupWordsCellIdentifier";
     [abstractConfirmView removeFromSuperview];
     
     if (self.successBackup) {
-        [self finish];
+        [self startSuccessBackup];
     }
 }
 
@@ -386,7 +393,7 @@ static NSString *BACKUP_WORDS_CELL_IDENTIFIER = @"BackupWordsCellIdentifier";
     [alertMessageView removeFromSuperview];
 }
 
-#pragma mark - UINavigationControllerDelegate
+/*#pragma mark - UINavigationControllerDelegate
 
 - (void)navigationController:(UINavigationController *)navigationController willShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
     DDLogVerbose(@"%@ navigationController: %@ willShowViewController: %@ animated: %@", LOG_TAG, navigationController, viewController, animated ? @"YES" : @"NO");
@@ -397,7 +404,7 @@ static NSString *BACKUP_WORDS_CELL_IDENTIFIER = @"BackupWordsCellIdentifier";
         [successBackupViewController initWithBackupPath:self.backupPath words:self.backupWords backupId:self.backupId];
         [navigationController pushViewController:successBackupViewController animated:YES];
     }
-}
+}*/
 
 #pragma mark - Private methods
 
@@ -445,8 +452,8 @@ static NSString *BACKUP_WORDS_CELL_IDENTIFIER = @"BackupWordsCellIdentifier";
     return NO;
 }
 
-- (void)finish {
-    DDLogVerbose(@"%@ finish", LOG_TAG);
+- (void)resetViews {
+    DDLogVerbose(@"%@ resetViews", LOG_TAG);
     
     if (self.backupService) {
         [self.backupService dispose];
@@ -454,12 +461,18 @@ static NSString *BACKUP_WORDS_CELL_IDENTIFIER = @"BackupWordsCellIdentifier";
     }
     
     if (self.overlayView) {
-        self.overlayView.hidden = NO;
+        self.overlayView.hidden = YES;
         [self.activityIndicatorView stopAnimating];
         [self.overlayView removeFromSuperview];
     }
     
     [[UIApplication sharedApplication] setIdleTimerDisabled:NO];
+}
+
+- (void)finish {
+    DDLogVerbose(@"%@ finish", LOG_TAG);
+    
+    [self resetViews];
     [self.navigationController popViewControllerAnimated:NO];
 }
 
@@ -485,6 +498,22 @@ static NSString *BACKUP_WORDS_CELL_IDENTIFIER = @"BackupWordsCellIdentifier";
     
     [self.navigationController.view addSubview:backupContentConfirmView];
     [backupContentConfirmView showConfirmView];
+}
+
+- (void)startSuccessBackup {
+    DDLogVerbose(@"%@ startSuccessBackup", LOG_TAG);
+    
+    UINavigationController *navigationController = self.navigationController;
+    NSMutableArray<UIViewController *> *viewControllers = [navigationController.viewControllers mutableCopy];
+
+    NSUInteger index = [viewControllers indexOfObjectIdenticalTo:self];
+    if (index != NSNotFound) {
+        SuccessBackupViewController *successBackupViewController = (SuccessBackupViewController *)[self.storyboard instantiateViewControllerWithIdentifier:@"SuccessBackupViewController"];
+        [successBackupViewController initWithBackupPath:self.backupPath words:self.backupWords backupId:self.backupId];
+        [self resetViews];
+        viewControllers[index] = successBackupViewController;
+        [navigationController setViewControllers:viewControllers animated:YES];
+    }
 }
 
 - (NSString *)getWordsList {

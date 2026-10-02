@@ -128,6 +128,14 @@ static const int ddLogLevel = DDLogLevelWarning;
     RTCSetMinDebugLogLevel(RTCLoggingSeverityWarning);
 #endif
 
+    // iOS can launch us in the background without any user action: prewarm after the device unlock
+    // (ActivePrewarm environment variable), silent push, background task.  A normal launch by the user
+    // is in the inactive state at this point.  For a background launch, hold a background task and arm the
+    // shutdown job before the twinlife library opens the database and takes the connection lock, so that
+    // we close them and end the task ourselves instead of being suspended with the files opened (0xdead10cc).
+    // A push or background task handler that follows replaces that job and the foreground cancels it.
+    [[self.twinmeContext getJobService] willFinishLaunchingWithApplication:self];
+
     return YES;
 }
 

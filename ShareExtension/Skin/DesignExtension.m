@@ -48,6 +48,10 @@ static UIColor *DESIGN_BACKGROUND_COLOR_GREY;
 static UIColor *DESIGN_POPUP_BACKGROUND_COLOR;
 static UIColor *DESIGN_FONT_COLOR_PROFILE_GREY;
 static UIColor *DESIGN_MAIN_COLOR;
+static UIColor *DESIGN_CHECKMARK_BORDER_COLOR;
+static UIColor *DESIGN_DEFAULT_COLOR;
+
+static CGFloat DESIGN_CHECKMARK_BORDER_WIDTH;
 
 @implementation DesignExtension
 
@@ -83,6 +87,10 @@ static UIColor *DESIGN_MAIN_COLOR;
     
     DESIGN_MAIN_COLOR = [UIColor colorWithRed:251./255. green:28./255. blue:91./255. alpha:1];
     DESIGN_FONT_COLOR_PROFILE_GREY = [UIColor colorWithRed:143./255. green:150./255. blue:164./255. alpha:1.0];
+    DESIGN_CHECKMARK_BORDER_COLOR = [UIColor colorWithRed:114./255. green:140./255. blue:161./255. alpha:0.56];
+    DESIGN_DEFAULT_COLOR = [UIColor colorWithRed:251./255. green:28./255. blue:91./255. alpha:1];
+    DESIGN_CHECKMARK_BORDER_WIDTH = 0.5;
+    DESIGN_SEPARATOR_HEIGHT = 0.5;
     
     [self setupColors];
 }
@@ -270,5 +278,19 @@ static UIColor *DESIGN_MAIN_COLOR;
     return DESIGN_SPACE_RADIUS_RATIO;
 }
 
++ (UIColor *)DEFAULT_COLOR {
+    
+    return DESIGN_DEFAULT_COLOR;
+}
+
++ (UIColor *)CHECKMARK_BORDER_COLOR {
+    
+    return DESIGN_CHECKMARK_BORDER_COLOR;
+}
+
++ (CGFloat)CHECKMARK_BORDER_WIDTH {
+    
+    return DESIGN_CHECKMARK_BORDER_WIDTH;
+}
 
 @end

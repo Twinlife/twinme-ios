@@ -1,9 +1,10 @@
 /*
- *  Copyright (c) 2020-2024 twinlife SA.
+ *  Copyright (c) 2020-2026 twinlife SA.
  *  SPDX-License-Identifier: AGPL-3.0-only
  *
  *  Contributors:
  *   Fabrice Trescartes (Fabrice.Trescartes@twin.life)
+ *   Romain Kolb (romain.kolb@skyrock.com)
  */
 
 #import <TwinmeCommon/AbstractTwinmeViewController.h>
@@ -13,8 +14,6 @@
 //
 
 @interface AccountMigrationViewController : AbstractTwinmeViewController
-
-@property (nonatomic) BOOL startFromSplashScreen;
 
 - (void)initWithAccountMigration:(nonnull TLAccountMigration *)accountMigration;
 

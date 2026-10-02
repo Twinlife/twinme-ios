@@ -15,14 +15,16 @@
 
 #import <Utils/NSString+Utils.h>
 
-#import <TwinmeCommon/Design.h>
 #import "DefaultConfirmView.h"
-#import <TwinmeCommon/OnboardingConfirmView.h>
 
 #import "BackupCell.h"
 #import "UIBackupInfo.h"
 
 #import <TwinmeCommon/BackupService.h>
+#import <TwinmeCommon/Design.h>
+#import <TwinmeCommon/MainViewController.h>
+#import <TwinmeCommon/OnboardingConfirmView.h>
+#import <TwinmeCommon/TwinmeNavigationController.h>
 
 #if 0
 static const int ddLogLevel = DDLogLevelVerbose;
@@ -372,12 +374,18 @@ static NSString *BACKUP_CELL_IDENTIFIER = @"BackupCellIdentifier";
 - (void)startBackup {
     DDLogVerbose(@"%@ startBackup", LOG_TAG);
     
-    [self.navigationController popViewControllerAnimated:YES];
-    
-    dispatch_async(dispatch_get_main_queue(), ^{
+    [CATransaction begin];
+    [CATransaction setCompletionBlock:^{
+        ApplicationDelegate *delegate = (ApplicationDelegate *)[[UIApplication sharedApplication] delegate];
+        MainViewController *mainViewController = delegate.mainViewController;
+        TwinmeNavigationController *selectedNavigationController = mainViewController.selectedViewController;
         BackupViewController *backupViewController = (BackupViewController *)[[UIStoryboard storyboardWithName:@"Backup" bundle:nil] instantiateViewControllerWithIdentifier:@"BackupViewController"];
-        [self.navigationController pushViewController:backupViewController animated:YES];
-    });
+        [selectedNavigationController pushViewController:backupViewController animated:YES];
+    }];
+    
+    [self.navigationController popViewControllerAnimated:YES];
+
+    [CATransaction commit];
 }
 
 - (void)invalidateBackup {

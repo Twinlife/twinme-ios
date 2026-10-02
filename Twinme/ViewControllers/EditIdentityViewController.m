@@ -255,10 +255,9 @@ static const int ddLogLevel = DDLogLevelWarning;
 
 - (void)imagePickerController:(UIImagePickerController *)pickerController didFinishPickingMediaWithInfo:(NSDictionary *)info {
     DDLogVerbose(@"%@ imagePickerController: %@ didFinishPickingMediaWithInfo: %@", LOG_TAG, pickerController, info);
-    
-    self.navigationController.navigationBarHidden = YES;
-    
+        
     [pickerController dismissViewControllerAnimated:YES completion:^{
+        self.navigationController.navigationBarHidden = YES;
         [self setUpdated];
         
         self.updatedIdentityLargeAvatar = info[UIImagePickerControllerEditedImage];
@@ -270,8 +269,9 @@ static const int ddLogLevel = DDLogLevelWarning;
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)pickerController {
     DDLogVerbose(@"%@ imagePickerControllerDidCancel: %@", LOG_TAG, pickerController);
     
-    self.navigationController.navigationBarHidden = YES;
-    [pickerController dismissViewControllerAnimated:YES completion:nil];
+    [pickerController dismissViewControllerAnimated:YES completion:^{
+        self.navigationController.navigationBarHidden = YES;
+    }];
 }
 
 #pragma mark - PHPickerViewControllerDelegate
@@ -282,6 +282,8 @@ static const int ddLogLevel = DDLogLevelWarning;
     [self showProgressIndicator];
     
     [pickerController dismissViewControllerAnimated:YES completion:^{
+        self.navigationController.navigationBarHidden = YES;
+
         if (!results || results.count == 0) {
             [self hideProgressIndicator];
             return;

@@ -12,6 +12,9 @@
 
 #import <TwinmeCommon/Design.h>
 
+#import <Twinme/TLTwinmeAttributes.h>
+#import "UIColor+Hex.h"
+
 #if 0
 static const int ddLogLevel = DDLogLevelVerbose;
 #else
@@ -82,6 +85,14 @@ static const int ddLogLevel = DDLogLevelWarning;
     
     self.nameLabel.text = name;
     self.avatarView.image = avatar;
+    
+    if ([avatar isEqual:[TLTwinmeAttributes DEFAULT_GROUP_AVATAR]]) {
+        self.avatarView.backgroundColor = [UIColor colorWithHexString:Design.DEFAULT_COLOR alpha:1.0];
+        self.avatarView.tintColor = [UIColor whiteColor];
+    } else {
+        self.avatarView.backgroundColor = [UIColor clearColor];
+        self.avatarView.tintColor = [UIColor clearColor];
+    }
     
     [self updateFont];
     [self updateColor];

@@ -16,25 +16,28 @@
 #import <Twinme/TLSpace.h>
 #import <Twinme/TLAccountMigration.h>
 #import <Twinme/TLTwinmeAttributes.h>
-#import <TwinmeCommon/AccountMigrationScannerService.h>
-#import <TwinmeCommon/AccountMigrationService.h>
 
 #import <Utils/NSString+Utils.h>
 
 #import "AccountMigrationScannerViewController.h"
 #import "AccountMigrationViewController.h"
 #import "RestoreViewController.h"
-#import <TwinmeCommon/TwinmeNavigationController.h>
+
+#import <TwinmeCommon/AccountMigrationScannerService.h>
+#import <TwinmeCommon/AccountMigrationService.h>
+#import <TwinmeCommon/Design.h>
+#import <TwinmeCommon/Utils.h>
 #import <TwinmeCommon/MainViewController.h>
+#import <TwinmeCommon/OnboardingConfirmView.h>
+#import <TwinmeCommon/TwinmeNavigationController.h>
 
 #import "AlertMessageView.h"
+#import "CustomTabView.h"
 #import "DefaultConfirmView.h"
-#import <TwinmeCommon/OnboardingConfirmView.h>
+#import "UICustomTab.h"
 #import "UIAccountMigrationItem.h"
 #import "AccountMigrationCell.h"
 
-#import <TwinmeCommon/Design.h>
-#import <TwinmeCommon/Utils.h>
 
 #if 0
 static const int ddLogLevel = DDLogLevelVerbose;
@@ -53,8 +56,11 @@ static int RESTORE_ALERT_TAG = 10;
 // Interface: AccountMigrationScannerViewController ()
 //
 
-@interface AccountMigrationScannerViewController () <AVCaptureMetadataOutputObjectsDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewDataSource, UIDocumentPickerDelegate, UIDocumentInteractionControllerDelegate, AlertMessageViewDelegate, BottomSheetViewDelegate, AccountMigrationScannerServiceDelegate>
+@interface AccountMigrationScannerViewController () <AVCaptureMetadataOutputObjectsDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewDataSource, UIDocumentPickerDelegate, UIDocumentInteractionControllerDelegate, AlertMessageViewDelegate, BottomSheetViewDelegate, CustomTabViewDelegate, AccountMigrationScannerServiceDelegate>
 
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *customTabViewTopConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *customTabViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet UIView *customTabContainerView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *accountViewHeightConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *accountViewWidthConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *accountViewTopConstraint;
@@ -88,6 +94,7 @@ static int RESTORE_ALERT_TAG = 10;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *restoreLabelTrailingConstraint;
 @property (weak, nonatomic) IBOutlet UILabel *restoreLabel;
 @property (weak, nonatomic) IBOutlet UIActivityIndicatorView *activityIndicatorView;
+@property (nonatomic) CustomTabView *customTabView;
 
 @property UIView *highlightView;
 @property AVCaptureSession *captureSession;
@@ -120,7 +127,7 @@ static int RESTORE_ALERT_TAG = 10;
     if (self) {
         _accountMigrationScannerService = [[AccountMigrationScannerService alloc] initWithTwinmeContext:self.twinmeContext delegate:self];
         _hasRelations = NO;
-        _fromCurrentDevice = NO;
+        _accountMigrationScannerMode = AccountMigrationScannerModeCode;
         _accountMigrationItems = [[NSMutableArray alloc] init];
     }
     return self;
@@ -145,15 +152,41 @@ static int RESTORE_ALERT_TAG = 10;
         OnboardingConfirmView *onboardingConfirmView = [[OnboardingConfirmView alloc] init];
         onboardingConfirmView.bottomSheetViewDelegate = self;
 
-        UIImage *image = [self.twinmeApplication darkModeEnable:[self currentSpaceSettings]] ? [UIImage imageNamed:@"OnboardingMigrationDark"] : [UIImage imageNamed:@"OnboardingMigration"];
-        
-        [onboardingConfirmView initWithTitle:TwinmeLocalizedString(@"account_view_migration_title", nil) message: TwinmeLocalizedString(@"account_view_migration_message", nil) image:image action:TwinmeLocalizedString(@"application_ok", nil) actionColor:nil cancel:TwinmeLocalizedString(@"application_do_not_display", nil)];
+        [onboardingConfirmView initWithTitle:TwinmeLocalizedString(@"account_view_migration_title", nil) message: TwinmeLocalizedString(@"account_view_migration_message", nil) image:[UIImage imageNamed:@"AccountMigration"] action:TwinmeLocalizedString(@"application_ok", nil) actionColor:nil cancel:TwinmeLocalizedString(@"application_do_not_display", nil)];
         
         NSMutableAttributedString *attributedTitle = [[NSMutableAttributedString alloc] initWithString:TwinmeLocalizedString(@"account_view_migration_title", nil) attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_BOLD36, NSFontAttributeName, Design.FONT_COLOR_DEFAULT, NSForegroundColorAttributeName, nil]];
         [onboardingConfirmView updateTitle:attributedTitle];
         
         [self.navigationController.view addSubview:onboardingConfirmView];
         [onboardingConfirmView showConfirmView];
+    }
+    
+    if (self.captureSession) {
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            [self.captureSession startRunning];
+        });
+    }
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    DDLogVerbose(@"%@ viewWillDisappear: %d", LOG_TAG, animated);
+    
+    [super viewWillDisappear:animated];
+    
+    if (self.captureSession) {
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            [self.captureSession stopRunning];
+        });
+    }
+}
+
+- (void)viewDidLayoutSubviews {
+    DDLogVerbose(@"%@ viewDidLayoutSubviews", LOG_TAG);
+    
+    [super viewDidLayoutSubviews];
+    
+    if (!self.customTabView) {
+        [self initCustomTab];
     }
 }
 
@@ -238,6 +271,134 @@ static int RESTORE_ALERT_TAG = 10;
         }
     }
 }
+
+#pragma mark - AccountMigrationScannerServiceDelegate
+
+- (void)onGetTwincodeNotFound {
+    DDLogVerbose(@"%@ onGetTwincodeNotFound", LOG_TAG);
+    
+    [self incorrectQRCode];
+}
+
+- (void)onGetTwincodeExpired {
+    DDLogVerbose(@"%@ onGetTwincodeExpired", LOG_TAG);
+    
+    [self incorrectQRCode];
+}
+
+- (void)onGetTwincodeWithTwincode:(nonnull TLTwincodeOutbound *)twincode avatar:(nullable UIImage *)avatar {
+    DDLogVerbose(@"%@ onGetTwincodeWithTwincode twincodeOutbound:%@", LOG_TAG, twincode);
+    
+    TLAccountMigrationVersion *version = [TLTwinmeAttributes getTwincodeAttributeAccountMigrationWithTwincode:twincode];
+    self.twincodeOutbound = twincode;
+    
+    [self checkVersionWithPeerAccountMigrationVersion:version withBlock:^{
+        [self.accountMigrationScannerService bindAccountMigrationWithTwincodeOutbound:twincode];
+    }];
+}
+
+- (void)onAccountMigrationConnected:(nonnull NSUUID *)accountMigrationId {
+    DDLogVerbose(@"%@ onAccountMigrationConnected accountMigrationId:%@", LOG_TAG, accountMigrationId.UUIDString);
+
+    ApplicationDelegate *delegate = (ApplicationDelegate *)[[UIApplication sharedApplication] delegate];
+    [delegate.accountMigrationService outgoingMigrationWithAccountMigrationId:accountMigrationId];
+
+    UINavigationController *navigationController = self.navigationController;
+    UIStoryboard *storyboard = self.storyboard;
+    TLAccountMigration *accountMigration = self.accountMigration;
+    [CATransaction begin];
+    [CATransaction setCompletionBlock:^{
+        AccountMigrationViewController *accountMigrationViewController = [storyboard instantiateViewControllerWithIdentifier:@"AccountMigrationViewController"];
+        [accountMigrationViewController initWithAccountMigration:accountMigration];
+        TwinmeNavigationController *migrationNavigationController = [[TwinmeNavigationController alloc]initWithRootViewController:accountMigrationViewController];
+        [navigationController presentViewController:migrationNavigationController animated:YES completion:nil];
+    }];
+    
+    [self finish];
+
+    [CATransaction commit];
+}
+
+- (void)onCreateAccountMigration:(nullable TLAccountMigration *)accountMigration twincodeUri:(nonnull TLTwincodeURI *)twincodeUri {
+    DDLogVerbose(@"%@ onCreateAccountMigration accountMigration:%@", LOG_TAG, accountMigration);
+    
+    self.accountMigration = accountMigration;
+    self.accountMigrationLink = twincodeUri;
+    
+    [self updateQRCode];
+}
+
+- (void)onUpdateAccountMigration:(nonnull TLAccountMigration *)accountMigration {
+    DDLogVerbose(@"%@ onUpdateAccountMigration: %@", LOG_TAG, accountMigration);
+
+    // TODO: redirect to the next view controller if the peer is now connected.
+    if ([accountMigration isBound]) {
+        [self onAccountMigrationConnected:accountMigration.uuid];
+    }
+}
+
+- (void)onDeleteAccountMigration:(nonnull NSUUID *)accountMigrationId {
+    DDLogVerbose(@"%@ onDeleteAccountMigration: %@", LOG_TAG, accountMigrationId);
+
+    if (self.accountMigration && [self.accountMigration.uuid isEqual:accountMigrationId]) {
+        [self finish];
+    }
+}
+
+- (void)onGetDefaultProfile:(nonnull TLProfile *)profile {
+    DDLogVerbose(@"%@ onGetDefaultProfile profile:%@", LOG_TAG, profile);
+    
+    self.profile = profile;
+}
+
+- (void)onGetDefaultProfileNotFound {
+    DDLogVerbose(@"%@ onGetDefaultProfileNotFound", LOG_TAG);
+    
+}
+
+- (void)onHasRelations {
+    DDLogVerbose(@"%@ onHasRelations", LOG_TAG);
+    
+    self.hasRelations = YES;
+}
+
+- (void)checkVersionWithPeerAccountMigrationVersion:(nonnull TLAccountMigrationVersion *)peerAccountMigrationVersion withBlock:(nonnull void (^)(void))block {
+    DDLogVerbose(@"%@ checkVersion peerVersion=", peerAccountMigrationVersion);
+    
+    // If the peer version is too old, there is a strong risk to lose data: if we send our database
+    // it has a new format that is not compatible with the peer device application.
+    // - if version match, we can proceed,
+    // - if our version is newer and there is no relation, we can proceed,
+    // - if our version is older and the peer has no relation, we can proceed.
+    
+    TLVersion *supportedVersion = [[TLVersion alloc] initWithVersion:TLAccountMigrationService.VERSION];
+    
+    TLVersion *peerVersion = peerAccountMigrationVersion.version;
+    BOOL peerHasRelations = peerAccountMigrationVersion.hasRelations;
+    
+    if (peerVersion.major == supportedVersion.major
+        || (peerVersion.major < supportedVersion.major && !self.hasRelations)
+        || (peerVersion.major > supportedVersion.major && !peerHasRelations)) {
+        block();
+    } else {
+        // Ask confirmation here to issue the bindMigration()
+        DDLogError(@"%@ AccountMigration is stopped because the peer device is old!", LOG_TAG);
+        
+        NSString *message;
+        if (peerVersion.major < supportedVersion.major) {
+            message = TwinmeLocalizedString(@"account_migration_scanner_view_message_older_version_target", nil);
+        } else {
+            message = TwinmeLocalizedString(@"account_migration_scanner_view_message_older_version", nil);
+        }
+        
+        DefaultConfirmView *migrationConfirmView = [[DefaultConfirmView alloc] init];
+        migrationConfirmView.bottomSheetViewDelegate = self;
+        [migrationConfirmView initWithTitle:TwinmeLocalizedString(@"deleted_account_view_warning", nil) message:message image:[UIImage imageNamed:@"AccountMigration"] avatar:nil action:TwinmeLocalizedString(@"account_migration_view_start", nil) actionColor:nil cancel:nil];
+        [self.tabBarController.view addSubview:migrationConfirmView];
+        [migrationConfirmView showConfirmView];
+    }
+}
+
 
 #pragma mark - ImagePicker Delegate Methods
 
@@ -416,6 +577,18 @@ static int RESTORE_ALERT_TAG = 10;
     return cell;
 }
 
+#pragma mark - CustomTabViewDelegate
+
+- (void)didSelectTab:(UICustomTab *)uiCustomTab {
+    DDLogVerbose(@"%@ didSelectTab: %@", LOG_TAG, uiCustomTab);
+    
+    [self hapticFeedBack:UIImpactFeedbackStyleHeavy];
+    
+    self.accountMigrationScannerMode = uiCustomTab.tag;
+    
+    [self loadItems];
+    [self updateViews];
+}
 
 #pragma mark - Private methods
 
@@ -425,6 +598,9 @@ static int RESTORE_ALERT_TAG = 10;
     [self.view setBackgroundColor:Design.GREY_BACKGROUND_COLOR];
     
     [self setNavigationTitle:TwinmeLocalizedString(@"account_view_migration_title", nil)];
+    
+    self.customTabViewTopConstraint.constant *= Design.HEIGHT_RATIO;
+    self.customTabViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     
     self.accountViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     self.accountViewWidthConstraint.constant *= Design.WIDTH_RATIO;
@@ -488,20 +664,7 @@ static int RESTORE_ALERT_TAG = 10;
     }
     
     [self updateQRCode];
-    
-    if (self.fromCurrentDevice) {
-        self.captureView.hidden = NO;
-        self.accountView.hidden = YES;
         
-        [self setupCaptureSession];
-        self.previewLayer.frame = self.captureView.bounds;
-        self.messageLabel.text = TwinmeLocalizedString(@"account_migration_scanner_view_header_my_device", nil);
-    } else {
-        self.captureView.hidden = YES;
-        self.accountView.hidden = NO;
-        self.messageLabel.text = TwinmeLocalizedString(@"account_migration_scanner_view_header_other_device", nil);
-    }
-    
     self.tableViewTopConstraint.constant *= Design.HEIGHT_RATIO;
     self.tableViewWidthConstraint.constant *= Design.WIDTH_RATIO;
     self.tableViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
@@ -552,6 +715,40 @@ static int RESTORE_ALERT_TAG = 10;
     [self.restoreLabel setAttributedText:restoreAttributedString];
     
     [self loadItems];
+    [self updateViews];
+}
+
+- (void)initCustomTab {
+    DDLogVerbose(@"%@ initCustomTab", LOG_TAG);
+    
+    NSMutableArray *customTabs = [[NSMutableArray alloc]init];
+    
+    [customTabs addObject:[[UICustomTab alloc]initWithTitle:TwinmeLocalizedString(@"account_migration_view_display", nil) tag:AccountMigrationScannerModeCode isSelected:self.accountMigrationScannerMode == AccountMigrationScannerModeCode]];
+    [customTabs addObject:[[UICustomTab alloc]initWithTitle:TwinmeLocalizedString(@"add_contact_view_scan_title", nil) tag:AccountMigrationScannerModeScan isSelected:self.accountMigrationScannerMode == AccountMigrationScannerModeScan]];
+    
+    self.customTabView = [[CustomTabView alloc] initWithCustomTab:customTabs];
+    self.customTabView.customTabViewDelegate = self;
+    [self.customTabView updateColor:Design.GREY_BACKGROUND_COLOR mainColor:Design.GREY_BACKGROUND_COLOR textSelectedColor:Design.BLACK_COLOR borderColor:nil];
+    [self.customTabContainerView addSubview:self.customTabView];
+}
+
+- (void)updateViews {
+    DDLogVerbose(@"%@ updateViews", LOG_TAG);
+    
+    if (self.accountMigrationScannerMode == AccountMigrationScannerModeScan) {
+        self.captureView.hidden = NO;
+        self.accountView.hidden = YES;
+        
+        [self setupCaptureSession];
+        self.previewLayer.frame = self.captureView.bounds;
+        self.messageLabel.text = TwinmeLocalizedString(@"account_migration_scanner_view_header_my_device", nil);
+    } else {
+        self.captureView.hidden = YES;
+        self.accountView.hidden = NO;
+        self.messageLabel.text = TwinmeLocalizedString(@"account_migration_scanner_view_header_other_device", nil);
+    }
+    
+    [self.tableView reloadData];
 }
 
 - (void)handleDecodeWithURI:(nonnull NSURL *)uri {
@@ -627,132 +824,6 @@ static int RESTORE_ALERT_TAG = 10;
     }
 }
 
-- (void)onGetTwincodeNotFound {
-    DDLogVerbose(@"%@ onGetTwincodeNotFound", LOG_TAG);
-    
-    [self incorrectQRCode];
-}
-
-- (void)onGetTwincodeExpired {
-    DDLogVerbose(@"%@ onGetTwincodeExpired", LOG_TAG);
-    
-    [self incorrectQRCode];
-}
-
-- (void)onGetTwincodeWithTwincode:(nonnull TLTwincodeOutbound *)twincode avatar:(nullable UIImage *)avatar {
-    DDLogVerbose(@"%@ onGetTwincodeWithTwincode twincodeOutbound:%@", LOG_TAG, twincode);
-    
-    TLAccountMigrationVersion *version = [TLTwinmeAttributes getTwincodeAttributeAccountMigrationWithTwincode:twincode];
-    self.twincodeOutbound = twincode;
-    
-    [self checkVersionWithPeerAccountMigrationVersion:version withBlock:^{
-        [self.accountMigrationScannerService bindAccountMigrationWithTwincodeOutbound:twincode];
-    }];
-}
-
-- (void)onAccountMigrationConnected:(nonnull NSUUID *)accountMigrationId {
-    DDLogVerbose(@"%@ onAccountMigrationConnected accountMigrationId:%@", LOG_TAG, accountMigrationId.UUIDString);
-
-    ApplicationDelegate *delegate = (ApplicationDelegate *)[[UIApplication sharedApplication] delegate];
-    [delegate.accountMigrationService outgoingMigrationWithAccountMigrationId:accountMigrationId];
-
-    UINavigationController *navigationController = self.navigationController;
-    UIStoryboard *storyboard = self.storyboard;
-    TLAccountMigration *accountMigration = self.accountMigration;
-    [CATransaction begin];
-    [CATransaction setCompletionBlock:^{
-        AccountMigrationViewController *accountMigrationViewController = [storyboard instantiateViewControllerWithIdentifier:@"AccountMigrationViewController"];
-        [accountMigrationViewController initWithAccountMigration:accountMigration];
-        TwinmeNavigationController *migrationNavigationController = [[TwinmeNavigationController alloc]initWithRootViewController:accountMigrationViewController];
-        [navigationController presentViewController:migrationNavigationController animated:YES completion:nil];
-    }];
-    
-    [self finish];
-
-    [CATransaction commit];
-}
-
-- (void)onCreateAccountMigration:(nullable TLAccountMigration *)accountMigration twincodeUri:(nonnull TLTwincodeURI *)twincodeUri {
-    DDLogVerbose(@"%@ onCreateAccountMigration accountMigration:%@", LOG_TAG, accountMigration);
-    
-    self.accountMigration = accountMigration;
-    self.accountMigrationLink = twincodeUri;
-    
-    [self updateQRCode];
-}
-
-- (void)onUpdateAccountMigration:(nonnull TLAccountMigration *)accountMigration {
-    DDLogVerbose(@"%@ onUpdateAccountMigration: %@", LOG_TAG, accountMigration);
-
-    // TODO: redirect to the next view controller if the peer is now connected.
-    if ([accountMigration isBound]) {
-        [self onAccountMigrationConnected:accountMigration.uuid];
-    }
-}
-
-- (void)onDeleteAccountMigration:(nonnull NSUUID *)accountMigrationId {
-    DDLogVerbose(@"%@ onDeleteAccountMigration: %@", LOG_TAG, accountMigrationId);
-
-    if (self.accountMigration && [self.accountMigration.uuid isEqual:accountMigrationId]) {
-        [self finish];
-    }
-}
-
-- (void)onGetDefaultProfile:(nonnull TLProfile *)profile {
-    DDLogVerbose(@"%@ onGetDefaultProfile profile:%@", LOG_TAG, profile);
-    
-    self.profile = profile;
-}
-
-- (void)onGetDefaultProfileNotFound {
-    DDLogVerbose(@"%@ onGetDefaultProfileNotFound", LOG_TAG);
-    
-}
-
-- (void)onHasRelations {
-    DDLogVerbose(@"%@ onHasRelations", LOG_TAG);
-    
-    self.hasRelations = YES;
-}
-
-- (void)checkVersionWithPeerAccountMigrationVersion:(nonnull TLAccountMigrationVersion *)peerAccountMigrationVersion withBlock:(nonnull void (^)(void))block {
-    DDLogVerbose(@"%@ checkVersion peerVersion=", peerAccountMigrationVersion);
-    
-    // If the peer version is too old, there is a strong risk to lose data: if we send our database
-    // it has a new format that is not compatible with the peer device application.
-    // - if version match, we can proceed,
-    // - if our version is newer and there is no relation, we can proceed,
-    // - if our version is older and the peer has no relation, we can proceed.
-    
-    TLVersion *supportedVersion = [[TLVersion alloc] initWithVersion:TLAccountMigrationService.VERSION];
-    
-    TLVersion *peerVersion = peerAccountMigrationVersion.version;
-    BOOL peerHasRelations = peerAccountMigrationVersion.hasRelations;
-    
-    if (peerVersion.major == supportedVersion.major
-        || (peerVersion.major < supportedVersion.major && !self.hasRelations)
-        || (peerVersion.major > supportedVersion.major && !peerHasRelations)) {
-        block();
-    } else {
-        // Ask confirmation here to issue the bindMigration()
-        DDLogError(@"%@ AccountMigration is stopped because the peer device is old!", LOG_TAG);
-        
-        NSString *message;
-        if (peerVersion.major < supportedVersion.major) {
-            message = TwinmeLocalizedString(@"account_migration_scanner_view_message_older_version_target", nil);
-        } else {
-            message = TwinmeLocalizedString(@"account_migration_scanner_view_message_older_version", nil);
-        }
-        
-        DefaultConfirmView *migrationConfirmView = [[DefaultConfirmView alloc] init];
-        migrationConfirmView.bottomSheetViewDelegate = self;
-        UIImage *image = [self.twinmeApplication darkModeEnable:[self currentSpaceSettings]] ? [UIImage imageNamed:@"OnboardingMigrationDark"] : [UIImage imageNamed:@"OnboardingMigration"];
-        [migrationConfirmView initWithTitle:TwinmeLocalizedString(@"deleted_account_view_warning", nil) message:message image:image avatar:nil action:TwinmeLocalizedString(@"account_migration_view_start", nil) actionColor:nil cancel:nil];
-        [self.tabBarController.view addSubview:migrationConfirmView];
-        [migrationConfirmView showConfirmView];
-    }
-}
-
 - (void)updateQRCode {
     DDLogVerbose(@"%@ updateQRCode", LOG_TAG);
     
@@ -790,12 +861,11 @@ static int RESTORE_ALERT_TAG = 10;
     [self.accountMigrationItems addObject:[[UIAccountMigrationItem alloc] initWithPosition:1 text:TwinmeLocalizedString(@"account_migration_scanner_view_step_1", nil)]];
     [self.accountMigrationItems addObject:[[UIAccountMigrationItem alloc] initWithPosition:2 text:TwinmeLocalizedString(@"account_migration_scanner_view_step_2", nil)]];
     [self.accountMigrationItems addObject:[[UIAccountMigrationItem alloc] initWithPosition:3 text:TwinmeLocalizedString(@"account_migration_scanner_view_step_3", nil)]];
+    [self.accountMigrationItems addObject:[[UIAccountMigrationItem alloc] initWithPosition:4 text:TwinmeLocalizedString(@"account_migration_scanner_view_step_4", nil)]];
     
-    if (self.fromCurrentDevice) {
-        [self.accountMigrationItems addObject:[[UIAccountMigrationItem alloc] initWithPosition:4 text:TwinmeLocalizedString(@"account_migration_scanner_view_step_4_another_device", nil)]];
+    if (self.accountMigrationScannerMode == AccountMigrationScannerModeScan) {
         [self.accountMigrationItems addObject:[[UIAccountMigrationItem alloc] initWithPosition:5 text:TwinmeLocalizedString(@"account_migration_scanner_view_step_5_my_device", nil)]];
     } else {
-        [self.accountMigrationItems addObject:[[UIAccountMigrationItem alloc] initWithPosition:4 text:TwinmeLocalizedString(@"account_migration_scanner_view_step_4_my_device", nil)]];
         [self.accountMigrationItems addObject:[[UIAccountMigrationItem alloc] initWithPosition:5 text:TwinmeLocalizedString(@"account_migration_scanner_view_step_5_another_device", nil)]];
     }
     

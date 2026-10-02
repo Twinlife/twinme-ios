@@ -16,4 +16,6 @@
 
 - (void)bindWithName:(NSString *)name avatar:(UIImage *)avatar isCertified:(BOOL)isCertified hideSeparator:(BOOL)hideSeparator;
 
+@property (nonatomic) BOOL checked;
+
 @end

@@ -347,7 +347,7 @@ static NSString *SETTINGS_ICON_CELL_IDENTIFIER = @"SettingsIconCellIdentifier";
     } else if (helpItemType == HelpItemTypeAccountTransfer) {
         title =  TwinmeLocalizedString(@"account_view_transfer_between_devices", nil);
         message = TwinmeLocalizedString(@"account_view_migration_message", nil);
-        image = [self.twinmeApplication darkModeEnable:[self currentSpaceSettings]] ? [UIImage imageNamed:@"OnboardingMigrationDark"] : [UIImage imageNamed:@"OnboardingMigration"];
+        image = [UIImage imageNamed:@"AccountMigration"];
     } else if (helpItemType == HelpItemTypeProxy) {
         title =  TwinmeLocalizedString(@"proxy_view_title", nil);
         message = TwinmeLocalizedString(@"proxy_view_onboarding", nil);

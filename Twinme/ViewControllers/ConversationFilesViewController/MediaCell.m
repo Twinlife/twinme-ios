@@ -16,10 +16,13 @@
 #import "VideoItem.h"
 #import "PeerVideoItem.h"
 
-#import <TwinmeCommon/Design.h>
+#import <Twinlife/TLConversationService.h>
 
 #import <TwinmeCommon/AsyncImageLoader.h>
 #import <TwinmeCommon/AsyncVideoLoader.h>
+#import <TwinmeCommon/Design.h>
+
+#import <Utils/NSString+Utils.h>
 
 #if 0
 static const int ddLogLevel = DDLogLevelVerbose;
@@ -50,6 +53,13 @@ static UIColor *DESIGN_PLACEHOLDER_COLOR;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *checkMarkViewBottomConstraint;
 @property (weak, nonatomic) IBOutlet UIView *checkMarkView;
 @property (weak, nonatomic) IBOutlet UIImageView *checkMarkImageView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *durationViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *durationViewLeadingConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *durationViewBottomConstraint;
+@property (weak, nonatomic) IBOutlet UIView *durationView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *durationLabelLeadingConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *durationLabelTrailingConstraint;
+@property (weak, nonatomic) IBOutlet UILabel *durationLabel;
 
 @property (nonatomic) AsyncImageLoader *imageLoader;
 @property (nonatomic) AsyncVideoLoader *videoLoader;
@@ -109,6 +119,20 @@ static UIColor *DESIGN_PLACEHOLDER_COLOR;
     self.checkMarkView.hidden = YES;
     self.checkMarkView.backgroundColor = [UIColor whiteColor];
     self.checkMarkImageView.tintColor = Design.MAIN_COLOR;
+    
+    self.durationViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    self.durationViewLeadingConstraint.constant *= Design.WIDTH_RATIO;
+    self.durationViewBottomConstraint.constant *= Design.HEIGHT_RATIO;
+    
+    self.durationView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.5];
+    self.durationView.clipsToBounds = YES;
+    self.durationView.layer.cornerRadius = self.durationViewHeightConstraint.constant * 0.5;
+    
+    self.durationLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
+    self.durationLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
+    
+    self.durationLabel.font = Design.FONT_REGULAR26;
+    self.durationLabel.textColor = [UIColor whiteColor];
 }
 
 - (void)prepareForReuse {
@@ -131,7 +155,6 @@ static UIColor *DESIGN_PLACEHOLDER_COLOR;
     DDLogVerbose(@"%@ bind", LOG_TAG);
     
     UIImage *image;
-    
     if (item.type == ItemTypeVideo || item.type == ItemTypePeerVideo) {
         TLVideoDescriptor *videoDescriptor;
         if (item.isPeerItem) {
@@ -154,6 +177,8 @@ static UIColor *DESIGN_PLACEHOLDER_COLOR;
         if (image) {
             self.imageView.image = image;
         }
+        self.durationView.hidden = NO;
+        self.durationLabel.text = [NSString convertWithInterval:videoDescriptor.duration format:@"mm:ss"];
     } else {
         TLImageDescriptor *imageDescriptor;
         if (item.isPeerItem) {
@@ -173,6 +198,7 @@ static UIColor *DESIGN_PLACEHOLDER_COLOR;
             }
         }
         image = self.imageLoader.image;
+        self.durationView.hidden = YES;
     }
     
     if (image) {

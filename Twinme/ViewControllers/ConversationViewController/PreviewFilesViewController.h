@@ -12,7 +12,18 @@
 // Interface: PreviewFilesViewController
 //
 
+@class UIPreviewMedia;
+
 @interface PreviewFilesViewController : AbstractPreviewViewController
+
+@property (weak, nonatomic) IBOutlet UIView *overlayView;
+@property (weak, nonatomic) IBOutlet UIActivityIndicatorView *activityIndicatorView;
+@property (weak, nonatomic) IBOutlet UILabel *stateLabel;
+@property (nonatomic) NSMutableArray *files;
+@property (nonatomic) int countFilePicking;
+@property (nonatomic) BOOL endFilePicking;
+@property (nonatomic) BOOL pickMediaError;
+@property (nonatomic) BOOL pickerExportingFile;
 
 - (void)initWithPreviewMedia:(NSArray *)previewMedias errorPicking:(BOOL)errorPicking;
 
@@ -21,5 +32,7 @@
 - (void)initWithVideo:(NSURL *)url;
 
 - (void)initWithPreviewFiles:(NSArray <NSURL *>*)previewFiles;
+
+- (void)resizeImage:(UIPreviewMedia *)previewMedia;
 
 @end

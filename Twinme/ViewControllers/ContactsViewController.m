@@ -666,7 +666,7 @@ static const int CONTACTS_VIEW_SECTION_COUNT = 2;
     
     if (sender.state == UIGestureRecognizerStateEnded) {
         AccountMigrationScannerViewController *accountMigrationScannerViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"AccountMigrationScannerViewController"];
-        accountMigrationScannerViewController.fromCurrentDevice = NO;
+        accountMigrationScannerViewController.accountMigrationScannerMode = AccountMigrationScannerModeCode;
         [self.navigationController pushViewController:accountMigrationScannerViewController animated:YES];
     }
 }

@@ -271,6 +271,7 @@
 		574855D32C9846FA00B1C6DB /* AccountViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 574855D22C9846FA00B1C6DB /* AccountViewController.m */; };
 		5749CBF62F72F80C005C8F11 /* LastCallCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 5749CBF42F72F80C005C8F11 /* LastCallCell.m */; };
 		5749CBF72F72F80C005C8F11 /* LastCallCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5749CBF52F72F80C005C8F11 /* LastCallCell.xib */; };
+		574AAA5E306145C0009C7D07 /* ShareFilesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 574AAA5D306145C0009C7D07 /* ShareFilesViewController.m */; };
 		574DB1F12EC1E7E8000E1F90 /* InfoPlist.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 574DB1F02EC1E7E8000E1F90 /* InfoPlist.xcstrings */; };
 		574E5C902FA097FD008EA3B0 /* PollResultView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 574E5C8F2FA097FD008EA3B0 /* PollResultView.xib */; };
 		574E5C912FA097FD008EA3B0 /* PollResultView.m in Sources */ = {isa = PBXBuildFile; fileRef = 574E5C8E2FA097FD008EA3B0 /* PollResultView.m */; };
@@ -516,6 +517,15 @@
 		57D5AD2D2CEB837B00D46A0C /* LogsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 57D5AD2C2CEB837B00D46A0C /* LogsViewController.m */; };
 		57D5B1152D2C4F3D001F79EA /* DeleteAccountConfirmView.m in Sources */ = {isa = PBXBuildFile; fileRef = 57D5B1132D2C4F3D001F79EA /* DeleteAccountConfirmView.m */; };
 		57D5B1162D2C4F3D001F79EA /* DeleteAccountConfirmView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 57D5B1142D2C4F3D001F79EA /* DeleteAccountConfirmView.xib */; };
+		57DCB8B1305A66E20041DECA /* MigrationDeviceView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 57DCB8A8305A66E20041DECA /* MigrationDeviceView.xib */; };
+		57DCB8B2305A66E20041DECA /* MigrationHeaderCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 57DCB8AB305A66E20041DECA /* MigrationHeaderCell.xib */; };
+		57DCB8B3305A66E20041DECA /* MigrationStateCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 57DCB8AE305A66E20041DECA /* MigrationStateCell.xib */; };
+		57DCB8B4305A66E20041DECA /* MigrationHeaderCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 57DCB8AA305A66E20041DECA /* MigrationHeaderCell.m */; };
+		57DCB8B5305A66E20041DECA /* MigrationDeviceView.m in Sources */ = {isa = PBXBuildFile; fileRef = 57DCB8A7305A66E20041DECA /* MigrationDeviceView.m */; };
+		57DCB8B6305A66E20041DECA /* MigrationStateCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 57DCB8AD305A66E20041DECA /* MigrationStateCell.m */; };
+		57DCB8B7305A66E20041DECA /* UIMigrationStateItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 57DCB8B0305A66E20041DECA /* UIMigrationStateItem.m */; };
+		57DCB952305BE0800041DECA /* ShareExtensionSelectedCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 57DCB950305BE0800041DECA /* ShareExtensionSelectedCell.m */; };
+		57DCB953305BE0800041DECA /* ShareExtensionSelectedCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 57DCB951305BE0800041DECA /* ShareExtensionSelectedCell.xib */; };
 		57DD47DC2DBBEFE200F14087 /* InvitationCodeConfirmView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 57DD47D12DBBEFE200F14087 /* InvitationCodeConfirmView.xib */; };
 		57DD47DD2DBBEFE200F14087 /* InvitationCodeCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 57DD47CE2DBBEFE200F14087 /* InvitationCodeCell.xib */; };
 		57DD47DE2DBBEFE200F14087 /* MenuAddContactView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 57DD47D92DBBEFE200F14087 /* MenuAddContactView.xib */; };
@@ -1497,6 +1507,8 @@
 		5749CBF32F72F80C005C8F11 /* LastCallCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LastCallCell.h; sourceTree = "<group>"; };
 		5749CBF42F72F80C005C8F11 /* LastCallCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LastCallCell.m; sourceTree = "<group>"; };
 		5749CBF52F72F80C005C8F11 /* LastCallCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = LastCallCell.xib; sourceTree = "<group>"; };
+		574AAA5C306145C0009C7D07 /* ShareFilesViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ShareFilesViewController.h; path = ViewControllers/ShareViewController/ShareFilesViewController.h; sourceTree = "<group>"; };
+		574AAA5D306145C0009C7D07 /* ShareFilesViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = ShareFilesViewController.m; path = ViewControllers/ShareViewController/ShareFilesViewController.m; sourceTree = "<group>"; };
 		574DB1F02EC1E7E8000E1F90 /* InfoPlist.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = InfoPlist.xcstrings; sourceTree = "<group>"; };
 		574E5C8D2FA097FD008EA3B0 /* PollResultView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = PollResultView.h; path = ViewControllers/ConversationViewController/PollResultView.h; sourceTree = "<group>"; };
 		574E5C8E2FA097FD008EA3B0 /* PollResultView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = PollResultView.m; path = ViewControllers/ConversationViewController/PollResultView.m; sourceTree = "<group>"; };
@@ -1869,6 +1881,20 @@
 		57D5B1122D2C4F3D001F79EA /* DeleteAccountConfirmView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DeleteAccountConfirmView.h; sourceTree = "<group>"; };
 		57D5B1132D2C4F3D001F79EA /* DeleteAccountConfirmView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DeleteAccountConfirmView.m; sourceTree = "<group>"; };
 		57D5B1142D2C4F3D001F79EA /* DeleteAccountConfirmView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = DeleteAccountConfirmView.xib; sourceTree = "<group>"; };
+		57DCB8A6305A66E20041DECA /* MigrationDeviceView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MigrationDeviceView.h; sourceTree = "<group>"; };
+		57DCB8A7305A66E20041DECA /* MigrationDeviceView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MigrationDeviceView.m; sourceTree = "<group>"; };
+		57DCB8A8305A66E20041DECA /* MigrationDeviceView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MigrationDeviceView.xib; sourceTree = "<group>"; };
+		57DCB8A9305A66E20041DECA /* MigrationHeaderCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MigrationHeaderCell.h; sourceTree = "<group>"; };
+		57DCB8AA305A66E20041DECA /* MigrationHeaderCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MigrationHeaderCell.m; sourceTree = "<group>"; };
+		57DCB8AB305A66E20041DECA /* MigrationHeaderCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MigrationHeaderCell.xib; sourceTree = "<group>"; };
+		57DCB8AC305A66E20041DECA /* MigrationStateCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MigrationStateCell.h; sourceTree = "<group>"; };
+		57DCB8AD305A66E20041DECA /* MigrationStateCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MigrationStateCell.m; sourceTree = "<group>"; };
+		57DCB8AE305A66E20041DECA /* MigrationStateCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MigrationStateCell.xib; sourceTree = "<group>"; };
+		57DCB8AF305A66E20041DECA /* UIMigrationStateItem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UIMigrationStateItem.h; sourceTree = "<group>"; };
+		57DCB8B0305A66E20041DECA /* UIMigrationStateItem.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UIMigrationStateItem.m; sourceTree = "<group>"; };
+		57DCB94F305BE0800041DECA /* ShareExtensionSelectedCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ShareExtensionSelectedCell.h; path = ViewControllers/ShareExtensionSelectedCell.h; sourceTree = "<group>"; };
+		57DCB950305BE0800041DECA /* ShareExtensionSelectedCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = ShareExtensionSelectedCell.m; path = ViewControllers/ShareExtensionSelectedCell.m; sourceTree = "<group>"; };
+		57DCB951305BE0800041DECA /* ShareExtensionSelectedCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = ShareExtensionSelectedCell.xib; path = ViewControllers/ShareExtensionSelectedCell.xib; sourceTree = "<group>"; };
 		57DD47CA2DBBEFE200F14087 /* EnterInvitationCodeViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EnterInvitationCodeViewController.h; sourceTree = "<group>"; };
 		57DD47CB2DBBEFE200F14087 /* EnterInvitationCodeViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EnterInvitationCodeViewController.m; sourceTree = "<group>"; };
 		57DD47CC2DBBEFE200F14087 /* InvitationCodeCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = InvitationCodeCell.h; sourceTree = "<group>"; };
@@ -3263,8 +3289,19 @@
 				577A97622C35B5560000C0F3 /* AccountMigrationScannerViewController.m */,
 				577A97632C35B5560000C0F3 /* AccountMigrationViewController.h */,
 				577A97642C35B5560000C0F3 /* AccountMigrationViewController.m */,
+				57DCB8A6305A66E20041DECA /* MigrationDeviceView.h */,
+				57DCB8A7305A66E20041DECA /* MigrationDeviceView.m */,
+				57DCB8A8305A66E20041DECA /* MigrationDeviceView.xib */,
+				57DCB8A9305A66E20041DECA /* MigrationHeaderCell.h */,
+				57DCB8AA305A66E20041DECA /* MigrationHeaderCell.m */,
+				57DCB8AB305A66E20041DECA /* MigrationHeaderCell.xib */,
+				57DCB8AC305A66E20041DECA /* MigrationStateCell.h */,
+				57DCB8AD305A66E20041DECA /* MigrationStateCell.m */,
+				57DCB8AE305A66E20041DECA /* MigrationStateCell.xib */,
 				570CB5A32FF2C4E000C23D23 /* UIAccountMigrationItem.h */,
 				570CB5A42FF2C4E000C23D23 /* UIAccountMigrationItem.m */,
+				57DCB8AF305A66E20041DECA /* UIMigrationStateItem.h */,
+				57DCB8B0305A66E20041DECA /* UIMigrationStateItem.m */,
 			);
 			name = AccountMigrationViewController;
 			path = ViewControllers/AccountMigrationViewController;
@@ -4160,6 +4197,9 @@
 		83E9609726A5DFE30071038B /* ViewControllers */ = {
 			isa = PBXGroup;
 			children = (
+				57DCB94F305BE0800041DECA /* ShareExtensionSelectedCell.h */,
+				57DCB950305BE0800041DECA /* ShareExtensionSelectedCell.m */,
+				57DCB951305BE0800041DECA /* ShareExtensionSelectedCell.xib */,
 				01ECEA8A2AC565E500FB27DD /* ShareExtensionSpace.h */,
 				01ECEA8D2AC565E500FB27DD /* ShareExtensionSpace.m */,
 				01ECEA882AC565E400FB27DD /* ShareExtensionSpaceCell.h */,
@@ -4278,12 +4318,14 @@
 		83FEE3FD26174E4B0007C1F1 /* ShareViewController */ = {
 			isa = PBXGroup;
 			children = (
-				01ECEA662AC4C4F000FB27DD /* ChangeSpaceCell.h */,
-				01ECEA642AC4C4F000FB27DD /* ChangeSpaceCell.m */,
-				01ECEA652AC4C4F000FB27DD /* ChangeSpaceCell.xib */,
 				018FB1EB27A2E38D004305BC /* AddCommentCell.h */,
 				018FB1EC27A2E38D004305BC /* AddCommentCell.m */,
 				018FB1EA27A2E38D004305BC /* AddCommentCell.xib */,
+				01ECEA662AC4C4F000FB27DD /* ChangeSpaceCell.h */,
+				01ECEA642AC4C4F000FB27DD /* ChangeSpaceCell.m */,
+				01ECEA652AC4C4F000FB27DD /* ChangeSpaceCell.xib */,
+				574AAA5C306145C0009C7D07 /* ShareFilesViewController.h */,
+				574AAA5D306145C0009C7D07 /* ShareFilesViewController.m */,
 				83FEE40026174E710007C1F1 /* ShareSectionHeaderCell.h */,
 				83FEE3FE26174E710007C1F1 /* ShareSectionHeaderCell.m */,
 				83FEE40226174E710007C1F1 /* ShareSectionHeaderCell.xib */,
@@ -4831,6 +4873,9 @@
 				83FEE38F261749BE0007C1F1 /* PersonalizationCell.xib in Resources */,
 				83FEE34D261749550007C1F1 /* ConversationCell.xib in Resources */,
 				83E9618426A87C7F0071038B /* SettingsInformationCell.xib in Resources */,
+				57DCB8B1305A66E20041DECA /* MigrationDeviceView.xib in Resources */,
+				57DCB8B2305A66E20041DECA /* MigrationHeaderCell.xib in Resources */,
+				57DCB8B3305A66E20041DECA /* MigrationStateCell.xib in Resources */,
 				01795E8D291A6FEA00C56352 /* EnableNotificationCell.xib in Resources */,
 				018FB1E927A2E296004305BC /* PeerLinkItemCell.xib in Resources */,
 				012C79502A670698000B819C /* FullScreenVideoCell.xib in Resources */,
@@ -4899,6 +4944,7 @@
 			files = (
 				578B01832BBBF4A900AE3EA8 /* PrivacyInfo.xcprivacy in Resources */,
 				574ED6BB2F69A4A8004B5F35 /* LocalizableBackup.xcstrings in Resources */,
+				57DCB953305BE0800041DECA /* ShareExtensionSelectedCell.xib in Resources */,
 				83E9607726A5DDA60071038B /* MainInterface.storyboard in Resources */,
 				57BCE36E2E70A3D70049CC31 /* Localizable.xcstrings in Resources */,
 				57E28A542D144B9A0097ED6A /* ShareExtensionAssets.xcassets in Resources */,
@@ -5210,6 +5256,10 @@
 				019610E7294B13EE0098481F /* CoachMarkView.m in Sources */,
 				577A976E2C35B5560000C0F3 /* AccountMigrationViewController.m in Sources */,
 				83B19D631CC5294000D546F7 /* AddProfileViewController.m in Sources */,
+				57DCB8B4305A66E20041DECA /* MigrationHeaderCell.m in Sources */,
+				57DCB8B5305A66E20041DECA /* MigrationDeviceView.m in Sources */,
+				57DCB8B6305A66E20041DECA /* MigrationStateCell.m in Sources */,
+				57DCB8B7305A66E20041DECA /* UIMigrationStateItem.m in Sources */,
 				83FEE2F3261748900007C1F1 /* ShowGroupViewController.m in Sources */,
 				83E123DB270ADE6600C946DC /* SettingsValueItemCell.m in Sources */,
 				57C49AA82B715169006EB227 /* CallMessageCell.m in Sources */,
@@ -5407,6 +5457,7 @@
 				5777A7862C073AB9003130CD /* GroupCapabilitiesViewController.m in Sources */,
 				570029422DE74548003EDDC3 /* EditMessageView.m in Sources */,
 				83FEE2F6261748900007C1F1 /* AcceptGroupInvitationViewController.m in Sources */,
+				574AAA5E306145C0009C7D07 /* ShareFilesViewController.m in Sources */,
 				5765D70B2D5B623A0061DD3B /* UIActionConversation.m in Sources */,
 				83192FA925F0EF810059FE7D /* NotificationErrorView.m in Sources */,
 				83A6C58026C6918C00997FE0 /* EphemeralView.m in Sources */,
@@ -5447,6 +5498,7 @@
 				01ECEA902AC565E500FB27DD /* ShareExtensionSpaceCell.m in Sources */,
 				01ECEA922AC56E3000FB27DD /* UIColor+Hex.m in Sources */,
 				01ECEA912AC565E500FB27DD /* ShareExtensionSpace.m in Sources */,
+				57DCB952305BE0800041DECA /* ShareExtensionSelectedCell.m in Sources */,
 				83E9609626A5DFD10071038B /* DesignExtension.m in Sources */,
 				83E960A326A5E0020071038B /* ShareExtensionHeaderCell.m in Sources */,
 				83E960A226A5E0020071038B /* ShareExtensionViewController.m in Sources */,

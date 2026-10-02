@@ -20,6 +20,9 @@
 @property (weak, nonatomic) IBOutlet UIView *textContainerView;
 @property (weak, nonatomic) IBOutlet UITextView *messageTextView;
 @property (weak, nonatomic) IBOutlet UIView *sendView;
+@property (weak, nonatomic) IBOutlet UIImageView *certifiedImageView;
+@property (weak, nonatomic) IBOutlet UIImageView *avatarView;
+@property (weak, nonatomic) IBOutlet UILabel *nameLabel;
 @property (nonatomic) BOOL startWithMedia;
 @property (nonatomic) BOOL isQualityMediaOriginal;
 

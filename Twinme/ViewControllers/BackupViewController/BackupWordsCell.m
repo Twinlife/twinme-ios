@@ -40,6 +40,8 @@ static const CGFloat DESIGN_WORD_HEIGHT = 100;
 @property (weak, nonatomic) IBOutlet UICollectionView *wordsCollectionView;
 
 @property (nonatomic) NSArray *words;
+@property (nonatomic) CGFloat wordsCollectionViewTopConstant;
+@property (nonatomic) CGFloat wordsCollectionViewBottomConstant;
 
 @end
 
@@ -65,6 +67,8 @@ static const CGFloat DESIGN_WORD_HEIGHT = 100;
     self.wordsCollectionViewTopConstraint.constant *= Design.HEIGHT_RATIO;
     self.wordsCollectionViewBottomConstraint.constant *= Design.HEIGHT_RATIO;
     self.wordsCollectionViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    self.wordsCollectionViewTopConstant = self.wordsCollectionViewTopConstraint.constant;
+    self.wordsCollectionViewBottomConstant = self.wordsCollectionViewBottomConstraint.constant;
     
     self.wordsCollectionView.dataSource = self;
     self.wordsCollectionView.delegate = self;
@@ -86,10 +90,16 @@ static const CGFloat DESIGN_WORD_HEIGHT = 100;
     
     self.words = words;
     
-    if (!self.words) {
+    if (self.words.count == 0) {
+        self.wordsCollectionViewTopConstraint.constant = 0.f;
+        self.wordsCollectionViewBottomConstraint.constant = 0.f;
         self.wordsCollectionViewHeightConstraint.constant = 0;
+        self.wordsCollectionView.hidden = YES;
     } else {
-        self.wordsCollectionViewHeightConstraint.constant = self.words.count * 0.5 * DESIGN_WORD_HEIGHT * Design.HEIGHT_RATIO;
+        self.wordsCollectionViewTopConstraint.constant = self.wordsCollectionViewTopConstant;
+        self.wordsCollectionViewBottomConstraint.constant = self.wordsCollectionViewBottomConstant;
+        self.wordsCollectionViewHeightConstraint.constant = ceilf(self.words.count * 0.5f) * DESIGN_WORD_HEIGHT * Design.HEIGHT_RATIO;
+        self.wordsCollectionView.hidden = NO;
     }
     
     [self.wordsCollectionView reloadData];

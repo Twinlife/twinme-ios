@@ -493,10 +493,9 @@ static CGFloat DESIGN_COLLECTION_CELL_WIDTH = 70;
 
 - (void)imagePickerController:(UIImagePickerController *)pickerController didFinishPickingMediaWithInfo:(NSDictionary *)info {
     DDLogVerbose(@"%@ imagePickerController: %@ didFinishPickingMediaWithInfo: %@", LOG_TAG, pickerController, info);
-    
-    self.navigationController.navigationBarHidden = YES;
-    
+        
     [pickerController dismissViewControllerAnimated:YES completion:^{
+        self.navigationController.navigationBarHidden = YES;
         self.updatedSpaceLargeAvatar = info[UIImagePickerControllerEditedImage];
         self.updatedSpaceAvatar = [self.updatedSpaceLargeAvatar resizeImage];
         self.avatarView.image = self.updatedSpaceLargeAvatar;
@@ -508,9 +507,9 @@ static CGFloat DESIGN_COLLECTION_CELL_WIDTH = 70;
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)pickerController {
     DDLogVerbose(@"%@ imagePickerControllerDidCancel: %@", LOG_TAG, pickerController);
     
-    self.navigationController.navigationBarHidden = YES;
-    
-    [pickerController dismissViewControllerAnimated:YES completion:nil];
+    [pickerController dismissViewControllerAnimated:YES completion:^{
+        self.navigationController.navigationBarHidden = YES;
+    }];
 }
 
 #pragma mark - PHPickerViewControllerDelegate
@@ -521,6 +520,8 @@ static CGFloat DESIGN_COLLECTION_CELL_WIDTH = 70;
     [self showProgressIndicator];
     
     [pickerController dismissViewControllerAnimated:YES completion:^{
+        self.navigationController.navigationBarHidden = YES;
+
         if (!results || results.count == 0) {
             [self hideProgressIndicator];
             return;

@@ -10,9 +10,11 @@
 
 #import "CallAgainConfirmView.h"
 
+#import <Twinme/TLTwinmeAttributes.h>
 #import <Utils/NSString+Utils.h>
 
 #import <TwinmeCommon/Design.h>
+#import "UIColor+Hex.h"
 
 #if 0
 static const int ddLogLevel = DDLogLevelVerbose;
@@ -45,6 +47,19 @@ static const int ddLogLevel = DDLogLevelWarning;
         [self initViews];
     }
     return self;
+}
+
+- (void)initWithTitle:(nonnull NSString *)title message:(nonnull NSString *)message avatar:(nullable UIImage *)avatar icon:(nullable UIImage *)icon {
+    
+    [super initWithTitle:title message:message avatar:avatar icon:icon];
+    
+    if ([avatar isEqual:[TLTwinmeAttributes DEFAULT_GROUP_AVATAR]]) {
+        self.avatarView.backgroundColor = [UIColor colorWithHexString:Design.DEFAULT_COLOR alpha:1.0];
+        self.avatarView.tintColor = [UIColor whiteColor];
+    } else {
+        self.avatarView.backgroundColor = [UIColor clearColor];
+        self.avatarView.tintColor = [UIColor clearColor];
+    }
 }
 
 - (void)initViews {

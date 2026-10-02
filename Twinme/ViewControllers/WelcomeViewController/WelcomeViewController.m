@@ -483,7 +483,7 @@ static const int WELCOME_STEP_COUNT = 3;
     
     if (sender.state == UIGestureRecognizerStateEnded) {
         AccountMigrationScannerViewController *accountMigrationScannerViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"AccountMigrationScannerViewController"];
-        accountMigrationScannerViewController.fromCurrentDevice = NO;
+        accountMigrationScannerViewController.accountMigrationScannerMode = AccountMigrationScannerModeCode;
         [self.navigationController pushViewController:accountMigrationScannerViewController animated:YES];
     }
 }
