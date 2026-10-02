@@ -101,6 +101,13 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *checkMarkViewLeadingConstraint;
 @property (weak, nonatomic) IBOutlet UIView *checkMarkView;
 @property (weak, nonatomic) IBOutlet UIImageView *checkMarkImageView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *durationViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *durationViewLeadingConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *durationViewBottomConstraint;
+@property (weak, nonatomic) IBOutlet UIView *durationView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *durationLabelLeadingConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *durationLabelTrailingConstraint;
+@property (weak, nonatomic) IBOutlet UILabel *durationLabel;
 @property (weak, nonatomic) IBOutlet UIView *overlayView;
 
 @property (nonatomic) TLVideoDescriptor *videoDescriptor;
@@ -176,6 +183,20 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
     placeholderLongPressGesture.delegate = self;
     [self.placeholderView addGestureRecognizer:placeholderLongPressGesture];
     [placeholderTapGesture requireGestureRecognizerToFail:placeholderLongPressGesture];
+    
+    self.durationViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    self.durationViewLeadingConstraint.constant *= Design.WIDTH_RATIO;
+    self.durationViewBottomConstraint.constant *= Design.HEIGHT_RATIO;
+    
+    self.durationView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.5];
+    self.durationView.clipsToBounds = YES;
+    self.durationView.layer.cornerRadius = self.durationViewHeightConstraint.constant * 0.5;
+    
+    self.durationLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
+    self.durationLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
+    
+    self.durationLabel.font = Design.FONT_REGULAR28;
+    self.durationLabel.textColor = [UIColor whiteColor];
     
     self.replyViewTopConstraint.constant *= Design.HEIGHT_RATIO;
     self.replyViewBottomConstraint.constant *= Design.HEIGHT_RATIO;
@@ -417,6 +438,7 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
     
     if (![peerVideoItem isAvailableItem]) {
         self.gradientBottomView.hidden = NO;
+        self.durationView.hidden = YES;
         self.progressView.hidden = NO;
         self.progressLabel.hidden = NO;
         self.ephemeralView.hidden = YES;
@@ -425,8 +447,11 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
         self.progressLabel.text = [NSString stringWithFormat:@"%.0f %%", progress * 100.0];
     } else {
         self.gradientBottomView.hidden = YES;
+        self.durationView.hidden = NO;
     }
     
+    self.durationLabel.text = [NSString convertWithInterval:self.videoDescriptor.duration format:@"mm:ss"];
+
     self.replyImageViewHeightConstraint.constant = 0;
     self.replyImageViewTopConstraint.constant = 0;
     self.replyImageViewBottomConstraint.constant = 0;
@@ -526,6 +551,7 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
         self.ephemeralView.hidden = NO;
         self.progressView.hidden = YES;
         self.progressLabel.hidden = YES;
+        self.durationView.hidden = YES;
         
         if (self.updateEphemeralTimer) {
             [self.updateEphemeralTimer invalidate];
@@ -578,6 +604,7 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
             [self.contentView bringSubviewToFront:self.playImageView];
             [self.contentView bringSubviewToFront:self.gradientBottomView];
             [self.contentView bringSubviewToFront:self.ephemeralView];
+            [self.contentView bringSubviewToFront:self.durationView];
             [self.contentView bringSubviewToFront:self.annotationCollectionView];
         }
     } else {

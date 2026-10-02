@@ -4,9 +4,11 @@
  *
  *  Contributors:
  *   Fabrice Trescartes (Fabrice.Trescartes@twin.life)
+ *   Romain Kolb (romain.kolb@skyrock.com)
  */
 
 #import <CocoaLumberjack.h>
+#import <QuartzCore/QuartzCore.h>
 
 #import "AccountMigrationViewController.h"
 
@@ -22,6 +24,10 @@
 #import "InfoFloatingView.h"
 #import "DefaultConfirmView.h"
 #import "ApplicationAssertion.h"
+#import "MigrationStateCell.h"
+#import "MigrationHeaderCell.h"
+#import "UIMigrationStateItem.h"
+#import "MigrationDeviceView.h"
 
 #if 0
 static const int ddLogLevel = DDLogLevelVerbose;
@@ -29,34 +35,34 @@ static const int ddLogLevel = DDLogLevelVerbose;
 static const int ddLogLevel = DDLogLevelWarning;
 #endif
 
+static const CGFloat DESIGN_CELL_HEIGHT = 100;
+static const CGFloat DESIGN_TABLE_VIEW_GRADIENT_HEIGHT = 40;
 static CGFloat DESIGN_INFO_FLOATING_VIEW_SIZE = 120;
 static CGFloat INFO_FLOATING_VIEW_SIZE;
+
+static NSString *MIGRATION_HEADER_CELL_IDENTIFIER = @"MigrationHeaderCellIdentifier";
+static NSString *MIGRATION_STATE_CELL_IDENTIFIER = @"MigrationStateCellIdentifier";
+
+static UIColor *DEVICE_COLOR_PRIMARY;
+static UIColor *DEVICE_COLOR_SECONDARY;
 
 //
 // Interface: AccountMigrationViewController ()
 //
 
-@interface AccountMigrationViewController () <AccountMigrationServiceDelegate, AlertMessageViewDelegate, BottomSheetViewDelegate>
+@interface AccountMigrationViewController () <UITableViewDataSource, UITableViewDelegate, AccountMigrationServiceDelegate, AlertMessageViewDelegate, BottomSheetViewDelegate>
 
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *migrationTitleLabelLeading;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *migrationTitleLabelTrailing;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *migrationTitleLabelTopConstraint;
+@property (weak, nonatomic) IBOutlet UILabel *migrationTitleLabel;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *migrationImageViewHeightConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *migrationImageViewTopConstraint;
 @property (weak, nonatomic) IBOutlet UIView *migrationImageView;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *informationLabelTopConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *informationLabelWidthConstraint;
-@property (weak, nonatomic) IBOutlet UILabel *informationLabel;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *migrationViewTopConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *migrationViewWidthConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *migrationViewHeightConstraint;
-@property (weak, nonatomic) IBOutlet UIView *migrationView;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *progressLabelTopConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *progressLabelWidthConstraint;
-@property (weak, nonatomic) IBOutlet UILabel *progressLabel;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *progressViewTopConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *progressViewWidthConstraint;
-@property (weak, nonatomic) IBOutlet UIProgressView *progressView;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *stateLabelTopConstraint;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *stateLabelWidthConstraint;
-@property (weak, nonatomic) IBOutlet UILabel *stateLabel;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *infoLabelLeading;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *infoLabelTrailing;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *infoLabelTopConstraint;
+@property (weak, nonatomic) IBOutlet UILabel *infoLabel;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *startViewWidthConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *startViewHeightConstraint;
 @property (weak, nonatomic) IBOutlet UIView *startView;
@@ -73,6 +79,17 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
 @property (weak, nonatomic) IBOutlet UIView *cancelView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *cancelLabelWidthConstraint;
 @property (weak, nonatomic) IBOutlet UILabel *cancelLabel;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *tableViewWidthConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *tableViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *tableViewTopConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *tableViewBottomConstraint;
+@property (weak, nonatomic) IBOutlet UITableView *tableView;
+
+@property (nonatomic) UIView *tableViewTopGradientView;
+@property (nonatomic) UIView *tableViewBottomGradientView;
+@property (nonatomic) CAGradientLayer *tableViewTopGradientLayer;
+@property (nonatomic) CAGradientLayer *tableViewBottomGradientLayer;
+@property (nonatomic) CGFloat tableViewBottomConstraintValue;
 
 @property (nonatomic, nonnull) AccountMigrationService *accountMigrationService;
 @property (nonatomic, nullable) NSUUID *accountMigrationId;
@@ -88,6 +105,9 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
 @property (nonatomic) BOOL isAlertMessage;
 
 @property (nonatomic) InfoFloatingView *infoFloatingView;
+@property (nonatomic) DefaultConfirmView *cancelMigrationConfirmView;
+@property (nonatomic) UIMigrationStateItem *headerMigrationStateItem;
+@property (nonatomic) NSMutableArray<UIMigrationStateItem *> *migrationsItems;
 
 @end
 
@@ -104,8 +124,9 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
     DDLogVerbose(@"%@ initialize", LOG_TAG);
     
     INFO_FLOATING_VIEW_SIZE = DESIGN_INFO_FLOATING_VIEW_SIZE * Design.HEIGHT_RATIO;
+    DEVICE_COLOR_PRIMARY = [UIColor colorWithRed:169./255. green:151./255. blue:245./255. alpha:1.0f];
+    DEVICE_COLOR_SECONDARY = [UIColor colorWithRed:85./255. green:182./255. blue:248./255. alpha:1.0f];
 }
-
 
 - (instancetype) initWithCoder:(NSCoder *)coder {
     self = [super initWithCoder:coder];
@@ -116,9 +137,9 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
         self.needRestart = NO;
         self.canceled = NO;
         self.isConnected = NO;
-        self.startFromSplashScreen = NO;
         self.isAlertMessage = NO;
         self.state = TLAccountMigrationStateStarting;
+        self.migrationsItems = [[NSMutableArray alloc]init];
     }
     
     return self;
@@ -135,6 +156,11 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
     
     self.accountMigrationService.migrationObserver = self;
     
+    // Check if we have an active migration to resume.
+    if (!self.accountMigrationId) {
+        self.accountMigrationId = [[self.twinmeContext getAccountMigrationService] getActiveDeviceMigrationId];
+    }
+    
     if (self.accountMigrationId) {
         [self.accountMigrationService outgoingMigrationWithAccountMigrationId:self.accountMigrationId];
     } else {
@@ -144,6 +170,23 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
     [self.navigationItem setHidesBackButton:YES];
 }
 
+- (void)viewDidLayoutSubviews {
+    DDLogVerbose(@"%@ viewDidLayoutSubviews", LOG_TAG);
+    
+    [super viewDidLayoutSubviews];
+    
+    self.tableViewTopGradientLayer.frame = self.tableViewTopGradientView.bounds;
+    self.tableViewBottomGradientLayer.frame = self.tableViewBottomGradientView.bounds;
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    DDLogVerbose(@"%@ viewWillAppear", LOG_TAG);
+    
+    [super viewWillAppear:animated];
+    
+    self.navigationController.navigationBarHidden = YES;
+}
+
 - (void)initWithAccountMigration:(nonnull TLAccountMigration *)accountMigration {
     DDLogVerbose(@"%@ initWithAccountMigration: %@", LOG_TAG, accountMigration);
     
@@ -151,13 +194,21 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
 }
 
 - (void)onConnectionStatusChange:(TLConnectionStatus)connectionStatus {
-    
+    DDLogVerbose(@"%@ onConnectionStatusChange: %u", LOG_TAG, connectionStatus);
+
     if (connectionStatus == TLConnectionStatusConnected) {
+        if (self.connectionStatus == connectionStatus) {
+            return;
+        }
         self.connectionStatus = connectionStatus;
+        
         if ([self.twinmeApplication showConnectedMessage]) {
             [self.twinmeApplication setShowConnectedMessage:NO];
             [self initInfoFloatingView];
-            [self.infoFloatingView setConnectionStatus:self.twinmeContext.connectionStatus];
+        }
+        
+        if (self.infoFloatingView) {
+            [self.infoFloatingView setConnectionStatus:connectionStatus];
         }
     } else {
         
@@ -240,8 +291,8 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
             [self updateViews:status];
             return;
         }
-                
-        self.stateLabel.text = [self stateToLabelWithState:self.state];
+        
+        [self updateTableViewBottom];
     }
     
     if (self.state == TLAccountMigrationStateTerminated) {
@@ -260,14 +311,16 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
     }
     
     if (!status.isConnected) {
-        self.informationLabel.text = TwinmeLocalizedString(@"account_migration_view_state_wait_connect", nil);
-    } else if (self.state == TLAccountMigrationStateStarting) {
-        self.informationLabel.text = TwinmeLocalizedString(@"account_migration_view_network_message", nil);
-    } else if (self.state != TLAccountMigrationStateStopped && self.state != TLAccountMigrationStateTerminated && self.state != TLAccountMigrationStateCanceled && self.state != TLAccountMigrationStateError) {
-        self.informationLabel.text = @"";
+        // alpha == 0.5 => button effectively disabled
+        self.startView.alpha = 0.5f;
+    } else if (self.state == TLAccountMigrationStateNegociate) {
+        self.startView.alpha = 1.0f;
     }
     
+    [self updateItems:state status:status];
+    
     if (peerInfo && localInfo) {
+        
         NSString *message;
         if (peerInfo.databaseFileSize >= localInfo.localDatabaseAvailableSize) {
             message = TwinmeLocalizedString(@"account_migration_view_not_enough_space_to_receive", nil);
@@ -290,18 +343,8 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
     }
     
     long sent = status.bytesSent;
-    long sentRemain = status.estimatedBytesRemainSend;
+    long sentRemain = status.sendProgress;
     long received = status.bytesReceived;
-    double progressPercent = status.progress;
-    
-    if (progressPercent >= 0 && progressPercent <= 100) {
-        self.progressView.progress = progressPercent / 100;
-        self.progressLabel.text = [NSString stringWithFormat:@"%d %%", (int)progressPercent];
-    } else if (progressPercent <= 0) {
-        self.progressLabel.text = TwinmeLocalizedString(@"0%", nil);
-    } else {
-        self.progressLabel.text = TwinmeLocalizedString(@"100%", nil);
-    }
     
     if (sentRemain != self.remain) {
         self.remain = sentRemain;
@@ -365,7 +408,72 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
     DDLogVerbose(@"%@ didFinishCloseAnimation: %@", LOG_TAG, abstractBottomSheetView);
     
     [abstractBottomSheetView removeFromSuperview];
+    
+    if ([self.cancelMigrationConfirmView isEqual:abstractBottomSheetView]) {
+        self.cancelMigrationConfirmView = nil;
+    }
 }
+
+#pragma mark - UITableViewDataSource
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+    DDLogVerbose(@"%@ numberOfSectionsInTableView: %@", LOG_TAG, tableView);
+    
+    return 1;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath  {
+    DDLogVerbose(@"%@ tableView: %@ heightForRowAtIndexPath: %@", LOG_TAG, tableView, indexPath);
+    
+    return UITableViewAutomaticDimension;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView estimatedHeightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    DDLogVerbose(@"%@ tableView: %@ estimatedHeightForRowAtIndexPath: %@", LOG_TAG, tableView, indexPath);
+    
+    return roundf(DESIGN_CELL_HEIGHT * Design.HEIGHT_RATIO);
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
+    DDLogVerbose(@"%@ tableView: %@ heightForHeaderInSection: %ld", LOG_TAG, tableView, (long)section);
+    
+    return roundf(DESIGN_TABLE_VIEW_GRADIENT_HEIGHT * Design.HEIGHT_RATIO);
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section {
+    DDLogVerbose(@"%@ tableView: %@ heightForFooterInSection: %ld", LOG_TAG, tableView, (long)section);
+    
+    return roundf(DESIGN_TABLE_VIEW_GRADIENT_HEIGHT * Design.HEIGHT_RATIO);
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    DDLogVerbose(@"%@ tableView: %@ numberOfRowsInSection: %ld", LOG_TAG, tableView, (long)section);
+    
+    return self.migrationsItems.count;
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    DDLogVerbose(@"%@ tableView: %@ cellForRowAtIndexPath: %@", LOG_TAG, tableView, indexPath);
+    
+    UIMigrationStateItem *migrationStateItem = [self.migrationsItems objectAtIndex:indexPath.row];
+    MigrationStateCell *cell = [tableView dequeueReusableCellWithIdentifier:MIGRATION_STATE_CELL_IDENTIFIER];
+    if (!cell) {
+        cell = [[MigrationStateCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:MIGRATION_STATE_CELL_IDENTIFIER];
+    }
+    
+    BOOL previousStateDone = NO;
+    if (indexPath.row != 0) {
+        UIMigrationStateItem *migrationStateItem = [self.migrationsItems objectAtIndex:indexPath.row - 1];
+        previousStateDone = [migrationStateItem getState] == MigrationStateItemStateDone;
+    }
+    
+    [cell setMinimumHeight:roundf(DESIGN_CELL_HEIGHT * Design.HEIGHT_RATIO)];
+
+    [cell bindWithItem:migrationStateItem previousStateDone:previousStateDone];
+    
+    return cell;
+}
+
 
 #pragma mark - Private methods
 
@@ -376,53 +484,45 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
     
     [self setNavigationTitle:TwinmeLocalizedString(@"account_view_migration_title", nil)];
     
-    self.informationLabelTopConstraint.constant *= Design.HEIGHT_RATIO;
-    self.informationLabelWidthConstraint.constant *= Design.WIDTH_RATIO;
-    self.informationLabel.font = Design.FONT_BOLD28;
-    self.informationLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    self.informationLabel.text = @"";
+    self.migrationTitleLabelLeading.constant *= Design.WIDTH_RATIO;
+    self.migrationTitleLabelTrailing.constant *= Design.WIDTH_RATIO;
+    self.migrationTitleLabelTopConstraint.constant *= Design.HEIGHT_RATIO;
     
-    self.migrationViewTopConstraint.constant *= Design.HEIGHT_RATIO;
-    self.migrationViewWidthConstraint.constant *= Design.WIDTH_RATIO;
-    self.migrationViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
-    self.migrationView.backgroundColor = Design.GREY_ITEM;
-    self.migrationView.layer.cornerRadius = Design.CONTAINER_RADIUS;
-    self.migrationView.clipsToBounds = YES;
-    
-    self.progressLabelTopConstraint.constant *= Design.HEIGHT_RATIO;
-    self.progressLabelWidthConstraint.constant *= Design.WIDTH_RATIO;
-    self.progressLabel.font = Design.FONT_BOLD28;
-    self.progressLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    self.progressLabel.text = TwinmeLocalizedString(@"0%", nil);
-    
-    self.progressViewTopConstraint.constant *= Design.HEIGHT_RATIO;
-    self.progressViewWidthConstraint.constant *= Design.WIDTH_RATIO;
-    
-    self.progressView.trackTintColor = [UIColor colorWithWhite:1.0 alpha:0.4];
-    self.progressView.progressTintColor = Design.MAIN_COLOR;
-    self.progressView.clipsToBounds = true;
-    
-    if (self.progressView.subviews.count > 1) {
-        self.progressView.subviews[1].clipsToBounds = true;
-        self.progressView.transform = CGAffineTransformMakeScale(1.0, Design.PROGRESS_VIEW_SCALE);
-    }
-    
-    if (self.progressView.layer.sublayers.count > 1) {
-        CALayer *layer = [self.progressView.layer.sublayers objectAtIndex:1];
-        layer.cornerRadius =  self.progressView.frame.size.height * 0.5;
-        self.progressView.layer.cornerRadius = self.progressView.frame.size.height * 0.5;
-    }
-    
-    self.progressView.progress = 0;
-    
-    self.stateLabelTopConstraint.constant *= Design.HEIGHT_RATIO;
-    self.stateLabelWidthConstraint.constant *= Design.WIDTH_RATIO;
-    self.stateLabel.font = Design.FONT_BOLD28;
-    self.stateLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    self.stateLabel.text = TwinmeLocalizedString(@"show_contact_view_pending", nil);
+    self.migrationTitleLabel.text = TwinmeLocalizedString(@"account_view_migration_title", nil);
+    self.migrationTitleLabel.textColor = Design.BLACK_COLOR;
+    self.migrationTitleLabel.font = Design.FONT_BOLD34;
     
     self.migrationImageViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     self.migrationImageViewTopConstraint.constant *= Design.HEIGHT_RATIO;
+    
+    self.infoLabelLeading.constant *= Design.WIDTH_RATIO;
+    self.infoLabelTrailing.constant *= Design.WIDTH_RATIO;
+    self.infoLabelTopConstraint.constant *= Design.HEIGHT_RATIO;
+    
+    self.infoLabel.numberOfLines = 0;
+    self.infoLabel.textColor = Design.BLACK_COLOR;
+    self.infoLabel.font = Design.FONT_REGULAR34;
+    self.infoLabel.text = @"";
+    
+    self.tableViewTopConstraint.constant *= Design.HEIGHT_RATIO;
+    self.tableViewBottomConstraint.constant *= Design.HEIGHT_RATIO;
+    self.tableViewBottomConstraintValue = self.tableViewBottomConstraint.constant;
+    self.tableViewWidthConstraint.constant *= Design.WIDTH_RATIO;
+    self.tableViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+        
+    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+    [self.tableView registerNib:[UINib nibWithNibName:@"MigrationHeaderCell" bundle:nil] forCellReuseIdentifier:MIGRATION_HEADER_CELL_IDENTIFIER];
+    [self.tableView registerNib:[UINib nibWithNibName:@"MigrationStateCell" bundle:nil] forCellReuseIdentifier:MIGRATION_STATE_CELL_IDENTIFIER];
+
+    self.tableView.backgroundColor = Design.WHITE_COLOR;
+    self.tableView.dataSource = self;
+    self.tableView.delegate = self;
+    self.tableView.rowHeight = UITableViewAutomaticDimension;
+    self.tableView.estimatedRowHeight = roundf(DESIGN_CELL_HEIGHT * Design.HEIGHT_RATIO);
+    self.tableView.clipsToBounds = YES;
+    self.tableView.layer.cornerRadius = Design.POPUP_RADIUS;
+    self.tableView.layer.masksToBounds = YES;
+    [self initTableViewGradientViews];
     
     self.startViewWidthConstraint.constant *= Design.WIDTH_RATIO;
     self.startViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
@@ -432,6 +532,8 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
     self.startView.layer.cornerRadius = Design.CONTAINER_RADIUS;
     self.startView.clipsToBounds = YES;
     self.startView.hidden = NO;
+    // Start button cannot be selected until we are connected.
+    self.startView.alpha = 0.5f;
     
     UITapGestureRecognizer *startMigrationViewGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleStartMigrationTapGesture:)];
     [self.startView addGestureRecognizer:startMigrationViewGestureRecognizer];
@@ -460,7 +562,7 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
     self.cancelViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     self.cancelViewWidthConstraint.constant *= Design.WIDTH_RATIO;
     
-    self.cancelView.backgroundColor = Design.BUTTON_RED_COLOR;
+    self.cancelView.backgroundColor = Design.BLACK_COLOR;
     self.cancelView.userInteractionEnabled = YES;
     self.cancelView.isAccessibilityElement = YES;
     self.cancelView.accessibilityLabel = TwinmeLocalizedString(@"account_migration_view_stop", nil);
@@ -471,14 +573,82 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
     
     self.cancelLabelWidthConstraint.constant *= Design.WIDTH_RATIO;
     [self.cancelLabel setFont:Design.FONT_MEDIUM34];
-    self.cancelLabel.textColor = [UIColor whiteColor];
+    self.cancelLabel.textColor = Design.WHITE_COLOR;
     self.cancelLabel.text = TwinmeLocalizedString(@"account_migration_view_stop", nil);
     
-    if (self.startFromSplashScreen) {
-        self.declineView.hidden = YES;
-        self.startView.hidden = YES;
-        self.cancelView.hidden = NO;
+    [self initItems];
+    [self updateTableViewBottom];
+}
+
+- (void)initTableViewGradientViews {
+    DDLogVerbose(@"%@ initTableViewGradientViews", LOG_TAG);
+    
+    CGFloat gradientHeight = roundf(DESIGN_TABLE_VIEW_GRADIENT_HEIGHT * Design.HEIGHT_RATIO);
+    
+    self.tableViewTopGradientView = [[UIView alloc] initWithFrame:CGRectZero];
+    self.tableViewTopGradientView.translatesAutoresizingMaskIntoConstraints = NO;
+    self.tableViewTopGradientView.userInteractionEnabled = NO;
+    self.tableViewTopGradientView.clipsToBounds = YES;
+    
+    self.tableViewBottomGradientView = [[UIView alloc] initWithFrame:CGRectZero];
+    self.tableViewBottomGradientView.translatesAutoresizingMaskIntoConstraints = NO;
+    self.tableViewBottomGradientView.userInteractionEnabled = NO;
+    self.tableViewBottomGradientView.clipsToBounds = YES;
+    
+    UIColor *whiteColor = Design.WHITE_COLOR;
+    UIColor *transparentColor = [whiteColor colorWithAlphaComponent:0.0f];
+    
+    self.tableViewTopGradientLayer = [CAGradientLayer layer];
+    self.tableViewTopGradientLayer.colors = @[(id)whiteColor.CGColor, (id)transparentColor.CGColor];
+    self.tableViewTopGradientLayer.startPoint = CGPointMake(0.5f, 0.0f);
+    self.tableViewTopGradientLayer.endPoint = CGPointMake(0.5f, 1.0f);
+    
+    self.tableViewBottomGradientLayer = [CAGradientLayer layer];
+    self.tableViewBottomGradientLayer.colors = @[(id)transparentColor.CGColor, (id)whiteColor.CGColor];
+    self.tableViewBottomGradientLayer.startPoint = CGPointMake(0.5f, 0.0f);
+    self.tableViewBottomGradientLayer.endPoint = CGPointMake(0.5f, 1.0f);
+    
+    [self.tableViewTopGradientView.layer addSublayer:self.tableViewTopGradientLayer];
+    [self.tableViewBottomGradientView.layer addSublayer:self.tableViewBottomGradientLayer];
+    
+    [self.view addSubview:self.tableViewTopGradientView];
+    [self.view addSubview:self.tableViewBottomGradientView];
+    
+    [NSLayoutConstraint activateConstraints:@[
+        [self.tableViewTopGradientView.leadingAnchor constraintEqualToAnchor:self.tableView.leadingAnchor],
+        [self.tableViewTopGradientView.trailingAnchor constraintEqualToAnchor:self.tableView.trailingAnchor],
+        [self.tableViewTopGradientView.topAnchor constraintEqualToAnchor:self.tableView.topAnchor],
+        [self.tableViewTopGradientView.heightAnchor constraintEqualToConstant:gradientHeight],
+        
+        [self.tableViewBottomGradientView.leadingAnchor constraintEqualToAnchor:self.tableView.leadingAnchor],
+        [self.tableViewBottomGradientView.trailingAnchor constraintEqualToAnchor:self.tableView.trailingAnchor],
+        [self.tableViewBottomGradientView.bottomAnchor constraintEqualToAnchor:self.tableView.bottomAnchor],
+        [self.tableViewBottomGradientView.heightAnchor constraintEqualToConstant:gradientHeight]
+    ]];
+    
+    [self.view bringSubviewToFront:self.tableViewTopGradientView];
+    [self.view bringSubviewToFront:self.tableViewBottomGradientView];
+}
+
+- (void)updateTableViewBottom {
+    DDLogVerbose(@"%@ updateTableViewBottom", LOG_TAG);
+
+    UIView *view;
+    NSLayoutAttribute attribute;
+    if (!self.startView.hidden) {
+        view = self.startView;
+        attribute = NSLayoutAttributeTop;
+    } else if (self.cancelView.hidden) {
+        view = self.cancelView;
+        attribute = NSLayoutAttributeBottom;
+    } else {
+        view = self.cancelView;
+        attribute = NSLayoutAttributeTop;
     }
+
+    [NSLayoutConstraint deactivateConstraints:@[self.tableViewBottomConstraint]];
+    self.tableViewBottomConstraint = [NSLayoutConstraint constraintWithItem:self.tableView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:view attribute:attribute multiplier:1.0f constant:-self.tableViewBottomConstraintValue];
+    [NSLayoutConstraint activateConstraints:@[self.tableViewBottomConstraint]];
 }
 
 - (void)handleStartMigrationTapGesture:(UITapGestureRecognizer *)sender {
@@ -516,43 +686,32 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
 - (void)updateViews:(TLAccountMigrationStatus *)status {
     DDLogVerbose(@"%@ updateViews", LOG_TAG);
     
+    if ((self.state == TLAccountMigrationStateCanceled || self.state == TLAccountMigrationStateError || self.state == TLAccountMigrationStateStopped || self.state == TLAccountMigrationStateTerminated) && self.cancelMigrationConfirmView) {
+        [self.cancelMigrationConfirmView closeConfirmView];
+    }
+    
     if (self.state == TLAccountMigrationStateNone || self.state == TLAccountMigrationStateCanceled) {
         self.startView.hidden = YES;
         self.declineView.hidden = YES;
         
         if (self.state == TLAccountMigrationStateCanceled) {
             self.cancelView.hidden = NO;
-            self.informationLabel.text = TwinmeLocalizedString(@"account_migration_view_cancel_message", nil);
-            self.stateLabel.text = TwinmeLocalizedString(@"account_migration_view_state_canceled", nil);
-            
             [self finish];
         } else {
             self.cancelView.hidden = YES;
-            self.informationLabel.text = TwinmeLocalizedString(@"account_migration_view_close_message", nil);
-            self.stateLabel.text = TwinmeLocalizedString(@"account_migration_view_success_message", nil);
         }
     } else if (self.state == TLAccountMigrationStateError) {
         self.startView.hidden = YES;
         self.declineView.hidden = YES;
         self.cancelView.hidden = NO;
-                
-        if (status.errorCode == TLAccountMigrationErrorCodeNoSpaceLeft) {
-            self.stateLabel.text = TwinmeLocalizedString(@"account_migration_view_not_enough_space_for_files", nil);
-            self.informationLabel.text = TwinmeLocalizedString(@"application_migration_no_storage_space_message", nil);
-        } else {
-            self.stateLabel.text = TwinmeLocalizedString(@"account_migration_view_state_canceled", nil);
-            self.informationLabel.text = [NSString stringWithFormat:@"%@ \n %ld", TwinmeLocalizedString(@"cleanup_view_error", nil), (long)status.errorCode];
-        }
-        
         self.cancelLabel.text = TwinmeLocalizedString(@"application_cancel", nil);
-    } else if (self.state == TLAccountMigrationStateStopped) {
+    } else if (self.state == TLAccountMigrationStateStopped || self.state == TLAccountMigrationStateTerminated) {
         self.startView.hidden = YES;
         self.declineView.hidden = YES;
         self.cancelView.hidden = YES;
-        
-        self.stateLabel.text = TwinmeLocalizedString(@"account_migration_view_success_message", nil);
-        self.informationLabel.text = TwinmeLocalizedString(@"account_migration_view_close_message", nil);
     }
+    
+    [self updateTableViewBottom];
 }
 
 - (nonnull NSString *)stateToLabelWithState:(TLAccountMigrationState)state {
@@ -601,13 +760,11 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
         return;
     }
     
-    DefaultConfirmView *migrationConfirmView = [[DefaultConfirmView alloc] init];
-    migrationConfirmView.bottomSheetViewDelegate = self;
-    
-    UIImage *image = [self.twinmeApplication darkModeEnable:[self currentSpaceSettings]] ? [UIImage imageNamed:@"OnboardingMigrationDark"] : [UIImage imageNamed:@"OnboardingMigration"];
-    [migrationConfirmView initWithTitle:TwinmeLocalizedString(@"deleted_account_view_warning", nil) message:TwinmeLocalizedString(@"account_migration_view_confirm_cancel_message", nil) image:image avatar:nil action:TwinmeLocalizedString(@"account_migration_view_stop", nil) actionColor:Design.DELETE_COLOR_RED cancel:nil];
-    [self.navigationController.view addSubview:migrationConfirmView];
-    [migrationConfirmView showConfirmView];
+    self.cancelMigrationConfirmView = [[DefaultConfirmView alloc] init];
+    self.cancelMigrationConfirmView.bottomSheetViewDelegate = self;
+    [self.cancelMigrationConfirmView initWithTitle:TwinmeLocalizedString(@"deleted_account_view_warning", nil) message:TwinmeLocalizedString(@"account_migration_view_confirm_cancel_message", nil) image:nil avatar:nil action:TwinmeLocalizedString(@"account_migration_view_stop", nil) actionColor:Design.DELETE_COLOR_RED cancel:nil];
+    [self.navigationController.view addSubview:self.cancelMigrationConfirmView];
+    [self.cancelMigrationConfirmView showConfirmView];
 }
 
 - (void)confirmCancelMigration {
@@ -629,7 +786,56 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
         [self.accountMigrationService stopService];
     }
     
+    [self removeInfoFloatingView];
     [self.navigationController dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (void)initItems {
+    DDLogVerbose(@"%@ initItems", LOG_TAG);
+    
+    self.headerMigrationStateItem = [[UIMigrationStateItem alloc]initWithType:MigrationStateItemTypeHeader];
+    [self.migrationsItems addObject:[[UIMigrationStateItem alloc]initWithType:MigrationStateItemTypeInit]];
+    [self.migrationsItems addObject:[[UIMigrationStateItem alloc]initWithType:MigrationStateItemTypeTransfer]];
+    [self.migrationsItems addObject:[[UIMigrationStateItem alloc]initWithType:MigrationStateItemTypeSettings]];
+    [self.migrationsItems addObject:[[UIMigrationStateItem alloc]initWithType:MigrationStateItemTypeDatabase]];
+    [self.migrationsItems addObject:[[UIMigrationStateItem alloc]initWithType:MigrationStateItemTypeAcocunt]];
+    [self.migrationsItems addObject:[[UIMigrationStateItem alloc]initWithType:MigrationStateItemTypeTerminated]];
+}
+
+- (void)updateItems:(TLAccountMigrationState)state status:(TLAccountMigrationStatus *)status {
+    DDLogVerbose(@"%@ updateItems", LOG_TAG);
+    
+    if (self.headerMigrationStateItem) {
+        [self.headerMigrationStateItem update:state status:status];
+    }
+    
+    for (UIMigrationStateItem *migrationStateItem in self.migrationsItems) {
+        [migrationStateItem update:state status:status];
+    }
+    
+    [self reloadData];
+}
+
+- (void)reloadData {
+    DDLogVerbose(@"%@ reloadData", LOG_TAG);
+    
+    if (self.headerMigrationStateItem) {
+        if ([self.headerMigrationStateItem getInfo] && [[self.headerMigrationStateItem getInfo] length] > 0) {
+            NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:@""];
+            [attributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:[self.headerMigrationStateItem  getTitle] attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_MEDIUM32, NSFontAttributeName, Design.FONT_COLOR_DEFAULT, NSForegroundColorAttributeName, nil]]];
+            if ([self.headerMigrationStateItem  getInfo]) {
+                [attributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:@"\n"]];
+                [attributedString appendAttributedString:[[NSMutableAttributedString alloc] initWithString:[self.headerMigrationStateItem  getInfo] attributes:[NSDictionary dictionaryWithObjectsAndKeys:Design.FONT_REGULAR30, NSFontAttributeName, Design.FONT_COLOR_GREY, NSForegroundColorAttributeName, nil]]];
+            }
+            self.infoLabel.attributedText = attributedString;
+        } else {
+            self.infoLabel.font = Design.FONT_MEDIUM36;
+            self.infoLabel.textColor = Design.FONT_COLOR_DEFAULT;
+            self.infoLabel.text = [self.headerMigrationStateItem  getTitle];
+        }
+    }
+    
+    [self.tableView reloadData];
 }
 
 - (void)updateFont {
@@ -638,17 +844,13 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
     self.cancelLabel.font = Design.FONT_MEDIUM34;
     self.declineLabel.font = Design.FONT_MEDIUM34;
     self.startLabel.font = Design.FONT_MEDIUM34;
-    self.informationLabel.font = Design.FONT_BOLD28;
-    self.stateLabel.font = Design.FONT_BOLD28;
-    self.progressLabel.font = Design.FONT_BOLD28;
 }
 
 - (void)updateColor {
     DDLogVerbose(@"%@ updateColor", LOG_TAG);
-    
-    self.informationLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    self.stateLabel.textColor = Design.FONT_COLOR_DEFAULT;
-    self.progressLabel.textColor = Design.FONT_COLOR_DEFAULT;
+
+    self.cancelView.backgroundColor = Design.BLACK_COLOR;
+    self.cancelLabel.textColor = Design.WHITE_COLOR;
 }
 
 @end

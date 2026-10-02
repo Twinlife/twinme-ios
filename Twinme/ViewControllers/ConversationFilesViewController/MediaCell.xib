@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="24765" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21678"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24743"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -29,6 +30,24 @@
                             <constraint firstAttribute="width" secondItem="MiU-hG-Ym6" secondAttribute="height" multiplier="1:1" id="s1D-vj-nqb"/>
                         </constraints>
                     </imageView>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="RdP-ty-tRC">
+                        <rect key="frame" x="10" y="85" width="66" height="26"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="00:00" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="oX9-cf-X6j">
+                                <rect key="frame" x="10" y="2.6666666666666714" width="46" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="oX9-cf-X6j" firstAttribute="leading" secondItem="RdP-ty-tRC" secondAttribute="leading" constant="10" id="1T5-zU-5Fh"/>
+                            <constraint firstAttribute="height" constant="26" id="Klo-37-QOw"/>
+                            <constraint firstAttribute="trailing" secondItem="oX9-cf-X6j" secondAttribute="trailing" constant="10" id="N9Z-MZ-vzZ"/>
+                            <constraint firstItem="oX9-cf-X6j" firstAttribute="centerY" secondItem="RdP-ty-tRC" secondAttribute="centerY" id="qQX-dd-JLy"/>
+                        </constraints>
+                    </view>
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="b0o-a1-zKx">
                         <rect key="frame" x="63" y="63" width="44" height="44"/>
                         <subviews>
@@ -41,8 +60,10 @@
                             <constraint firstAttribute="bottom" secondItem="lfv-G0-nVb" secondAttribute="bottom" id="7eg-xp-PbB"/>
                             <constraint firstAttribute="height" constant="44" id="EY3-pz-icv"/>
                             <constraint firstItem="lfv-G0-nVb" firstAttribute="leading" secondItem="b0o-a1-zKx" secondAttribute="leading" id="KnI-R2-O5k"/>
+                            <constraint firstAttribute="width" secondItem="b0o-a1-zKx" secondAttribute="height" multiplier="1:1" id="RD9-w6-njJ"/>
                             <constraint firstAttribute="width" secondItem="b0o-a1-zKx" secondAttribute="height" multiplier="1:1" id="Vgd-o7-EmZ"/>
                             <constraint firstAttribute="trailing" secondItem="lfv-G0-nVb" secondAttribute="trailing" id="cvb-2C-0es"/>
+                            <constraint firstAttribute="width" secondItem="b0o-a1-zKx" secondAttribute="height" multiplier="1:1" id="h0s-6J-Nt6"/>
                             <constraint firstItem="lfv-G0-nVb" firstAttribute="top" secondItem="b0o-a1-zKx" secondAttribute="top" id="oZ8-yw-dWI"/>
                         </constraints>
                     </view>
@@ -51,11 +72,11 @@
             <constraints>
                 <constraint firstAttribute="bottom" secondItem="b0o-a1-zKx" secondAttribute="bottom" constant="18" id="0U2-BC-522"/>
                 <constraint firstItem="MiU-hG-Ym6" firstAttribute="centerY" secondItem="aZg-zH-AaG" secondAttribute="centerY" id="PxY-pc-Ha1"/>
-                <constraint firstItem="b0o-a1-zKx" firstAttribute="width" secondItem="b0o-a1-zKx" secondAttribute="height" multiplier="1:1" id="RD9-w6-njJ"/>
+                <constraint firstItem="aZg-zH-AaG" firstAttribute="bottom" secondItem="RdP-ty-tRC" secondAttribute="bottom" constant="8" id="QfR-FS-KxK"/>
+                <constraint firstItem="RdP-ty-tRC" firstAttribute="leading" secondItem="aZg-zH-AaG" secondAttribute="leading" constant="4" id="SYQ-Hp-ocb"/>
                 <constraint firstAttribute="trailing" secondItem="b0o-a1-zKx" secondAttribute="trailing" constant="18" id="WJY-4r-XpC"/>
                 <constraint firstAttribute="trailing" secondItem="aZg-zH-AaG" secondAttribute="trailing" constant="6" id="bLs-CH-zr9"/>
                 <constraint firstItem="aZg-zH-AaG" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" constant="6" id="dD0-Nz-g9K"/>
-                <constraint firstItem="b0o-a1-zKx" firstAttribute="width" secondItem="b0o-a1-zKx" secondAttribute="height" multiplier="1:1" id="h0s-6J-Nt6"/>
                 <constraint firstAttribute="bottom" secondItem="aZg-zH-AaG" secondAttribute="bottom" constant="6" id="nDb-CQ-3xP"/>
                 <constraint firstItem="aZg-zH-AaG" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" constant="6" id="pkc-rc-Cp9"/>
                 <constraint firstItem="MiU-hG-Ym6" firstAttribute="centerX" secondItem="aZg-zH-AaG" secondAttribute="centerX" id="qJw-G2-Leq"/>
@@ -66,6 +87,13 @@
                 <outlet property="checkMarkViewBottomConstraint" destination="0U2-BC-522" id="ueX-XR-hip"/>
                 <outlet property="checkMarkViewHeightConstraint" destination="EY3-pz-icv" id="jOg-Ny-Vxp"/>
                 <outlet property="checkMarkViewTrailingConstraint" destination="WJY-4r-XpC" id="ILv-Nw-kII"/>
+                <outlet property="durationLabel" destination="oX9-cf-X6j" id="73R-qH-PtM"/>
+                <outlet property="durationLabelLeadingConstraint" destination="1T5-zU-5Fh" id="e2M-uQ-lq1"/>
+                <outlet property="durationLabelTrailingConstraint" destination="N9Z-MZ-vzZ" id="sQe-v8-gpv"/>
+                <outlet property="durationView" destination="RdP-ty-tRC" id="1dO-86-w1F"/>
+                <outlet property="durationViewBottomConstraint" destination="QfR-FS-KxK" id="8xC-Tg-M8K"/>
+                <outlet property="durationViewHeightConstraint" destination="Klo-37-QOw" id="JOF-vG-zXa"/>
+                <outlet property="durationViewLeadingConstraint" destination="SYQ-Hp-ocb" id="meV-06-3iz"/>
                 <outlet property="imageView" destination="aZg-zH-AaG" id="V7n-dO-vr2"/>
                 <outlet property="imageViewBottomConstraint" destination="nDb-CQ-3xP" id="nUk-Wc-GEa"/>
                 <outlet property="imageViewLeadingConstraint" destination="pkc-rc-Cp9" id="3Ir-r1-qYz"/>
@@ -80,5 +108,8 @@
     <resources>
         <image name="AddPhoto" width="34" height="34"/>
         <image name="CheckMarkGrey" width="22" height="22"/>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
     </resources>
 </document>

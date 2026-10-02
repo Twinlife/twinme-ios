@@ -909,6 +909,20 @@
 		572246372FAB22C50078A478 /* MenuBackupView.m in Sources */ = {isa = PBXBuildFile; fileRef = 572246352FAB22C50078A478 /* MenuBackupView.m */; };
 		5722464B2FAB22D90078A478 /* MenuBackupView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5722464A2FAB22D90078A478 /* MenuBackupView.xib */; };
 		5722464C2FAB22D90078A478 /* MenuBackupView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5722464A2FAB22D90078A478 /* MenuBackupView.xib */; };
+		5724A2613057DB3E003AA67E /* MigrationStateCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5724A2603057DB3E003AA67E /* MigrationStateCell.xib */; };
+		5724A2623057DB3E003AA67E /* MigrationStateCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 5724A25F3057DB3E003AA67E /* MigrationStateCell.m */; };
+		5724A2633057DB3E003AA67E /* MigrationStateCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 5724A25F3057DB3E003AA67E /* MigrationStateCell.m */; };
+		5724A2643057DB3E003AA67E /* MigrationStateCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5724A2603057DB3E003AA67E /* MigrationStateCell.xib */; };
+		5724A2793057DBA7003AA67E /* UIMigrationStateItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 5724A2783057DBA7003AA67E /* UIMigrationStateItem.m */; };
+		5724A27A3057DBA7003AA67E /* UIMigrationStateItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 5724A2783057DBA7003AA67E /* UIMigrationStateItem.m */; };
+		5724A27E3057E343003AA67E /* MigrationHeaderCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 5724A27C3057E343003AA67E /* MigrationHeaderCell.m */; };
+		5724A27F3057E343003AA67E /* MigrationHeaderCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5724A27D3057E343003AA67E /* MigrationHeaderCell.xib */; };
+		5724A2803057E343003AA67E /* MigrationHeaderCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5724A27D3057E343003AA67E /* MigrationHeaderCell.xib */; };
+		5724A2813057E343003AA67E /* MigrationHeaderCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 5724A27C3057E343003AA67E /* MigrationHeaderCell.m */; };
+		5724A2883057EC99003AA67E /* MigrationDeviceView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5724A2873057EC99003AA67E /* MigrationDeviceView.m */; };
+		5724A2893057EC99003AA67E /* MigrationDeviceView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5724A2873057EC99003AA67E /* MigrationDeviceView.m */; };
+		5724A2B83057ED0E003AA67E /* MigrationDeviceView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5724A2B73057ED0E003AA67E /* MigrationDeviceView.xib */; };
+		5724A2B93057ED0E003AA67E /* MigrationDeviceView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5724A2B73057ED0E003AA67E /* MigrationDeviceView.xib */; };
 		5725B9572D37B6AB00F2E04F /* AlertMessageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5725B9562D37B6AB00F2E04F /* AlertMessageView.m */; };
 		5725B9592D37B6E600F2E04F /* AlertMessageView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5725B9582D37B6E500F2E04F /* AlertMessageView.xib */; };
 		5725B95A2D37B6E600F2E04F /* AlertMessageView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5725B9582D37B6E500F2E04F /* AlertMessageView.xib */; };
@@ -1341,6 +1355,12 @@
 		57C13B6B2FF7F29200957FCE /* ShareContactCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 57C13B682FF7F29200957FCE /* ShareContactCell.xib */; };
 		57C13B6C2FF7F29200957FCE /* ShareContactCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 57C13B672FF7F29200957FCE /* ShareContactCell.m */; };
 		57D5AD042CEB473B00D46A0C /* LogsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 57D5AD032CEB473B00D46A0C /* LogsViewController.m */; };
+		57DCB918305AF9860041DECA /* ShareExtensionSelectedCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 57DCB917305AF9860041DECA /* ShareExtensionSelectedCell.xib */; };
+		57DCB919305AF9860041DECA /* ShareExtensionSelectedCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 57DCB916305AF9860041DECA /* ShareExtensionSelectedCell.m */; };
+		57DCB91A305AF9860041DECA /* ShareExtensionSelectedCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 57DCB916305AF9860041DECA /* ShareExtensionSelectedCell.m */; };
+		57DCB91B305AF9860041DECA /* ShareExtensionSelectedCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 57DCB917305AF9860041DECA /* ShareExtensionSelectedCell.xib */; };
+		57DCB9AD305C5AB00041DECA /* ShareFilesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 57DCB9AC305C5AB00041DECA /* ShareFilesViewController.m */; };
+		57DCB9AE305C5AB00041DECA /* ShareFilesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 57DCB9AC305C5AB00041DECA /* ShareFilesViewController.m */; };
 		57DD46932DBBE4A400F14087 /* MenuAddContactView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 57DD46922DBBE4A400F14087 /* MenuAddContactView.xib */; };
 		57DD46942DBBE4A400F14087 /* MenuAddContactView.m in Sources */ = {isa = PBXBuildFile; fileRef = 57DD46912DBBE4A400F14087 /* MenuAddContactView.m */; };
 		57DD46C52DBBE51E00F14087 /* AddInvitationCodeCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 57DD46BF2DBBE51E00F14087 /* AddInvitationCodeCell.xib */; };
@@ -2395,6 +2415,17 @@
 		572246342FAB22C50078A478 /* MenuBackupView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MenuBackupView.h; sourceTree = "<group>"; };
 		572246352FAB22C50078A478 /* MenuBackupView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MenuBackupView.m; sourceTree = "<group>"; };
 		5722464A2FAB22D90078A478 /* MenuBackupView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MenuBackupView.xib; sourceTree = "<group>"; };
+		5724A25E3057DB3E003AA67E /* MigrationStateCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MigrationStateCell.h; path = ViewControllers/AccountMigrationViewController/MigrationStateCell.h; sourceTree = "<group>"; };
+		5724A25F3057DB3E003AA67E /* MigrationStateCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = MigrationStateCell.m; path = ViewControllers/AccountMigrationViewController/MigrationStateCell.m; sourceTree = "<group>"; };
+		5724A2603057DB3E003AA67E /* MigrationStateCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = MigrationStateCell.xib; path = ViewControllers/AccountMigrationViewController/MigrationStateCell.xib; sourceTree = "<group>"; };
+		5724A2773057DBA7003AA67E /* UIMigrationStateItem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = UIMigrationStateItem.h; path = ViewControllers/AccountMigrationViewController/UIMigrationStateItem.h; sourceTree = "<group>"; };
+		5724A2783057DBA7003AA67E /* UIMigrationStateItem.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = UIMigrationStateItem.m; path = ViewControllers/AccountMigrationViewController/UIMigrationStateItem.m; sourceTree = "<group>"; };
+		5724A27B3057E343003AA67E /* MigrationHeaderCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MigrationHeaderCell.h; path = ViewControllers/AccountMigrationViewController/MigrationHeaderCell.h; sourceTree = "<group>"; };
+		5724A27C3057E343003AA67E /* MigrationHeaderCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = MigrationHeaderCell.m; path = ViewControllers/AccountMigrationViewController/MigrationHeaderCell.m; sourceTree = "<group>"; };
+		5724A27D3057E343003AA67E /* MigrationHeaderCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = MigrationHeaderCell.xib; path = ViewControllers/AccountMigrationViewController/MigrationHeaderCell.xib; sourceTree = "<group>"; };
+		5724A2863057EC99003AA67E /* MigrationDeviceView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MigrationDeviceView.h; path = ViewControllers/AccountMigrationViewController/MigrationDeviceView.h; sourceTree = "<group>"; };
+		5724A2873057EC99003AA67E /* MigrationDeviceView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = MigrationDeviceView.m; path = ViewControllers/AccountMigrationViewController/MigrationDeviceView.m; sourceTree = "<group>"; };
+		5724A2B73057ED0E003AA67E /* MigrationDeviceView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = MigrationDeviceView.xib; path = ViewControllers/AccountMigrationViewController/MigrationDeviceView.xib; sourceTree = "<group>"; };
 		5725B9552D37B6AB00F2E04F /* AlertMessageView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AlertMessageView.h; path = Utilities/AlertMessageView.h; sourceTree = "<group>"; };
 		5725B9562D37B6AB00F2E04F /* AlertMessageView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = AlertMessageView.m; path = Utilities/AlertMessageView.m; sourceTree = "<group>"; };
 		5725B9582D37B6E500F2E04F /* AlertMessageView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = AlertMessageView.xib; path = Utilities/AlertMessageView.xib; sourceTree = "<group>"; };
@@ -2761,6 +2792,11 @@
 		57C13B682FF7F29200957FCE /* ShareContactCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ShareContactCell.xib; sourceTree = "<group>"; };
 		57D5AD022CEB473B00D46A0C /* LogsViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = LogsViewController.h; path = ViewControllers/LogsViewController.h; sourceTree = "<group>"; };
 		57D5AD032CEB473B00D46A0C /* LogsViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = LogsViewController.m; path = ViewControllers/LogsViewController.m; sourceTree = "<group>"; };
+		57DCB915305AF9860041DECA /* ShareExtensionSelectedCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ShareExtensionSelectedCell.h; path = ViewControllers/ShareExtensionSelectedCell.h; sourceTree = "<group>"; };
+		57DCB916305AF9860041DECA /* ShareExtensionSelectedCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = ShareExtensionSelectedCell.m; path = ViewControllers/ShareExtensionSelectedCell.m; sourceTree = "<group>"; };
+		57DCB917305AF9860041DECA /* ShareExtensionSelectedCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = ShareExtensionSelectedCell.xib; path = ViewControllers/ShareExtensionSelectedCell.xib; sourceTree = "<group>"; };
+		57DCB9AB305C5AB00041DECA /* ShareFilesViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ShareFilesViewController.h; sourceTree = "<group>"; };
+		57DCB9AC305C5AB00041DECA /* ShareFilesViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ShareFilesViewController.m; sourceTree = "<group>"; };
 		57DD46902DBBE4A400F14087 /* MenuAddContactView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MenuAddContactView.h; sourceTree = "<group>"; };
 		57DD46912DBBE4A400F14087 /* MenuAddContactView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MenuAddContactView.m; sourceTree = "<group>"; };
 		57DD46922DBBE4A400F14087 /* MenuAddContactView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MenuAddContactView.xib; sourceTree = "<group>"; };
@@ -4385,6 +4421,9 @@
 				830191DC260B32030053BD5F /* ShareExtensionHeaderCell.xib */,
 				830191DB260B32030053BD5F /* ShareExtensionViewController.h */,
 				830191DE260B32030053BD5F /* ShareExtensionViewController.m */,
+				57DCB915305AF9860041DECA /* ShareExtensionSelectedCell.h */,
+				57DCB916305AF9860041DECA /* ShareExtensionSelectedCell.m */,
+				57DCB917305AF9860041DECA /* ShareExtensionSelectedCell.xib */,
 			);
 			name = ViewControllers;
 			sourceTree = "<group>";
@@ -4740,15 +4779,26 @@
 		8348F25E25811E1200F95AD7 /* AccountMigrationViewController */ = {
 			isa = PBXGroup;
 			children = (
-				570CB56E2FF2C36400C23D23 /* UIAccountMigrationItem.h */,
-				570CB56F2FF2C36400C23D23 /* UIAccountMigrationItem.m */,
+				57E6AA072FF2512C003C946B /* AccountMigrationCell.h */,
+				57E6AA082FF2512C003C946B /* AccountMigrationCell.m */,
+				57E6AA092FF2512C003C946B /* AccountMigrationCell.xib */,
 				8348F26225811E4300F95AD7 /* AccountMigrationScannerViewController.h */,
 				8348F25F25811E4300F95AD7 /* AccountMigrationScannerViewController.m */,
 				8348F26025811E4300F95AD7 /* AccountMigrationViewController.h */,
 				8348F26125811E4300F95AD7 /* AccountMigrationViewController.m */,
-				57E6AA072FF2512C003C946B /* AccountMigrationCell.h */,
-				57E6AA082FF2512C003C946B /* AccountMigrationCell.m */,
-				57E6AA092FF2512C003C946B /* AccountMigrationCell.xib */,
+				5724A2863057EC99003AA67E /* MigrationDeviceView.h */,
+				5724A2873057EC99003AA67E /* MigrationDeviceView.m */,
+				5724A2B73057ED0E003AA67E /* MigrationDeviceView.xib */,
+				5724A27B3057E343003AA67E /* MigrationHeaderCell.h */,
+				5724A27C3057E343003AA67E /* MigrationHeaderCell.m */,
+				5724A27D3057E343003AA67E /* MigrationHeaderCell.xib */,
+				5724A25E3057DB3E003AA67E /* MigrationStateCell.h */,
+				5724A25F3057DB3E003AA67E /* MigrationStateCell.m */,
+				5724A2603057DB3E003AA67E /* MigrationStateCell.xib */,
+				570CB56E2FF2C36400C23D23 /* UIAccountMigrationItem.h */,
+				570CB56F2FF2C36400C23D23 /* UIAccountMigrationItem.m */,
+				5724A2773057DBA7003AA67E /* UIMigrationStateItem.h */,
+				5724A2783057DBA7003AA67E /* UIMigrationStateItem.m */,
 			);
 			name = AccountMigrationViewController;
 			sourceTree = "<group>";
@@ -4826,6 +4876,8 @@
 				836600DE24781FF7008C3141 /* ShareSectionHeaderCell.xib */,
 				836600E124781FF7008C3141 /* ShareViewController.h */,
 				836600DF24781FF7008C3141 /* ShareViewController.m */,
+				57DCB9AB305C5AB00041DECA /* ShareFilesViewController.h */,
+				57DCB9AC305C5AB00041DECA /* ShareFilesViewController.m */,
 			);
 			name = ShareViewController;
 			path = ViewControllers/ShareViewController;
@@ -6022,8 +6074,10 @@
 				576F565A2F5B1D98000BC47B /* audio_call_5_ringtone.caf in Resources */,
 				576F565B2F5B1D98000BC47B /* audio_call_7_ringtone.caf in Resources */,
 				576F565C2F5B1D98000BC47B /* mario_notif.caf in Resources */,
+				5724A2B93057ED0E003AA67E /* MigrationDeviceView.xib in Resources */,
 				576F565D2F5B1D98000BC47B /* hiphop_audio.caf in Resources */,
 				576F565E2F5B1D98000BC47B /* notification_7.caf in Resources */,
+				5724A2643057DB3E003AA67E /* MigrationStateCell.xib in Resources */,
 				576F565F2F5B1D98000BC47B /* hiphop_video.caf in Resources */,
 				576F56602F5B1D98000BC47B /* notification_5.caf in Resources */,
 				576F56612F5B1D98000BC47B /* audio_call_4_ringtone.caf in Resources */,
@@ -6087,6 +6141,7 @@
 				83C7E72C24016090005735DD /* CallItemCell.xib in Resources */,
 				836C6BF323191A1F00CD3AF1 /* terms_of_service_zh-Hans.html in Resources */,
 				57DD46932DBBE4A400F14087 /* MenuAddContactView.xib in Resources */,
+				5724A27F3057E343003AA67E /* MigrationHeaderCell.xib in Resources */,
 				577F42512FEACAFC00A3693D /* PeerShareContactItemCell.xib in Resources */,
 				018FB19C27A135DB004305BC /* AddCommentCell.xib in Resources */,
 				578F36DC2D34FDB9001A8F05 /* DefaultConfirmView.xib in Resources */,
@@ -6353,8 +6408,10 @@
 				576F56402F5B1D98000BC47B /* audio_call_5_ringtone.caf in Resources */,
 				576F56412F5B1D98000BC47B /* audio_call_7_ringtone.caf in Resources */,
 				576F56422F5B1D98000BC47B /* mario_notif.caf in Resources */,
+				5724A2B83057ED0E003AA67E /* MigrationDeviceView.xib in Resources */,
 				576F56432F5B1D98000BC47B /* hiphop_audio.caf in Resources */,
 				576F56442F5B1D98000BC47B /* notification_7.caf in Resources */,
+				5724A2613057DB3E003AA67E /* MigrationStateCell.xib in Resources */,
 				576F56452F5B1D98000BC47B /* hiphop_video.caf in Resources */,
 				576F56462F5B1D98000BC47B /* notification_5.caf in Resources */,
 				576F56472F5B1D98000BC47B /* audio_call_4_ringtone.caf in Resources */,
@@ -6418,6 +6475,7 @@
 				47CD1A632E9CF7DB00F0E361 /* CallItemCell.xib in Resources */,
 				47CD1A642E9CF7DB00F0E361 /* terms_of_service_zh-Hans.html in Resources */,
 				47CD1A652E9CF7DB00F0E361 /* MenuAddContactView.xib in Resources */,
+				5724A2803057E343003AA67E /* MigrationHeaderCell.xib in Resources */,
 				577F42542FEACAFC00A3693D /* PeerShareContactItemCell.xib in Resources */,
 				47CD1A662E9CF7DB00F0E361 /* AddCommentCell.xib in Resources */,
 				47CD1A672E9CF7DB00F0E361 /* DefaultConfirmView.xib in Resources */,
@@ -6476,6 +6534,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				57DCB918305AF9860041DECA /* ShareExtensionSelectedCell.xib in Resources */,
 				47CD1AB42E9CF92700F0E361 /* ShareExtensionAssets.xcassets in Resources */,
 				47CD1AB52E9CF92700F0E361 /* PrivacyInfo.xcprivacy in Resources */,
 				47CD1AB62E9CF92700F0E361 /* Localizable.xcstrings in Resources */,
@@ -6490,6 +6549,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				57DCB91B305AF9860041DECA /* ShareExtensionSelectedCell.xib in Resources */,
 				830191B5260B29B40053BD5F /* ShareExtensionAssets.xcassets in Resources */,
 				578B01862BBBF4AE00AE3EA8 /* PrivacyInfo.xcprivacy in Resources */,
 				57BCE3192E709CE10049CC31 /* Localizable.xcstrings in Resources */,
@@ -6754,8 +6814,10 @@
 				0120D59A2791B148006876AC /* LinkItem.m in Sources */,
 				83B07D921E3A380A00BE0B43 /* PeerAudioItem.m in Sources */,
 				0118BCB42A5C459F00ACB9D1 /* UIContactTag.m in Sources */,
+				5724A2633057DB3E003AA67E /* MigrationStateCell.m in Sources */,
 				5765D6032D5B503E0061DD3B /* UIPreviewFile.m in Sources */,
 				5781FC9A2EB4D1570057324F /* TwinmeSearchController.m in Sources */,
+				57DCB9AD305C5AB00041DECA /* ShareFilesViewController.m in Sources */,
 				5765D5AA2D5B4EA10061DD3B /* UIActionConversation.m in Sources */,
 				83D88D261EBCB45E00AFD6F2 /* NotificationCenter.m in Sources */,
 				01EBEA51294228360034E0F6 /* ConversationAppearanceViewController.m in Sources */,
@@ -6864,6 +6926,7 @@
 				576394952F337D1200BAA531 /* ScheduleCell.m in Sources */,
 				57A41C032B5A7FEA004FB171 /* CallConversationView.m in Sources */,
 				01C3DDBD2A657AEC001077B5 /* FullScreenImageCell.m in Sources */,
+				5724A2793057DBA7003AA67E /* UIMigrationStateItem.m in Sources */,
 				83EF7F8520C990C2002A7224 /* PeerVideoItemCell.m in Sources */,
 				579F818C2F9FA0410032EA27 /* UIPollResult.m in Sources */,
 				83EF7FC020CB0D59002A7224 /* UIViewController+Utils.m in Sources */,
@@ -6942,6 +7005,7 @@
 				837481B1216FCCCD00B51687 /* AddGroupMemberCell.m in Sources */,
 				57FBA6102D76FA30001C08AC /* TextViewRightView.m in Sources */,
 				01EC60F1294D125200A0705B /* CoachMark.m in Sources */,
+				5724A27E3057E343003AA67E /* MigrationHeaderCell.m in Sources */,
 				839408BF24B2F5C600451E51 /* PersonalizationCell.m in Sources */,
 				57BF122C2D01EF70001459CA /* DeleteConfirmView.m in Sources */,
 				83E9603D26A580740071038B /* SettingsInformationCell.m in Sources */,
@@ -6950,6 +7014,7 @@
 				578B03F02BC539FA00AE3EA8 /* AnnotationsView.m in Sources */,
 				573184832C8B24F8001F484A /* CallCertifyView.m in Sources */,
 				5777EB312E0978D800CD0911 /* CustomProgressBarView.m in Sources */,
+				5724A2893057EC99003AA67E /* MigrationDeviceView.m in Sources */,
 				01A3A601287EEA95009F34D2 /* CallMenuView.m in Sources */,
 				577177592FE14CCE00DD4DBF /* TimeoutCell.m in Sources */,
 				5771775A2FE14CCE00DD4DBF /* UITimeout.m in Sources */,
@@ -7201,8 +7266,10 @@
 				47CD188D2E9CF7DB00F0E361 /* LinkItem.m in Sources */,
 				47CD188E2E9CF7DB00F0E361 /* PeerAudioItem.m in Sources */,
 				47CD188F2E9CF7DB00F0E361 /* UIContactTag.m in Sources */,
+				5724A2623057DB3E003AA67E /* MigrationStateCell.m in Sources */,
 				47CD18902E9CF7DB00F0E361 /* UIPreviewFile.m in Sources */,
 				5781FC992EB4D1570057324F /* TwinmeSearchController.m in Sources */,
+				57DCB9AE305C5AB00041DECA /* ShareFilesViewController.m in Sources */,
 				47CD18912E9CF7DB00F0E361 /* UIActionConversation.m in Sources */,
 				47CD18922E9CF7DB00F0E361 /* NotificationCenter.m in Sources */,
 				47CD18932E9CF7DB00F0E361 /* ConversationAppearanceViewController.m in Sources */,
@@ -7311,6 +7378,7 @@
 				576394972F337D1200BAA531 /* ScheduleCell.m in Sources */,
 				47CD18F12E9CF7DB00F0E361 /* CallConversationView.m in Sources */,
 				47CD18F22E9CF7DB00F0E361 /* FullScreenImageCell.m in Sources */,
+				5724A27A3057DBA7003AA67E /* UIMigrationStateItem.m in Sources */,
 				47CD18F32E9CF7DB00F0E361 /* PeerVideoItemCell.m in Sources */,
 				579F818D2F9FA0410032EA27 /* UIPollResult.m in Sources */,
 				47CD18F42E9CF7DB00F0E361 /* UIViewController+Utils.m in Sources */,
@@ -7389,6 +7457,7 @@
 				47CD19382E9CF7DB00F0E361 /* AddGroupMemberCell.m in Sources */,
 				47CD19392E9CF7DB00F0E361 /* TextViewRightView.m in Sources */,
 				47CD193A2E9CF7DB00F0E361 /* CoachMark.m in Sources */,
+				5724A2813057E343003AA67E /* MigrationHeaderCell.m in Sources */,
 				47CD193B2E9CF7DB00F0E361 /* PersonalizationCell.m in Sources */,
 				47CD193C2E9CF7DB00F0E361 /* DeleteConfirmView.m in Sources */,
 				47CD193D2E9CF7DB00F0E361 /* SettingsInformationCell.m in Sources */,
@@ -7397,6 +7466,7 @@
 				47CD19402E9CF7DB00F0E361 /* AnnotationsView.m in Sources */,
 				47CD19412E9CF7DB00F0E361 /* CallCertifyView.m in Sources */,
 				47CD19422E9CF7DB00F0E361 /* CustomProgressBarView.m in Sources */,
+				5724A2883057EC99003AA67E /* MigrationDeviceView.m in Sources */,
 				47CD19432E9CF7DB00F0E361 /* CallMenuView.m in Sources */,
 				577177562FE14CCE00DD4DBF /* TimeoutCell.m in Sources */,
 				577177572FE14CCE00DD4DBF /* UITimeout.m in Sources */,
@@ -7459,6 +7529,7 @@
 				47CD1AA62E9CF92700F0E361 /* ShareExtensionViewController.m in Sources */,
 				47CD1AA72E9CF92700F0E361 /* DesignExtension.m in Sources */,
 				47CD1AA82E9CF92700F0E361 /* ShareExtensionContactCell.m in Sources */,
+				57DCB919305AF9860041DECA /* ShareExtensionSelectedCell.m in Sources */,
 				47CD1AA92E9CF92700F0E361 /* ShareExtensionService.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -7471,6 +7542,7 @@
 				830191E4260B32030053BD5F /* ShareExtensionViewController.m in Sources */,
 				830191EB260B323D0053BD5F /* DesignExtension.m in Sources */,
 				830191E3260B32030053BD5F /* ShareExtensionContactCell.m in Sources */,
+				57DCB91A305AF9860041DECA /* ShareExtensionSelectedCell.m in Sources */,
 				830191D7260B317C0053BD5F /* ShareExtensionService.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

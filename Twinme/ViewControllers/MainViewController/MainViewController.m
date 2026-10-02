@@ -5,6 +5,7 @@
  *  Contributors:
  *   Fabrice Trescartes (Fabrice.Trescartes@twin.life)
  *   Stephane Carrez (Stephane.Carrez@twin.life)
+ *   Romain Kolb (romain.kolb@skyrock.com)
  */
 
 #import <CocoaLumberjack.h>
@@ -50,6 +51,7 @@
 #import "AccountMigrationScannerViewController.h"
 #import "SuccessAuthentifiedRelationView.h"
 #import "SettingsAdvancedViewController.h"
+#import "ShareFilesViewController.h"
 
 #import "MainService.h"
 #import <TwinmeCommon/CallService.h>
@@ -201,6 +203,9 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(applicationDidBecomeActive:)
                                                  name:UISceneDidActivateNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(applicationWillResignActive:)
+                                                 name:UISceneDidEnterBackgroundNotification object:nil];
 
     [self initViewsController];
     
@@ -327,6 +332,17 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
     });
 }
 
+- (void)applicationWillResignActive:(NSNotification *)notification {
+    DDLogVerbose(@"%@ applicationWillResignActive: %@", LOG_TAG, notification);
+        
+    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC));
+    dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+        if (self.sideMenuOpen) {
+            [self closeSideMenu:NO];
+        }
+    });
+}
+
 - (TwinmeNavigationController *)selectedViewController {
     
     return self.tabBarViewController.selectedViewController;
@@ -442,7 +458,6 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
     if ([self.twinmeApplication isRunning]) {
         if (isMigration) {
             AccountMigrationViewController *accountMigrationViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"AccountMigrationViewController"];
-            accountMigrationViewController.startFromSplashScreen = YES;
             TwinmeNavigationController *migrationNavigationController = [[TwinmeNavigationController alloc]initWithRootViewController:accountMigrationViewController];
             [self presentViewController:migrationNavigationController animated:NO completion:^{
                 [self.splashScreenViewController.view removeFromSuperview];
@@ -984,7 +999,7 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
         [self handleExtensionShareContentURL:url startPreview:YES];
     } else if (url && [MIGRATION_ACTION isEqualToString:url.host]) {
         AccountMigrationScannerViewController *accountMigrationScannerViewController = (AccountMigrationScannerViewController *)[[UIStoryboard storyboardWithName:@"iPhone" bundle:nil] instantiateViewControllerWithIdentifier:@"AccountMigrationScannerViewController"];
-        accountMigrationScannerViewController.fromCurrentDevice = YES;
+        accountMigrationScannerViewController.accountMigrationScannerMode = AccountMigrationScannerModeScan;
         [self.selectedViewController pushViewController:accountMigrationScannerViewController animated:YES];
     } else if (url) {
         [self.mainService findSubjectWithHandle:[url absoluteString] withBlock:^(TLBaseServiceErrorCode errorCode, id<TLOriginator> subject) {
@@ -1066,71 +1081,114 @@ static CGFloat INFO_FLOATING_VIEW_SIZE;
     DDLogVerbose(@"%@ handleExtensionShareContentURL %@", LOG_TAG, url);
     
     NSArray *queryItems = [[[NSURLComponents alloc] initWithURL:url resolvingAgainstBaseURL:false] queryItems];
-    NSString *value = nil;
+    NSString *contactValue = nil;
+    NSString *groupValue = nil;
     BOOL isGroup = NO;
     for (NSURLQueryItem *queryItem in queryItems) {
         if ([queryItem.name isEqualToString:@"contact"]) {
-            value = queryItem.value;
-            break;
-        }
-        if ([queryItem.name isEqualToString:@"group"]) {
-            value = queryItem.value;
+            contactValue = queryItem.value;
+        } else if ([queryItem.name isEqualToString:@"group"]) {
+            groupValue = queryItem.value;
             isGroup = YES;
-            break;
         }
     }
-    if (!value) {
-        return NO;
-    }
-    NSUUID *contactId = [[NSUUID alloc] initWithUUIDString:value];
-    if (!contactId) {
+    if (!groupValue && !contactValue) {
         return NO;
     }
     
-    UIViewController *topViewController = [UIViewController topViewController];
-    if ([topViewController isKindOfClass:[ConversationViewController class]]) {
-        ConversationViewController *viewController = (ConversationViewController *)topViewController;
+    if ((contactValue && [contactValue containsString:@","]) || (groupValue && [groupValue containsString:@","]) || (contactValue && groupValue)) {
         
-        if (startPreview) {
-            [viewController startFromShareExtension];
+        NSMutableArray *contactsId = [[NSMutableArray alloc] init];
+        NSMutableArray *groupsId = [[NSMutableArray alloc] init];
+        if (contactValue) {
+            NSArray *contactValues = [contactValue componentsSeparatedByString:@","];
+            for (NSString *value in contactValues) {
+                NSUUID *contactId = [[NSUUID alloc] initWithUUIDString:value];
+                if (contactId) {
+                    [contactsId addObject:contactId];
+                }
+            }
         }
         
-        id<TLOriginator> originator = [viewController getOriginator];
-        if ([originator.uuid isEqual:contactId]) {
+        if (groupValue) {
+            NSArray *groupValues = [groupValue componentsSeparatedByString:@","];
+            for (NSString *value in groupValues) {
+                NSUUID *groupId = [[NSUUID alloc] initWithUUIDString:value];
+                if (groupId) {
+                    [groupsId addObject:groupId];
+                }
+            }
+        }
+        
+        if (contactsId.count > 0 || groupsId.count > 0) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self dismissModalViewController];
+                if (startPreview) {
+                    TwinmeNavigationController *selectedNavigationController = self.selectedViewController;
+                    ShareFilesViewController *shareFilesViewController = (ShareFilesViewController *)[self.storyboard instantiateViewControllerWithIdentifier:@"ShareFilesViewController"];
+                    
+                    [shareFilesViewController initWithContacts:contactsId groups:groupsId];
+                    [self presentViewController:shareFilesViewController animated:YES completion:^{}];
+                } else {
+                    [self selectTab:2];
+                }
+            });
+        } else {
             return NO;
         }
-    }
-    
-    if (isGroup) {
-        [self.twinmeContext getGroupWithGroupId:contactId withBlock:^(TLBaseServiceErrorCode errorCode, TLGroup *group) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [self dismissModalViewController];
-                TwinmeNavigationController *selectedNavigationController = self.selectedViewController;
-                ConversationViewController *conversationViewController = (ConversationViewController *)[self.storyboard instantiateViewControllerWithIdentifier:@"ConversationViewController"];
-                
-                [conversationViewController initWithContact:group];
-                if (startPreview) {
-                    [conversationViewController startFromShareExtension];
-                }
-                [selectedNavigationController pushViewController:conversationViewController animated:YES];
-            });
-        }];
     } else {
-        [self.twinmeContext getContactWithContactId:contactId withBlock:^(TLBaseServiceErrorCode errorCode, TLContact * contact) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [self dismissModalViewController];
-                TwinmeNavigationController *selectedNavigationController = self.selectedViewController;
-                ConversationViewController *conversationViewController = (ConversationViewController *)[self.storyboard instantiateViewControllerWithIdentifier:@"ConversationViewController"];
-                
-                [conversationViewController initWithContact:contact];
-                
-                if (startPreview) {
-                    [conversationViewController startFromShareExtension];
-                }
-                
-                [selectedNavigationController pushViewController:conversationViewController animated:YES];
-            });
-        }];
+        NSString *value = contactValue ? contactValue : groupValue;
+        
+        NSUUID *contactId = [[NSUUID alloc] initWithUUIDString:value];
+        if (!contactId) {
+            return NO;
+        }
+        
+        UIViewController *topViewController = [UIViewController topViewController];
+        if ([topViewController isKindOfClass:[ConversationViewController class]]) {
+            ConversationViewController *viewController = (ConversationViewController *)topViewController;
+            
+            if (startPreview) {
+                [viewController startFromShareExtension];
+            }
+            
+            id<TLOriginator> originator = [viewController getOriginator];
+            if ([originator.uuid isEqual:contactId]) {
+                return NO;
+            }
+        }
+        
+        if (isGroup) {
+            [self.twinmeContext getGroupWithGroupId:contactId withBlock:^(TLBaseServiceErrorCode errorCode, TLGroup *group) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self dismissModalViewController];
+                    TwinmeNavigationController *selectedNavigationController = self.selectedViewController;
+                    ConversationViewController *conversationViewController = (ConversationViewController *)[self.storyboard instantiateViewControllerWithIdentifier:@"ConversationViewController"];
+                    
+                    [conversationViewController initWithContact:group];
+                    if (startPreview) {
+                        [conversationViewController startFromShareExtension];
+                    }
+                    [selectedNavigationController pushViewController:conversationViewController animated:YES];
+                });
+            }];
+        } else {
+            [self.twinmeContext getContactWithContactId:contactId withBlock:^(TLBaseServiceErrorCode errorCode, TLContact * contact) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self dismissModalViewController];
+                    TwinmeNavigationController *selectedNavigationController = self.selectedViewController;
+                    ConversationViewController *conversationViewController = (ConversationViewController *)[self.storyboard instantiateViewControllerWithIdentifier:@"ConversationViewController"];
+                    
+                    [conversationViewController initWithContact:contact];
+                    
+                    if (startPreview) {
+                        [conversationViewController startFromShareExtension];
+                    }
+                    
+                    [selectedNavigationController pushViewController:conversationViewController animated:YES];
+                });
+            }];
+        }
     }
     
     return YES;

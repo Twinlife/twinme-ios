@@ -29,6 +29,7 @@
 
 #import "AddContactViewController.h"
 #import "AcceptInvitationViewController.h"
+#import "AccountMigrationScannerViewController.h"
 #import "EnterInvitationCodeViewController.h"
 #import "InvitationCodeViewController.h"
 #import "ShowProfileViewController.h"
@@ -1186,16 +1187,19 @@ static UIColor *DESIGN_PLACEHOLDER_COLOR;
                 [self incorrectQRCode:TLBaseServiceErrorCodeBadRequest];
             }
         }];
+    } else if (twincodeUri.kind == TLTwincodeURIKindAccountMigration) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.navigationController popToRootViewControllerAnimated:YES];
+            AccountMigrationScannerViewController *accountMigrationScannerViewController = (AccountMigrationScannerViewController *)[[UIStoryboard storyboardWithName:@"iPhone" bundle:nil] instantiateViewControllerWithIdentifier:@"AccountMigrationScannerViewController"];
+            accountMigrationScannerViewController.accountMigrationScannerMode = AccountMigrationScannerModeScan;
+            [self.navigationController pushViewController:accountMigrationScannerViewController animated:YES];
+        });
     } else {
         NSString *message = TwinmeLocalizedString(@"capture_view_incorrect_qrcode", nil);
         
         switch (twincodeUri.kind) {
             case TLTwincodeURIKindCall:
                 message = TwinmeLocalizedString(@"add_contact_view_scan_message_call_link", nil);
-                break;
-                
-            case TLTwincodeURIKindAccountMigration:
-                message = TwinmeLocalizedString(@"add_contact_view_scan_message_migration_link", nil);
                 break;
                 
             case TLTwincodeURIKindTransfer:

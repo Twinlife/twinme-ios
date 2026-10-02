@@ -209,8 +209,8 @@ static const CGFloat DESIGN_QRCODE_TOP_MARGIN = 60;
     
 }
 
-- (void)onGetProxyUri:(nullable TLTwincodeURI *)twincodeURI proxyescriptor:(nonnull TLSNIProxyDescriptor *)proxyDescriptor {
-    DDLogVerbose(@"%@ onGetProxyUri: %@ proxyescriptor: %@", LOG_TAG, twincodeURI, proxyDescriptor);
+- (void)onGetProxyUri:(nullable TLTwincodeURI *)twincodeURI proxyDescriptor:(nonnull TLSNIProxyDescriptor *)proxyDescriptor {
+    DDLogVerbose(@"%@ onGetProxyUri: %@ proxyDescriptor: %@", LOG_TAG, twincodeURI, proxyDescriptor);
     
     if (twincodeURI && [self.proxyDescriptor isEqual:proxyDescriptor]) {
         [self updateProxy:twincodeURI];

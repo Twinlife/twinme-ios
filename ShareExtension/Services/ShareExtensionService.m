@@ -539,6 +539,32 @@ static ShareExtensionService *INSTANCE;
     return [[NSURL alloc] initWithString:url];
 }
 
+- (nonnull NSURL *)getConversationURLWithOriginators:(nonnull NSArray<id<TLOriginator>> *)originators startPreviewFile:(BOOL)startPreviewFile {
+    DDLogVerbose(@"%@ getConversationURLWithOriginators: %@", LOG_TAG, originators);
+
+    NSString *url;
+    NSString *groups = @"";
+    NSString *contacts = @"";
+    for (id<TLOriginator> originator in originators) {
+        if (originator.isGroup) {
+            groups = groups.length == 0 ? originator.uuid.UUIDString : [NSString stringWithFormat:@"%@,%@", groups, originator.uuid.UUIDString];
+        } else {
+            contacts = contacts.length == 0 ? originator.uuid.UUIDString : [NSString stringWithFormat:@"%@,%@", contacts, originator.uuid.UUIDString];
+        }
+    }
+    
+    
+    if (groups.length > 0 && contacts.length > 0) {
+        url = [NSString stringWithFormat:@"%@://%@?group=%@&contact=%@", APPLICATION_SCHEME, startPreviewFile ? PREVIEW_ACTION : CONVERSATION_ACTION, groups, contacts];
+    } else if (groups.length > 0) {
+        url = [NSString stringWithFormat:@"%@://%@?group=%@", APPLICATION_SCHEME, startPreviewFile ? PREVIEW_ACTION : CONVERSATION_ACTION, groups];
+    } else {
+        url = [NSString stringWithFormat:@"%@://%@?contact=%@", APPLICATION_SCHEME, startPreviewFile ? PREVIEW_ACTION : CONVERSATION_ACTION, contacts];
+    }
+        
+    return [[NSURL alloc] initWithString:url];
+}
+
 - (void)getConversationWithContact:(nonnull TLContact *)contact {
     DDLogVerbose(@"%@ getConversationWithContact: %@", LOG_TAG, contact);
     

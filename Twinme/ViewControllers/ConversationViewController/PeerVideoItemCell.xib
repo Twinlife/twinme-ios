@@ -4,6 +4,7 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24743"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -69,6 +70,24 @@
                             <constraint firstAttribute="width" constant="500" id="tmy-yi-fv7"/>
                         </constraints>
                     </imageView>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="6fc-11-su5">
+                        <rect key="frame" x="114" y="850" width="70" height="36"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="00:00" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ahb-Rv-Jon">
+                                <rect key="frame" x="12" y="7.5" width="46" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="ahb-Rv-Jon" firstAttribute="leading" secondItem="6fc-11-su5" secondAttribute="leading" constant="12" id="R8g-9r-oxL"/>
+                            <constraint firstItem="ahb-Rv-Jon" firstAttribute="centerY" secondItem="6fc-11-su5" secondAttribute="centerY" id="Tlj-NA-aPA"/>
+                            <constraint firstAttribute="trailing" secondItem="ahb-Rv-Jon" secondAttribute="trailing" constant="12" id="ZW1-x0-ioY"/>
+                            <constraint firstAttribute="height" constant="36" id="twC-O9-vwU"/>
+                        </constraints>
+                    </view>
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="a2P-UG-qE9">
                         <rect key="frame" x="96" y="318.5" width="500" height="583.5"/>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -176,7 +195,9 @@
                     <constraint firstItem="XS3-vi-bt6" firstAttribute="leading" secondItem="59b-o7-fXk" secondAttribute="leading" id="T2g-FC-lfa"/>
                     <constraint firstAttribute="trailing" secondItem="rAi-03-Li8" secondAttribute="trailing" id="Zwi-Op-bi8"/>
                     <constraint firstItem="rAi-03-Li8" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" id="bKt-72-8o4"/>
+                    <constraint firstItem="59b-o7-fXk" firstAttribute="bottom" secondItem="6fc-11-su5" secondAttribute="bottom" constant="16" id="cHo-4t-Jlo"/>
                     <constraint firstItem="UMR-yv-jAo" firstAttribute="bottom" secondItem="59b-o7-fXk" secondAttribute="bottom" constant="-2" id="fEN-xt-Kwr"/>
+                    <constraint firstItem="6fc-11-su5" firstAttribute="leading" secondItem="59b-o7-fXk" secondAttribute="leading" constant="18" id="fsF-4P-Srn"/>
                     <constraint firstItem="GtH-ba-mzy" firstAttribute="top" relation="greaterThanOrEqual" secondItem="H2p-sc-9uM" secondAttribute="top" priority="750" constant="18" id="iVs-n9-Qev"/>
                     <constraint firstItem="MJV-4f-RxZ" firstAttribute="leading" secondItem="59b-o7-fXk" secondAttribute="leading" id="j9A-3g-LN9"/>
                     <constraint firstItem="5Z8-Ec-obe" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="jOQ-lv-5Kh"/>
@@ -207,6 +228,13 @@
                 <outlet property="contentImageViewLeadingConstraint" destination="BAv-II-k8g" id="2kk-25-4fG"/>
                 <outlet property="contentImageViewTopConstraint" destination="7uC-dW-O7f" id="pcb-dy-5tS"/>
                 <outlet property="contentImageViewWidthConstraint" destination="tmy-yi-fv7" id="2jk-Y9-FHD"/>
+                <outlet property="durationLabel" destination="ahb-Rv-Jon" id="S0S-j2-tjt"/>
+                <outlet property="durationLabelLeadingConstraint" destination="R8g-9r-oxL" id="ypw-rd-U1N"/>
+                <outlet property="durationLabelTrailingConstraint" destination="ZW1-x0-ioY" id="phD-TP-vEJ"/>
+                <outlet property="durationView" destination="6fc-11-su5" id="VHD-Lx-u6E"/>
+                <outlet property="durationViewBottomConstraint" destination="cHo-4t-Jlo" id="8zl-WR-Pfo"/>
+                <outlet property="durationViewHeightConstraint" destination="twC-O9-vwU" id="QOE-UE-ibv"/>
+                <outlet property="durationViewLeadingConstraint" destination="fsF-4P-Srn" id="W7G-Db-RDS"/>
                 <outlet property="ephemeralView" destination="i17-Uv-i82" id="x5q-pd-Llu"/>
                 <outlet property="ephemeralViewHeightConstraint" destination="hsw-rW-cnh" id="xe0-Z6-JDa"/>
                 <outlet property="ephemeralViewLeadingConstraint" destination="xJR-7O-Wc1" id="sod-GO-ht6"/>
@@ -252,5 +280,8 @@
         <image name="CheckMarkGrey" width="22" height="22"/>
         <image name="PlayerPlay" width="70" height="70"/>
         <image name="ReplyItem" width="15" height="15"/>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
     </resources>
 </document>

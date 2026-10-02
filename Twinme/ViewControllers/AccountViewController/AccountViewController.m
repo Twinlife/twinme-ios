@@ -223,7 +223,6 @@ typedef enum {
     
     NSInteger numberOfRowsInSection;
     switch (section) {
-        case SECTION_TRANSFER:
         case SECTION_CONVERSATIONS:
             numberOfRowsInSection = 2;
             break;
@@ -236,6 +235,7 @@ typedef enum {
             }
             break;
             
+        case SECTION_TRANSFER:
         case SECTION_DELETE:
             numberOfRowsInSection = 1;
             break;
@@ -272,13 +272,8 @@ typedef enum {
         UIColor *iconTintColor = Design.UNSELECTED_TAB_COLOR;
         
         if (indexPath.section == SECTION_TRANSFER) {
-            if (indexPath.row == 0) {
-                title = TwinmeLocalizedString(@"account_view_transfer_from_device", nil);
-                icon = [UIImage imageNamed:@"MigrationMyDeviceIcon"];
-            } else {
-                title = TwinmeLocalizedString(@"account_view_transfer_from_another_device", nil);
-                icon = [UIImage imageNamed:@"MigrationAnotherDeviceIcon"];
-            }
+            title = TwinmeLocalizedString(@"account_view_migration_title", nil);
+            icon = [UIImage imageNamed:@"MigrationMyDeviceIcon"];
         } else if (indexPath.section == SECTION_BACKUP ) {
             if (indexPath.row == 0) {
                 title = TwinmeLocalizedStringFromTable(@"account_view_backup", @"LocalizableBackup", nil);
@@ -320,7 +315,7 @@ typedef enum {
     DDLogVerbose(@"%@ tableView: %@ didSelectRowAtIndexPath: %@", LOG_TAG, tableView, indexPath);
     
     if (indexPath.section == SECTION_TRANSFER) {
-        [self startAccountMigration:indexPath.row == 0];
+        [self startAccountMigration];
     } else if (indexPath.section == SECTION_BACKUP) {
         if (indexPath.row == 3) {
             BackupsViewController *backupsViewController = (BackupsViewController *)[[UIStoryboard storyboardWithName:@"Backup" bundle:nil] instantiateViewControllerWithIdentifier:@"BackupsViewController"];
@@ -368,7 +363,7 @@ typedef enum {
             [self startBackupViewController:(int)abstractConfirmView.tag];
         }
     } else {
-        [self startAccountMigration:NO];
+        [self startAccountMigration];
     }
     
 }
@@ -531,11 +526,10 @@ typedef enum {
     }
 }
 
-- (void)startAccountMigration:(BOOL)fromCurrentDevice {
-    DDLogVerbose(@"%@ startAccountMigration: %@", LOG_TAG, fromCurrentDevice ? @"YES" : @"NO");
+- (void)startAccountMigration {
+    DDLogVerbose(@"%@ startAccountMigration", LOG_TAG);
     
     AccountMigrationScannerViewController *accountMigrationScannerViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"AccountMigrationScannerViewController"];
-    accountMigrationScannerViewController.fromCurrentDevice = fromCurrentDevice;
     [self.navigationController pushViewController:accountMigrationScannerViewController animated:YES];
 }
 

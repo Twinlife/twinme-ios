@@ -40,6 +40,11 @@ static UIColor *DESIGN_NAVIGATION_BACKGROUND_COLOR;
 static UIColor *DESIGN_SEPARATOR_COLOR_GREY;
 static UIColor *DESIGN_BACKGROUND_COLOR_GREY;
 static UIColor *DESIGN_POPUP_BACKGROUND_COLOR;
+static UIColor *DESIGN_CHECKMARK_BORDER_COLOR;
+static UIColor *DESIGN_DEFAULT_COLOR;
+
+static CGFloat DESIGN_CHECKMARK_BORDER_WIDTH;
+static CGFloat DESIGN_SEPARATOR_HEIGHT;
 
 @implementation DesignExtension
 
@@ -68,6 +73,12 @@ static UIColor *DESIGN_POPUP_BACKGROUND_COLOR;
     DESIGN_BOLD36 = [UIFont systemFontOfSize:(36 * DESIGN_FONT_RATIO) weight:UIFontWeightBold];
     DESIGN_BOLD44 = [UIFont systemFontOfSize:(44 * DESIGN_FONT_RATIO) weight:UIFontWeightBold];
     DESIGN_BOLD68 = [UIFont systemFontOfSize:(68 * DESIGN_FONT_RATIO) weight:UIFontWeightBold];
+    
+    DESIGN_CHECKMARK_BORDER_COLOR = [UIColor colorWithRed:114./255. green:140./255. blue:161./255. alpha:0.56];
+    DESIGN_DEFAULT_COLOR = [UIColor colorWithRed:0./255. green:174./255. blue:255./255. alpha:1];
+    DESIGN_CHECKMARK_BORDER_WIDTH = 0.5;
+    
+    DESIGN_SEPARATOR_HEIGHT = 0.5;
     
     [self setupColors];
 }
@@ -223,6 +234,26 @@ static UIColor *DESIGN_POPUP_BACKGROUND_COLOR;
 + (UIColor *)POPUP_BACKGROUND_COLOR {
     
     return DESIGN_POPUP_BACKGROUND_COLOR;
+}
+
++ (UIColor *)DEFAULT_COLOR {
+    
+    return DESIGN_DEFAULT_COLOR;
+}
+
++ (UIColor *)CHECKMARK_BORDER_COLOR {
+    
+    return DESIGN_CHECKMARK_BORDER_COLOR;
+}
+
++ (CGFloat)CHECKMARK_BORDER_WIDTH {
+    
+    return DESIGN_CHECKMARK_BORDER_WIDTH;
+}
+
++ (CGFloat)SEPARATOR_HEIGHT {
+    
+    return DESIGN_SEPARATOR_HEIGHT;
 }
 
 @end

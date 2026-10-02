@@ -56,19 +56,11 @@ static CGFloat DESIGN_THUMBNAIL_SIZE = 120;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *thumbnailCollectionViewHeightConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *thumbnailCollectionViewBottomConstraint;
 @property (weak, nonatomic) IBOutlet UICollectionView *thumbnailCollectionView;
-@property (weak, nonatomic) IBOutlet UIView *overlayView;
-@property (weak, nonatomic) IBOutlet UIActivityIndicatorView *activityIndicatorView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *stateLabelLeadingConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *stateLabelTrailingConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *stateLabelTopConstraint;
-@property (weak, nonatomic) IBOutlet UILabel *stateLabel;
 
 @property (nonatomic) NSInteger currentItemIndex;
-@property (nonatomic) NSMutableArray *files;
-@property (nonatomic) int countFilePicking;
-@property (nonatomic) BOOL endFilePicking;
-@property (nonatomic) BOOL pickMediaError;
-@property (nonatomic) BOOL pickerExportingFile;
 
 @end
 

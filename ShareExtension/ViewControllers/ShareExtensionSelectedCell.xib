@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="24765" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24743"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="ShareExtensionSelectedCellIdentifier" id="gTV-IL-0wX" customClass="ShareExtensionSelectedCell">
+            <rect key="frame" x="0.0" y="0.0" width="116" height="116"/>
+            <autoresizingMask key="autoresizingMask"/>
+            <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                <rect key="frame" x="0.0" y="0.0" width="116" height="116"/>
+                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                <subviews>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="hbu-5D-BFU">
+                        <rect key="frame" x="0.0" y="0.0" width="116" height="116"/>
+                        <subviews>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Ovz-Nb-BgE">
+                                <rect key="frame" x="23" y="23" width="70" height="70"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" secondItem="Ovz-Nb-BgE" secondAttribute="height" multiplier="1:1" id="ICq-GW-03D"/>
+                                    <constraint firstAttribute="height" constant="70" id="OyY-ts-aHw"/>
+                                </constraints>
+                            </imageView>
+                        </subviews>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="Ovz-Nb-BgE" firstAttribute="centerX" secondItem="hbu-5D-BFU" secondAttribute="centerX" id="Brn-2r-USQ"/>
+                            <constraint firstItem="Ovz-Nb-BgE" firstAttribute="centerY" secondItem="hbu-5D-BFU" secondAttribute="centerY" id="XSO-W0-FKY"/>
+                        </constraints>
+                    </view>
+                </subviews>
+            </view>
+            <constraints>
+                <constraint firstAttribute="bottom" secondItem="hbu-5D-BFU" secondAttribute="bottom" id="98y-EX-Qss"/>
+                <constraint firstAttribute="trailing" secondItem="hbu-5D-BFU" secondAttribute="trailing" id="R5N-Vh-Ssf"/>
+                <constraint firstItem="hbu-5D-BFU" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" id="SXl-A2-MZi"/>
+                <constraint firstItem="hbu-5D-BFU" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" id="aiM-Jj-q4w"/>
+            </constraints>
+            <connections>
+                <outlet property="avatarView" destination="Ovz-Nb-BgE" id="gK6-Xe-LyX"/>
+                <outlet property="avatarViewHeightConstraint" destination="OyY-ts-aHw" id="0WJ-c6-Etr"/>
+            </connections>
+            <point key="canvasLocation" x="-276" y="100"/>
+        </collectionViewCell>
+    </objects>
+</document>

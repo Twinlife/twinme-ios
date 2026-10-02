@@ -91,6 +91,13 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *checkMarkViewLeadingConstraint;
 @property (weak, nonatomic) IBOutlet UIView *checkMarkView;
 @property (weak, nonatomic) IBOutlet UIImageView *checkMarkImageView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *durationViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *durationViewLeadingConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *durationViewBottomConstraint;
+@property (weak, nonatomic) IBOutlet UIView *durationView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *durationLabelLeadingConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *durationLabelTrailingConstraint;
+@property (weak, nonatomic) IBOutlet UILabel *durationLabel;
 @property (weak, nonatomic) IBOutlet UIView *overlayView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *infoImageViewHeightConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *infoImageViewTrailinConstraint;
@@ -159,6 +166,20 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
     self.playImageViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
     self.playImageViewTrailingConstraint.constant *= Design.WIDTH_RATIO;
     self.playImageViewBottomConstraint.constant *= Design.HEIGHT_RATIO;
+    
+    self.durationViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    self.durationViewLeadingConstraint.constant *= Design.WIDTH_RATIO;
+    self.durationViewBottomConstraint.constant *= Design.HEIGHT_RATIO;
+    
+    self.durationView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.5];
+    self.durationView.clipsToBounds = YES;
+    self.durationView.layer.cornerRadius = self.durationViewHeightConstraint.constant * 0.5;
+    
+    self.durationLabelLeadingConstraint.constant *= Design.WIDTH_RATIO;
+    self.durationLabelTrailingConstraint.constant *= Design.WIDTH_RATIO;
+    
+    self.durationLabel.font = Design.FONT_REGULAR28;
+    self.durationLabel.textColor = [UIColor whiteColor];
     
     self.replyViewTopConstraint.constant *= Design.HEIGHT_RATIO;
     self.replyViewBottomConstraint.constant *= Design.HEIGHT_RATIO;
@@ -372,6 +393,8 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
         self.contentImageViewHeightConstraint.constant = self.contentImageViewWidthConstraint.constant / imageWidth * imageHeight;
     }
     
+    self.durationLabel.text = [NSString convertWithInterval:self.videoDescriptor.duration format:@"mm:ss"];
+    
     self.replyImageViewHeightConstraint.constant = 0;
     self.replyImageViewTopConstraint.constant = 0;
     self.replyImageViewBottomConstraint.constant = 0;
@@ -561,6 +584,7 @@ static NSString *ANNOTATION_COUNT_CELL_IDENTIFIER = @"AnnotationCountCellIdentif
             [self.contentView bringSubviewToFront:self.replyToImageContentView];
             [self.contentView bringSubviewToFront:self.contentImageView];
             [self.contentView bringSubviewToFront:self.playImageView];
+            [self.contentView bringSubviewToFront:self.durationView];
             [self.contentView bringSubviewToFront:self.annotationCollectionView];
         }
     } else {

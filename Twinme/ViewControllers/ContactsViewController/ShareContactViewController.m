@@ -22,7 +22,8 @@
 
 #import <TwinmeCommon/Design.h>
 #import <TwinmeCommon/ContactsService.h>
-
+#import <TwinmeCommon/MainViewController.h>
+#import <TwinmeCommon/TwinmeNavigationController.h>
 
 #if 0
 static const int ddLogLevel = DDLogLevelVerbose;

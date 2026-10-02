@@ -33,6 +33,7 @@
 
 #import "ShareExtensionContactCell.h"
 #import "ShareExtensionHeaderCell.h"
+#import "ShareExtensionSelectedCell.h"
 
 #import "DesignExtension.h"
 
@@ -103,9 +104,11 @@ static const int ddLogLevel = DDLogLevelWarning;
 
 static NSString *SHARE_EXTENSION_CONTACT_CELL_IDENTIFIER = @"ShareExtensionContactCellIdentifier";
 static NSString *SHARE_EXTENSION_HEADER_CELL_IDENTIFIER = @"ShareExtensionHeaderCellIdentifier";
+static NSString *SHARE_EXTENSION_SELECTED_CELL_IDENTIFIER = @"ShareExtensionSelectedCellIdentifier";
 
 static CGFloat DESIGN_SECTION_HEIGHT = 110;
 static CGFloat DESIGN_CELL_HEIGHT = 124;
+static CGFloat DESIGN_COLLECTION_CELL_HEIGHT = 116;
 
 static const int SHARE_VIEW_SECTION_COUNT = 2;
 
@@ -116,16 +119,34 @@ static const int GROUPS_VIEW_SECTION = 1;
 // Interface: ShareExtensionViewController
 //
 
-@interface ShareExtensionViewController () <UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate, ShareExtensionServiceDelegate>
+@interface ShareExtensionViewController () <UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate, UICollectionViewDataSource, ShareExtensionServiceDelegate>
 
-@property (weak, nonatomic) IBOutlet UITableView *contactsTableView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *tableViewBottomConstraint;
+@property (weak, nonatomic) IBOutlet UITableView *tableView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *separatorViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet UIView *separatorView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *bottomViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *bottomViewBottomConstraint;
+@property (weak, nonatomic) IBOutlet UIView *bottomView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *selectedCollectionViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *selectedCollectionViewTopConstraint;
+@property (weak, nonatomic) IBOutlet UICollectionView *selectedCollectionView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *sendViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *sendViewLeadingConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *sendViewTrailingConstraint;
+@property (weak, nonatomic) IBOutlet UIView *sendView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *sendImageViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet UIImageView *sendImageView;
+
 @property (nonatomic) UIActivityIndicatorView *activityIndicatorView;
 @property (nonatomic) UIBarButtonItem *cancelBarButtonItem;
 @property (nonatomic) UISearchController *searchController;
 
 @property (nonatomic) BOOL uiInitialized;
+@property (nonatomic) BOOL keyboardHidden;
 @property (nonatomic) NSMutableArray *uiContacts;
 @property (nonatomic) NSMutableArray *uiGroups;
+@property (nonatomic) NSMutableArray<UIContact *> *uiSelectedContact;
 
 @property (nonatomic) NSMutableArray *contents;
 @property (nonatomic) BOOL fileCopyAllowed;
@@ -140,6 +161,9 @@ static const int GROUPS_VIEW_SECTION = 1;
 @property (nonatomic) BOOL finsihWithAction;
 
 @property (nonatomic) NSString *previewPath;
+
+@property (nonatomic) NSURL *shareURL;
+
 
 @end
 
@@ -162,9 +186,11 @@ static const int GROUPS_VIEW_SECTION = 1;
     if (self) {
         _uiContacts = [[NSMutableArray alloc] init];
         _uiGroups = [[NSMutableArray alloc] init];
+        _uiSelectedContact = [[NSMutableArray alloc] init];
         _fileCopyAllowed = NO;
         _messageCopyAllowed = NO;
         _refreshTableScheduled = NO;
+        _keyboardHidden = YES;
         _currentItem = 0;
         _finsihWithAction = NO;
         _contents = [[NSMutableArray alloc]init];
@@ -189,12 +215,18 @@ static const int GROUPS_VIEW_SECTION = 1;
     [super viewWillAppear:animated];
 
     [self.shareService start];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
     DDLogVerbose(@"%@ viewWillDisappear: %@", LOG_TAG, animated ? @"YES":@"NO");
     
     [super viewWillDisappear:animated];
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillHideNotification object:nil];
     
     if (!self.finsihWithAction) {
         [self.uiContacts removeAllObjects];
@@ -208,6 +240,44 @@ static const int GROUPS_VIEW_SECTION = 1;
             [self.extensionContext cancelRequestWithError:error];
         }];
     }
+}
+
+- (void)viewSafeAreaInsetsDidChange {
+    DDLogVerbose(@"%@ viewSafeAreaInsetsDidChange", LOG_TAG);
+    
+    [super viewSafeAreaInsetsDidChange];
+    
+    if (self.keyboardHidden) {
+        self.bottomViewBottomConstraint.constant = 0;
+        [self updateBottomHeight];
+    }
+}
+
+- (void)keyboardWillShow:(NSNotification *)notification {
+    DDLogVerbose(@"%@ keyboardWillShow: %@", LOG_TAG, notification);
+    
+    if (!self.keyboardHidden) {
+        return;
+    }
+    
+    self.keyboardHidden = NO;
+    NSDictionary *info = [notification userInfo];
+    CGRect keyboardFrame = [[info objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
+    CGRect keyboardFrameInView = [self.view convertRect:keyboardFrame fromView:nil];
+    CGRect intersection = CGRectIntersection(self.view.bounds, keyboardFrameInView);
+
+    CGFloat keyboardOverlap = CGRectIsNull(intersection) ? 0.0f : CGRectGetHeight(intersection);
+    self.bottomViewBottomConstraint.constant = keyboardOverlap;
+    [self updateBottomHeight];
+}
+
+- (void)keyboardWillHide:(NSNotification *)notification {
+    DDLogVerbose(@"%@ keyboardWillHide: %@", LOG_TAG, notification);
+    
+    self.keyboardHidden = YES;
+    
+    self.bottomViewBottomConstraint.constant = 0;
+    [self updateBottomHeight];
 }
 
 #pragma mark - ShareExtensionServiceDelegate
@@ -295,6 +365,27 @@ static const int GROUPS_VIEW_SECTION = 1;
 - (void)onShareCompleted {
     DDLogVerbose(@"%@ onShareCompleted", LOG_TAG);
     
+    if (self.uiSelectedContact.count > 0) {
+        UIContact *selectedContact = [self.uiSelectedContact objectAtIndex:0];
+        [self.uiSelectedContact removeObjectAtIndex:0];
+        TLSpaceSettings *spaceSettings = selectedContact.contact.space.settings;
+        if ([selectedContact.contact.space.settings getBooleanWithName:PROPERTY_DEFAULT_MESSAGE_SETTINGS defaultValue:YES]) {
+            spaceSettings = [self.shareService getDefaultSpaceSettings];
+        }
+        
+        self.messageCopyAllowed = spaceSettings.messageCopyAllowed;
+        self.fileCopyAllowed = spaceSettings.fileCopyAllowed;
+        self.contact = selectedContact.contact;
+        
+        if (selectedContact.contact.isGroup) {
+            [self.shareService getConversationWithGroup:(TLGroup *)selectedContact.contact];
+        } else {
+            [self.shareService getConversationWithContact:(TLContact *)selectedContact.contact];
+        }
+        
+        return;
+    }
+    
     [self.activityIndicatorView stopAnimating];
     
     BOOL fileToSend = NO;
@@ -307,7 +398,9 @@ static const int GROUPS_VIEW_SECTION = 1;
         }
     }
     
-    [self openURL:[self.shareService getConversationURLWithOriginator:self.contact startPreviewFile:fileToSend]];
+    if (self.shareURL) {
+        [self openURL:self.shareURL];
+    }
     
     self.finsihWithAction = YES;
     
@@ -412,7 +505,7 @@ static const int GROUPS_VIEW_SECTION = 1;
     DDLogVerbose(@"%@ reloadContactTableData", LOG_TAG);
     
     self.refreshTableScheduled = NO;
-    [self.contactsTableView reloadData];
+    [self.tableView reloadData];
 }
 
 - (void)refreshTable {
@@ -562,15 +655,30 @@ static const int GROUPS_VIEW_SECTION = 1;
         if (indexPath.row < self.uiContacts.count) {
             UIContact *uiContact = [self.uiContacts objectAtIndex:indexPath.row];
             BOOL hideSeparator = indexPath.row + 1 == self.uiContacts.count ? YES : NO;
+            
+            if ([self isSelectedContact:uiContact]) {
+                [shareExtensionCell setChecked:YES];
+            } else {
+                [shareExtensionCell setChecked:NO];
+            }
+            
             [shareExtensionCell bindWithName:uiContact.name avatar:uiContact.avatar isCertified:uiContact.isCertified hideSeparator:hideSeparator];
         }
     } else {
         if (indexPath.row < self.uiGroups.count) {
             UIContact *uiGroup = [self.uiGroups objectAtIndex:indexPath.row];
             BOOL hideSeparator = indexPath.row + 1 == self.uiGroups.count ? YES : NO;
+            
+            if ([self isSelectedContact:uiGroup]) {
+                [shareExtensionCell setChecked:YES];
+            } else {
+                [shareExtensionCell setChecked:NO];
+            }
+            
             [shareExtensionCell bindWithName:uiGroup.name avatar:uiGroup.avatar isCertified:NO hideSeparator:hideSeparator];
         }
     }
+    
     
     return shareExtensionCell;
 }
@@ -579,12 +687,81 @@ static const int GROUPS_VIEW_SECTION = 1;
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     DDLogVerbose(@"%@ tableView: %@ didSelectRowAtIndexPath: %@", LOG_TAG, tableView, indexPath);
-    
-    if (!self.selectedIndexPath) {
-        self.selectedIndexPath = indexPath;
-        [self.activityIndicatorView startAnimating];
-        [self loadItem];
+                
+    UIContact *contact;
+    if (indexPath.section == CONTACTS_VIEW_SECTION) {
+        contact = [self.uiContacts objectAtIndex:indexPath.row];
+    } else if (indexPath.section == GROUPS_VIEW_SECTION) {
+        contact = [self.uiGroups objectAtIndex:indexPath.row];
     }
+    
+    if (!contact) {
+        return;
+    }
+    
+    ShareExtensionContactCell *shareExtensionContactCell = [self.tableView cellForRowAtIndexPath:indexPath];
+    NSInteger indexContact = [self indexForContact:contact];
+    if (indexContact != -1) {
+        NSIndexPath *deletedIndexPath = [NSIndexPath indexPathForItem:indexContact inSection:0];
+        [self.uiSelectedContact removeObjectAtIndex:indexContact];
+        [self.selectedCollectionView deleteItemsAtIndexPaths:@[deletedIndexPath]];
+        [shareExtensionContactCell setChecked:NO];
+    } else {
+        [self.uiSelectedContact addObject:contact];
+        NSIndexPath *insertedIndexPath = [NSIndexPath indexPathForItem:self.uiSelectedContact.count - 1 inSection:0];
+        [self.selectedCollectionView insertItemsAtIndexPaths:@[insertedIndexPath]];
+        [self.selectedCollectionView scrollToItemAtIndexPath:insertedIndexPath atScrollPosition:UICollectionViewScrollPositionRight animated:YES];
+        [shareExtensionContactCell setChecked:YES];
+    }
+            
+    self.bottomView.hidden = self.uiSelectedContact.count == 0;
+    [self updateBottomHeight];
+    [self.tableView reloadData];
+}
+
+#pragma mark - UICollectionViewDataSource
+
+- (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView {
+    DDLogVerbose(@"%@ numberOfSectionsInCollectionView: %@", LOG_TAG, collectionView);
+    
+    return 1;
+}
+
+- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
+    DDLogVerbose(@"%@ collectionView: %@ numberOfItemsInSection: %ld", LOG_TAG, collectionView, (long)section);
+    
+    return self.uiSelectedContact.count;
+}
+
+- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
+    DDLogVerbose(@"%@ collectionView: %@ layout: %@ sizeForItemAtIndexPath: %@", LOG_TAG, collectionView, collectionViewLayout, indexPath);
+    
+    CGFloat heightCell = DESIGN_COLLECTION_CELL_HEIGHT * DesignExtension.HEIGHT_RATIO;
+    return CGSizeMake(heightCell, heightCell);
+}
+
+- (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout minimumLineSpacingForSectionAtIndex:(NSInteger)section {
+    DDLogVerbose(@"%@ collectionView: %@ layout: %@ minimumLineSpacingForSectionAtIndex: %ld", LOG_TAG, collectionView, collectionViewLayout, (long)section);
+    
+    return 0;
+}
+
+- (CGSize)collectionView:(UICollectionView *)collectionView layout:(nonnull UICollectionViewLayout *)collectionViewLayout referenceSizeForHeaderInSection:(NSInteger)section {
+    DDLogVerbose(@"%@ collectionView: %@ layout: %@ referenceSizeForHeaderInSection: %ld", LOG_TAG, collectionView, collectionViewLayout, (long)section);
+    
+    return CGSizeMake(0, 0);
+}
+
+- (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(nonnull NSIndexPath *)indexPath {
+    DDLogVerbose(@"%@ collectionView: %@ cellForItemAtIndexPath: %@", LOG_TAG, collectionView, indexPath);
+    
+    ShareExtensionSelectedCell *shareExtensionSelectedCell = [collectionView dequeueReusableCellWithReuseIdentifier:SHARE_EXTENSION_SELECTED_CELL_IDENTIFIER forIndexPath:indexPath];
+    
+    UIContact *uiContact = self.uiSelectedContact[indexPath.row];
+    UIImage *avatar = uiContact.avatar;
+    [shareExtensionSelectedCell bindWithAvatar:avatar];
+
+    return shareExtensionSelectedCell;
 }
 
 #pragma mark - Private methods
@@ -635,16 +812,55 @@ static const int GROUPS_VIEW_SECTION = 1;
     self.searchController.searchBar.translucent = NO;
     self.navigationItem.searchController = self.searchController;
     
-    self.contactsTableView.backgroundColor = DesignExtension.LIGHT_GREY_BACKGROUND_COLOR;
-    self.contactsTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    self.contactsTableView.tableFooterView = nil;
-    self.contactsTableView.delegate = self;
-    self.contactsTableView.dataSource = self;
-    self.contactsTableView.sectionHeaderHeight = 0;
-    self.contactsTableView.sectionFooterHeight = 0;
+    self.tableView.backgroundColor = DesignExtension.LIGHT_GREY_BACKGROUND_COLOR;
+    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+    self.tableView.tableFooterView = nil;
+    self.tableView.delegate = self;
+    self.tableView.dataSource = self;
+    self.tableView.sectionHeaderHeight = 0;
+    self.tableView.sectionFooterHeight = 0;
     
-    [self.contactsTableView registerNib:[UINib nibWithNibName:@"ShareExtensionContactCell" bundle:nil] forCellReuseIdentifier:SHARE_EXTENSION_CONTACT_CELL_IDENTIFIER];
-    [self.contactsTableView registerNib:[UINib nibWithNibName:@"ShareExtensionHeaderCell" bundle:nil] forCellReuseIdentifier:SHARE_EXTENSION_HEADER_CELL_IDENTIFIER];
+    [self.tableView registerNib:[UINib nibWithNibName:@"ShareExtensionContactCell" bundle:nil] forCellReuseIdentifier:SHARE_EXTENSION_CONTACT_CELL_IDENTIFIER];
+    [self.tableView registerNib:[UINib nibWithNibName:@"ShareExtensionHeaderCell" bundle:nil] forCellReuseIdentifier:SHARE_EXTENSION_HEADER_CELL_IDENTIFIER];
+    
+    self.selectedCollectionViewTopConstraint.constant *= DesignExtension.HEIGHT_RATIO;
+    self.selectedCollectionViewHeightConstraint.constant = DESIGN_COLLECTION_CELL_HEIGHT * DesignExtension.HEIGHT_RATIO;
+    
+    UICollectionViewFlowLayout* viewFlowLayout = [[UICollectionViewFlowLayout alloc] init];
+    [viewFlowLayout setScrollDirection:UICollectionViewScrollDirectionHorizontal];
+    [viewFlowLayout setMinimumInteritemSpacing:0];
+    [viewFlowLayout setMinimumLineSpacing:0];
+    CGFloat heightCell = DESIGN_COLLECTION_CELL_HEIGHT * DesignExtension.HEIGHT_RATIO;
+    [viewFlowLayout setItemSize:CGSizeMake(heightCell, heightCell)];
+    
+    [self.selectedCollectionView setCollectionViewLayout:viewFlowLayout];
+    self.selectedCollectionView.dataSource = self;
+    self.selectedCollectionView.backgroundColor = DesignExtension.WHITE_COLOR;
+    [self.selectedCollectionView registerNib:[UINib nibWithNibName:@"ShareExtensionSelectedCell" bundle:nil] forCellWithReuseIdentifier:SHARE_EXTENSION_SELECTED_CELL_IDENTIFIER];
+    
+    self.separatorViewHeightConstraint.constant = DesignExtension.SEPARATOR_HEIGHT;
+    self.separatorView.backgroundColor = DesignExtension.SEPARATOR_COLOR_GREY;
+    
+    self.bottomViewBottomConstraint.constant = 0;
+    [self updateBottomHeight];
+
+    self.bottomView.backgroundColor = DesignExtension.WHITE_COLOR;
+    self.bottomView.hidden = YES;
+
+    self.sendViewLeadingConstraint.constant *= DesignExtension.WIDTH_RATIO;
+    self.sendViewTrailingConstraint.constant *= DesignExtension.WIDTH_RATIO;
+    self.sendViewHeightConstraint.constant *= DesignExtension.HEIGHT_RATIO;
+    
+    self.sendView.backgroundColor = DesignExtension.DEFAULT_COLOR;
+    self.sendView.clipsToBounds = YES;
+    self.sendView.layer.cornerRadius =  self.sendViewHeightConstraint.constant * 0.5f;
+    self.sendView.accessibilityLabel = TwinmeLocalizedString(@"feedback_view_send", nil);
+    self.sendView.isAccessibilityElement = YES;
+    [self.sendView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSendTapGesture:)]];
+    
+    self.sendImageViewHeightConstraint.constant *= DesignExtension.HEIGHT_RATIO;
+    
+    self.sendImageView.image =  [self.sendImageView.image imageFlippedForRightToLeftLayoutDirection];
     
     self.activityIndicatorView = [[UIActivityIndicatorView alloc]initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleMedium];
     self.activityIndicatorView.center = self.view.center;
@@ -682,6 +898,14 @@ static const int GROUPS_VIEW_SECTION = 1;
         NSError *error = [[NSError alloc]initWithDomain:[[NSBundle mainBundle] bundleIdentifier] code:0 userInfo:nil];
         [self.extensionContext cancelRequestWithError:error];
     }];
+}
+
+- (void)handleSendTapGesture:(UITapGestureRecognizer *)sender {
+    DDLogVerbose(@"%@ handleSendTapGesture: %@", LOG_TAG, sender);
+    
+    [self.activityIndicatorView startAnimating];
+    
+    [self loadItem];
 }
 
 - (void)loadItem {
@@ -844,31 +1068,25 @@ static const int GROUPS_VIEW_SECTION = 1;
 
 - (void)shareContent {
     DDLogVerbose(@"%@ shareContent", LOG_TAG);
+        
+    [self initShareURL];
+
+    UIContact *selectedContact = [self.uiSelectedContact objectAtIndex:0];
+    [self.uiSelectedContact removeObjectAtIndex:0];
     
-    if (self.selectedIndexPath.section == CONTACTS_VIEW_SECTION) {
-        UIContact *uiContact = [self.uiContacts objectAtIndex:self.selectedIndexPath.row];
-        
-        TLSpaceSettings *spaceSettings = uiContact.contact.space.settings;
-        if ([uiContact.contact.space.settings getBooleanWithName:PROPERTY_DEFAULT_MESSAGE_SETTINGS defaultValue:YES]) {
-            spaceSettings = [self.shareService getDefaultSpaceSettings];
-        }
-        
-        self.messageCopyAllowed = spaceSettings.messageCopyAllowed;
-        self.fileCopyAllowed = spaceSettings.fileCopyAllowed;
-        self.contact = uiContact.contact;
-        [self.shareService getConversationWithContact:(TLContact *)uiContact.contact];
-    } else if (self.selectedIndexPath.section == GROUPS_VIEW_SECTION) {
-        UIContact *uiGroup = [self.uiGroups objectAtIndex:self.selectedIndexPath.row];
-        
-        TLSpaceSettings *spaceSettings = uiGroup.contact.space.settings;
-        if ([uiGroup.contact.space.settings getBooleanWithName:PROPERTY_DEFAULT_MESSAGE_SETTINGS defaultValue:YES]) {
-            spaceSettings = [self.shareService getDefaultSpaceSettings];
-        }
-        
-        self.messageCopyAllowed = spaceSettings.messageCopyAllowed;
-        self.fileCopyAllowed = spaceSettings.fileCopyAllowed;
-        self.contact = uiGroup.contact;
-        [self.shareService getConversationWithGroup:(TLGroup *)uiGroup.contact];
+    TLSpaceSettings *spaceSettings = selectedContact.contact.space.settings;
+    if ([selectedContact.contact.space.settings getBooleanWithName:PROPERTY_DEFAULT_MESSAGE_SETTINGS defaultValue:YES]) {
+        spaceSettings = [self.shareService getDefaultSpaceSettings];
+    }
+    
+    self.messageCopyAllowed = spaceSettings.messageCopyAllowed;
+    self.fileCopyAllowed = spaceSettings.fileCopyAllowed;
+    self.contact = selectedContact.contact;
+    
+    if (selectedContact.contact.isGroup) {
+        [self.shareService getConversationWithGroup:(TLGroup *)selectedContact.contact];
+    } else {
+        [self.shareService getConversationWithContact:(TLContact *)selectedContact.contact];
     }
 }
 
@@ -892,5 +1110,73 @@ static const int GROUPS_VIEW_SECTION = 1;
     UTType *fileType = [UTType typeWithFilenameExtension:[file pathExtension]];
     return [fileType conformsToType:UTTypeAudio];
 }
+
+- (BOOL)isSelectedContact:(UIContact *)contact {
+    DDLogVerbose(@"%@ isSelectedContact: %@", LOG_TAG, contact);
+
+    for (UIContact *uiContact in self.uiSelectedContact) {
+        if ([contact.contact.uuid isEqual:uiContact.contact.uuid]) {
+            return YES;
+        }
+    }
+    return NO;
+}
+ 
+- (void)initShareURL {
+    DDLogVerbose(@"%@ initShareURL", LOG_TAG);
+    
+    NSMutableArray *selectedOriginators = [[NSMutableArray alloc]init];
+    for (UIContact *contact in self.uiSelectedContact) {
+        [selectedOriginators addObject:contact.contact];
+    }
+    
+    BOOL fileToSend = NO;
+    if (self.contents.count > 0) {
+        for (id object in self.contents) {
+            if ([object isKindOfClass:[NSURL class]]) {
+                fileToSend = YES;
+                break;
+            }
+        }
+    }
+    
+    self.shareURL = [self.shareService getConversationURLWithOriginators:selectedOriginators startPreviewFile:fileToSend];
+}
+
+- (NSInteger)indexForContact:(UIContact *)contact {
+    DDLogVerbose(@"%@ indexForContact: %@", LOG_TAG, contact);
+
+    int index = -1;
+    for (UIContact *uiContact in self.uiSelectedContact) {
+        index++;
+        if ([contact.contact.uuid isEqual:uiContact.contact.uuid]) {
+            return index;
+        }
+    }
+    return -1;
+}
+
+- (CGFloat)safeAreaBottomInset {
+    DDLogVerbose(@"%@ safeAreaBottomInset", LOG_TAG);
+    
+    UIWindow *window = self.view.window;
+    if (window) {
+        return window.safeAreaInsets.bottom;
+    }
+    
+    return self.view.safeAreaInsets.bottom;
+}
+
+- (void)updateBottomHeight {
+    DDLogVerbose(@"%@ updateBottomHeight", LOG_TAG);
+    
+    CGFloat selectedContactsHeight = self.selectedCollectionViewTopConstraint.constant + self.selectedCollectionViewHeightConstraint.constant + (self.keyboardHidden ? [self safeAreaBottomInset] : 0);
+    CGFloat bottomViewHeight = MAX(selectedContactsHeight, self.sendViewHeightConstraint.constant);
+    
+    self.bottomViewHeightConstraint.constant = bottomViewHeight;
+    self.bottomView.hidden = self.uiSelectedContact.count == 0;
+    self.tableViewBottomConstraint.constant = self.bottomView.hidden ? 0 : bottomViewHeight + self.bottomViewBottomConstraint.constant;
+}
+
 
 @end

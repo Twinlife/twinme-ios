@@ -47,13 +47,10 @@ static const long long WARNING_ORIGINAL_SIZE = 1024 * 1024 * 10;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *closeImageViewHeightConstraint;
 @property (weak, nonatomic) IBOutlet UIImageView *closeImageView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *certifiedImageViewHeightConstraint;
-@property (weak, nonatomic) IBOutlet UIImageView *certifiedImageView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *avatarViewHeightConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *avatarViewLeadingConstraint;
-@property (weak, nonatomic) IBOutlet UIImageView *avatarView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *nameLabelLeadingConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *nameLabelTrailingConstraint;
-@property (weak, nonatomic) IBOutlet UILabel *nameLabel;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *nameViewLeadingConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *nameViewTrailingConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *nameViewHeightConstraint;
@@ -137,8 +134,14 @@ static const long long WARNING_ORIGINAL_SIZE = 1024 * 1024 * 10;
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillChangeFrame:) name:UIKeyboardWillChangeFrameNotification object:nil];
     
     self.qualityView.hidden = !self.startWithMedia;
-    self.nameLabel.text = self.contactName;
-    self.avatarView.image = self.contactAvatar;
+    if (self.contactName) {
+        self.nameLabel.text = self.contactName;
+    }
+    
+    if (self.contactAvatar) {
+        self.avatarView.image = self.contactAvatar;
+    }
+    
     self.certifiedImageView.hidden = !self.certified;
     
     if (self.message && ![self.message isEqualToString:@""]) {

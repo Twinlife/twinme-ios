@@ -322,10 +322,9 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
 
 - (void)imagePickerController:(UIImagePickerController *)pickerController didFinishPickingMediaWithInfo:(NSDictionary *)info {
     DDLogVerbose(@"%@ imagePickerController: %@ didFinishPickingMediaWithInfo: %@", LOG_TAG, pickerController, info);
-    
-    self.navigationController.navigationBarHidden = YES;
-    
+        
     [pickerController dismissViewControllerAnimated:YES completion:^{
+        self.navigationController.navigationBarHidden = YES;
         self.updatedLargeAvatar = info[UIImagePickerControllerEditedImage];
         self.updatedAvatar = [self.updatedLargeAvatar resizeImage];
         self.avatarView.image = self.updatedLargeAvatar;
@@ -337,8 +336,9 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)pickerController {
     DDLogVerbose(@"%@ imagePickerControllerDidCancel: %@", LOG_TAG, pickerController);
     
-    self.navigationController.navigationBarHidden = YES;
-    [pickerController dismissViewControllerAnimated:YES completion:nil];
+    [pickerController dismissViewControllerAnimated:YES completion:^{
+        self.navigationController.navigationBarHidden = YES;
+    }];
 }
 
 #pragma mark - PHPickerViewControllerDelegate
@@ -349,6 +349,8 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     [self showProgressIndicator];
     
     [pickerController dismissViewControllerAnimated:YES completion:^{
+        self.navigationController.navigationBarHidden = YES;
+
         if (!results || results.count == 0) {
             [self hideProgressIndicator];
             return;

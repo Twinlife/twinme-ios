@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2021 twinlife SA.
+ *  Copyright (c) 2021-2026 twinlife SA.
  *  SPDX-License-Identifier: AGPL-3.0-only
  *
  *  Contributors:
@@ -34,6 +34,10 @@ static CGFloat DESIGN_NAME_TRAILING = 38;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *certifiedRelationImageViewHeightConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *certifiedRelationImageViewLeadingConstraint;
 @property (weak, nonatomic) IBOutlet UIImageView *certifiedRelationImageView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *checkMarkViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *checkMarkViewTrailingConstraint;
+@property (weak, nonatomic) IBOutlet UIView *checkMarkView;
+@property (weak, nonatomic) IBOutlet UIImageView *checkMarkImageView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *separatorViewLeadingConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *separatorViewBottomConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *separatorViewHeightConstraint;
@@ -42,11 +46,11 @@ static CGFloat DESIGN_NAME_TRAILING = 38;
 @end
 
 //
-// Implementation: ShareContactCell
+// Implementation: ShareExtensionContactCell
 //
 
 #undef LOG_TAG
-#define LOG_TAG @"ShareContactCell"
+#define LOG_TAG @"ShareExtensionContactCell"
 
 @implementation ShareExtensionContactCell
 
@@ -73,6 +77,21 @@ static CGFloat DESIGN_NAME_TRAILING = 38;
     self.certifiedRelationImageViewHeightConstraint.constant = DESIGN_CERTIFIED_HEIGHT * DesignExtension.HEIGHT_RATIO;
     self.certifiedRelationImageViewLeadingConstraint.constant *= DesignExtension.WIDTH_RATIO;
     
+    CGFloat checkMarkViewHeightConstraintConstant = self.checkMarkViewHeightConstraint.constant * DesignExtension.HEIGHT_RATIO;
+    CGFloat roundedCheckMarkViewHeightConstraintConstant = ((int) (roundf(checkMarkViewHeightConstraintConstant / 2))) * 2;
+    
+    self.checkMarkViewHeightConstraint.constant = roundedCheckMarkViewHeightConstraintConstant;
+    self.checkMarkViewTrailingConstraint.constant *= DesignExtension.WIDTH_RATIO;
+        
+    CALayer *checkMarkViewLayer = self.checkMarkView.layer;
+    checkMarkViewLayer.cornerRadius = self.checkMarkViewHeightConstraint.constant * 0.5;
+    checkMarkViewLayer.borderWidth = DesignExtension.CHECKMARK_BORDER_WIDTH;
+    checkMarkViewLayer.borderColor = DesignExtension.CHECKMARK_BORDER_COLOR.CGColor;
+    
+    self.checkMarkView.clipsToBounds = YES;
+    
+    self.checkMarkImageView.tintColor = DesignExtension.DEFAULT_COLOR;
+    
     self.separatorViewLeadingConstraint.constant *= DesignExtension.WIDTH_RATIO;
     self.separatorViewBottomConstraint.constant = DESIGN_SEPARATOR_HEIGHT;
     self.separatorViewHeightConstraint.constant = DESIGN_SEPARATOR_HEIGHT;
@@ -86,6 +105,8 @@ static CGFloat DESIGN_NAME_TRAILING = 38;
     
     self.avatarView.image = nil;
     self.nameLabel.text = nil;
+    
+    [self setChecked:NO];
 }
 
 - (void)bindWithName:(NSString *)name avatar:(UIImage *)avatar isCertified:(BOOL)isCertified hideSeparator:(BOOL)hideSeparator {
@@ -109,6 +130,12 @@ static CGFloat DESIGN_NAME_TRAILING = 38;
     }
     
     self.separatorView.hidden = hideSeparator;
+}
+
+- (void)setChecked:(BOOL)checked {
+    _checked = checked;
+
+    self.checkMarkImageView.hidden = !checked;
 }
 
 @end

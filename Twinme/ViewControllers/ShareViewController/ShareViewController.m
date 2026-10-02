@@ -17,50 +17,31 @@
 
 #import <Utils/NSString+Utils.h>
 
-#import "MessageItem.h"
-#import "PeerMessageItem.h"
-#import "LinkItem.h"
-#import "PeerLinkItem.h"
-#import "ImageItem.h"
-#import "PeerImageItem.h"
-#import "AudioItem.h"
-#import "PeerAudioItem.h"
-#import "VideoItem.h"
-#import "PeerVideoItem.h"
-#import "FileItem.h"
-#import "PeerFileItem.h"
-
-#import "MessageItemCell.h"
-#import "PeerMessageItemCell.h"
-#import "LinkItemCell.h"
-#import "PeerLinkItemCell.h"
-#import "ImageItemCell.h"
-#import "PeerImageItemCell.h"
-#import "AudioItemCell.h"
-#import "PeerAudioItemCell.h"
-#import "VideoItemCell.h"
-#import "PeerVideoItemCell.h"
-#import "FileItemCell.h"
-#import "PeerFileItemCell.h"
-#import "AddCommentCell.h"
-
-#import <TwinmeCommon/ShareService.h>
-
 #import "ShareViewController.h"
 #import "ConversationViewController.h"
-#import <TwinmeCommon/TwinmeNavigationController.h>
-#import <TwinmeCommon/MainViewController.h>
 #import "ShareSectionHeaderCell.h"
+#import "Item.h"
+#import "ImageItem.h"
+#import "PeerImageItem.h"
+#import "VideoItem.h"
+#import "PeerVideoItem.h"
 
-#import <TwinmeCommon/Design.h>
 #import "UIColor+Hex.h"
 
 #import "AddGroupMemberCell.h"
-#import "SelectedMembersCell.h"
+#import "SelectedGroupMemberCell.h"
 #import "UIContact.h"
-#import <TwinmeCommon/ApplicationDelegate.h>
 
+#import <TwinmeCommon/ApplicationDelegate.h>
 #import <TwinmeCommon/AsyncManager.h>
+#import <TwinmeCommon/AsyncImageLoader.h>
+#import <TwinmeCommon/AsyncVideoLoader.h>
+#import <TwinmeCommon/MainViewController.h>
+#import <TwinmeCommon/ShareService.h>
+#import <TwinmeCommon/TwinmeNavigationController.h>
+
+#import <Twinlife/TLConversationService.h>
+
 
 #if 0
 static const int ddLogLevel = DDLogLevelVerbose;
@@ -69,48 +50,64 @@ static const int ddLogLevel = DDLogLevelWarning;
 #endif
 
 static CGFloat DESIGN_SELECTED_MEMBERS_HEIGHT = 116;
+static CGFloat DESIGN_DEFAULT_TEXT_MARGIN = 24;
 
 static NSString *ADD_GROUP_MEMBER_CELL_IDENTIFIER = @"AddGroupMemberCellIdentifier";
 static NSString *SHARE_SECTION_HEADER_CELL_IDENTIFIER = @"ShareSectionHeaderCellIdentifier";
-static NSString *SELECTED_MEMBERS_CELL_IDENTIFIER = @"SelectedMembersCellIdentifier";
-static NSString *MESSAGE_ITEM_CELL_IDENTIFIER = @"MessageItemCellIdentifier";
-static NSString *PEER_MESSAGE_ITEM_CELL_IDENTIFIER = @"PeerMessageItemCellIdentifier";
-static NSString *LINK_ITEM_CELL_IDENTIFIER = @"LinkItemCellIdentifier";
-static NSString *PEER_LINK_ITEM_CELL_IDENTIFIER = @"PeerLinkItemCellIdentifier";
-static NSString *IMAGE_ITEM_CELL_IDENTIFIER = @"ImageItemCellIdentifier";
-static NSString *PEER_IMAGE_ITEM_CELL_IDENTIFIER = @"PeerImageItemCellIdentifier";
-static NSString *TIME_CELL_IDENTIFIER = @"TimeCellIdentifier";
-static NSString *AUDIO_ITEM_CELL_IDENTIFIER = @"AudioItemCellIdentifier";
-static NSString *PEER_AUDIO_ITEM_CELL_IDENTIFIER = @"PeerAudioItemCellIdentifier";
-static NSString *VIDEO_ITEM_CELL_IDENTIFIER = @"VideoItemCellIdentifier";
-static NSString *PEER_VIDEO_ITEM_CELL_IDENTIFIER = @"PeerVideoItemCellIdentifier";
-static NSString *FILE_ITEM_CELL_IDENTIFIER = @"FileItemCellIdentifier";
-static NSString *PEER_FILE_ITEM_CELL_IDENTIFIER = @"PeerFileItemCellIdentifier";
-static NSString *ADD_COMMENT_CELL_IDENTIFIER = @"AddCommentCellIdentifier";
+static NSString *SELECTED_GROUP_MEMBER_CELL_IDENTIFIER = @"SelectedGroupMemberCellIdentifier";
+static CGFloat DESIGN_COLLECTION_CELL_HEIGHT = 116;
 
 static CGFloat DESIGN_SECTION_HEIGHT = 110;
 static CGFloat DESIGN_SECTION_CONTACT_HEIGHT = 60;
-static CGFloat DESIGN_COMMENT_CELL_HEIGHT = 140;
+static const CGFloat DESIGN_HEIGHT_INSET = 24;
+static const int MAX_VISIBLE_LINES = 3;
 
-static const int SHARE_VIEW_SECTION_COUNT = 3;
+static const int SHARE_VIEW_SECTION_COUNT = 2;
 
-static const int SELECTED_VIEW_SECTION = 0;
-static const int CONTACTS_VIEW_SECTION = 1;
-static const int GROUPS_VIEW_SECTION = 2;
+static const int CONTACTS_VIEW_SECTION = 0;
+static const int GROUPS_VIEW_SECTION = 1;
 
 //
 // Interface: ShareViewController ()
 //
 
-@interface ShareViewController () <ShareServiceDelegate, UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate, AddCommentDelegate, AsyncLoaderDelegate>
+@interface ShareViewController () <ShareServiceDelegate, UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate, UICollectionViewDataSource, UITextViewDelegate, AsyncLoaderDelegate>
 
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *previewTableViewHeightConstraint;
-@property (weak, nonatomic) IBOutlet UITableView *previewTableView;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *contactsTableViewBottomConstraint;
-@property (weak, nonatomic) IBOutlet UITableView *contactsTableView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *tableViewBottomConstraint;
+@property (weak, nonatomic) IBOutlet UITableView *tableView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *separatorViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet UIView *separatorView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *bottomViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *bottomViewBottomConstraint;
+@property (weak, nonatomic) IBOutlet UIView *bottomView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *textContainerViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *textContainerLeadingConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *textContainerTrailingConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *textContainerTopConstraint;
+@property (weak, nonatomic) IBOutlet UIView *textContainerView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *messageTextViewLeadingConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *messageTextViewTrailingConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *messageTextViewTopConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *messageTextViewBottomConstraint;
+@property (weak, nonatomic) IBOutlet UITextView *messageTextView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *selectedCollectionViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *selectedCollectionViewTopConstraint;
+@property (weak, nonatomic) IBOutlet UICollectionView *selectedCollectionView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *sendViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *sendViewLeadingConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *sendViewTrailingConstraint;
+@property (weak, nonatomic) IBOutlet UIView *sendView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *sendImageViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet UIImageView *sendImageView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *previewViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *previewViewLeadingConstraint;
+@property (weak, nonatomic) IBOutlet UIImageView *previewView;
+
 @property (nonatomic) UIBarButtonItem *cancelBarButtonItem;
-@property (nonatomic) UIBarButtonItem *sendBarButtonItem;
 @property (nonatomic) UISearchController *searchController;
+@property (nonatomic) AsyncImageLoader *imageLoader;
+@property (nonatomic) AsyncVideoLoader *videoLoader;
+@property (nonatomic) AsyncManager *asyncLoaderManager;
 
 @property (nonatomic) BOOL uiInitialized;
 @property (nonatomic) BOOL keyboardHidden;
@@ -124,7 +121,6 @@ static const int GROUPS_VIEW_SECTION = 2;
 @property (nonatomic, readonly, nonnull) NSMutableArray<UIContact *> *uiSelectedContact;
 
 @property (nonatomic, readonly, nonnull) ShareService *shareService;
-@property (nonatomic) AsyncManager *asyncLoaderManager;
 
 @property (nonatomic) NSString *comment;
 
@@ -155,7 +151,7 @@ static const int GROUPS_VIEW_SECTION = 2;
         _needRefresh = NO;
         _needsCopyFile = YES;
         
-        _shareService = [[ShareService alloc] initWithTwinmeContext:self.twinmeContext delegate:self];
+        _shareService = [[ShareService alloc] initWithTwinmeContext:self.twinmeContext delegate:self fromExtension:NO];
         _asyncLoaderManager = [[AsyncManager alloc] initWithTwinmeContext:self.twinmeContext delegate:self];
     }
     return self;
@@ -186,6 +182,8 @@ static const int GROUPS_VIEW_SECTION = 2;
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
+    
+    [self centerTextViewContent];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -196,26 +194,13 @@ static const int GROUPS_VIEW_SECTION = 2;
     
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillHideNotification object:nil];
-        
-    [self.asyncLoaderManager clear];
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
     DDLogVerbose(@"%@ viewDidDisappear: %@", LOG_TAG, animated ? @"YES" : @"NO");
     
-    [self.asyncLoaderManager clear];
     [super viewDidDisappear:animated];
-}
-
-- (void)viewDidLayoutSubviews {
-    DDLogVerbose(@"%@ viewDidLayoutSubviews", LOG_TAG);
-    
-    [super viewDidLayoutSubviews];
-    
-    dispatch_async(dispatch_get_main_queue(), ^{
-        CGRect rect = [self.previewTableView rectForRowAtIndexPath:[NSIndexPath indexPathForRow:1 inSection:0]];
-        self.previewTableViewHeightConstraint.constant = rect.origin.y + rect.size.height;
-    });
+    [self.asyncLoaderManager clear];
 }
 
 - (void)keyboardWillShow:(NSNotification *)notification {
@@ -228,9 +213,9 @@ static const int GROUPS_VIEW_SECTION = 2;
     self.keyboardHidden = NO;
     NSDictionary *info = [notification userInfo];
     CGSize keyboardSize = [[info objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue].size;
-    self.contactsTableViewBottomConstraint.constant = keyboardSize.height;
-        
-    [self.previewTableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:0 inSection:0]] withRowAnimation:UITableViewRowAnimationNone];
+    CGFloat value = self.view.frame.size.height - [[info objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue].origin.y;
+    self.bottomViewBottomConstraint.constant = value;
+    [self updateBottomHeight];
     
     if ([self.twinmeApplication getDefaultKeyboardHeight] != keyboardSize.height) {
         [self.twinmeApplication setDefaultKeyboardHeight:keyboardSize.height];
@@ -241,8 +226,25 @@ static const int GROUPS_VIEW_SECTION = 2;
     DDLogVerbose(@"%@ keyboardWillHide: %@", LOG_TAG, notification);
     
     self.keyboardHidden = YES;
-    [self.previewTableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:0 inSection:0]] withRowAnimation:UITableViewRowAnimationNone];
-    self.contactsTableViewBottomConstraint.constant = 0;
+    
+    UIWindow *window = [self currentWindow];
+    CGFloat safeAreaInset;
+    if (window) {
+        safeAreaInset = window.safeAreaInsets.bottom;
+    } else {
+        safeAreaInset = self.view.safeAreaInsets.bottom;
+    }
+    
+    self.bottomViewBottomConstraint.constant  = safeAreaInset;
+    [self updateBottomHeight];
+}
+
+- (void)keyboardWillChangeFrame:(NSNotification *)notification {
+    DDLogVerbose(@"%@ keyboardWillChangeFrame: %@", LOG_TAG, notification);
+    
+    NSDictionary *info = [notification userInfo];
+    CGFloat bottomViewHeight = self.uiSelectedContact.count > 0 ? self.bottomViewHeightConstraint.constant + self.bottomViewBottomConstraint.constant : 0;
+    self.tableViewBottomConstraint.constant = self.view.frame.size.height - [[info objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue].origin.y - bottomViewHeight;
 }
 
 #pragma mark - Async Loader
@@ -250,42 +252,21 @@ static const int GROUPS_VIEW_SECTION = 2;
 - (void)onLoadedWithItems:(nonnull NSMutableArray<id<NSObject>> *)items {
     DDLogVerbose(@"%@ onLoadedWithItems: %@", LOG_TAG, items);
     
-    if ([items containsObject:self.item]) {
-        [items removeObject:self.item];
-        ItemCell *itemCell = (ItemCell *)[self.previewTableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
-        switch (self.item.type) {
-            case ItemTypeAudio:
-            case ItemTypePeerAudio:
-            case ItemTypeFile:
-            case ItemTypePeerFile:
-            case ItemTypeLink:
-            case ItemTypePeerLink:
-            case ItemTypeMessage:
-            case ItemTypePeerMessage:
-            case ItemTypeImage:
-            case ItemTypePeerImage:
-            case ItemTypeVideo:
-            case ItemTypePeerVideo: {
-                [itemCell bindWithItem:self.item conversationViewController:self.conversationViewController asyncManager:self.asyncLoaderManager];
-                break;
-            }
-                
-            default:
-                [itemCell bindWithItem:self.item conversationViewController:self.conversationViewController];
-                break;
-        }
-        if (items.count == 0) {
-            return;
-        }
+    if (self.imageLoader) {
+        self.previewView.image = self.imageLoader.image;
     }
+    
+    if (self.videoLoader) {
+        self.previewView.image = self.videoLoader.image;
+    }
+    
+    [items removeAllObjects];
 }
-
 
 #pragma mark - ShareServiceDelegate
 
 - (void)onSetCurrentSpace:(nonnull TLSpace *)space {
 
-    [self.previewTableView reloadData];
 }
 
 - (void)onGetContacts:(NSArray *)contacts {
@@ -383,20 +364,20 @@ static const int GROUPS_VIEW_SECTION = 2;
         BOOL toBeDeleted = YES;
 
         if ([self isImageFile:self.fileURL.path]) {
-            [self.shareService pushFileWithPath:self.fileURL.path type:TLDescriptorTypeImageDescriptor toBeDeleted:toBeDeleted copyAllowed:self.twinmeApplication.allowCopyFile];
+            [self.shareService pushFileWithPath:self.fileURL.path type:TLDescriptorTypeImageDescriptor toBeDeleted:toBeDeleted copyAllowed:self.twinmeApplication.allowCopyFile timeout:0];
         } else if ([self isVideoFile:self.fileURL.path]) {
-            [self.shareService pushFileWithPath:self.fileURL.path type:TLDescriptorTypeVideoDescriptor toBeDeleted:toBeDeleted copyAllowed:self.twinmeApplication.allowCopyFile];
+            [self.shareService pushFileWithPath:self.fileURL.path type:TLDescriptorTypeVideoDescriptor toBeDeleted:toBeDeleted copyAllowed:self.twinmeApplication.allowCopyFile timeout:0];
         } else if ([self isAudioFile:self.fileURL.path]) {
-            [self.shareService pushFileWithPath:self.fileURL.path type:TLDescriptorTypeAudioDescriptor toBeDeleted:toBeDeleted copyAllowed:self.twinmeApplication.allowCopyFile];
+            [self.shareService pushFileWithPath:self.fileURL.path type:TLDescriptorTypeAudioDescriptor toBeDeleted:toBeDeleted copyAllowed:self.twinmeApplication.allowCopyFile timeout:0];
         } else {
-            [self.shareService pushFileWithPath:self.fileURL.path type:TLDescriptorTypeNamedFileDescriptor toBeDeleted:toBeDeleted copyAllowed:self.twinmeApplication.allowCopyFile];
+            [self.shareService pushFileWithPath:self.fileURL.path type:TLDescriptorTypeNamedFileDescriptor toBeDeleted:toBeDeleted copyAllowed:self.twinmeApplication.allowCopyFile timeout:0];
         }
     } else if (self.content) {
-        [self.shareService pushMessage:self.content copyAllowed:self.twinmeApplication.allowCopyText];
+        [self.shareService pushMessage:self.content copyAllowed:self.twinmeApplication.allowCopyText timeout:0];
     }
     
     if (self.comment && ![self.comment isEqualToString:@""]) {
-        [self.shareService pushMessage:self.comment copyAllowed:self.twinmeApplication.allowCopyText];
+        [self.shareService pushMessage:self.comment copyAllowed:self.twinmeApplication.allowCopyText timeout:0];
     }
 
     if (self.uiSelectedContact.count == 0) {
@@ -504,7 +485,7 @@ static const int GROUPS_VIEW_SECTION = 2;
     
     self.refreshTableScheduled = NO;
     if (self.uiInitialized) {
-        [self.contactsTableView reloadData];
+        [self.tableView reloadData];
     }
 }
 
@@ -516,7 +497,7 @@ static const int GROUPS_VIEW_SECTION = 2;
         self.refreshTableScheduled = YES;
         dispatch_async(dispatch_get_main_queue(), ^{
             self.refreshTableScheduled = NO;
-            [self.contactsTableView reloadData];
+            [self.tableView reloadData];
         });
     }
 }
@@ -542,59 +523,103 @@ static const int GROUPS_VIEW_SECTION = 2;
     [self.shareService getContactsAndGroups: self.currentSpace];
 }
 
+#pragma mark - UITextViewDelegate
+
+- (void)textViewDidBeginEditing:(UITextView *)textView {
+    DDLogVerbose(@"%@ textViewDidBeginEditing: %@", LOG_TAG, textView);
+    
+    if ([textView.text isEqualToString:TwinmeLocalizedString(@"conversation_view_message", nil)]) {
+        textView.text = @"";
+        textView.textColor = Design.FONT_COLOR_DEFAULT;
+    }
+}
+
+- (void)textViewDidChange:(UITextView *)textView {
+    DDLogVerbose(@"%@ textViewDidChange: %@", LOG_TAG, textView);
+    
+    [self centerTextViewContent];
+}
+
+- (void)textViewDidEndEditing:(UITextView *)textView {
+    DDLogVerbose(@"%@ textViewDidEndEditing: %@", LOG_TAG, textView);
+    
+    if ([textView.text isEqualToString:@""]) {
+        textView.text = TwinmeLocalizedString(@"conversation_view_message", nil);
+        textView.textColor = Design.PLACEHOLDER_COLOR;
+    }
+}
+
+- (void)centerTextViewContent {
+    DDLogVerbose(@"%@ centerTextViewContent", LOG_TAG);
+        
+    CGFloat textViewWidth = Design.DISPLAY_WIDTH - self.textContainerLeadingConstraint.constant - self.messageTextViewLeadingConstraint.constant - self.messageTextViewTrailingConstraint.constant - self.sendViewLeadingConstraint.constant - self.sendViewHeightConstraint.constant - self.sendViewTrailingConstraint.constant;
+    
+    CGRect textRect = [self.messageTextView.text boundingRectWithSize:CGSizeMake(textViewWidth, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin|NSStringDrawingUsesFontLeading attributes:@{
+        NSFontAttributeName : Design.FONT_REGULAR32
+    } context:nil];
+    
+    int countLines = textRect.size.height / Design.FONT_REGULAR32.lineHeight;
+    
+    float containerHeight = Design.FONT_REGULAR32.lineHeight * countLines + (DESIGN_HEIGHT_INSET * Design.HEIGHT_RATIO * 2);
+    float minHeight = Design.FONT_REGULAR32.lineHeight + (DESIGN_HEIGHT_INSET * Design.HEIGHT_RATIO * 2);
+    float maxHeight = Design.FONT_REGULAR32.lineHeight * MAX_VISIBLE_LINES + (DESIGN_HEIGHT_INSET * Design.HEIGHT_RATIO * 2);
+    if (containerHeight < minHeight) {
+        containerHeight = minHeight;
+    } else if (containerHeight > maxHeight) {
+        containerHeight = maxHeight;
+    }
+    
+    self.textContainerViewHeightConstraint.constant = containerHeight;
+    [self updateBottomHeight];
+    
+    [UIView animateWithDuration:0.2 animations:^{
+        [self.view layoutIfNeeded];
+    } completion:^(BOOL finished) {
+        CGFloat emptySize = ([self.messageTextView bounds].size.height - [self.messageTextView contentSize].height);
+        CGFloat inset = MAX(0, emptySize / 2.0);
+        self.messageTextView.contentInset = UIEdgeInsetsMake(inset, self.messageTextView.contentInset.left, inset, self.messageTextView.contentInset.right);
+    }];
+}
+
 #pragma mark - UITableViewDataSource
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     DDLogVerbose(@"%@ numberOfSectionsInTableView: %@", LOG_TAG, tableView);
     
-    if (tableView == self.contactsTableView) {
-        return SHARE_VIEW_SECTION_COUNT;
-    }
-    
-    return 1;
+    return SHARE_VIEW_SECTION_COUNT;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     DDLogVerbose(@"%@ tableView: %@ numberOfRowsInSection: %ld", LOG_TAG, tableView, (long)section);
     
-    if (tableView == self.contactsTableView) {
-        if (section == CONTACTS_VIEW_SECTION) {
-            return self.uiContacts.count;
-        } else if (section == GROUPS_VIEW_SECTION) {
-            return self.uiGroups.count;
-        }
-        
-        return 1;
-    } else if (self.item && tableView == self.previewTableView) {
-        return 2;
+    if (section == CONTACTS_VIEW_SECTION) {
+        return self.uiContacts.count;
+    } else {
+        return self.uiGroups.count;
     }
-    
-    return 0;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
     DDLogVerbose(@"%@ tableView: %@ heightForHeaderInSection: %ld", LOG_TAG, tableView, (long)section);
     
-    if (tableView == self.contactsTableView) {
-        switch (section) {
-            case CONTACTS_VIEW_SECTION: {
-                if (self.uiContacts.count > 0) {
-                    if (self.item) {
-                        return DESIGN_SECTION_CONTACT_HEIGHT * Design.HEIGHT_RATIO;
-                    }
-                    return DESIGN_SECTION_HEIGHT * Design.HEIGHT_RATIO;
+    switch (section) {
+        case CONTACTS_VIEW_SECTION: {
+            if (self.uiContacts.count > 0) {
+                if (self.item) {
+                    return DESIGN_SECTION_CONTACT_HEIGHT * Design.HEIGHT_RATIO;
                 }
-                break;
+                return DESIGN_SECTION_HEIGHT * Design.HEIGHT_RATIO;
             }
-            case GROUPS_VIEW_SECTION: {
-                if (self.uiGroups.count > 0) {
-                    return DESIGN_SECTION_HEIGHT * Design.HEIGHT_RATIO;
-                }
-                break;
-            }
-            default:
-                break;
+            break;
         }
+        case GROUPS_VIEW_SECTION: {
+            if (self.uiGroups.count > 0) {
+                return DESIGN_SECTION_HEIGHT * Design.HEIGHT_RATIO;
+            }
+            break;
+        }
+        default:
+            break;
     }
     
     return CGFLOAT_MIN;
@@ -608,31 +633,12 @@ static const int GROUPS_VIEW_SECTION = 2;
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath  {
     
-    if (tableView == self.contactsTableView) {
-        if (indexPath.section == SELECTED_VIEW_SECTION) {
-            if (self.uiSelectedContact.count > 0) {
-                return DESIGN_SELECTED_MEMBERS_HEIGHT * Design.HEIGHT_RATIO;
-            }
-            return 1;
-        }
-        
-        return Design.CELL_HEIGHT;
-    } else {
-        if (indexPath.row == 0) {
-            return UITableViewAutomaticDimension;
-        } else {
-            return DESIGN_COMMENT_CELL_HEIGHT * Design.HEIGHT_RATIO;
-        }
-    }
+    return Design.CELL_HEIGHT;
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
     DDLogVerbose(@"%@ tableView: %@ viewForHeaderInSection: %ld", LOG_TAG, tableView, (long)section);
-    
-    if (tableView == self.previewTableView || section == SELECTED_VIEW_SECTION) {
-        return [[UIView alloc]init];
-    }
-    
+        
     ShareSectionHeaderCell *shareSectionHeaderCell = (ShareSectionHeaderCell *)[tableView dequeueReusableCellWithIdentifier:SHARE_SECTION_HEADER_CELL_IDENTIFIER];
     if (!shareSectionHeaderCell) {
         shareSectionHeaderCell = [[ShareSectionHeaderCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:SHARE_SECTION_HEADER_CELL_IDENTIFIER];
@@ -663,153 +669,30 @@ static const int GROUPS_VIEW_SECTION = 2;
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     DDLogVerbose(@"%@ tableView: %@ cellForRowAtIndexPath: %@", LOG_TAG, tableView, indexPath);
     
-    if (tableView == self.contactsTableView) {
-        if (indexPath.section == SELECTED_VIEW_SECTION) {
-            SelectedMembersCell *selectedMemberCell = (SelectedMembersCell *)[tableView dequeueReusableCellWithIdentifier:SELECTED_MEMBERS_CELL_IDENTIFIER];
-            if (!selectedMemberCell) {
-                selectedMemberCell = [[SelectedMembersCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:SELECTED_MEMBERS_CELL_IDENTIFIER];
-            }
-            
-            [selectedMemberCell bindWithMembers:self.uiSelectedContact fromCreateGroup:NO adminAvatar:nil];
-            
-            return selectedMemberCell;
-        } else {
-            AddGroupMemberCell *contactCell = (AddGroupMemberCell *)[tableView dequeueReusableCellWithIdentifier:ADD_GROUP_MEMBER_CELL_IDENTIFIER];
-            if (!contactCell) {
-                contactCell = [[AddGroupMemberCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:ADD_GROUP_MEMBER_CELL_IDENTIFIER];
-            }
-            
-            UIContact *uiContact = nil;
-            BOOL hideSeparator = NO;
-            if (indexPath.section == CONTACTS_VIEW_SECTION) {
-                uiContact = self.uiContacts[indexPath.row];
-                hideSeparator = indexPath.row + 1 == self.uiContacts.count ? YES : NO;
-            } else {
-                uiContact = self.uiGroups[indexPath.row];
-                hideSeparator = indexPath.row + 1 == self.uiGroups.count ? YES : NO;
-            }
-            
-            if ([self isSelectedContact:uiContact]) {
-                [contactCell setChecked:YES];
-            } else {
-                [contactCell setChecked:NO];
-            }
-            
-            [contactCell bindWithName:uiContact.name avatar:uiContact.avatar isCertified:uiContact.isCertified hideSeparator:hideSeparator];
-            
-            return contactCell;
-        }
-    } else {
-        if (indexPath.row == 0) {
-            if (self.keyboardHidden) {
-                self.item.mode = ItemModePreview;
-            } else {
-                self.item.mode = ItemModeSmallPreview;
-            }
-            
-            self.item.replyAllowed = NO;
-            switch (self.item.type) {
-                case ItemTypeMessage: {
-                    MessageItem *messageItem = (MessageItem *)self.item;
-                    MessageItemCell *messageItemCell = (MessageItemCell *)[self.previewTableView dequeueReusableCellWithIdentifier:MESSAGE_ITEM_CELL_IDENTIFIER forIndexPath:indexPath];
-                    [messageItemCell bindWithItem:messageItem conversationViewController:self.conversationViewController asyncManager:self.asyncLoaderManager];
-                    return messageItemCell;
-                }
-                    
-                case ItemTypePeerMessage: {
-                    PeerMessageItem *peerMessageItem = (PeerMessageItem *)self.item;
-                    PeerMessageItemCell *peerMessageItemCell = (PeerMessageItemCell *)[self.previewTableView dequeueReusableCellWithIdentifier:PEER_MESSAGE_ITEM_CELL_IDENTIFIER forIndexPath:indexPath];
-                    [peerMessageItemCell bindWithItem:peerMessageItem conversationViewController:self.conversationViewController asyncManager:self.asyncLoaderManager];
-                    return peerMessageItemCell;
-                }
-                    
-                case ItemTypeLink: {
-                    LinkItem *linkItem = (LinkItem *)self.item;
-                    LinkItemCell *linkItemCell = (LinkItemCell *)[self.previewTableView dequeueReusableCellWithIdentifier:LINK_ITEM_CELL_IDENTIFIER forIndexPath:indexPath];
-                    [linkItemCell bindWithItem:linkItem conversationViewController:self.conversationViewController asyncManager:self.asyncLoaderManager];
-                    return linkItemCell;
-                }
-                    
-                case ItemTypePeerLink: {
-                    PeerLinkItem *peerLinkItem = (PeerLinkItem *)self.item;
-                    PeerLinkItemCell *peerLinkItemCell = (PeerLinkItemCell *)[self.previewTableView dequeueReusableCellWithIdentifier:PEER_LINK_ITEM_CELL_IDENTIFIER forIndexPath:indexPath];
-                    [peerLinkItemCell bindWithItem:peerLinkItem conversationViewController:self.conversationViewController asyncManager:self.asyncLoaderManager];
-                    return peerLinkItemCell;
-                }
-                    
-                case ItemTypeImage: {
-                    ImageItem *imageItem = (ImageItem *)self.item;
-                    ImageItemCell *imageItemCell = (ImageItemCell *)[self.previewTableView dequeueReusableCellWithIdentifier:IMAGE_ITEM_CELL_IDENTIFIER forIndexPath:indexPath];
-                    [imageItemCell bindWithItem:imageItem conversationViewController:self.conversationViewController asyncManager:self.asyncLoaderManager];
-                    return imageItemCell;
-                }
-                    
-                case ItemTypePeerImage: {
-                    PeerImageItem *peerImageItem = (PeerImageItem *)self.item;
-                    PeerImageItemCell *peerImageItemCell = (PeerImageItemCell *)[self.previewTableView dequeueReusableCellWithIdentifier:PEER_IMAGE_ITEM_CELL_IDENTIFIER forIndexPath:indexPath];
-                    [peerImageItemCell bindWithItem:peerImageItem conversationViewController:self.conversationViewController asyncManager:self.asyncLoaderManager];
-                    return peerImageItemCell;
-                }
-                    
-                case ItemTypeAudio: {
-                    AudioItem *audioItem = (AudioItem *)self.item;
-                    AudioItemCell *audioItemCell = (AudioItemCell *)[self.previewTableView dequeueReusableCellWithIdentifier:AUDIO_ITEM_CELL_IDENTIFIER forIndexPath:indexPath];
-                    [audioItemCell bindWithItem:audioItem conversationViewController:self.conversationViewController asyncManager:self.asyncLoaderManager];
-                    return audioItemCell;
-                }
-                    
-                case ItemTypePeerAudio: {
-                    PeerAudioItem *peerAudioItem = (PeerAudioItem *)self.item;
-                    PeerAudioItemCell *peerAudioItemCell = (PeerAudioItemCell *)[self.previewTableView dequeueReusableCellWithIdentifier:PEER_AUDIO_ITEM_CELL_IDENTIFIER forIndexPath:indexPath];
-                    [peerAudioItemCell bindWithItem:peerAudioItem conversationViewController:self.conversationViewController asyncManager:self.asyncLoaderManager];
-                    return peerAudioItemCell;
-                }
-                    
-                case ItemTypeVideo: {
-                    VideoItem *videoItem = (VideoItem *)self.item;
-                    VideoItemCell *videoItemCell = (VideoItemCell *)[self.previewTableView dequeueReusableCellWithIdentifier:VIDEO_ITEM_CELL_IDENTIFIER forIndexPath:indexPath];
-                    [videoItemCell bindWithItem:videoItem conversationViewController:self.conversationViewController asyncManager:self.asyncLoaderManager];
-                    return videoItemCell;
-                }
-                    
-                case ItemTypePeerVideo: {
-                    PeerVideoItem *peerVideoItem = (PeerVideoItem *)self.item;
-                    PeerVideoItemCell *peerVideoItemCell = (PeerVideoItemCell *)[self.previewTableView dequeueReusableCellWithIdentifier:PEER_VIDEO_ITEM_CELL_IDENTIFIER forIndexPath:indexPath];
-                    [peerVideoItemCell bindWithItem:peerVideoItem conversationViewController:self.conversationViewController asyncManager:self.asyncLoaderManager];
-                    return peerVideoItemCell;
-                }
-                    
-                case ItemTypeFile: {
-                    FileItem *fileItem = (FileItem *)self.item;
-                    FileItemCell *fileItemCell = (FileItemCell *)[self.previewTableView dequeueReusableCellWithIdentifier:FILE_ITEM_CELL_IDENTIFIER forIndexPath:indexPath];
-                    [fileItemCell bindWithItem:fileItem conversationViewController:self.conversationViewController asyncManager:self.asyncLoaderManager];
-                    return fileItemCell;
-                }
-                    
-                case ItemTypePeerFile: {
-                    PeerFileItem *peerFileItem = (PeerFileItem *)self.item;
-                    PeerFileItemCell *peerFileItemCell = (PeerFileItemCell *)[self.previewTableView dequeueReusableCellWithIdentifier:PEER_FILE_ITEM_CELL_IDENTIFIER forIndexPath:indexPath];
-                    [peerFileItemCell bindWithItem:peerFileItem conversationViewController:self.conversationViewController asyncManager:self.asyncLoaderManager];
-                    return peerFileItemCell;
-                }
-                    
-                default:
-                    break;
-            }
-            
-            return [[UITableViewCell alloc]init];
-        } else {
-            AddCommentCell *addCommentCell = (AddCommentCell *)[tableView dequeueReusableCellWithIdentifier:ADD_COMMENT_CELL_IDENTIFIER];
-            if (!addCommentCell) {
-                addCommentCell = [[AddCommentCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:ADD_COMMENT_CELL_IDENTIFIER];
-            }
-            
-            addCommentCell.addCommentDelegate = self;
-            [addCommentCell bind];
-            
-            return addCommentCell;
-        }
+    AddGroupMemberCell *contactCell = (AddGroupMemberCell *)[tableView dequeueReusableCellWithIdentifier:ADD_GROUP_MEMBER_CELL_IDENTIFIER];
+    if (!contactCell) {
+        contactCell = [[AddGroupMemberCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:ADD_GROUP_MEMBER_CELL_IDENTIFIER];
     }
+    
+    UIContact *uiContact = nil;
+    BOOL hideSeparator = NO;
+    if (indexPath.section == CONTACTS_VIEW_SECTION) {
+        uiContact = self.uiContacts[indexPath.row];
+        hideSeparator = indexPath.row + 1 == self.uiContacts.count ? YES : NO;
+    } else {
+        uiContact = self.uiGroups[indexPath.row];
+        hideSeparator = indexPath.row + 1 == self.uiGroups.count ? YES : NO;
+    }
+    
+    if ([self isSelectedContact:uiContact]) {
+        [contactCell setChecked:YES];
+    } else {
+        [contactCell setChecked:NO];
+    }
+    
+    [contactCell bindWithName:uiContact.name avatar:uiContact.avatar isCertified:uiContact.isCertified hideSeparator:hideSeparator];
+    
+    return contactCell;
 }
 
 #pragma mark - UITableViewDelegate
@@ -817,58 +700,85 @@ static const int GROUPS_VIEW_SECTION = 2;
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     DDLogVerbose(@"%@ tableView: %@ didSelectRowAtIndexPath: %@", LOG_TAG, tableView, indexPath);
     
-    if (tableView == self.contactsTableView) {
-        [self.contactsTableView deselectRowAtIndexPath:indexPath animated:YES];
+    [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
         
-        if (indexPath.section == SELECTED_VIEW_SECTION) {
-            return;
-        }
-        
-        UIContact *contact;
-        
-        if (indexPath.section == CONTACTS_VIEW_SECTION) {
-            contact = [self.uiContacts objectAtIndex:indexPath.row];
-        } else if (indexPath.section == GROUPS_VIEW_SECTION) {
-            contact = [self.uiGroups objectAtIndex:indexPath.row];
-        }
-        
-        if (!contact) {
-            return;
-        }
-        
-        AddGroupMemberCell *addGroupMemberCell = [self.contactsTableView cellForRowAtIndexPath:indexPath];
-        SelectedMembersCell *selectedMemberCell = [self.contactsTableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:SELECTED_VIEW_SECTION]];
-        NSInteger indexContact = [self indexForContact:contact];
-        if (indexContact != -1) {
-            NSIndexPath *deletedIndexPath = [NSIndexPath indexPathForItem:indexContact inSection:0];
-            [self.uiSelectedContact removeObjectAtIndex:indexContact];
-            [selectedMemberCell.membersCollectionView deleteItemsAtIndexPaths:@[deletedIndexPath]];
-            [addGroupMemberCell setChecked:NO];
-        } else {
-            [self.uiSelectedContact addObject:contact];
-            NSIndexPath *insertedIndexPath = [NSIndexPath indexPathForItem:self.uiSelectedContact.count - 1 inSection:0];
-            [selectedMemberCell.membersCollectionView insertItemsAtIndexPaths:@[insertedIndexPath]];
-            [selectedMemberCell.membersCollectionView scrollToItemAtIndexPath:insertedIndexPath atScrollPosition:UICollectionViewScrollPositionRight animated:YES];
-            [addGroupMemberCell setChecked:YES];
-        }
-        
-        if (self.uiSelectedContact.count > 0) {
-            self.sendBarButtonItem.enabled = YES;
-        } else {
-            self.sendBarButtonItem.enabled = NO;
-        }
-        
-        [self.contactsTableView reloadData];
-    }
-}
-
-#pragma mark - AddCommentDelegate
-
-- (void)commentDidChange:(nullable NSString *)comment {
-    DDLogVerbose(@"%@ commentDidChange: %@", LOG_TAG, comment);
+    UIContact *contact;
     
-    self.comment = comment;
+    if (indexPath.section == CONTACTS_VIEW_SECTION) {
+        contact = [self.uiContacts objectAtIndex:indexPath.row];
+    } else if (indexPath.section == GROUPS_VIEW_SECTION) {
+        contact = [self.uiGroups objectAtIndex:indexPath.row];
+    }
+    
+    if (!contact) {
+        return;
+    }
+    
+    AddGroupMemberCell *addGroupMemberCell = [self.tableView cellForRowAtIndexPath:indexPath];
+    NSInteger indexContact = [self indexForContact:contact];
+    if (indexContact != -1) {
+        NSIndexPath *deletedIndexPath = [NSIndexPath indexPathForItem:indexContact inSection:0];
+        [self.uiSelectedContact removeObjectAtIndex:indexContact];
+        [self.selectedCollectionView deleteItemsAtIndexPaths:@[deletedIndexPath]];
+        [addGroupMemberCell setChecked:NO];
+    } else {
+        [self.uiSelectedContact addObject:contact];
+        NSIndexPath *insertedIndexPath = [NSIndexPath indexPathForItem:self.uiSelectedContact.count - 1 inSection:0];
+        [self.selectedCollectionView insertItemsAtIndexPaths:@[insertedIndexPath]];
+        [self.selectedCollectionView scrollToItemAtIndexPath:insertedIndexPath atScrollPosition:UICollectionViewScrollPositionRight animated:YES];
+        [addGroupMemberCell setChecked:YES];
+    }
+    
+    [self updateBottomHeight];
+    
+    [self.tableView reloadData];
 }
+
+#pragma mark - UICollectionViewDataSource
+
+- (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView {
+    DDLogVerbose(@"%@ numberOfSectionsInCollectionView: %@", LOG_TAG, collectionView);
+    
+    return 1;
+}
+
+- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
+    DDLogVerbose(@"%@ collectionView: %@ numberOfItemsInSection: %ld", LOG_TAG, collectionView, (long)section);
+    
+    return self.uiSelectedContact.count;
+}
+
+- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
+    DDLogVerbose(@"%@ collectionView: %@ layout: %@ sizeForItemAtIndexPath: %@", LOG_TAG, collectionView, collectionViewLayout, indexPath);
+    
+    CGFloat heightCell = DESIGN_COLLECTION_CELL_HEIGHT * Design.HEIGHT_RATIO;
+    return CGSizeMake(heightCell, heightCell);
+}
+
+- (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout minimumLineSpacingForSectionAtIndex:(NSInteger)section {
+    DDLogVerbose(@"%@ collectionView: %@ layout: %@ minimumLineSpacingForSectionAtIndex: %ld", LOG_TAG, collectionView, collectionViewLayout, (long)section);
+    
+    return 0;
+}
+
+- (CGSize)collectionView:(UICollectionView *)collectionView layout:(nonnull UICollectionViewLayout *)collectionViewLayout referenceSizeForHeaderInSection:(NSInteger)section {
+    DDLogVerbose(@"%@ collectionView: %@ layout: %@ referenceSizeForHeaderInSection: %ld", LOG_TAG, collectionView, collectionViewLayout, (long)section);
+    
+    return CGSizeMake(0, 0);
+}
+
+- (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(nonnull NSIndexPath *)indexPath {
+    DDLogVerbose(@"%@ collectionView: %@ cellForItemAtIndexPath: %@", LOG_TAG, collectionView, indexPath);
+    
+    SelectedGroupMemberCell *groupMemberCell = [collectionView dequeueReusableCellWithReuseIdentifier:SELECTED_GROUP_MEMBER_CELL_IDENTIFIER forIndexPath:indexPath];
+    
+    UIContact *uiMember = self.uiSelectedContact[indexPath.row];
+    UIImage *avatar = uiMember.avatar;
+    [groupMemberCell bindWithAvatar:avatar];
+
+    return groupMemberCell;
+}
+
 
 #pragma mark - Private methods
 
@@ -882,13 +792,7 @@ static const int GROUPS_VIEW_SECTION = 2;
     [self.cancelBarButtonItem setTitleTextAttributes: @{NSFontAttributeName : Design.FONT_BOLD36, NSForegroundColorAttributeName: [UIColor whiteColor]} forState:UIControlStateNormal];
     [self.cancelBarButtonItem setTitleTextAttributes: @{NSFontAttributeName : Design.FONT_BOLD36, NSForegroundColorAttributeName: [UIColor colorWithWhite:1.0 alpha:0.5]} forState:UIControlStateDisabled];
     self.navigationItem.leftBarButtonItem = self.cancelBarButtonItem;
-    
-    self.sendBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:TwinmeLocalizedString(@"feedback_view_send", nil) style:UIBarButtonItemStylePlain target:self action:@selector(handleSendTapGesture:)];
-    [self.sendBarButtonItem setTitleTextAttributes: @{NSFontAttributeName: Design.FONT_BOLD36, NSForegroundColorAttributeName: [UIColor whiteColor]} forState:UIControlStateNormal];
-    [self.sendBarButtonItem setTitleTextAttributes: @{NSFontAttributeName: Design.FONT_BOLD36, NSForegroundColorAttributeName: [UIColor colorWithWhite:1.0 alpha:0.5]} forState:UIControlStateDisabled];
-    self.navigationItem.rightBarButtonItem = self.sendBarButtonItem;
-    self.sendBarButtonItem.enabled = NO;
-    
+        
     if (self.descriptorId) {
         [self setNavigationTitle:TwinmeLocalizedString(@"conversation_view_menu_item_view_forward_title", nil)];
     } else {
@@ -917,43 +821,105 @@ static const int GROUPS_VIEW_SECTION = 2;
     self.searchController.searchBar.searchTextField.tintColor = Design.POPUP_BACKGROUND_COLOR;
     self.searchController.searchBar.translucent = NO;
     self.navigationItem.searchController = self.searchController;
+            
+    self.tableView.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
+    self.tableView.delegate = self;
+    self.tableView.dataSource = self;
+    self.tableView.sectionHeaderHeight = 0;
+    self.tableView.sectionFooterHeight = 0;
     
-    self.previewTableViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    [self.tableView registerNib:[UINib nibWithNibName:@"AddGroupMemberCell" bundle:nil] forCellReuseIdentifier:ADD_GROUP_MEMBER_CELL_IDENTIFIER];
+    [self.tableView registerNib:[UINib nibWithNibName:@"ShareSectionHeaderCell" bundle:nil] forCellReuseIdentifier:SHARE_SECTION_HEADER_CELL_IDENTIFIER];
     
-    self.previewTableView.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
-    self.previewTableView.delegate = self;
-    self.previewTableView.dataSource = self;
-    self.previewTableView.sectionHeaderHeight = 0;
-    self.previewTableView.sectionFooterHeight = 0;
-    self.previewTableView.rowHeight = UITableViewAutomaticDimension;
-    self.previewTableView.estimatedRowHeight = Design.CELL_HEIGHT;
-    self.previewTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    self.previewTableView.scrollEnabled = NO;
+    self.selectedCollectionViewTopConstraint.constant *= Design.HEIGHT_RATIO;
+    self.selectedCollectionViewHeightConstraint.constant = DESIGN_COLLECTION_CELL_HEIGHT * Design.HEIGHT_RATIO;
     
-    [self.previewTableView registerNib:[UINib nibWithNibName:@"MessageItemCell" bundle:nil] forCellReuseIdentifier:MESSAGE_ITEM_CELL_IDENTIFIER];
-    [self.previewTableView registerNib:[UINib nibWithNibName:@"PeerMessageItemCell" bundle:nil] forCellReuseIdentifier:PEER_MESSAGE_ITEM_CELL_IDENTIFIER];
-    [self.previewTableView registerNib:[UINib nibWithNibName:@"LinkItemCell" bundle:nil] forCellReuseIdentifier:LINK_ITEM_CELL_IDENTIFIER];
-    [self.previewTableView registerNib:[UINib nibWithNibName:@"PeerLinkItemCell" bundle:nil] forCellReuseIdentifier:PEER_LINK_ITEM_CELL_IDENTIFIER];
-    [self.previewTableView registerNib:[UINib nibWithNibName:@"ImageItemCell" bundle:nil] forCellReuseIdentifier:IMAGE_ITEM_CELL_IDENTIFIER];
-    [self.previewTableView registerNib:[UINib nibWithNibName:@"PeerImageItemCell" bundle:nil] forCellReuseIdentifier:PEER_IMAGE_ITEM_CELL_IDENTIFIER];
-    [self.previewTableView registerNib:[UINib nibWithNibName:@"AudioItemCell" bundle:nil] forCellReuseIdentifier:AUDIO_ITEM_CELL_IDENTIFIER];
-    [self.previewTableView registerNib:[UINib nibWithNibName:@"PeerAudioItemCell" bundle:nil] forCellReuseIdentifier:PEER_AUDIO_ITEM_CELL_IDENTIFIER];
-    [self.previewTableView registerNib:[UINib nibWithNibName:@"VideoItemCell" bundle:nil] forCellReuseIdentifier:VIDEO_ITEM_CELL_IDENTIFIER];
-    [self.previewTableView registerNib:[UINib nibWithNibName:@"PeerVideoItemCell" bundle:nil] forCellReuseIdentifier:PEER_VIDEO_ITEM_CELL_IDENTIFIER];
-    [self.previewTableView registerNib:[UINib nibWithNibName:@"FileItemCell" bundle:nil] forCellReuseIdentifier:FILE_ITEM_CELL_IDENTIFIER];
-    [self.previewTableView registerNib:[UINib nibWithNibName:@"PeerFileItemCell" bundle:nil] forCellReuseIdentifier:PEER_FILE_ITEM_CELL_IDENTIFIER];
-    [self.previewTableView registerNib:[UINib nibWithNibName:@"AddCommentCell" bundle:nil] forCellReuseIdentifier:ADD_COMMENT_CELL_IDENTIFIER];
-        
-    self.contactsTableView.backgroundColor = Design.LIGHT_GREY_BACKGROUND_COLOR;
-    self.contactsTableView.delegate = self;
-    self.contactsTableView.dataSource = self;
-    self.contactsTableView.sectionHeaderHeight = 0;
-    self.contactsTableView.sectionFooterHeight = 0;
+    UICollectionViewFlowLayout* viewFlowLayout = [[UICollectionViewFlowLayout alloc] init];
+    [viewFlowLayout setScrollDirection:UICollectionViewScrollDirectionHorizontal];
+    [viewFlowLayout setMinimumInteritemSpacing:0];
+    [viewFlowLayout setMinimumLineSpacing:0];
+    CGFloat heightCell = DESIGN_COLLECTION_CELL_HEIGHT * Design.HEIGHT_RATIO;
+    [viewFlowLayout setItemSize:CGSizeMake(heightCell, heightCell)];
     
-    [self.contactsTableView registerNib:[UINib nibWithNibName:@"AddGroupMemberCell" bundle:nil] forCellReuseIdentifier:ADD_GROUP_MEMBER_CELL_IDENTIFIER];
-    [self.contactsTableView registerNib:[UINib nibWithNibName:@"SelectedMembersCell" bundle:nil] forCellReuseIdentifier:SELECTED_MEMBERS_CELL_IDENTIFIER];
-    [self.contactsTableView registerNib:[UINib nibWithNibName:@"ShareSectionHeaderCell" bundle:nil] forCellReuseIdentifier:SHARE_SECTION_HEADER_CELL_IDENTIFIER];
+    [self.selectedCollectionView setCollectionViewLayout:viewFlowLayout];
+    self.selectedCollectionView.dataSource = self;
+    self.selectedCollectionView.backgroundColor = Design.WHITE_COLOR;
+    [self.selectedCollectionView registerNib:[UINib nibWithNibName:@"SelectedGroupMemberCell" bundle:nil] forCellWithReuseIdentifier:SELECTED_GROUP_MEMBER_CELL_IDENTIFIER];
     
+    self.separatorViewHeightConstraint.constant = Design.SEPARATOR_HEIGHT;
+    self.separatorView.backgroundColor = Design.SEPARATOR_COLOR_GREY;
+    
+    UIWindow *window = [self currentWindow];
+    CGFloat safeAreaInset;
+    if (window) {
+        safeAreaInset = window.safeAreaInsets.bottom;
+    } else {
+        safeAreaInset = self.view.safeAreaInsets.bottom;
+    }
+    
+    self.bottomViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    self.bottomViewBottomConstraint.constant = safeAreaInset;
+
+    self.bottomView.backgroundColor = Design.WHITE_COLOR;
+    self.bottomView.hidden = YES;
+    
+    self.previewViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    self.previewViewLeadingConstraint.constant *= Design.WIDTH_RATIO;
+    
+    self.previewView.clipsToBounds = YES;
+    self.previewView.layer.cornerRadius = Design.CONTAINER_RADIUS;
+    
+    CGFloat sendViewHeight = Design.FONT_REGULAR32.lineHeight + (DESIGN_HEIGHT_INSET * Design.HEIGHT_RATIO * 2);
+    
+    self.textContainerViewHeightConstraint.constant = sendViewHeight;
+    self.textContainerLeadingConstraint.constant *= Design.WIDTH_RATIO;
+    self.textContainerTrailingConstraint.constant *= Design.WIDTH_RATIO;
+    self.textContainerTopConstraint.constant *= Design.HEIGHT_RATIO;
+    
+    self.textContainerView.backgroundColor = Design.TEXTFIELD_CONVERSATION_BACKGROUND_COLOR;
+    self.textContainerView.clipsToBounds = YES;
+    self.textContainerView.layer.cornerRadius = self.textContainerViewHeightConstraint.constant * 0.5;
+    
+    if ([self isMediaItem]) {
+        self.previewView.hidden = NO;
+        [self updatePreview];
+    } else {
+        self.previewViewHeightConstraint.constant = 0;
+        self.textContainerLeadingConstraint.constant = 0;
+        self.previewView.hidden = YES;
+    }
+    
+    self.messageTextViewLeadingConstraint.constant *= Design.WIDTH_RATIO;
+    self.messageTextViewTrailingConstraint.constant *= Design.WIDTH_RATIO;
+    self.messageTextViewTopConstraint.constant = 0;
+    self.messageTextViewBottomConstraint.constant = 0;
+    
+    self.messageTextView.textContainerInset = UIEdgeInsetsMake(DESIGN_HEIGHT_INSET * 0.5 * Design.HEIGHT_RATIO, 0, DESIGN_HEIGHT_INSET * 0.5 * Design.HEIGHT_RATIO, 0);
+    self.messageTextView.textColor = Design.FONT_COLOR_DEFAULT;
+    self.messageTextView.font = Design.FONT_REGULAR32;
+    self.messageTextView.autocapitalizationType = UITextAutocapitalizationTypeSentences;
+    self.messageTextView.returnKeyType = UIReturnKeyDefault;
+    self.messageTextView.keyboardAppearance = UIKeyboardAppearanceDark;
+    self.messageTextView.delegate = self;
+    self.messageTextView.text = TwinmeLocalizedString(@"conversation_view_message", nil);
+    self.messageTextView.textColor = Design.PLACEHOLDER_COLOR;
+    
+    self.sendViewLeadingConstraint.constant *= Design.WIDTH_RATIO;
+    self.sendViewTrailingConstraint.constant *= Design.WIDTH_RATIO;
+    self.sendViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    
+    self.sendView.backgroundColor = Design.MAIN_COLOR;
+    self.sendView.clipsToBounds = YES;
+    self.sendView.layer.cornerRadius =  self.sendViewHeightConstraint.constant * 0.5f;
+    self.sendView.accessibilityLabel = TwinmeLocalizedString(@"feedback_view_send", nil);
+    self.sendView.isAccessibilityElement = YES;
+    [self.sendView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSendTapGesture:)]];
+    
+    self.sendImageViewHeightConstraint.constant *= Design.HEIGHT_RATIO;
+    
+    self.sendImageView.image =  [self.sendImageView.image imageFlippedForRightToLeftLayoutDirection];
+    
+    [self updateBottomHeight];
     self.uiInitialized = YES;
     
     [self.view layoutIfNeeded];
@@ -962,9 +928,21 @@ static const int GROUPS_VIEW_SECTION = 2;
 - (void)finish {
     DDLogVerbose(@"%@ finish", LOG_TAG);
     
+    [self.shareService dispose];
+    
     [self.asyncLoaderManager stop];
     self.asyncLoaderManager = nil;
-    [self.shareService dispose];
+    
+    if (self.imageLoader) {
+        [self.imageLoader cancel];
+        self.imageLoader = nil;
+    }
+    
+    if (self.videoLoader) {
+        [self.videoLoader cancel];
+        self.videoLoader = nil;
+    }
+    
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
@@ -983,12 +961,14 @@ static const int GROUPS_VIEW_SECTION = 2;
 
 - (void)handleSendTapGesture:(UIButton *)sender {
     DDLogVerbose(@"%@ handleSendTapGesture: %@", LOG_TAG, sender);
-    
-    self.sendBarButtonItem.enabled = NO;
-         
+             
     if (self.uiSelectedContact.count > 0) {
-        UIContact *selectedContact = [self.uiSelectedContact objectAtIndex:0];
         
+        if (![self.messageTextView.text isEqual:TwinmeLocalizedString(@"conversation_view_message", nil)]) {
+            self.comment = self.messageTextView.text;
+        }
+                    
+        UIContact *selectedContact = [self.uiSelectedContact objectAtIndex:0];
         [self.uiSelectedContact removeObjectAtIndex:0];
         if (selectedContact.contact.isGroup) {
             [self.shareService getConversationWithGroup:(TLGroup *)selectedContact.contact];
@@ -1067,16 +1047,93 @@ static const int GROUPS_VIEW_SECTION = 2;
     }
 }
 
+- (void)updateBottomHeight {
+    DDLogVerbose(@"%@ updateBottomHeight", LOG_TAG);
+    
+    if (!self.previewView.hidden) {
+        if (self.previewViewHeightConstraint.constant > self.textContainerViewHeightConstraint.constant) {
+            self.textContainerTopConstraint.constant = (DESIGN_DEFAULT_TEXT_MARGIN * Design.HEIGHT_RATIO) + (self.previewViewHeightConstraint.constant - self.textContainerViewHeightConstraint.constant);
+        } else {
+            self.textContainerTopConstraint.constant = (DESIGN_DEFAULT_TEXT_MARGIN * Design.HEIGHT_RATIO);
+        }
+    }
+    
+    CGFloat textContentHeight = self.textContainerTopConstraint.constant + self.textContainerViewHeightConstraint.constant;
+    CGFloat selectedContactsHeight = self.selectedCollectionViewTopConstraint.constant + self.selectedCollectionViewHeightConstraint.constant;
+    CGFloat contentHeight = textContentHeight + selectedContactsHeight;
+    CGFloat bottomViewHeight = MAX(contentHeight, self.sendViewHeightConstraint.constant);
+    
+    self.bottomViewHeightConstraint.constant = bottomViewHeight;
+    self.bottomView.hidden = self.uiSelectedContact.count == 0;
+    self.tableViewBottomConstraint.constant = self.bottomView.hidden ? 0 : bottomViewHeight + self.bottomViewBottomConstraint.constant;
+}
+
+- (void)updatePreview {
+    DDLogVerbose(@"%@ updatePreview", LOG_TAG);
+    
+    UIImage *image;
+    if (self.item.type == ItemTypeVideo || self.item.type == ItemTypePeerVideo) {
+        TLVideoDescriptor *videoDescriptor;
+        if (self.item.isPeerItem) {
+            PeerVideoItem *peerVideoItem = (PeerVideoItem *)self.item;
+            videoDescriptor = peerVideoItem.videoDescriptor;
+        } else {
+            VideoItem *videoItem = (VideoItem *)self.item;
+            videoDescriptor = videoItem.videoDescriptor;
+        }
+        
+        // Use an async loader to get the video thumbnail.
+        if (!self.videoLoader) {
+            self.videoLoader = [[AsyncVideoLoader alloc] initWithItem:self.item videoDescriptor:videoDescriptor size:CGSizeMake(self.previewViewHeightConstraint.constant, self.previewViewHeightConstraint.constant)];
+            if (!self.videoLoader.image) {
+                [self.asyncLoaderManager addItemWithAsyncLoader:self.videoLoader];
+            }
+        }
+
+        image = self.videoLoader.image;
+        if (image) {
+            self.previewView.image = image;
+        }
+    } else {
+        TLImageDescriptor *imageDescriptor;
+        if (self.item.isPeerItem) {
+            PeerImageItem *peerImageItem = (PeerImageItem *)self.item;
+            imageDescriptor = peerImageItem.imageDescriptor;
+        } else {
+            ImageItem *imageItem = (ImageItem *)self.item;
+            imageDescriptor = imageItem.imageDescriptor;
+        }
+                
+        // Use an async loader to get the image thumbnail.
+        if (!self.imageLoader) {
+            self.imageLoader = [[AsyncImageLoader alloc] initWithItem:self.item imageDescriptor:imageDescriptor size:CGSizeMake(self.previewViewHeightConstraint.constant, self.previewViewHeightConstraint.constant)];
+            
+            if (!self.imageLoader.image) {
+                [self.asyncLoaderManager addItemWithAsyncLoader:self.imageLoader];
+            }
+        }
+        image = self.imageLoader.image;
+    }
+    
+    if (image) {
+        self.previewView.image = image;
+    } else {
+        self.previewView.image = nil;
+    }
+}
+
+- (BOOL)isMediaItem {
+    DDLogVerbose(@"%@ isMediaItem", LOG_TAG);
+    
+    return self.item.type == ItemTypeImage || self.item.type == ItemTypePeerImage || self.item.type == ItemTypeVideo || self.item.type == ItemTypePeerVideo;
+}
+
 - (void)updateFont {
     DDLogVerbose(@"%@ updateFont", LOG_TAG);
     
     [self.cancelBarButtonItem setTitleTextAttributes: @{NSFontAttributeName: Design.FONT_BOLD36, NSForegroundColorAttributeName: [UIColor whiteColor]} forState:UIControlStateNormal];
     [self.cancelBarButtonItem setTitleTextAttributes: @{NSFontAttributeName: Design.FONT_BOLD36, NSForegroundColorAttributeName: [UIColor colorWithWhite:1.0 alpha:0.5]} forState:UIControlStateDisabled];
-    
-    [self.sendBarButtonItem setTitleTextAttributes:@{NSFontAttributeName:Design.FONT_BOLD36, NSForegroundColorAttributeName: [UIColor whiteColor]} forState:UIControlStateNormal];
-    [self.sendBarButtonItem setTitleTextAttributes:@{NSFontAttributeName:Design.FONT_BOLD36, NSForegroundColorAttributeName: [UIColor colorWithWhite:1.0 alpha:0.5]} forState:UIControlStateDisabled];
-    
-    [self.contactsTableView reloadData];
+    [self.tableView reloadData];
 }
 
 - (void)updateColor {

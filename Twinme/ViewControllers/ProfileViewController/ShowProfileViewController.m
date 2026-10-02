@@ -485,7 +485,7 @@ static UIColor *DESIGN_AVATAR_PLACEHOLDER_COLOR;
     
     if (sender.state == UIGestureRecognizerStateEnded) {
         AccountMigrationScannerViewController *accountMigrationScannerViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"AccountMigrationScannerViewController"];
-        accountMigrationScannerViewController.fromCurrentDevice = NO;
+        accountMigrationScannerViewController.accountMigrationScannerMode = AccountMigrationScannerModeCode;
         [self.navigationController pushViewController:accountMigrationScannerViewController animated:YES];
     }
 }
